@@ -79,15 +79,19 @@
       front: {
         text: "",
         textColor: "#fffdf8",
+        textScale: 1,
         logo: null,
         logoName: "",
+        logoScale: 1,
         ...DEFAULT_POSITIONS.front,
       },
       back: {
         text: "",
         textColor: "#fffdf8",
+        textScale: 1,
         logo: null,
         logoName: "",
+        logoScale: 1,
         ...DEFAULT_POSITIONS.back,
       },
     },
@@ -248,6 +252,10 @@
   const sizeButtons = $$(".size");
   const textInput = $("[data-text-input]");
   const charCount = $("[data-char-count]");
+  const textSizeInput = $("[data-text-size]");
+  const textSizeValue = $("[data-text-size-value]");
+  const logoSizeInput = $("[data-logo-size]");
+  const logoSizeValue = $("[data-logo-size-value]");
   const textColorButtons = $$("[data-text-color]");
   const materialButtons = $$("[data-material]");
   const materialLabel = $("[data-material-label]");
@@ -330,13 +338,33 @@
           logoName: item.logoName || "",
         };
         const back = item.back || {};
+        const scaleLabel = (scale) => {
+          const percent = Math.round((scale || 1) * 100);
+          return percent === 100 ? "" : ` (${percent}%)`;
+        };
         const customLines = [];
         customLines.push(`Material: ${item.materialName || "Algodón 400 g"}`);
         customLines.push(`Técnica: ${item.techniqueName || "DTG"}`);
-        if (front.text) customLines.push(`Frente: “${front.text}”`);
-        if (front.logoName) customLines.push(`Logo frente: ${front.logoName}`);
-        if (back.text) customLines.push(`Espalda: “${back.text}”`);
-        if (back.logoName) customLines.push(`Logo espalda: ${back.logoName}`);
+        if (front.text) {
+          customLines.push(
+            `Frente: “${front.text}”${scaleLabel(front.textScale)}`
+          );
+        }
+        if (front.logoName) {
+          customLines.push(
+            `Logo frente: ${front.logoName}${scaleLabel(front.logoScale)}`
+          );
+        }
+        if (back.text) {
+          customLines.push(
+            `Espalda: “${back.text}”${scaleLabel(back.textScale)}`
+          );
+        }
+        if (back.logoName) {
+          customLines.push(
+            `Logo espalda: ${back.logoName}${scaleLabel(back.logoScale)}`
+          );
+        }
         if (item.hoodContrast) {
           customLines.push(
             `Forro de capucha a contraste${item.hoodColorName ? ` (${item.hoodColorName})` : ""}`
@@ -761,6 +789,7 @@
       printText.style.color = design.textColor;
       printText.style.setProperty("--x", `${design.textX}%`);
       printText.style.setProperty("--y", `${design.textY}%`);
+      printText.style.setProperty("--item-scale", design.textScale || 1);
       printText.setAttribute(
         "aria-label",
         design.text
@@ -781,6 +810,7 @@
       }
       printLogo.style.setProperty("--x", `${design.logoX}%`);
       printLogo.style.setProperty("--y", `${design.logoY}%`);
+      printLogo.style.setProperty("--item-scale", design.logoScale || 1);
     }
 
     const total =
@@ -816,6 +846,18 @@
     const design = activeDesign();
     if (textInput) textInput.value = design.text;
     if (charCount) charCount.textContent = String(design.text.length);
+    if (textSizeInput) {
+      textSizeInput.value = String(Math.round((design.textScale || 1) * 100));
+    }
+    if (textSizeValue) {
+      textSizeValue.textContent = `${Math.round((design.textScale || 1) * 100)}%`;
+    }
+    if (logoSizeInput) {
+      logoSizeInput.value = String(Math.round((design.logoScale || 1) * 100));
+    }
+    if (logoSizeValue) {
+      logoSizeValue.textContent = `${Math.round((design.logoScale || 1) * 100)}%`;
+    }
     if (logoInput) logoInput.value = "";
     if (uploadFile) uploadFile.hidden = !design.logo;
     if (fileName) fileName.textContent = design.logoName || "";
@@ -1004,6 +1046,24 @@
     });
   });
 
+  if (textSizeInput) {
+    textSizeInput.addEventListener("input", () => {
+      const design = activeDesign();
+      design.textScale = Number(textSizeInput.value) / 100;
+      if (textSizeValue) textSizeValue.textContent = `${textSizeInput.value}%`;
+      updatePreview();
+    });
+  }
+
+  if (logoSizeInput) {
+    logoSizeInput.addEventListener("input", () => {
+      const design = activeDesign();
+      design.logoScale = Number(logoSizeInput.value) / 100;
+      if (logoSizeValue) logoSizeValue.textContent = `${logoSizeInput.value}%`;
+      updatePreview();
+    });
+  }
+
   if (hoodContrastInput) {
     hoodContrastInput.addEventListener("change", () => {
       state.hood.contrast = hoodContrastInput.checked;
@@ -1133,7 +1193,9 @@
         front: {
           text: front.text,
           textColor: front.textColor,
+          textScale: front.textScale,
           logoName: front.logoName,
+          logoScale: front.logoScale,
           textX: front.textX,
           textY: front.textY,
           logoX: front.logoX,
@@ -1142,7 +1204,9 @@
         back: {
           text: back.text,
           textColor: back.textColor,
+          textScale: back.textScale,
           logoName: back.logoName,
+          logoScale: back.logoScale,
           textX: back.textX,
           textY: back.textY,
           logoX: back.logoX,

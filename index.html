@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261109-material-visual3">
+  <link rel="stylesheet" href="styles.css?v=20261109-resize">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -216,7 +216,7 @@
         <div class="section-head">
           <span class="eyebrow">El estudio</span>
           <h2>Diseña la tuya<br>en 30 segundos.</h2>
-          <p>Elige material, técnica, color, talla y capucha. Diseña el frente y la espalda, arrastra el texto o el logo y mira el precio al instante.</p>
+          <p>Elige material, técnica, color, talla y capucha. Diseña el frente y la espalda, arrastra el texto o el logo, ajusta su tamaño y mira el precio al instante.</p>
         </div>
 
         <div class="studio reveal">
@@ -253,7 +253,7 @@
 
             <p class="editor-hint">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 4v16M4 12h16M8 8l4-4 4 4M8 16l4 4 4-4M8 8 4 12l4 4M16 8l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Arrastra el texto o el logo para colocarlo donde quieras.
+              Arrastra el texto o el logo y ajusta su tamaño.
             </p>
 
             <div class="preview-meta">
@@ -376,6 +376,13 @@
                   <button type="button" class="text-color" style="--tc:#cdf25a" data-text-color="#cdf25a" aria-label="Texto lima" aria-pressed="false"></button>
                 </div>
               </div>
+              <div class="size-row">
+                <div class="control-head">
+                  <label class="control-label" for="text-size">Tamaño del texto</label>
+                  <span class="control-value" data-text-size-value>100%</span>
+                </div>
+                <input class="size-range" id="text-size" type="range" min="50" max="150" step="5" value="100" data-text-size aria-label="Tamaño del texto">
+              </div>
             </div>
 
             <div class="control">
@@ -394,6 +401,13 @@
                 <span class="file-dot" aria-hidden="true"></span>
                 <span class="file-name" data-file-name></span>
                 <button type="button" class="file-remove" data-remove-logo aria-label="Quitar logo">×</button>
+              </div>
+              <div class="size-row">
+                <div class="control-head">
+                  <label class="control-label" for="logo-size">Tamaño del logo</label>
+                  <span class="control-value" data-logo-size-value>100%</span>
+                </div>
+                <input class="size-range" id="logo-size" type="range" min="50" max="200" step="5" value="100" data-logo-size aria-label="Tamaño del logo">
               </div>
             </div>
 
@@ -614,7 +628,7 @@
           </details>
           <details>
             <summary>¿Puedo personalizar la espalda y la capucha?<span class="plus" aria-hidden="true"></span></summary>
-            <p>Sí. En el diseñador puedes cambiar entre frente y espalda, añadir texto o logo en cada cara y arrastrarlos para colocarlos donde quieras. También puedes elegir un forro de capucha a contraste, el color de los cordones y el color del texto.</p>
+            <p>Sí. En el diseñador puedes cambiar entre frente y espalda, añadir texto o logo en cada cara, arrastrarlos para colocarlos donde quieras y ajustar su tamaño con los controles. También puedes elegir un forro de capucha a contraste, el color de los cordones y el color del texto.</p>
           </details>
           <details>
             <summary>¿Cuánto tarda en llegar?<span class="plus" aria-hidden="true"></span></summary>
@@ -849,7 +863,7 @@
 
   <div class="toast-region" data-toast-region aria-live="polite"></div>
 
-  <script src="app.js?v=20261109-material-visual3"></script>
-  <script src="legal.js?v=20261109-material-visual3"></script>
+  <script src="app.js?v=20261109-resize"></script>
+  <script src="legal.js?v=20261109-resize"></script>
 </body>
 </html>
