@@ -34,6 +34,23 @@
     back: { textX: 50, textY: 49, logoX: 50, logoY: 32 },
   };
 
+  const MATERIAL_IDS = [
+    "cotton400",
+    "cotton320",
+    "french300",
+    "blend350",
+    "polyester280",
+  ];
+
+  const TECHNIQUE_IDS = [
+    "dtg",
+    "dtf",
+    "bordado",
+    "serigrafia",
+    "vinilo",
+    "sublimacion",
+  ];
+
   const state = {
     color: "#1c1c1f",
     colorName: "Negro",
@@ -220,6 +237,8 @@
   const previewNames = $$("[data-preview-color-name]");
   const previewSwatch = $("[data-preview-swatch]");
   const previewSize = $("[data-preview-size]");
+  const previewMaterial = $("[data-preview-material]");
+  const previewTechnique = $("[data-preview-technique]");
   const printText = $("[data-print-text]");
   const printLogo = $("[data-print-logo]");
   const viewButtons = $$(".view-tab");
@@ -703,6 +722,19 @@
         state.hood.contrast && isFront
       );
 
+      MATERIAL_IDS.forEach((id) => {
+        hoodiePreview.classList.toggle(
+          `material-${id}`,
+          state.material.id === id
+        );
+      });
+      TECHNIQUE_IDS.forEach((id) => {
+        hoodiePreview.classList.toggle(
+          `technique-${id}`,
+          state.technique.id === id
+        );
+      });
+
       if (hoodiePhoto) {
         hoodiePhoto.src = `assets/hoodie-${isFront ? "front" : "back"}.png`;
         hoodiePhoto.alt = `Vista ${
@@ -720,6 +752,8 @@
 
     if (previewSwatch) previewSwatch.style.background = state.color;
     if (previewSize) previewSize.textContent = state.size;
+    if (previewMaterial) previewMaterial.textContent = state.material.name;
+    if (previewTechnique) previewTechnique.textContent = state.technique.name;
 
     if (printText) {
       printText.textContent = design.text;
