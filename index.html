@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261109-resize">
+  <link rel="stylesheet" href="styles.css?v=20261109-controls">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -356,58 +356,83 @@
               </div>
             </div>
 
-            <div class="editing-bar">
-              <span>Diseño de <strong data-editing-label>frente</strong></span>
-              <button type="button" class="link-btn" data-reset-print>Centrar diseño</button>
-            </div>
-
-            <div class="control">
-              <div class="control-head">
-                <label class="control-label" for="custom-text">Tu texto</label>
-                <span class="control-value"><span data-char-count>0</span>/16</span>
-              </div>
-              <input class="text-input" id="custom-text" type="text" maxlength="16" placeholder="EJ. SIN EXCUSAS" autocomplete="off" data-text-input>
-              <div class="text-color-row">
-                <span>Color del texto</span>
-                <div class="text-colors" role="group" aria-label="Color del texto">
-                  <button type="button" class="text-color is-active" style="--tc:#fffdf8" data-text-color="#fffdf8" aria-label="Texto blanco" aria-pressed="true"></button>
-                  <button type="button" class="text-color" style="--tc:#1c1c1f" data-text-color="#1c1c1f" aria-label="Texto negro" aria-pressed="false"></button>
-                  <button type="button" class="text-color" style="--tc:#ff4d1f" data-text-color="#ff4d1f" aria-label="Texto naranja" aria-pressed="false"></button>
-                  <button type="button" class="text-color" style="--tc:#cdf25a" data-text-color="#cdf25a" aria-label="Texto lima" aria-pressed="false"></button>
-                </div>
-              </div>
-              <div class="size-row">
-                <div class="control-head">
-                  <label class="control-label" for="text-size">Tamaño del texto</label>
-                  <span class="control-value" data-text-size-value>100%</span>
-                </div>
-                <input class="size-range" id="text-size" type="range" min="50" max="150" step="5" value="100" data-text-size aria-label="Tamaño del texto">
-              </div>
-            </div>
-
-            <div class="control">
-              <div class="control-head">
-                <span class="control-label">Tu logo <em>+$99 MXN</em></span>
-                <span class="control-value">Opcional por cara</span>
-              </div>
-              <input type="file" id="logo-input" accept="image/png,image/jpeg,image/svg+xml" data-logo-input hidden>
-              <label class="upload" for="logo-input" data-upload-label>
-                <span class="upload-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M8 8l4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="personalize">
+              <div class="personalize-head">
+                <span class="personalize-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20l3.6-.8L19 7.8 16.2 5 4.8 16.4 4 20Z" stroke-linejoin="round"/><path d="M14.5 6.7l2.8 2.8" stroke-linecap="round"/></svg>
+                  Personalización
                 </span>
-                <span class="upload-copy"><strong>Subir tu logo</strong><span>PNG, JPG o SVG · máx. 2 MB</span></span>
-              </label>
-              <div class="upload-file" data-upload-file hidden>
-                <span class="file-dot" aria-hidden="true"></span>
-                <span class="file-name" data-file-name></span>
-                <button type="button" class="file-remove" data-remove-logo aria-label="Quitar logo">×</button>
+                <span class="personalize-note">Frente y espalda</span>
               </div>
-              <div class="size-row">
-                <div class="control-head">
-                  <label class="control-label" for="logo-size">Tamaño del logo</label>
-                  <span class="control-value" data-logo-size-value>100%</span>
+
+              <div class="personalize-tools" role="group" aria-label="Herramienta de personalización">
+                <button type="button" class="personalize-tool is-active" data-personalize-tool="texto" aria-pressed="true">
+                  <span class="personalize-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 6h14M12 6v13M8 19h8" stroke-linecap="round"/></svg></span>
+                  <span>Texto</span>
+                </button>
+                <button type="button" class="personalize-tool" data-personalize-tool="logo" aria-pressed="false">
+                  <span class="personalize-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V4M8 8l4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <span>Logo</span>
+                </button>
+              </div>
+
+              <div class="editing-bar" data-editing-bar>
+                <span>Diseño de <strong data-editing-label>frente</strong></span>
+                <button type="button" class="link-btn" data-reset-print>Centrar diseño</button>
+              </div>
+
+              <div class="personalize-panel" data-personalize-panel="texto">
+                <div class="control">
+                  <div class="control-head">
+                    <label class="control-label" for="custom-text">Tu texto</label>
+                    <span class="control-value"><span data-char-count>0</span>/16</span>
+                  </div>
+                  <input class="text-input" id="custom-text" type="text" maxlength="16" placeholder="EJ. SIN EXCUSAS" autocomplete="off" data-text-input>
+                  <div class="text-color-row">
+                    <span>Color del texto</span>
+                    <div class="text-colors" role="group" aria-label="Color del texto">
+                      <button type="button" class="text-color is-active" style="--tc:#fffdf8" data-text-color="#fffdf8" aria-label="Texto blanco" aria-pressed="true"></button>
+                      <button type="button" class="text-color" style="--tc:#1c1c1f" data-text-color="#1c1c1f" aria-label="Texto negro" aria-pressed="false"></button>
+                      <button type="button" class="text-color" style="--tc:#ff4d1f" data-text-color="#ff4d1f" aria-label="Texto naranja" aria-pressed="false"></button>
+                      <button type="button" class="text-color" style="--tc:#cdf25a" data-text-color="#cdf25a" aria-label="Texto lima" aria-pressed="false"></button>
+                    </div>
+                  </div>
+                  <div class="size-row">
+                    <div class="control-head">
+                      <label class="control-label" for="text-size">Tamaño del texto</label>
+                      <span class="control-value" data-text-size-value>100%</span>
+                    </div>
+                    <input class="size-range" id="text-size" type="range" min="50" max="150" step="5" value="100" data-text-size aria-label="Tamaño del texto">
+                  </div>
                 </div>
-                <input class="size-range" id="logo-size" type="range" min="50" max="200" step="5" value="100" data-logo-size aria-label="Tamaño del logo">
+              </div>
+
+              <div class="personalize-panel" data-personalize-panel="logo" hidden>
+                <div class="control">
+                  <div class="control-head">
+                    <span class="control-label">Tu logo <em>+$99 MXN</em></span>
+                    <span class="control-value">Opcional por cara</span>
+                  </div>
+                  <input type="file" id="logo-input" accept="image/png,image/jpeg,image/svg+xml" data-logo-input hidden>
+                  <label class="upload" for="logo-input" data-upload-label>
+                    <span class="upload-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M8 8l4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    <span class="upload-copy"><strong>Subir tu logo</strong><span>PNG, JPG o SVG · máx. 2 MB</span></span>
+                  </label>
+                  <div class="upload-file" data-upload-file hidden>
+                    <span class="file-dot" aria-hidden="true"></span>
+                    <span class="file-name" data-file-name></span>
+                    <button type="button" class="file-remove" data-remove-logo aria-label="Quitar logo">×</button>
+                  </div>
+                  <div class="size-row">
+                    <div class="control-head">
+                      <label class="control-label" for="logo-size">Tamaño del logo</label>
+                      <span class="control-value" data-logo-size-value>100%</span>
+                    </div>
+                    <input class="size-range" id="logo-size" type="range" min="50" max="200" step="5" value="100" data-logo-size aria-label="Tamaño del logo">
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -863,7 +888,7 @@
 
   <div class="toast-region" data-toast-region aria-live="polite"></div>
 
-  <script src="app.js?v=20261109-resize"></script>
-  <script src="legal.js?v=20261109-resize"></script>
+  <script src="app.js?v=20261109-controls"></script>
+  <script src="legal.js?v=20261109-controls"></script>
 </body>
 </html>

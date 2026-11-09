@@ -246,6 +246,8 @@
   const printText = $("[data-print-text]");
   const printLogo = $("[data-print-logo]");
   const viewButtons = $$(".view-tab");
+  const toolButtons = $$("[data-personalize-tool]");
+  const toolPanels = $$("[data-personalize-panel]");
   const editingLabel = $("[data-editing-label]");
   const resetPrintButton = $("[data-reset-print]");
   const colorSwatches = $$(".swatch[data-color]");
@@ -699,6 +701,17 @@
     }
   }
 
+  function setTool(tool) {
+    toolButtons.forEach((button) => {
+      const active = button.dataset.personalizeTool === tool;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+    toolPanels.forEach((panel) => {
+      panel.hidden = panel.dataset.personalizePanel !== tool;
+    });
+  }
+
   function priceNoteText() {
     const parts = [`Base ${formatPrice(state.basePrice)}`];
 
@@ -1024,6 +1037,12 @@
       };
       updatePreview();
     });
+  });
+
+  toolButtons.forEach((button) => {
+    button.addEventListener("click", () =>
+      setTool(button.dataset.personalizeTool)
+    );
   });
 
   viewButtons.forEach((button) => {
@@ -1368,5 +1387,6 @@
 
   selectColor(state.color, state.colorName);
   setView(state.view);
+  setTool("texto");
   renderCart();
 })();
