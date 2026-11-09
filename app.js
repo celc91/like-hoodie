@@ -193,8 +193,8 @@
   const sizeModal = $("[data-size-modal]");
 
   const hoodiePreview = $("[data-preview-hoodie]");
-  const hoodieSvg = $(".hoodie--studio > svg");
-  const hoodieUse = $("[data-hoodie-use]");
+  const hoodiePhoto = $("[data-hoodie-photo]");
+  const cordOverlay = $("[data-cord-overlay]");
   const previewNames = $$("[data-preview-color-name]");
   const previewSwatch = $("[data-preview-swatch]");
   const previewSize = $("[data-preview-size]");
@@ -295,10 +295,14 @@
         const customHTML = customLines
           .map((line) => `<p class="cart-custom">${escapeHTML(line)}</p>`)
           .join("");
+        const isDark = color.toLowerCase() === "#1c1c1f";
         return `
           <article class="cart-item" data-id="${escapeHTML(item.id)}">
-            <div class="cart-thumb" style="color:${color}" aria-hidden="true">
-              <svg viewBox="0 0 400 480"><use href="#hoodie"></use></svg>
+            <div class="cart-thumb" aria-hidden="true">
+              <div class="hoodie ${isDark ? "is-dark" : ""}" style="--fabric-color:${color};--tint-mask:url('assets/hoodie-front.png')">
+                ${isDark ? "" : '<div class="fabric-tint"></div>'}
+                <img class="hoodie-photo" src="assets/hoodie-front.png" alt="" width="1003" height="1229" loading="lazy">
+              </div>
             </div>
             <div class="cart-info">
               <div class="cart-item-top">
@@ -576,13 +580,34 @@
     const design = activeDesign();
 
     if (hoodiePreview) {
-      hoodiePreview.style.color = state.color;
-      if (state.hood.contrast) {
-        hoodiePreview.style.setProperty("--hood-color", state.hood.color);
-      } else {
-        hoodiePreview.style.removeProperty("--hood-color");
-      }
+      const isFront = state.view === "front";
+      const isDark = state.color.toLowerCase() === "#1c1c1f";
+      hoodiePreview.style.setProperty("--fabric-color", state.color);
+      hoodiePreview.style.setProperty(
+        "--tint-mask",
+        `url("assets/hoodie-${isFront ? "front" : "back"}.png")`
+      );
+      hoodiePreview.style.setProperty(
+        "--hood-mask",
+        `url("assets/hood-mask-${isFront ? "front" : "back"}.svg")`
+      );
       hoodiePreview.style.setProperty("--cord-color", state.hood.cord);
+      hoodiePreview.style.setProperty("--hood-color", state.hood.color);
+      hoodiePreview.classList.toggle("is-dark", isDark);
+      hoodiePreview.classList.toggle(
+        "has-hood-contrast",
+        state.hood.contrast && isFront
+      );
+
+      if (hoodiePhoto) {
+        hoodiePhoto.src = `assets/hoodie-${isFront ? "front" : "back"}.png`;
+        hoodiePhoto.alt = `Vista ${
+          isFront ? "frontal" : "trasera"
+        } de tu sudadera personalizada`;
+        hoodiePhoto.width = isFront ? 1003 : 999;
+        hoodiePhoto.height = 1229;
+      }
+      if (cordOverlay) cordOverlay.hidden = !isFront;
     }
 
     previewNames.forEach((element) => {
@@ -642,20 +667,6 @@
       button.setAttribute("aria-pressed", String(active));
     });
 
-    if (hoodieUse) {
-      hoodieUse.setAttribute(
-        "href",
-        view === "front" ? "#hoodie" : "#hoodie-back"
-      );
-    }
-    if (hoodieSvg) {
-      hoodieSvg.setAttribute(
-        "aria-label",
-        view === "front"
-          ? "Vista frontal de tu sudadera personalizada"
-          : "Vista trasera de tu sudadera personalizada"
-      );
-    }
     if (editingLabel) {
       editingLabel.textContent = view === "front" ? "frente" : "espalda";
     }

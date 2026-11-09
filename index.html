@@ -176,10 +176,8 @@
         <div class="hero-visual">
           <div class="hero-blob" aria-hidden="true"></div>
           <div class="hero-hoodie">
-            <div class="hoodie hoodie--hero" style="color:#efe6d6">
-              <svg viewBox="0 0 400 480" role="img" aria-label="Sudadera color crema personalizada con el texto Sin Excusas">
-                <use href="#hoodie"></use>
-              </svg>
+            <div class="hoodie hoodie--hero is-dark" style="--fabric-color:#1c1c1f">
+              <img class="hoodie-photo" src="assets/hoodie-front.png" alt="Sudadera Chama negra personalizada con el texto Sin Excusas" width="1003" height="1229">
               <div class="print-area print-area--hero" aria-hidden="true">
                 <span class="print-kicker">HECHO A TU MANERA</span>
                 <span class="print-text" style="color:#ff4d1f">SIN<br>EXCUSAS</span>
@@ -233,9 +231,17 @@
             </div>
 
             <div class="hoodie-stage">
-              <div class="hoodie hoodie--studio" data-preview-hoodie>
-                <svg viewBox="0 0 400 480" role="img" aria-label="Vista frontal de tu sudadera personalizada">
-                  <use href="#hoodie" data-hoodie-use></use>
+              <div class="hoodie hoodie--studio is-dark" data-preview-hoodie style="--fabric-color:#1c1c1f;--tint-mask:url('assets/hoodie-front.png');--hood-mask:url('assets/hood-mask-front.svg')">
+                <div class="fabric-tint" data-fabric-tint aria-hidden="true"></div>
+                <img class="hoodie-photo" data-hoodie-photo src="assets/hoodie-front.png" alt="Vista frontal de tu sudadera personalizada" width="1003" height="1229">
+                <div class="hood-tint" data-hood-tint aria-hidden="true"></div>
+                <svg class="cord-overlay" data-cord-overlay viewBox="0 0 1003 1229" aria-hidden="true">
+                  <path class="cord-under" d="M474 170C468 250 463 360 457 512"/>
+                  <path class="cord-line" d="M474 170C468 250 463 360 457 512"/>
+                  <circle class="cord-tip" cx="457" cy="512" r="5"/>
+                  <path class="cord-under" d="M536 170C542 250 547 360 553 512"/>
+                  <path class="cord-line" d="M536 170C542 250 547 360 553 512"/>
+                  <circle class="cord-tip" cx="553" cy="512" r="5"/>
                 </svg>
                 <div class="editor-layer" data-editor-layer>
                   <span class="print-text editor-item" data-print-text data-print-type="text" tabindex="0" role="button" aria-label="Texto del diseño. Arrastra para moverlo."></span>
@@ -294,7 +300,7 @@
               <label class="switch-row">
                 <input type="checkbox" data-hood-contrast>
                 <span class="switch" aria-hidden="true"></span>
-                <span>Capucha a contraste</span>
+                <span>Forro de capucha a contraste</span>
               </label>
               <div class="hood-colors" data-hood-colors hidden>
                 <button type="button" class="hood-swatch is-active" style="--sw:#f2603c" data-hood-color="#f2603c" data-name="Naranja" aria-label="Capucha naranja" aria-pressed="true"></button>
@@ -386,7 +392,9 @@
           <article class="product-card reveal">
             <div class="product-visual" style="--fabric:#1c1c1f">
               <span class="tag tag--dark">Best seller</span>
-              <svg viewBox="0 0 400 480" aria-label="Sudadera negra"><use href="#hoodie"></use></svg>
+              <div class="hoodie product-hoodie is-dark" style="--fabric-color:#1c1c1f">
+                <img class="hoodie-photo" src="assets/hoodie-front.png" alt="Sudadera negra Chama" width="1003" height="1229">
+              </div>
             </div>
             <div class="product-info">
               <div class="product-title"><h3>La Clásica</h3><span>$899 MXN</span></div>
@@ -397,7 +405,10 @@
 
           <article class="product-card reveal">
             <div class="product-visual" style="--fabric:#efe6d6">
-              <svg viewBox="0 0 400 480" aria-label="Sudadera color crema"><use href="#hoodie"></use></svg>
+              <div class="hoodie product-hoodie" style="--fabric-color:#efe6d6;--tint-mask:url('assets/hoodie-front.png')">
+                <div class="fabric-tint" aria-hidden="true"></div>
+                <img class="hoodie-photo" src="assets/hoodie-front.png" alt="Sudadera color crema Chama" width="1003" height="1229">
+              </div>
             </div>
             <div class="product-info">
               <div class="product-title"><h3>Off-White</h3><span>$949 MXN</span></div>
@@ -409,7 +420,10 @@
           <article class="product-card reveal">
             <div class="product-visual" style="--fabric:#cdf25a">
               <span class="tag">Nuevo</span>
-              <svg viewBox="0 0 400 480" aria-label="Sudadera verde lima"><use href="#hoodie"></use></svg>
+              <div class="hoodie product-hoodie" style="--fabric-color:#cdf25a;--tint-mask:url('assets/hoodie-front.png')">
+                <div class="fabric-tint" aria-hidden="true"></div>
+                <img class="hoodie-photo" src="assets/hoodie-front.png" alt="Sudadera verde lima Chama" width="1003" height="1229">
+              </div>
             </div>
             <div class="product-info">
               <div class="product-title"><h3>Lima</h3><span>$969 MXN</span></div>
@@ -421,7 +435,10 @@
           <article class="product-card reveal">
             <div class="product-visual" style="--fabric:#f2603c">
               <span class="tag tag--light">Edición limitada</span>
-              <svg viewBox="0 0 400 480" aria-label="Sudadera naranja"><use href="#hoodie"></use></svg>
+              <div class="hoodie product-hoodie" style="--fabric-color:#f2603c;--tint-mask:url('assets/hoodie-front.png')">
+                <div class="fabric-tint" aria-hidden="true"></div>
+                <img class="hoodie-photo" src="assets/hoodie-front.png" alt="Sudadera naranja Chama" width="1003" height="1229">
+              </div>
             </div>
             <div class="product-info">
               <div class="product-title"><h3>Terracota</h3><span>$949 MXN</span></div>
@@ -594,8 +611,9 @@
           </div>
           <div class="cta-visual" aria-hidden="true">
             <div class="cta-blob"></div>
-            <div class="hoodie hoodie--cta" style="color:#efe6d6">
-              <svg viewBox="0 0 400 480"><use href="#hoodie"></use></svg>
+            <div class="hoodie hoodie--cta" style="--fabric-color:#cdf25a;--tint-mask:url('assets/hoodie-front.png')">
+              <div class="fabric-tint" aria-hidden="true"></div>
+              <img class="hoodie-photo" src="assets/hoodie-front.png" alt="" width="1003" height="1229">
               <div class="print-area print-area--cta">
                 <span class="print-text" style="color:#ff4d1f">HECHO<br>POR TI</span>
               </div>

@@ -8,7 +8,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 
 - **Diseñador en vivo:** color de sudadera, talla, texto, color de texto y subida de logo (PNG, JPG o SVG).
 - **Editor frontal y trasero:** cambia de vista, arrastra el texto y el logo para colocarlos y personaliza cada cara por separado.
-- **Capucha personalizable:** capucha a contraste y color de cordones.
+- **Capucha personalizable:** forro de capucha a contraste y color de cordones.
 - **Precio dinámico:** base por color, suplemento de talla XXL y extra por logo en cada cara.
 - **Catálogo:** cuatro modelos con selección directa al configurador.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
@@ -57,6 +57,7 @@ El sitio usa rutas relativas, así que funciona sin cambios en la subcarpeta de 
 ├── privacidad.html   # Aviso de privacidad
 ├── cookies.html      # Política de cookies
 ├── terminos.html     # Términos y condiciones
+├── assets/           # Fotografías de producto y máscaras
 ├── preview.png       # Captura para el README
 └── README.md
 ```
@@ -68,6 +69,10 @@ El sitio usa rutas relativas, así que funciona sin cambios en la subcarpeta de 
 - **Envío gratis:** `FREE_SHIPPING` en `app.js` (por defecto $1,200 MXN).
 - **Coste de envío:** `SHIPPING_COST` en `app.js`.
 - **Productos del catálogo:** tarjetas en `index.html` y sus botones `data-personalize`.
+
+## Fotografías de producto
+
+El editor usa una maqueta fotográfica frontal y trasera con fondo transparente, extraída de una plantilla de **Mockup Space** (licencia free personal & commercial use). Puedes sustituir `assets/hoodie-front.png` y `assets/hoodie-back.png` por fotografías reales de tus sudaderas manteniendo el fondo transparente y una composición vertical similar. Los colores se aplican con capas de tinte y máscaras, así que las fotos nuevas deben ser claras y con buena iluminación.
 
 ## Antes de publicar la tienda real
 

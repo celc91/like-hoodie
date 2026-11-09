@@ -689,10 +689,93 @@ section[id] {
   container-type: inline-size;
 }
 
-.hoodie > svg {
+.hoodie-photo {
+  position: relative;
+  z-index: 2;
+  display: block;
   width: 100%;
   height: auto;
+  mix-blend-mode: multiply;
   filter: drop-shadow(0 28px 32px rgba(22, 22, 24, 0.24));
+  pointer-events: none;
+}
+
+.fabric-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--fabric-color, #1c1c1f);
+  -webkit-mask-image: var(--tint-mask);
+  mask-image: var(--tint-mask);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.hood-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: var(--hood-color, #f2603c);
+  -webkit-mask-image: var(--hood-mask);
+  mask-image: var(--hood-mask);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  opacity: 0;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.hoodie.has-hood-contrast .hood-tint {
+  opacity: 0.92;
+}
+
+.hoodie.is-dark .fabric-tint {
+  display: none;
+}
+
+.hoodie.is-dark .hoodie-photo {
+  mix-blend-mode: normal;
+  filter: brightness(0.18) contrast(1.14)
+    drop-shadow(0 28px 32px rgba(22, 22, 24, 0.24));
+}
+
+.cord-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.cord-under {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.45);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.cord-line {
+  fill: none;
+  stroke: var(--cord-color, #fffdf8);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.cord-tip {
+  fill: var(--cord-color, #fffdf8);
+  stroke: rgba(0, 0, 0, 0.45);
+  stroke-width: 2;
 }
 
 .print-area {
@@ -708,7 +791,7 @@ section[id] {
   gap: 0.04em;
   text-align: center;
   pointer-events: none;
-  z-index: 2;
+  z-index: 6;
 }
 
 .print-text {
@@ -752,6 +835,10 @@ section[id] {
   line-height: 0.86;
   letter-spacing: 0.015em;
   white-space: nowrap;
+}
+
+.print-area--hero .print-kicker {
+  color: rgba(255, 253, 248, 0.62);
 }
 
 .sticker {
@@ -1031,11 +1118,6 @@ section[id] {
 
 .hoodie--studio {
   width: min(82%, 390px);
-  filter: drop-shadow(0 24px 28px rgba(22, 22, 24, 0.16));
-}
-
-.hoodie--studio > svg {
-  filter: none;
 }
 
 .preview-meta {
@@ -1395,14 +1477,16 @@ section[id] {
   overflow: hidden;
 }
 
-.product-visual > svg {
+.product-visual .hoodie {
   width: 66%;
-  max-height: 90%;
-  filter: drop-shadow(0 18px 18px rgba(22, 22, 24, 0.16));
   transition: transform 0.35s ease;
 }
 
-.product-card:hover .product-visual > svg {
+.product-visual .hoodie-photo {
+  filter: drop-shadow(0 18px 18px rgba(22, 22, 24, 0.16));
+}
+
+.product-card:hover .product-visual .hoodie {
   transform: rotate(-3deg) scale(1.04);
 }
 
@@ -1891,7 +1975,7 @@ details[open] .plus::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 350px;
+  min-height: 400px;
 }
 
 .cta-blob {
@@ -1906,13 +1990,8 @@ details[open] .plus::after {
 .hoodie--cta {
   position: relative;
   z-index: 2;
-  width: min(88%, 340px);
+  width: min(80%, 310px);
   transform: rotate(5deg);
-  filter: drop-shadow(0 26px 30px rgba(0, 0, 0, 0.3));
-}
-
-.hoodie--cta > svg {
-  filter: none;
 }
 
 .print-area--cta {
@@ -2240,10 +2319,17 @@ details[open] .plus::after {
   overflow: hidden;
 }
 
-.cart-thumb svg {
+.cart-thumb .hoodie {
   width: 66%;
-  height: auto;
+}
+
+.cart-thumb .hoodie-photo {
   filter: drop-shadow(0 6px 6px rgba(22, 22, 24, 0.14));
+}
+
+.cart-thumb .hoodie.is-dark .hoodie-photo {
+  filter: brightness(0.18) contrast(1.14)
+    drop-shadow(0 6px 6px rgba(22, 22, 24, 0.14));
 }
 
 .cart-info {
@@ -3107,7 +3193,7 @@ details[open] .plus::after {
     min-height: 190px;
   }
 
-  .product-visual > svg {
+  .product-visual .hoodie {
     width: 74%;
   }
 
@@ -3944,7 +4030,7 @@ details[open] .plus::after {
 .editor-layer {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 5;
   pointer-events: none;
 }
 
