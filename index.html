@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HILVÁN — Sudaderas personalizadas con tu idea</title>
+  <meta name="description" content="Diseña tu sudadera personalizada: algodón 400 g, impresión DTG de alta durabilidad, sin pedido mínimo y envío en 48–72 h. Tu idea, tu sudadera.">
+  <meta name="theme-color" content="#f4efe6">
+  <meta property="og:title" content="HILVÁN — Tu idea. Tu sudadera.">
+  <meta property="og:description" content="Crea una sudadera única con tu texto, tus colores y tu logo. Algodón premium 400 g y envío en 48–72 h.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ff4d1f'/%3E%3Cpath d='M20 16v32M44 16v32M20 32h24' stroke='%23fffdf8' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>document.documentElement.classList.add("js");</script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#inicio">Saltar al contenido</a>
+
+  <!-- Sprite reutilizable de la sudadera -->
+  <svg class="svg-sprite" aria-hidden="true" width="0" height="0" focusable="false">
+    <symbol id="hoodie" viewBox="0 0 400 480">
+      <!-- capucha -->
+      <path d="M137 96C124 36 160 14 200 14s76 22 63 82c-7 32-32 48-63 48s-56-16-63-48Z" fill="currentColor" stroke="rgba(0,0,0,.16)" stroke-width="2"/>
+      <path d="M137 96C124 36 160 14 200 14s76 22 63 82" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="9" stroke-linecap="round"/>
+      <!-- mangas -->
+      <path d="M126 102C98 106 80 120 71 146L32 298c-6 21 4 37 27 43l28 8c21 5 37-4 41-24l14-84 13-111Z" fill="currentColor" stroke="rgba(0,0,0,.16)" stroke-width="2"/>
+      <path d="M274 102c28 4 46 18 55 44l39 152c6 21-4 37-27 43l-28 8c-21 5-37-4-41-24l-14-84-13-111Z" fill="currentColor" stroke="rgba(0,0,0,.16)" stroke-width="2"/>
+      <!-- cuerpo -->
+      <path d="M126 98c0-16 12-27 30-31 14-3 29-7 44-7s30 4 44 7c18 4 30 15 30 31l28 282c2 20-8 33-28 35H126c-20-2-30-15-28-35Z" fill="currentColor" stroke="rgba(0,0,0,.16)" stroke-width="2"/>
+      <!-- bajo de canalé -->
+      <path d="M112 384h176c2 19-7 30-26 32H138c-19-2-28-13-26-32Z" fill="rgba(0,0,0,.10)"/>
+      <path d="M112 384h176" fill="none" stroke="rgba(0,0,0,.14)" stroke-width="2"/>
+      <!-- abertura de capucha -->
+      <path d="M158 84c3-27 19-42 42-42s39 15 42 42c-7 27-23 40-42 40s-35-13-42-40Z" fill="rgba(0,0,0,.38)"/>
+      <path d="M166 82c3-20 16-31 34-31s31 11 34 31c-6 20-19 29-34 29s-28-9-34-29Z" fill="rgba(0,0,0,.20)"/>
+      <!-- cordones -->
+      <path d="M182 122c-4 26-5 48-10 76" stroke="rgba(0,0,0,.35)" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M182 122c-4 26-5 48-10 76" stroke="rgba(255,255,255,.8)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <circle cx="171" cy="202" r="4" fill="rgba(0,0,0,.38)"/>
+      <path d="M218 122c4 26 5 48 10 76" stroke="rgba(0,0,0,.35)" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M218 122c4 26 5 48 10 76" stroke="rgba(255,255,255,.8)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <circle cx="229" cy="202" r="4" fill="rgba(0,0,0,.38)"/>
+      <!-- bolsillo canguro -->
+      <path d="M130 278c23-9 117-9 140 0l-8 92c-38 8-86 8-124 0Z" fill="rgba(0,0,0,.07)" stroke="rgba(0,0,0,.14)" stroke-width="2"/>
+      <path d="M130 278c23-9 117-9 140 0" fill="none" stroke="rgba(0,0,0,.16)" stroke-width="2.5"/>
+      <!-- sombras suaves -->
+      <path d="M126 102c-18 4-32 14-40 32l-30 116c-3 12 2 20 12 24" fill="none" stroke="rgba(0,0,0,.09)" stroke-width="10" stroke-linecap="round"/>
+      <path d="M274 102c18 4 32 14 40 32l30 116c3 12-2 20-12 24" fill="none" stroke="rgba(0,0,0,.09)" stroke-width="10" stroke-linecap="round"/>
+      <!-- luces de costura: hacen legibles los colores oscuros -->
+      <g fill="none" stroke="rgba(255,255,255,.16)" stroke-width="2.2" stroke-linecap="round">
+        <path d="M137 96C124 36 160 14 200 14s76 22 63 82"/>
+        <path d="M126 102C98 106 80 120 71 146L32 298c-6 21 4 37 27 43l28 8c21 5 37-4 41-24l14-84 13-111Z"/>
+        <path d="M274 102c28 4 46 18 55 44l39 152c6 21-4 37-27 43l-28 8c-21 5-37-4-41-24l-14-84-13-111Z"/>
+        <path d="M126 98c0-16 12-27 30-31 14-3 29-7 44-7s30 4 44 7c18 4 30 15 30 31l28 282c2 20-8 33-28 35H126c-20-2-30-15-28-35Z"/>
+        <path d="M158 84c3-27 19-42 42-42s39 15 42 42"/>
+        <path d="M130 278c23-9 117-9 140 0"/>
+        <path d="M41 296l88 20"/>
+        <path d="M359 296l-88 20"/>
+        <path d="M137 190l-8 130"/>
+        <path d="M263 190l8 130"/>
+      </g>
+    </symbol>
+  </svg>
+
+  <div class="announce">
+    <div class="container announce-inner">
+      <p>Envío gratis desde $1,200 MXN <span>·</span> Personalización sin pedido mínimo</p>
+      <a href="#personalizar">Diseña la tuya
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <header class="site-header" data-header>
+    <div class="container header-inner">
+      <a href="#inicio" class="brand" aria-label="HILVÁN, volver al inicio">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64"><path d="M20 16v32M44 16v32M20 32h24" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg>
+        </span>
+        <span class="brand-name">HILVÁN</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="#personalizar">Diseñador</a>
+        <a href="#catalogo">Catálogo</a>
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#opiniones">Opiniones</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="#personalizar" class="btn btn-dark btn-sm nav-cta">Diseñar la mía</a>
+        <button class="cart-button" type="button" data-open-cart aria-label="Abrir la cesta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M6 8h12l1 12H5L6 8Z" stroke-linejoin="round"/>
+            <path d="M9 10V6a3 3 0 0 1 6 0v4" stroke-linecap="round"/>
+          </svg>
+          <span class="cart-count" data-cart-count>0</span>
+        </button>
+        <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menú">
+          <span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="mobile-menu" id="mobile-menu" data-mobile-menu>
+      <nav aria-label="Navegación móvil">
+        <a href="#personalizar">Diseñador</a>
+        <a href="#catalogo">Catálogo</a>
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#opiniones">Opiniones</a>
+        <a href="#faq">FAQ</a>
+        <a href="#personalizar" class="btn btn-primary">Diseñar la mía</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="inicio">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow"><span class="pulse" aria-hidden="true"></span> Sudaderas personalizadas</span>
+          <h1>Tu idea.<br><span class="accent">Tu sudadera.</span></h1>
+          <p class="hero-sub">Convierte lo que llevas dentro en lo que llevas puesto. Elige color, añade tu texto o tu logo y recibe una sudadera única, en algodón de 400 g y con una impresión que no se agrieta.</p>
+          <div class="hero-actions">
+            <a href="#personalizar" class="btn btn-primary">Diseñar la mía
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="#catalogo" class="btn btn-ghost">Ver catálogo</a>
+          </div>
+          <div class="hero-proof">
+            <div class="avatars" aria-hidden="true">
+              <span>MG</span><span>LR</span><span>JT</span><span>+</span>
+            </div>
+            <div class="proof-copy">
+              <span class="stars" aria-label="5 de 5 estrellas">★★★★★</span>
+              <p><strong>4,9/5</strong> · +2.400 sudaderas entregadas</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="hero-blob" aria-hidden="true"></div>
+          <div class="hero-hoodie">
+            <div class="hoodie hoodie--hero" style="color:#efe6d6">
+              <svg viewBox="0 0 400 480" role="img" aria-label="Sudadera color crema personalizada con el texto Sin Excusas">
+                <use href="#hoodie"></use>
+              </svg>
+              <div class="print-area print-area--hero" aria-hidden="true">
+                <span class="print-kicker">HECHO A TU MANERA</span>
+                <span class="print-text" style="color:#ff4d1f">SIN<br>EXCUSAS</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sticker" aria-hidden="true"><span>Sin<br>mínimos</span></div>
+
+          <div class="float-card float-fabric">
+            <span class="float-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 17a4 4 0 0 1-.5-8 5.5 5.5 0 0 1 10.6 1.2A3.5 3.5 0 0 1 17 17H7Z" stroke-linejoin="round"/></svg>
+            </span>
+            <div><strong>Algodón 400 g</strong><span>Peinado, grueso, suave</span></div>
+          </div>
+
+          <div class="float-card float-shipping">
+            <span class="status-dot" aria-hidden="true"></span>
+            <div><strong>Envío 48–72 h</strong><span>Seguimiento incluido</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Diseño propio</span><i>✦</i><span>Impresión DTG</span><i>✦</i><span>Sin pedido mínimo</span><i>✦</i><span>Algodón 400 g</span><i>✦</i><span>Hecho en México</span><i>✦</i>
+        <span>Diseño propio</span><i>✦</i><span>Impresión DTG</span><i>✦</i><span>Sin pedido mínimo</span><i>✦</i><span>Algodón 400 g</span><i>✦</i><span>Hecho en México</span><i>✦</i>
+      </div>
+    </div>
+
+    <!-- CONFIGURADOR -->
+    <section class="studio-section" id="personalizar">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">El estudio</span>
+          <h2>Diseña la tuya<br>en 30 segundos.</h2>
+          <p>Elige color, talla y añade tu toque. La vista previa se actualiza al instante y el precio también. Así de fácil.</p>
+        </div>
+
+        <div class="studio reveal">
+          <div class="studio-preview">
+            <div class="preview-top">
+              <span>Vista previa</span>
+              <span class="live"><i aria-hidden="true"></i> En vivo</span>
+            </div>
+
+            <div class="hoodie-stage">
+              <div class="hoodie hoodie--studio" data-preview-hoodie>
+                <svg viewBox="0 0 400 480" role="img" aria-label="Vista previa de tu sudadera personalizada">
+                  <use href="#hoodie"></use>
+                </svg>
+                <div class="print-area" data-print-area>
+                  <img class="print-logo" data-print-logo alt="" hidden>
+                  <span class="print-text" data-print-text></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="preview-meta">
+              <span><i class="mini-swatch" data-preview-swatch aria-hidden="true"></i><span data-preview-color-name>Negro</span></span>
+              <span>Talla <strong data-preview-size>M</strong></span>
+            </div>
+          </div>
+
+          <div class="studio-controls">
+            <div class="control">
+              <div class="control-head">
+                <span class="control-label">Color de la sudadera</span>
+                <span class="control-value" data-preview-color-name>Negro</span>
+              </div>
+              <div class="swatches" role="group" aria-label="Color de la sudadera">
+                <button type="button" class="swatch is-active" style="--sw:#1c1c1f" data-color="#1c1c1f" data-name="Negro" aria-label="Negro" aria-pressed="true"></button>
+                <button type="button" class="swatch" style="--sw:#efe6d6" data-color="#efe6d6" data-name="Crema" aria-label="Crema" aria-pressed="false"></button>
+                <button type="button" class="swatch" style="--sw:#cdf25a" data-color="#cdf25a" data-name="Lima" aria-label="Verde lima" aria-pressed="false"></button>
+                <button type="button" class="swatch" style="--sw:#f2603c" data-color="#f2603c" data-name="Naranja" aria-label="Naranja" aria-pressed="false"></button>
+                <button type="button" class="swatch" style="--sw:#26324f" data-color="#26324f" data-name="Marino" aria-label="Azul marino" aria-pressed="false"></button>
+                <button type="button" class="swatch" style="--sw:#efb7c4" data-color="#efb7c4" data-name="Rosa" aria-label="Rosa" aria-pressed="false"></button>
+              </div>
+            </div>
+
+            <div class="control">
+              <div class="control-head">
+                <span class="control-label">Talla</span>
+                <button class="size-guide-link" type="button" data-size-guide>Guía de tallas</button>
+              </div>
+              <div class="sizes" role="group" aria-label="Talla">
+                <button type="button" class="size" data-size="XS" aria-pressed="false">XS</button>
+                <button type="button" class="size" data-size="S" aria-pressed="false">S</button>
+                <button type="button" class="size is-active" data-size="M" aria-pressed="true">M</button>
+                <button type="button" class="size" data-size="L" aria-pressed="false">L</button>
+                <button type="button" class="size" data-size="XL" aria-pressed="false">XL</button>
+                <button type="button" class="size" data-size="XXL" aria-pressed="false">XXL</button>
+              </div>
+            </div>
+
+            <div class="control">
+              <div class="control-head">
+                <label class="control-label" for="custom-text">Tu texto</label>
+                <span class="control-value"><span data-char-count>0</span>/16</span>
+              </div>
+              <input class="text-input" id="custom-text" type="text" maxlength="16" placeholder="EJ. SIN EXCUSAS" autocomplete="off" data-text-input>
+              <div class="text-color-row">
+                <span>Color del texto</span>
+                <div class="text-colors" role="group" aria-label="Color del texto">
+                  <button type="button" class="text-color is-active" style="--tc:#fffdf8" data-text-color="#fffdf8" aria-label="Texto blanco" aria-pressed="true"></button>
+                  <button type="button" class="text-color" style="--tc:#1c1c1f" data-text-color="#1c1c1f" aria-label="Texto negro" aria-pressed="false"></button>
+                  <button type="button" class="text-color" style="--tc:#ff4d1f" data-text-color="#ff4d1f" aria-label="Texto naranja" aria-pressed="false"></button>
+                  <button type="button" class="text-color" style="--tc:#cdf25a" data-text-color="#cdf25a" aria-label="Texto lima" aria-pressed="false"></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="control">
+              <div class="control-head">
+                <span class="control-label">Tu logo <em>+$99 MXN</em></span>
+                <span class="control-value">Opcional</span>
+              </div>
+              <input type="file" id="logo-input" accept="image/png,image/jpeg,image/svg+xml" data-logo-input hidden>
+              <label class="upload" for="logo-input" data-upload-label>
+                <span class="upload-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M8 8l4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="upload-copy"><strong>Subir tu logo</strong><span>PNG, JPG o SVG · máx. 2 MB</span></span>
+              </label>
+              <div class="upload-file" data-upload-file hidden>
+                <span class="file-dot" aria-hidden="true"></span>
+                <span class="file-name" data-file-name></span>
+                <button type="button" class="file-remove" data-remove-logo aria-label="Quitar logo">×</button>
+              </div>
+            </div>
+
+            <div class="price-row">
+              <div class="price-block">
+                <span class="price-label">Total</span>
+                <strong class="price" data-price>$899 MXN</strong>
+                <span class="price-note" data-price-note>Base $899 MXN · IVA incluido</span>
+              </div>
+              <button type="button" class="btn btn-primary btn-add" data-add-to-cart> Añadir a la cesta
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CATÁLOGO -->
+    <section class="catalog" id="catalogo">
+      <div class="container">
+        <div class="section-head section-head--row">
+          <div>
+            <span class="eyebrow">Los favoritos</span>
+            <h2>Empieza por una base.</h2>
+          </div>
+          <p>Cuatro colores que lo aguantan todo. Elige tu favorito, personalízalo y hazlo tuyo.</p>
+        </div>
+
+        <div class="product-grid">
+          <article class="product-card reveal">
+            <div class="product-visual" style="--fabric:#1c1c1f">
+              <span class="tag tag--dark">Best seller</span>
+              <svg viewBox="0 0 400 480" aria-label="Sudadera negra"><use href="#hoodie"></use></svg>
+            </div>
+            <div class="product-info">
+              <div class="product-title"><h3>La Clásica</h3><span>$899 MXN</span></div>
+              <p>Negro · Algodón 400 g</p>
+              <button type="button" class="btn btn-outline btn-block" data-personalize data-color="#1c1c1f" data-name="Negro" data-price="899">Personalizar</button>
+            </div>
+          </article>
+
+          <article class="product-card reveal">
+            <div class="product-visual" style="--fabric:#efe6d6">
+              <svg viewBox="0 0 400 480" aria-label="Sudadera color crema"><use href="#hoodie"></use></svg>
+            </div>
+            <div class="product-info">
+              <div class="product-title"><h3>Off-White</h3><span>$949 MXN</span></div>
+              <p>Crema · Algodón 400 g</p>
+              <button type="button" class="btn btn-outline btn-block" data-personalize data-color="#efe6d6" data-name="Crema" data-price="949">Personalizar</button>
+            </div>
+          </article>
+
+          <article class="product-card reveal">
+            <div class="product-visual" style="--fabric:#cdf25a">
+              <span class="tag">Nuevo</span>
+              <svg viewBox="0 0 400 480" aria-label="Sudadera verde lima"><use href="#hoodie"></use></svg>
+            </div>
+            <div class="product-info">
+              <div class="product-title"><h3>Lima</h3><span>$969 MXN</span></div>
+              <p>Verde lima · Algodón 400 g</p>
+              <button type="button" class="btn btn-outline btn-block" data-personalize data-color="#cdf25a" data-name="Lima" data-price="969">Personalizar</button>
+            </div>
+          </article>
+
+          <article class="product-card reveal">
+            <div class="product-visual" style="--fabric:#f2603c">
+              <span class="tag tag--light">Edición limitada</span>
+              <svg viewBox="0 0 400 480" aria-label="Sudadera naranja"><use href="#hoodie"></use></svg>
+            </div>
+            <div class="product-info">
+              <div class="product-title"><h3>Terracota</h3><span>$949 MXN</span></div>
+              <p>Naranja · Algodón 400 g</p>
+              <button type="button" class="btn btn-outline btn-block" data-personalize data-color="#f2603c" data-name="Naranja" data-price="949">Personalizar</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFICIOS -->
+    <section class="features" aria-label="Por qué elegir HILVÁN">
+      <div class="container features-grid">
+        <div class="feature reveal">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 17a4 4 0 0 1-.5-8 5.5 5.5 0 0 1 10.6 1.2A3.5 3.5 0 0 1 17 17H7Z" stroke-linejoin="round"/></svg>
+          </span>
+          <div><h3>Algodón 400 g</h3><p>Peinado, grueso y suave por dentro. Se nota la diferencia.</p></div>
+        </div>
+        <div class="feature reveal">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M7 8V4h10v4M7 16H5V9h14v7h-2M7 13h10v7H7v-7Z" stroke-linejoin="round"/></svg>
+          </span>
+          <div><h3>Impresión DTG</h3><p>Tinta directa al tejido. Colores vivos que no se agrietan.</p></div>
+        </div>
+        <div class="feature reveal">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" stroke-linecap="round"/></svg>
+          </span>
+          <div><h3>Sin pedido mínimo</h3><p>Una sola sudadera, personalizada. No necesitas lote.</p></div>
+        </div>
+        <div class="feature reveal">
+          <span class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z" stroke-linejoin="round"/><circle cx="7" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></svg>
+          </span>
+          <div><h3>Envío en 48–72 h</h3><p>Producimos y enviamos con seguimiento desde México.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CÓMO FUNCIONA -->
+    <section class="steps" id="como-funciona">
+      <div class="container">
+        <div class="section-head section-head--light">
+          <span class="eyebrow">Cómo funciona</span>
+          <h2>Tres pasos.<br>Cero complicaciones.</h2>
+        </div>
+        <div class="steps-grid">
+          <article class="step reveal">
+            <span class="step-num">01</span>
+            <h3>Elige y diseña</h3>
+            <p>Selecciona color y talla, escribe tu frase o sube tu logo. Verás el resultado al momento, sin sorpresas.</p>
+          </article>
+          <article class="step reveal">
+            <span class="step-num">02</span>
+            <h3>Nosotros la imprimimos</h3>
+            <p>Tu diseño se imprime en DTG sobre algodón de 400 g. Lo revisamos a mano antes de cada envío.</p>
+          </article>
+          <article class="step reveal">
+            <span class="step-num">03</span>
+            <h3>Llega a tu puerta</h3>
+            <p>En 48–72 h laborables tienes tu sudadera lista para estrenar. Con seguimiento y embalaje sin plástico.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPINIONES -->
+    <section class="reviews" id="opiniones">
+      <div class="container">
+        <div class="reviews-head">
+          <div>
+            <span class="eyebrow">Opiniones reales</span>
+            <h2>Se nota cuando<br>es tuya.</h2>
+          </div>
+          <div class="rating-badge">
+            <strong>4,9</strong>
+            <div><span class="stars">★★★★★</span><span>+2.400 pedidos</span></div>
+          </div>
+        </div>
+
+        <div class="reviews-grid">
+          <figure class="review-card reveal">
+            <span class="stars" aria-label="5 estrellas">★★★★★</span>
+            <blockquote>“Pedí una para el cumpleaños de mi hermana con una frase nuestra. La calidad es brutal y el acabado del texto, perfecto. Repetiré seguro.”</blockquote>
+            <figcaption>
+              <span class="review-avatar">MG</span>
+              <div><strong>María G.</strong><span>CDMX · Sudadera Lima</span></div>
+            </figcaption>
+          </figure>
+
+          <figure class="review-card reveal">
+            <span class="stars" aria-label="5 estrellas">★★★★★</span>
+            <blockquote>“Llegó en dos días y la talla clavada. El algodón es gordito, de los que abrigan de verdad. Mi hija no se la quita.”</blockquote>
+            <figcaption>
+              <span class="review-avatar">LR</span>
+              <div><strong>Luis R.</strong><span>Guadalajara · Sudadera Negra</span></div>
+            </figcaption>
+          </figure>
+
+          <figure class="review-card reveal">
+            <span class="stars" aria-label="5 estrellas">★★★★★</span>
+            <blockquote>“Subí el logo de mi marca y quedó mejor de lo que esperaba. Sin mínimos, sin líos y con un trato de diez.”</blockquote>
+            <figcaption>
+              <span class="review-avatar">JT</span>
+              <div><strong>Julia T.</strong><span>Monterrey · Sudadera Crema</span></div>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+      <div class="container faq-grid">
+        <div class="faq-intro">
+          <span class="eyebrow">Preguntas frecuentes</span>
+          <h2>Todo lo que<br>quieres saber.</h2>
+          <p>Si te queda cualquier duda, escríbenos. Contestamos personas, no bots.</p>
+          <a class="contact-card" href="mailto:hola@hilvan.mx">
+            <span>
+              <strong>¿Hablamos?</strong>
+              <span>hola@hilvan.mx · Respuesta en menos de 24 h</span>
+            </span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <div class="accordion">
+          <details open>
+            <summary>¿Puedo subir mi propio logo?<span class="plus" aria-hidden="true"></span></summary>
+            <p>Sí. Aceptamos PNG, JPG y SVG de hasta 2 MB. Para que quede nítido, lo ideal es un archivo con fondo transparente y buena resolución. Si tienes dudas, mándanoslo y lo revisamos antes de imprimir.</p>
+          </details>
+          <details>
+            <summary>¿Cuánto tarda en llegar?<span class="plus" aria-hidden="true"></span></summary>
+            <p>Producimos tu sudadera en 24–48 h y el envío tarda entre 48 y 72 h laborables en todo México. Recibirás un email con el número de seguimiento en cuanto salga de nuestro taller.</p>
+          </details>
+          <details>
+            <summary>¿Hay pedido mínimo?<span class="plus" aria-hidden="true"></span></summary>
+            <p>Ninguno. Puedes pedir una sola sudadera personalizada. Nos encanta que sea así: una idea, una pieza, sin tener que montar un pedido enorme.</p>
+          </details>
+          <details>
+            <summary>¿Cómo la lavo para que dure?<span class="plus" aria-hidden="true"></span></summary>
+            <p>Del revés, a 30 °C y sin suavizante. No uses secadora y plancha siempre por el revés, nunca directamente sobre la impresión. Con estos cuidados, el estampado aguanta lavado tras lavado.</p>
+          </details>
+          <details>
+            <summary>¿Puedo devolverla si no me convence?<span class="plus" aria-hidden="true"></span></summary>
+            <p>Al ser un producto personalizado, no admite devolución por cambio de opinión. Pero si llega con cualquier defecto o no coincide con tu diseño, la reponemos sin coste. Escríbenos y lo solucionamos.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-card reveal">
+          <div class="cta-copy">
+            <span class="eyebrow">Sin excusas</span>
+            <h2>Tu idea merece algo mejor que una sudadera genérica.</h2>
+            <p>Color, talla, texto y logo. Tú decides. Nosotros ponemos el algodón, la tinta y el cuidado.</p>
+            <a href="#personalizar" class="btn btn-lime">Empezar a diseñar
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+          <div class="cta-visual" aria-hidden="true">
+            <div class="cta-blob"></div>
+            <div class="hoodie hoodie--cta" style="color:#efe6d6">
+              <svg viewBox="0 0 400 480"><use href="#hoodie"></use></svg>
+              <div class="print-area print-area--cta">
+                <span class="print-text" style="color:#ff4d1f">HECHO<br>POR TI</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="#inicio" class="brand brand--footer" aria-label="HILVÁN, volver al inicio">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 64 64"><path d="M20 16v32M44 16v32M20 32h24" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg>
+          </span>
+          <span class="brand-name">HILVÁN</span>
+        </a>
+        <p>Sudaderas personalizadas, hechas con calma y algodón de verdad. Tu idea, puesta.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram">IG</a>
+          <a href="#" aria-label="TikTok">TT</a>
+          <a href="#" aria-label="Pinterest">PT</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Tienda</h4>
+        <a href="#personalizar">Diseñador</a>
+        <a href="#catalogo">Catálogo</a>
+        <a href="#faq">Guía de tallas</a>
+        <a href="#faq">Estado del pedido</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Ayuda</h4>
+        <a href="#faq">Envíos</a>
+        <a href="#faq">Devoluciones</a>
+        <a href="#faq">Cuidados</a>
+        <a href="mailto:hola@hilvan.mx">Contacto</a>
+      </div>
+
+      <div class="footer-news">
+        <h4>El club HILVÁN</h4>
+        <p>Diseños nuevos, ideas y un 10 % en tu primer pedido. Sin spam.</p>
+        <form class="newsletter" data-newsletter>
+          <label class="sr-only" for="newsletter-email">Tu email</label>
+          <input id="newsletter-email" type="email" name="email" placeholder="tu@email.com" required autocomplete="email">
+          <button type="submit" aria-label="Suscribirme">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>© 2026 HILVÁN. Hecho con algodón y buenas ideas.</p>
+      <div class="payments" aria-label="Métodos de pago">
+        <span>VISA</span><span>MASTERCARD</span><span>PAYPAL</span><span>APPLE PAY</span>
+      </div>
+      <div class="legal">
+        <a href="#">Privacidad</a>
+        <a href="#">Cookies</a>
+        <a href="#">Términos</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CESTA -->
+  <div class="overlay" data-overlay></div>
+
+  <aside class="cart-drawer" data-cart-drawer aria-hidden="true" aria-labelledby="cart-title" role="dialog" aria-modal="true">
+    <div class="cart-head">
+      <div>
+        <span class="eyebrow">Tu pedido</span>
+        <h2 id="cart-title">La cesta</h2>
+      </div>
+      <button type="button" class="icon-btn" data-close-cart aria-label="Cerrar la cesta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div class="shipping-bar" data-shipping-bar>
+      <p data-shipping-message>Te faltan $1,200 MXN para el envío gratis</p>
+      <div class="bar"><span data-shipping-progress></span></div>
+    </div>
+
+    <div class="cart-items" data-cart-items></div>
+
+    <div class="cart-empty" data-cart-empty hidden>
+      <span class="empty-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 8h12l1 12H5L6 8Z" stroke-linejoin="round"/><path d="M9 10V6a3 3 0 0 1 6 0v4" stroke-linecap="round"/></svg>
+      </span>
+      <h3>Tu cesta está vacía</h3>
+      <p>Diseña tu primera sudadera. Solo se tarda 30 segundos.</p>
+      <button type="button" class="btn btn-dark" data-close-cart>Empezar a diseñar</button>
+    </div>
+
+    <div class="cart-foot" data-cart-foot>
+      <div class="cart-line"><span>Subtotal</span><span data-subtotal>$0 MXN</span></div>
+      <div class="cart-line"><span>Envío</span><span data-shipping>—</span></div>
+      <div class="cart-total"><span>Total</span><strong data-total>$0 MXN</strong></div>
+      <button type="button" class="btn btn-primary btn-block" data-checkout>Finalizar compra</button>
+      <p class="secure">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke-linecap="round"/></svg>
+        Pago seguro · Reposición garantizada
+      </p>
+    </div>
+  </aside>
+
+  <!-- CHECKOUT -->
+  <div class="modal" data-checkout-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+    <div class="modal-panel">
+      <button type="button" class="icon-btn modal-close" data-close-checkout aria-label="Cerrar checkout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+      </button>
+
+      <div data-checkout-form-view>
+        <span class="eyebrow">Checkout</span>
+        <h2 id="checkout-title">Datos de envío</h2>
+        <p class="modal-sub">Pedido de demostración: no se realizará ningún cargo real.</p>
+
+        <form data-checkout-form>
+          <div class="field">
+            <label for="f-name">Nombre completo</label>
+            <input id="f-name" name="name" type="text" required autocomplete="name" placeholder="Ana García">
+          </div>
+          <div class="field">
+            <label for="f-email">Email</label>
+            <input id="f-email" name="email" type="email" required autocomplete="email" placeholder="ana@email.com">
+          </div>
+          <div class="field">
+            <label for="f-address">Dirección</label>
+            <input id="f-address" name="address" type="text" required autocomplete="street-address" placeholder="Calle, número, piso">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-city">Ciudad</label>
+              <input id="f-city" name="city" type="text" required autocomplete="address-level2" placeholder="Ciudad de México">
+            </div>
+            <div class="field">
+              <label for="f-zip">Código postal</label>
+              <input id="f-zip" name="zip" type="text" required autocomplete="postal-code" placeholder="06700" inputmode="numeric">
+            </div>
+          </div>
+          <div class="checkout-summary">
+            <span>Total a pagar</span>
+            <strong data-checkout-total>$0 MXN</strong>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Pagar ahora</button>
+          <p class="checkout-note">Al continuar aceptas los términos y la política de privacidad.</p>
+        </form>
+      </div>
+
+      <div class="checkout-success" data-checkout-success hidden>
+        <span class="success-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h2>¡Pedido confirmado!</h2>
+        <p>Gracias por confiar en HILVÁN. Te hemos enviado los detalles y el seguimiento a tu email.</p>
+        <p class="order-number">Pedido <strong data-order-number>HV-00000</strong></p>
+        <button type="button" class="btn btn-dark btn-block" data-close-checkout>Volver a la tienda</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL TALLAS -->
+  <div class="modal" data-size-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="size-title">
+    <div class="modal-panel modal-panel--sizes">
+      <button type="button" class="icon-btn modal-close" data-close-sizes aria-label="Cerrar guía de tallas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+      </button>
+      <span class="eyebrow">Guía de tallas</span>
+      <h2 id="size-title">Encuentra tu talla</h2>
+      <p class="modal-sub">Medidas de la prenda en plano (cm). Si dudas entre dos tallas, elige la mayor para un fit oversize.</p>
+      <div class="size-table-wrap">
+        <table class="size-table">
+          <thead><tr><th>Talla</th><th>Ancho</th><th>Largo</th><th>Manga</th></tr></thead>
+          <tbody>
+            <tr><td>XS</td><td>50</td><td>64</td><td>60</td></tr>
+            <tr><td>S</td><td>53</td><td>66</td><td>62</td></tr>
+            <tr><td>M</td><td>56</td><td>68</td><td>64</td></tr>
+            <tr><td>L</td><td>59</td><td>70</td><td>66</td></tr>
+            <tr><td>XL</td><td>62</td><td>72</td><td>68</td></tr>
+            <tr><td>XXL</td><td>65</td><td>74</td><td>70</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="size-note">La talla XXL tiene un suplemento de $49 MXN.</p>
+    </div>
+  </div>
+
+  <div class="toast-region" data-toast-region aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
