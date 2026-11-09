@@ -29,15 +29,39 @@
     "#efb7c4": 899,
   };
 
+  const DEFAULT_POSITIONS = {
+    front: { textX: 50, textY: 49, logoX: 50, logoY: 32 },
+    back: { textX: 50, textY: 49, logoX: 50, logoY: 32 },
+  };
+
   const state = {
     color: "#1c1c1f",
     colorName: "Negro",
     basePrice: 899,
     size: "M",
-    text: "",
-    textColor: "#fffdf8",
-    logo: null,
-    logoName: "",
+    view: "front",
+    hood: {
+      contrast: false,
+      color: "#f2603c",
+      colorName: "Naranja",
+      cord: "#fffdf8",
+    },
+    designs: {
+      front: {
+        text: "",
+        textColor: "#fffdf8",
+        logo: null,
+        logoName: "",
+        ...DEFAULT_POSITIONS.front,
+      },
+      back: {
+        text: "",
+        textColor: "#fffdf8",
+        logo: null,
+        logoName: "",
+        ...DEFAULT_POSITIONS.back,
+      },
+    },
     items: loadCart(),
   };
 
@@ -120,6 +144,23 @@
     return { subtotal, shipping, total: subtotal + shipping };
   }
 
+  function activeDesign() {
+    return state.designs[state.view];
+  }
+
+  function logoCount() {
+    return Object.values(state.designs).filter((design) => design.logo).length;
+  }
+
+  function clampPosition(value, type = "text", axis = "x") {
+    if (axis === "x") {
+      const min = type === "text" ? 23 : 15;
+      const max = type === "text" ? 77 : 85;
+      return Math.max(min, Math.min(max, value));
+    }
+    return Math.max(10, Math.min(90, value));
+  }
+
   /* ---------------------------------------------------------------------- */
   /* Referencias DOM                                                         */
   /* ---------------------------------------------------------------------- */
@@ -152,21 +193,30 @@
   const sizeModal = $("[data-size-modal]");
 
   const hoodiePreview = $("[data-preview-hoodie]");
+  const hoodieSvg = $(".hoodie--studio > svg");
+  const hoodieUse = $("[data-hoodie-use]");
   const previewNames = $$("[data-preview-color-name]");
   const previewSwatch = $("[data-preview-swatch]");
   const previewSize = $("[data-preview-size]");
-  const printArea = $("[data-print-area]");
   const printText = $("[data-print-text]");
   const printLogo = $("[data-print-logo]");
-  const colorSwatches = $$(".swatch");
+  const viewButtons = $$(".view-tab");
+  const editingLabel = $("[data-editing-label]");
+  const resetPrintButton = $("[data-reset-print]");
+  const colorSwatches = $$(".swatch[data-color]");
   const sizeButtons = $$(".size");
   const textInput = $("[data-text-input]");
   const charCount = $("[data-char-count]");
-  const textColorButtons = $$(".text-color");
+  const textColorButtons = $$("[data-text-color]");
   const logoInput = $("[data-logo-input]");
   const uploadFile = $("[data-upload-file]");
   const fileName = $("[data-file-name]");
   const removeLogoButton = $("[data-remove-logo]");
+  const hoodContrastInput = $("[data-hood-contrast]");
+  const hoodColorsRow = $("[data-hood-colors]");
+  const hoodColorButtons = $$("[data-hood-color]");
+  const hoodLabel = $("[data-hood-label]");
+  const cordColorButtons = $$("[data-cord-color]");
   const priceEl = $("[data-price]");
   const priceNote = $("[data-price-note]");
   const addToCartButton = $("[data-add-to-cart]");
@@ -227,6 +277,24 @@
     cartItems.innerHTML = state.items
       .map((item) => {
         const color = safeColor(item.colorHex);
+        const front = item.front || {
+          text: item.text || "",
+          logoName: item.logoName || "",
+        };
+        const back = item.back || {};
+        const customLines = [];
+        if (front.text) customLines.push(`Frente: “${front.text}”`);
+        if (front.logoName) customLines.push(`Logo frente: ${front.logoName}`);
+        if (back.text) customLines.push(`Espalda: “${back.text}”`);
+        if (back.logoName) customLines.push(`Logo espalda: ${back.logoName}`);
+        if (item.hoodContrast) {
+          customLines.push(
+            `Capucha a contraste${item.hoodColorName ? ` (${item.hoodColorName})` : ""}`
+          );
+        }
+        const customHTML = customLines
+          .map((line) => `<p class="cart-custom">${escapeHTML(line)}</p>`)
+          .join("");
         return `
           <article class="cart-item" data-id="${escapeHTML(item.id)}">
             <div class="cart-thumb" style="color:${color}" aria-hidden="true">
@@ -238,8 +306,7 @@
                 <button type="button" class="remove" data-remove-item="${escapeHTML(item.id)}" aria-label="Quitar ${escapeHTML(item.name || "sudadera")} de la cesta">×</button>
               </div>
               <p class="cart-meta">${escapeHTML(item.colorName || "Negro")} · Talla ${escapeHTML(item.size || "M")}</p>
-              ${item.text ? `<p class="cart-custom">“${escapeHTML(item.text)}”</p>` : ""}
-              ${item.logoName ? `<p class="cart-custom">Logo: ${escapeHTML(item.logoName)}</p>` : ""}
+              ${customHTML}
               <div class="cart-item-bottom">
                 <div class="qty" role="group" aria-label="Cantidad de ${escapeHTML(item.name || "sudadera")}">
                   <button type="button" data-dec="${escapeHTML(item.id)}" aria-label="Quitar una unidad">−</button>
@@ -457,9 +524,34 @@
   /* ---------------------------------------------------------------------- */
 
   function updateTextColorUI() {
+    const design = activeDesign();
     textColorButtons.forEach((button) => {
       const active =
-        button.dataset.textColor.toLowerCase() === state.textColor.toLowerCase();
+        button.dataset.textColor.toLowerCase() === design.textColor.toLowerCase();
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  }
+
+  function updateHoodUI() {
+    if (hoodContrastInput) hoodContrastInput.checked = state.hood.contrast;
+    if (hoodColorsRow) hoodColorsRow.hidden = !state.hood.contrast;
+    if (hoodLabel) {
+      hoodLabel.textContent = state.hood.contrast
+        ? state.hood.colorName
+        : "Igual que el cuerpo";
+    }
+
+    hoodColorButtons.forEach((button) => {
+      const active =
+        button.dataset.hoodColor.toLowerCase() === state.hood.color.toLowerCase();
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+
+    cordColorButtons.forEach((button) => {
+      const active =
+        button.dataset.cordColor.toLowerCase() === state.hood.cord.toLowerCase();
       button.classList.toggle("is-active", active);
       button.setAttribute("aria-pressed", String(active));
     });
@@ -467,14 +559,31 @@
 
   function priceNoteText() {
     const parts = [`Base ${formatPrice(state.basePrice)}`];
-    if (state.logo) parts.push(`logo +${formatPrice(LOGO_PRICE)}`);
+    const count = logoCount();
+    if (count > 0) {
+      parts.push(
+        `${count === 1 ? "logo" : `${count} logos`} +${formatPrice(
+          LOGO_PRICE * count
+        )}`
+      );
+    }
     if (state.size === "XXL") parts.push(`XXL +${formatPrice(XXL_PRICE)}`);
     parts.push("IVA incluido");
     return parts.join(" · ");
   }
 
   function updatePreview() {
-    if (hoodiePreview) hoodiePreview.style.color = state.color;
+    const design = activeDesign();
+
+    if (hoodiePreview) {
+      hoodiePreview.style.color = state.color;
+      if (state.hood.contrast) {
+        hoodiePreview.style.setProperty("--hood-color", state.hood.color);
+      } else {
+        hoodiePreview.style.removeProperty("--hood-color");
+      }
+      hoodiePreview.style.setProperty("--cord-color", state.hood.cord);
+    }
 
     previewNames.forEach((element) => {
       element.textContent = state.colorName;
@@ -484,43 +593,96 @@
     if (previewSize) previewSize.textContent = state.size;
 
     if (printText) {
-      printText.textContent = state.text;
-      printText.hidden = state.text.length === 0;
-      printText.style.color = state.textColor;
+      printText.textContent = design.text;
+      printText.hidden = design.text.length === 0;
+      printText.style.color = design.textColor;
+      printText.style.setProperty("--x", `${design.textX}%`);
+      printText.style.setProperty("--y", `${design.textY}%`);
+      printText.setAttribute(
+        "aria-label",
+        design.text
+          ? `Texto "${design.text}". Arrastra para moverlo.`
+          : "Texto del diseño. Arrastra para moverlo."
+      );
     }
 
     if (printLogo) {
-      if (state.logo) {
-        printLogo.src = state.logo;
-        printLogo.alt = "Logo personalizado";
+      if (design.logo) {
+        printLogo.src = design.logo;
+        printLogo.alt = `Logo de la vista ${state.view === "front" ? "frontal" : "trasera"}`;
         printLogo.hidden = false;
       } else {
         printLogo.removeAttribute("src");
         printLogo.alt = "";
         printLogo.hidden = true;
       }
-    }
-
-    if (printArea) {
-      printArea.classList.toggle("has-logo", Boolean(state.logo));
+      printLogo.style.setProperty("--x", `${design.logoX}%`);
+      printLogo.style.setProperty("--y", `${design.logoY}%`);
     }
 
     const total =
       state.basePrice +
-      (state.logo ? LOGO_PRICE : 0) +
+      logoCount() * LOGO_PRICE +
       (state.size === "XXL" ? XXL_PRICE : 0);
 
     if (priceEl) priceEl.textContent = formatPrice(total);
     if (priceNote) priceNote.textContent = priceNoteText();
 
     updateTextColorUI();
+    updateHoodUI();
+  }
+
+  function setView(view) {
+    if (!state.designs[view]) return;
+    state.view = view;
+
+    viewButtons.forEach((button) => {
+      const active = button.dataset.view === view;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+
+    if (hoodieUse) {
+      hoodieUse.setAttribute(
+        "href",
+        view === "front" ? "#hoodie" : "#hoodie-back"
+      );
+    }
+    if (hoodieSvg) {
+      hoodieSvg.setAttribute(
+        "aria-label",
+        view === "front"
+          ? "Vista frontal de tu sudadera personalizada"
+          : "Vista trasera de tu sudadera personalizada"
+      );
+    }
+    if (editingLabel) {
+      editingLabel.textContent = view === "front" ? "frente" : "espalda";
+    }
+
+    const design = activeDesign();
+    if (textInput) textInput.value = design.text;
+    if (charCount) charCount.textContent = String(design.text.length);
+    if (logoInput) logoInput.value = "";
+    if (uploadFile) uploadFile.hidden = !design.logo;
+    if (fileName) fileName.textContent = design.logoName || "";
+
+    updatePreview();
   }
 
   function selectColor(hex, name) {
     state.color = hex;
     state.colorName = name;
     state.basePrice = BASE_PRICES[hex] || state.basePrice;
-    state.textColor = contrastFor(hex);
+
+    const recommendation = contrastFor(hex);
+    ["front", "back"].forEach((side) => {
+      const design = state.designs[side];
+      const current = design.textColor.toLowerCase();
+      if (current === "#fffdf8" || current === "#1c1c1f") {
+        design.textColor = recommendation;
+      }
+    });
 
     colorSwatches.forEach((button) => {
       const active = button.dataset.color.toLowerCase() === hex.toLowerCase();
@@ -529,6 +691,102 @@
     });
 
     updatePreview();
+  }
+
+  function setupDraggable(element) {
+    if (!element) return;
+    const type = element.dataset.printType;
+    if (!type) return;
+
+    let dragging = false;
+    let dragSide = "front";
+
+    const applyPosition = (design) => {
+      element.style.setProperty(
+        "--x",
+        `${type === "text" ? design.textX : design.logoX}%`
+      );
+      element.style.setProperty(
+        "--y",
+        `${type === "text" ? design.textY : design.logoY}%`
+      );
+    };
+
+    const moveTo = (clientX, clientY) => {
+      if (!hoodiePreview) return;
+      const rect = hoodiePreview.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const x = clampPosition(((clientX - rect.left) / rect.width) * 100, type, "x");
+      const y = clampPosition(((clientY - rect.top) / rect.height) * 100, type, "y");
+      const design = state.designs[dragSide];
+
+      if (type === "text") {
+        design.textX = Math.round(x * 10) / 10;
+        design.textY = Math.round(y * 10) / 10;
+      } else {
+        design.logoX = Math.round(x * 10) / 10;
+        design.logoY = Math.round(y * 10) / 10;
+      }
+
+      applyPosition(design);
+    };
+
+    element.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      if (element.hidden) return;
+      event.preventDefault();
+      dragSide = state.view;
+      dragging = true;
+      element.classList.add("is-dragging");
+      element.focus({ preventScroll: true });
+      try {
+        element.setPointerCapture(event.pointerId);
+      } catch (error) {
+        /* Algunos navegadores no permiten capturar el puntero. */
+      }
+      moveTo(event.clientX, event.clientY);
+    });
+
+    element.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+      moveTo(event.clientX, event.clientY);
+    });
+
+    const endDrag = (event) => {
+      if (!dragging) return;
+      dragging = false;
+      element.classList.remove("is-dragging");
+      try {
+        element.releasePointerCapture(event.pointerId);
+      } catch (error) {
+        /* La captura pudo haberse perdido. */
+      }
+    };
+
+    element.addEventListener("pointerup", endDrag);
+    element.addEventListener("pointercancel", endDrag);
+
+    element.addEventListener("keydown", (event) => {
+      const allowed = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
+      if (!allowed.includes(event.key)) return;
+      event.preventDefault();
+      const design = activeDesign();
+      const step = event.shiftKey ? 5 : 1;
+
+      if (type === "text") {
+        if (event.key === "ArrowLeft") design.textX = clampPosition(design.textX - step, "text", "x");
+        if (event.key === "ArrowRight") design.textX = clampPosition(design.textX + step, "text", "x");
+        if (event.key === "ArrowUp") design.textY = clampPosition(design.textY - step, "text", "y");
+        if (event.key === "ArrowDown") design.textY = clampPosition(design.textY + step, "text", "y");
+      } else {
+        if (event.key === "ArrowLeft") design.logoX = clampPosition(design.logoX - step, "logo", "x");
+        if (event.key === "ArrowRight") design.logoX = clampPosition(design.logoX + step, "logo", "x");
+        if (event.key === "ArrowUp") design.logoY = clampPosition(design.logoY - step, "logo", "y");
+        if (event.key === "ArrowDown") design.logoY = clampPosition(design.logoY + step, "logo", "y");
+      }
+
+      applyPosition(design);
+    });
   }
 
   colorSwatches.forEach((button) => {
@@ -549,18 +807,45 @@
     });
   });
 
+  viewButtons.forEach((button) => {
+    button.addEventListener("click", () => setView(button.dataset.view));
+  });
+
   if (textInput) {
     textInput.addEventListener("input", () => {
-      state.text = textInput.value.toUpperCase();
-      if (charCount) charCount.textContent = String(state.text.length);
+      const design = activeDesign();
+      design.text = textInput.value.toUpperCase();
+      if (charCount) charCount.textContent = String(design.text.length);
       updatePreview();
     });
   }
 
   textColorButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      state.textColor = button.dataset.textColor;
-      updateTextColorUI();
+      activeDesign().textColor = button.dataset.textColor;
+      updatePreview();
+    });
+  });
+
+  if (hoodContrastInput) {
+    hoodContrastInput.addEventListener("change", () => {
+      state.hood.contrast = hoodContrastInput.checked;
+      updatePreview();
+    });
+  }
+
+  hoodColorButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.hood.contrast = true;
+      state.hood.color = button.dataset.hoodColor;
+      state.hood.colorName = button.dataset.name;
+      updatePreview();
+    });
+  });
+
+  cordColorButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.hood.cord = button.dataset.cordColor;
       updatePreview();
     });
   });
@@ -582,14 +867,21 @@
         return;
       }
 
+      const side = state.view;
       const reader = new FileReader();
       reader.onload = () => {
-        state.logo = String(reader.result);
-        state.logoName = file.name;
-        if (uploadFile) uploadFile.hidden = false;
-        if (fileName) fileName.textContent = file.name;
+        const design = state.designs[side];
+        design.logo = String(reader.result);
+        design.logoName = file.name;
+
+        if (state.view === side) {
+          if (uploadFile) uploadFile.hidden = false;
+          if (fileName) fileName.textContent = file.name;
+        }
         updatePreview();
-        showToast("Logo cargado. Quedará genial.");
+        showToast(
+          `Logo ${side === "front" ? "frontal" : "trasero"} cargado.`
+        );
       };
       reader.onerror = () => {
         showToast("No hemos podido leer el archivo. Inténtalo de nuevo.");
@@ -601,29 +893,65 @@
 
   if (removeLogoButton) {
     removeLogoButton.addEventListener("click", () => {
-      state.logo = null;
-      state.logoName = "";
+      const design = activeDesign();
+      design.logo = null;
+      design.logoName = "";
       if (logoInput) logoInput.value = "";
       if (uploadFile) uploadFile.hidden = true;
       updatePreview();
     });
   }
 
+  if (resetPrintButton) {
+    resetPrintButton.addEventListener("click", () => {
+      const design = activeDesign();
+      const defaults = DEFAULT_POSITIONS[state.view];
+      design.textX = defaults.textX;
+      design.textY = defaults.textY;
+      design.logoX = defaults.logoX;
+      design.logoY = defaults.logoY;
+      updatePreview();
+      showToast("Diseño centrado de nuevo.");
+    });
+  }
+
+  setupDraggable(printText);
+  setupDraggable(printLogo);
+
   if (addToCartButton) {
     addToCartButton.addEventListener("click", () => {
+      const front = state.designs.front;
+      const back = state.designs.back;
       const unitPrice =
         state.basePrice +
-        (state.logo ? LOGO_PRICE : 0) +
+        logoCount() * LOGO_PRICE +
         (state.size === "XXL" ? XXL_PRICE : 0);
 
-      const key = [
-        state.color,
-        state.size,
-        state.text,
-        state.textColor,
-        state.logoName,
-        state.basePrice,
-      ].join("|");
+      const designSnapshot = {
+        color: state.color,
+        size: state.size,
+        hood: { ...state.hood },
+        front: {
+          text: front.text,
+          textColor: front.textColor,
+          logoName: front.logoName,
+          textX: front.textX,
+          textY: front.textY,
+          logoX: front.logoX,
+          logoY: front.logoY,
+        },
+        back: {
+          text: back.text,
+          textColor: back.textColor,
+          logoName: back.logoName,
+          textX: back.textX,
+          textY: back.textY,
+          logoX: back.logoX,
+          logoY: back.logoY,
+        },
+        basePrice: state.basePrice,
+      };
+      const key = JSON.stringify(designSnapshot);
 
       const existing = state.items.find((item) => item.key === key);
       if (existing) {
@@ -636,9 +964,12 @@
           colorHex: state.color,
           colorName: state.colorName,
           size: state.size,
-          text: state.text,
-          textColor: state.textColor,
-          logoName: state.logoName,
+          front: designSnapshot.front,
+          back: designSnapshot.back,
+          hoodContrast: state.hood.contrast,
+          hoodColor: state.hood.color,
+          hoodColorName: state.hood.colorName,
+          cordColor: state.hood.cord,
           unitPrice,
           qty: 1,
         });
@@ -659,6 +990,7 @@
   personalizeButtons.forEach((button) => {
     button.addEventListener("click", () => {
       selectColor(button.dataset.color, button.dataset.name);
+      setView("front");
       const section = $("#personalizar");
       if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
       showToast(`${button.dataset.name}: lista para personalizar.`);
@@ -767,7 +1099,7 @@
   /* Inicio                                                                  */
   /* ---------------------------------------------------------------------- */
 
-  if (charCount) charCount.textContent = String(state.text.length);
   selectColor(state.color, state.colorName);
+  setView(state.view);
   renderCart();
 })();

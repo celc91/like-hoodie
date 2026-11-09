@@ -23,7 +23,7 @@
   <svg class="svg-sprite" aria-hidden="true" width="0" height="0" focusable="false">
     <symbol id="hoodie" viewBox="0 0 400 480">
       <!-- capucha -->
-      <path d="M137 96C124 36 160 14 200 14s76 22 63 82c-7 32-32 48-63 48s-56-16-63-48Z" fill="currentColor" stroke="rgba(0,0,0,.16)" stroke-width="2"/>
+      <path d="M137 96C124 36 160 14 200 14s76 22 63 82c-7 32-32 48-63 48s-56-16-63-48Z" fill="currentColor" stroke="rgba(0,0,0,.16)" stroke-width="2" style="fill: var(--hood-color, currentColor)"/>
       <path d="M137 96C124 36 160 14 200 14s76 22 63 82" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="9" stroke-linecap="round"/>
       <!-- mangas -->
       <path d="M126 102C98 106 80 120 71 146L32 298c-6 21 4 37 27 43l28 8c21 5 37-4 41-24l14-84 13-111Z" fill="currentColor" stroke="rgba(0,0,0,.16)" stroke-width="2"/>
@@ -35,14 +35,14 @@
       <path d="M112 384h176" fill="none" stroke="rgba(0,0,0,.14)" stroke-width="2"/>
       <!-- abertura de capucha -->
       <path d="M158 84c3-27 19-42 42-42s39 15 42 42c-7 27-23 40-42 40s-35-13-42-40Z" fill="rgba(0,0,0,.38)"/>
-      <path d="M166 82c3-20 16-31 34-31s31 11 34 31c-6 20-19 29-34 29s-28-9-34-29Z" fill="rgba(0,0,0,.20)"/>
+      <path d="M166 82c3-20 16-31 34-31s31 11 34 31c-6 20-19 29-34 29s-28-9-34-29Z" fill="rgba(0,0,0,.20)" style="fill: var(--hood-color, rgba(0,0,0,.20))"/>
       <!-- cordones -->
       <path d="M182 122c-4 26-5 48-10 76" stroke="rgba(0,0,0,.35)" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path d="M182 122c-4 26-5 48-10 76" stroke="rgba(255,255,255,.8)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-      <circle cx="171" cy="202" r="4" fill="rgba(0,0,0,.38)"/>
+      <path d="M182 122c-4 26-5 48-10 76" style="stroke: var(--cord-color, rgba(255,255,255,.8))" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <circle cx="171" cy="202" r="4" stroke="rgba(0,0,0,.3)" stroke-width="1" style="fill: var(--cord-color, rgba(255,255,255,.8))"/>
       <path d="M218 122c4 26 5 48 10 76" stroke="rgba(0,0,0,.35)" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path d="M218 122c4 26 5 48 10 76" stroke="rgba(255,255,255,.8)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-      <circle cx="229" cy="202" r="4" fill="rgba(0,0,0,.38)"/>
+      <path d="M218 122c4 26 5 48 10 76" style="stroke: var(--cord-color, rgba(255,255,255,.8))" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <circle cx="229" cy="202" r="4" stroke="rgba(0,0,0,.3)" stroke-width="1" style="fill: var(--cord-color, rgba(255,255,255,.8))"/>
       <!-- bolsillo canguro -->
       <path d="M130 278c23-9 117-9 140 0l-8 92c-38 8-86 8-124 0Z" fill="rgba(0,0,0,.07)" stroke="rgba(0,0,0,.14)" stroke-width="2"/>
       <path d="M130 278c23-9 117-9 140 0" fill="none" stroke="rgba(0,0,0,.16)" stroke-width="2.5"/>
@@ -57,6 +57,36 @@
         <path d="M126 98c0-16 12-27 30-31 14-3 29-7 44-7s30 4 44 7c18 4 30 15 30 31l28 282c2 20-8 33-28 35H126c-20-2-30-15-28-35Z"/>
         <path d="M158 84c3-27 19-42 42-42s39 15 42 42"/>
         <path d="M130 278c23-9 117-9 140 0"/>
+        <path d="M41 296l88 20"/>
+        <path d="M359 296l-88 20"/>
+        <path d="M137 190l-8 130"/>
+        <path d="M263 190l8 130"/>
+      </g>
+    </symbol>
+
+    <symbol id="hoodie-back" viewBox="0 0 400 480">
+      <!-- capucha trasera -->
+      <path d="M137 96C124 36 160 14 200 14s76 22 63 82c-7 32-32 48-63 48s-56-16-63-48Z" fill="currentColor" stroke="rgba(0,0,0,.16)" stroke-width="2" style="fill: var(--hood-color, currentColor)"/>
+      <path d="M137 96C124 36 160 14 200 14s76 22 63 82" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="9" stroke-linecap="round"/>
+      <!-- mangas -->
+      <path d="M126 102C98 106 80 120 71 146L32 298c-6 21 4 37 27 43l28 8c21 5 37-4 41-24l14-84 13-111Z" fill="currentColor" stroke="rgba(0,0,0,.16)" stroke-width="2"/>
+      <path d="M274 102c28 4 46 18 55 44l39 152c6 21-4 37-27 43l-28 8c-21 5-37-4-41-24l-14-84-13-111Z" fill="currentColor" stroke="rgba(0,0,0,.16)" stroke-width="2"/>
+      <!-- cuerpo -->
+      <path d="M126 98c0-16 12-27 30-31 14-3 29-7 44-7s30 4 44 7c18 4 30 15 30 31l28 282c2 20-8 33-28 35H126c-20-2-30-15-28-35Z" fill="currentColor" stroke="rgba(0,0,0,.16)" stroke-width="2"/>
+      <!-- bajo de canalé -->
+      <path d="M112 384h176c2 19-7 30-26 32H138c-19-2-28-13-26-32Z" fill="rgba(0,0,0,.10)"/>
+      <path d="M112 384h176" fill="none" stroke="rgba(0,0,0,.14)" stroke-width="2"/>
+      <!-- unión de capucha visible en la espalda -->
+      <path d="M146 98c18-18 90-18 108 0" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- sombras suaves -->
+      <path d="M126 102c-18 4-32 14-40 32l-30 116c-3 12 2 20 12 24" fill="none" stroke="rgba(0,0,0,.09)" stroke-width="10" stroke-linecap="round"/>
+      <path d="M274 102c18 4 32 14 40 32l30 116c3 12-2 20-12 24" fill="none" stroke="rgba(0,0,0,.09)" stroke-width="10" stroke-linecap="round"/>
+      <!-- luces de costura -->
+      <g fill="none" stroke="rgba(255,255,255,.16)" stroke-width="2.2" stroke-linecap="round">
+        <path d="M137 96C124 36 160 14 200 14s76 22 63 82"/>
+        <path d="M126 102C98 106 80 120 71 146L32 298c-6 21 4 37 27 43l28 8c21 5 37-4 41-24l14-84 13-111Z"/>
+        <path d="M274 102c28 4 46 18 55 44l39 152c6 21-4 37-27 43l-28 8c-21 5-37-4-41-24l-14-84-13-111Z"/>
+        <path d="M126 98c0-16 12-27 30-31 14-3 29-7 44-7s30 4 44 7c18 4 30 15 30 31l28 282c2 20-8 33-28 35H126c-20-2-30-15-28-35Z"/>
         <path d="M41 296l88 20"/>
         <path d="M359 296l-88 20"/>
         <path d="M137 190l-8 130"/>
@@ -125,7 +155,7 @@
         <div class="hero-copy">
           <span class="eyebrow"><span class="pulse" aria-hidden="true"></span> Sudaderas personalizadas</span>
           <h1>Tu idea.<br><span class="accent">Tu sudadera.</span></h1>
-          <p class="hero-sub">Convierte lo que llevas dentro en lo que llevas puesto. Elige color, añade tu texto o tu logo y recibe una sudadera única, en algodón de 400 g y con una impresión que no se agrieta.</p>
+          <p class="hero-sub">Convierte lo que llevas dentro en lo que llevas puesto. Elige color y capucha, añade texto o logo y colócalo donde quieras, en el frente o en la espalda. Algodón de 400 g e impresión que no se agrieta.</p>
           <div class="hero-actions">
             <a href="#personalizar" class="btn btn-primary">Diseñar la mía
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -188,27 +218,36 @@
         <div class="section-head">
           <span class="eyebrow">El estudio</span>
           <h2>Diseña la tuya<br>en 30 segundos.</h2>
-          <p>Elige color, talla y añade tu toque. La vista previa se actualiza al instante y el precio también. Así de fácil.</p>
+          <p>Elige color, talla y capucha. Diseña el frente y la espalda, arrastra el texto o el logo y mira el precio al instante.</p>
         </div>
 
         <div class="studio reveal">
           <div class="studio-preview">
             <div class="preview-top">
               <span>Vista previa</span>
+              <div class="view-toggle" role="group" aria-label="Vista de la sudadera">
+                <button type="button" class="view-tab is-active" data-view="front" aria-pressed="true">Frente</button>
+                <button type="button" class="view-tab" data-view="back" aria-pressed="false">Espalda</button>
+              </div>
               <span class="live"><i aria-hidden="true"></i> En vivo</span>
             </div>
 
             <div class="hoodie-stage">
               <div class="hoodie hoodie--studio" data-preview-hoodie>
-                <svg viewBox="0 0 400 480" role="img" aria-label="Vista previa de tu sudadera personalizada">
-                  <use href="#hoodie"></use>
+                <svg viewBox="0 0 400 480" role="img" aria-label="Vista frontal de tu sudadera personalizada">
+                  <use href="#hoodie" data-hoodie-use></use>
                 </svg>
-                <div class="print-area" data-print-area>
-                  <img class="print-logo" data-print-logo alt="" hidden>
-                  <span class="print-text" data-print-text></span>
+                <div class="editor-layer" data-editor-layer>
+                  <span class="print-text editor-item" data-print-text data-print-type="text" tabindex="0" role="button" aria-label="Texto del diseño. Arrastra para moverlo."></span>
+                  <img class="print-logo editor-item" data-print-logo data-print-type="logo" alt="" tabindex="0" role="button" draggable="false" hidden>
                 </div>
               </div>
             </div>
+
+            <p class="editor-hint">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 4v16M4 12h16M8 8l4-4 4 4M8 16l4 4 4-4M8 8 4 12l4 4M16 8l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Arrastra el texto o el logo para colocarlo donde quieras.
+            </p>
 
             <div class="preview-meta">
               <span><i class="mini-swatch" data-preview-swatch aria-hidden="true"></i><span data-preview-color-name>Negro</span></span>
@@ -249,6 +288,40 @@
 
             <div class="control">
               <div class="control-head">
+                <span class="control-label">Capucha</span>
+                <span class="control-value" data-hood-label>Igual que el cuerpo</span>
+              </div>
+              <label class="switch-row">
+                <input type="checkbox" data-hood-contrast>
+                <span class="switch" aria-hidden="true"></span>
+                <span>Capucha a contraste</span>
+              </label>
+              <div class="hood-colors" data-hood-colors hidden>
+                <button type="button" class="hood-swatch is-active" style="--sw:#f2603c" data-hood-color="#f2603c" data-name="Naranja" aria-label="Capucha naranja" aria-pressed="true"></button>
+                <button type="button" class="hood-swatch" style="--sw:#efe6d6" data-hood-color="#efe6d6" data-name="Crema" aria-label="Capucha crema" aria-pressed="false"></button>
+                <button type="button" class="hood-swatch" style="--sw:#cdf25a" data-hood-color="#cdf25a" data-name="Lima" aria-label="Capucha lima" aria-pressed="false"></button>
+                <button type="button" class="hood-swatch" style="--sw:#1c1c1f" data-hood-color="#1c1c1f" data-name="Negro" aria-label="Capucha negra" aria-pressed="false"></button>
+                <button type="button" class="hood-swatch" style="--sw:#26324f" data-hood-color="#26324f" data-name="Marino" aria-label="Capucha azul marino" aria-pressed="false"></button>
+                <button type="button" class="hood-swatch" style="--sw:#efb7c4" data-hood-color="#efb7c4" data-name="Rosa" aria-label="Capucha rosa" aria-pressed="false"></button>
+              </div>
+              <div class="text-color-row cord-row">
+                <span>Cordones</span>
+                <div class="text-colors" role="group" aria-label="Color de los cordones">
+                  <button type="button" class="cord-color is-active" style="--tc:#fffdf8" data-cord-color="#fffdf8" data-name="Crema" aria-label="Cordones crema" aria-pressed="true"></button>
+                  <button type="button" class="cord-color" style="--tc:#1c1c1f" data-cord-color="#1c1c1f" data-name="Negro" aria-label="Cordones negros" aria-pressed="false"></button>
+                  <button type="button" class="cord-color" style="--tc:#cdf25a" data-cord-color="#cdf25a" data-name="Lima" aria-label="Cordones lima" aria-pressed="false"></button>
+                  <button type="button" class="cord-color" style="--tc:#ff4d1f" data-cord-color="#ff4d1f" data-name="Naranja" aria-label="Cordones naranja" aria-pressed="false"></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="editing-bar">
+              <span>Diseño de <strong data-editing-label>frente</strong></span>
+              <button type="button" class="link-btn" data-reset-print>Centrar diseño</button>
+            </div>
+
+            <div class="control">
+              <div class="control-head">
                 <label class="control-label" for="custom-text">Tu texto</label>
                 <span class="control-value"><span data-char-count>0</span>/16</span>
               </div>
@@ -267,7 +340,7 @@
             <div class="control">
               <div class="control-head">
                 <span class="control-label">Tu logo <em>+$99 MXN</em></span>
-                <span class="control-value">Opcional</span>
+                <span class="control-value">Opcional por cara</span>
               </div>
               <input type="file" id="logo-input" accept="image/png,image/jpeg,image/svg+xml" data-logo-input hidden>
               <label class="upload" for="logo-input" data-upload-label>
@@ -482,6 +555,10 @@
           <details open>
             <summary>¿Puedo subir mi propio logo?<span class="plus" aria-hidden="true"></span></summary>
             <p>Sí. Aceptamos PNG, JPG y SVG de hasta 2 MB. Para que quede nítido, lo ideal es un archivo con fondo transparente y buena resolución. Si tienes dudas, mándanoslo y lo revisamos antes de imprimir.</p>
+          </details>
+          <details>
+            <summary>¿Puedo personalizar la espalda y la capucha?<span class="plus" aria-hidden="true"></span></summary>
+            <p>Sí. En el diseñador puedes cambiar entre frente y espalda, añadir texto o logo en cada cara y arrastrarlos para colocarlos donde quieras. También puedes elegir una capucha a contraste, el color de los cordones y el color del texto.</p>
           </details>
           <details>
             <summary>¿Cuánto tarda en llegar?<span class="plus" aria-hidden="true"></span></summary>

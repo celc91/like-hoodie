@@ -7,7 +7,9 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 ## Qué incluye
 
 - **Diseñador en vivo:** color de sudadera, talla, texto, color de texto y subida de logo (PNG, JPG o SVG).
-- **Precio dinámico:** base por color, suplemento de talla XXL y extra por logo.
+- **Editor frontal y trasero:** cambia de vista, arrastra el texto y el logo para colocarlos y personaliza cada cara por separado.
+- **Capucha personalizable:** capucha a contraste y color de cordones.
+- **Precio dinámico:** base por color, suplemento de talla XXL y extra por logo en cada cara.
 - **Catálogo:** cuatro modelos con selección directa al configurador.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
 - **Persistencia:** el carrito se guarda en `localStorage`.
