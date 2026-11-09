@@ -1,5 +1,5 @@
 /* ==========================================================================
-   HILVÁN — Lógica de tienda (carrito, configurador y checkout de demo)
+   Chama — Lógica de tienda (carrito, configurador y checkout de demo)
    ========================================================================== */
 
 (function () {
@@ -18,7 +18,7 @@
   const SHIPPING_COST = 99;
   const LOGO_PRICE = 99;
   const XXL_PRICE = 49;
-  const STORAGE_KEY = "hilvan_cart_v1";
+  const STORAGE_KEY = "chama_cart_v1";
 
   const BASE_PRICES = {
     "#1c1c1f": 899,
@@ -400,7 +400,7 @@
       }
 
       orderNumber.textContent =
-        "HV-" + Math.floor(10000 + Math.random() * 90000);
+        "CH-" + Math.floor(10000 + Math.random() * 90000);
       checkoutFormView.hidden = true;
       checkoutSuccess.hidden = false;
       checkoutSuccess.scrollIntoView({ block: "nearest" });

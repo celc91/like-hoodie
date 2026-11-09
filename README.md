@@ -1,8 +1,8 @@
-# HILVÁN — Sudaderas personalizadas
+# Chama — Sudaderas personalizadas
 
 Tienda online de demostración para vender sudaderas personalizadas. Incluye catálogo, configurador en vivo, carrito persistente y checkout simulado. Todo con HTML, CSS y JavaScript sin dependencias ni proceso de build.
 
-![Vista previa de HILVÁN](preview.png)
+![Vista previa de Chama](preview.png)
 
 ## Qué incluye
 
