@@ -40,6 +40,18 @@
     basePrice: 899,
     size: "M",
     view: "front",
+    material: {
+      id: "cotton400",
+      name: "Algodón 400 g",
+      delta: 0,
+      desc: "Algodón peinado 400 g/m²: grueso, abrigador y con caída premium.",
+    },
+    technique: {
+      id: "dtg",
+      name: "DTG",
+      price: 0,
+      desc: "Impresión directa al tejido, full color. Ideal para algodón.",
+    },
     hood: {
       contrast: false,
       color: "#f2603c",
@@ -152,6 +164,16 @@
     return Object.values(state.designs).filter((design) => design.logo).length;
   }
 
+  function hasAnyDesign() {
+    return Object.values(state.designs).some(
+      (design) => design.text.length > 0 || Boolean(design.logo)
+    );
+  }
+
+  function techniqueFee() {
+    return hasAnyDesign() ? state.technique.price : 0;
+  }
+
   function clampPosition(value, type = "text", axis = "x") {
     if (axis === "x") {
       const min = type === "text" ? 23 : 15;
@@ -208,6 +230,13 @@
   const textInput = $("[data-text-input]");
   const charCount = $("[data-char-count]");
   const textColorButtons = $$("[data-text-color]");
+  const materialButtons = $$("[data-material]");
+  const materialLabel = $("[data-material-label]");
+  const materialNote = $("[data-material-note]");
+  const techniqueButtons = $$("[data-technique]");
+  const techniqueLabel = $("[data-technique-label]");
+  const techniqueNote = $("[data-technique-note]");
+  const techniqueWarning = $("[data-technique-warning]");
   const logoInput = $("[data-logo-input]");
   const uploadFile = $("[data-upload-file]");
   const fileName = $("[data-file-name]");
@@ -217,7 +246,7 @@
   const hoodColorButtons = $$("[data-hood-color]");
   const hoodLabel = $("[data-hood-label]");
   const cordColorButtons = $$("[data-cord-color]");
-  const priceEl = $("[data-price]");
+  const priceEl = $("[data-price-display]");
   const priceNote = $("[data-price-note]");
   const addToCartButton = $("[data-add-to-cart]");
   const personalizeButtons = $$("[data-personalize]");
@@ -283,13 +312,15 @@
         };
         const back = item.back || {};
         const customLines = [];
+        customLines.push(`Material: ${item.materialName || "Algodón 400 g"}`);
+        customLines.push(`Técnica: ${item.techniqueName || "DTG"}`);
         if (front.text) customLines.push(`Frente: “${front.text}”`);
         if (front.logoName) customLines.push(`Logo frente: ${front.logoName}`);
         if (back.text) customLines.push(`Espalda: “${back.text}”`);
         if (back.logoName) customLines.push(`Logo espalda: ${back.logoName}`);
         if (item.hoodContrast) {
           customLines.push(
-            `Capucha a contraste${item.hoodColorName ? ` (${item.hoodColorName})` : ""}`
+            `Forro de capucha a contraste${item.hoodColorName ? ` (${item.hoodColorName})` : ""}`
           );
         }
         const customHTML = customLines
@@ -561,8 +592,81 @@
     });
   }
 
+  function updateMaterialUI() {
+    if (materialLabel) materialLabel.textContent = state.material.name;
+
+    materialButtons.forEach((button) => {
+      const active = button.dataset.material === state.material.id;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+
+    if (materialNote) {
+      const delta = state.material.delta;
+      const suffix =
+        delta === 0
+          ? " Incluido."
+          : delta > 0
+            ? ` +${formatPrice(delta)}.`
+            : ` Ahorras ${formatPrice(Math.abs(delta))}.`;
+      materialNote.textContent = state.material.desc + suffix;
+    }
+  }
+
+  function updateTechniqueUI() {
+    if (techniqueLabel) techniqueLabel.textContent = state.technique.name;
+
+    techniqueButtons.forEach((button) => {
+      const active = button.dataset.technique === state.technique.id;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+
+    if (techniqueNote) {
+      let suffix = " Incluido.";
+      if (state.technique.price > 0) {
+        suffix = hasAnyDesign()
+          ? ` Se suma ${formatPrice(state.technique.price)} una vez por pedido.`
+          : ` Se sumará ${formatPrice(state.technique.price)} cuando añadas texto o logo.`;
+      }
+      techniqueNote.textContent = state.technique.desc + suffix;
+    }
+
+    if (techniqueWarning) {
+      let warning = "";
+      if (
+        state.technique.id === "sublimacion" &&
+        state.material.id !== "polyester280"
+      ) {
+        warning =
+          "La sublimación necesita un tejido de poliéster. Cambia a Poliéster técnico para el mejor resultado.";
+      } else if (
+        state.technique.id === "dtg" &&
+        state.material.id === "polyester280"
+      ) {
+        warning =
+          "El DTG rinde mejor sobre algodón. En poliéster recomendamos DTF o sublimación.";
+      }
+      techniqueWarning.hidden = !warning;
+      techniqueWarning.textContent = warning;
+    }
+  }
+
   function priceNoteText() {
     const parts = [`Base ${formatPrice(state.basePrice)}`];
+
+    if (state.material.delta !== 0) {
+      const sign = state.material.delta > 0 ? "+" : "−";
+      parts.push(
+        `${state.material.name} ${sign}${formatPrice(
+          Math.abs(state.material.delta)
+        )}`
+      );
+    }
+    if (hasAnyDesign() && state.technique.price > 0) {
+      parts.push(`${state.technique.name} +${formatPrice(state.technique.price)}`);
+    }
+
     const count = logoCount();
     if (count > 0) {
       parts.push(
@@ -647,6 +751,8 @@
 
     const total =
       state.basePrice +
+      state.material.delta +
+      techniqueFee() +
       logoCount() * LOGO_PRICE +
       (state.size === "XXL" ? XXL_PRICE : 0);
 
@@ -655,6 +761,8 @@
 
     updateTextColorUI();
     updateHoodUI();
+    updateMaterialUI();
+    updateTechniqueUI();
   }
 
   function setView(view) {
@@ -818,6 +926,30 @@
     });
   });
 
+  materialButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.material = {
+        id: button.dataset.material,
+        name: button.dataset.name,
+        delta: Number(button.dataset.delta) || 0,
+        desc: button.dataset.desc,
+      };
+      updatePreview();
+    });
+  });
+
+  techniqueButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.technique = {
+        id: button.dataset.technique,
+        name: button.dataset.name,
+        price: Number(button.dataset.cost) || 0,
+        desc: button.dataset.desc,
+      };
+      updatePreview();
+    });
+  });
+
   viewButtons.forEach((button) => {
     button.addEventListener("click", () => setView(button.dataset.view));
   });
@@ -931,16 +1063,38 @@
 
   if (addToCartButton) {
     addToCartButton.addEventListener("click", () => {
+      if (
+        state.technique.id === "sublimacion" &&
+        state.material.id !== "polyester280"
+      ) {
+        showToast(
+          "La sublimación requiere poliéster. Cambia el material o elige otra técnica."
+        );
+        return;
+      }
+
       const front = state.designs.front;
       const back = state.designs.back;
       const unitPrice =
         state.basePrice +
+        state.material.delta +
+        techniqueFee() +
         logoCount() * LOGO_PRICE +
         (state.size === "XXL" ? XXL_PRICE : 0);
 
       const designSnapshot = {
         color: state.color,
         size: state.size,
+        material: {
+          id: state.material.id,
+          name: state.material.name,
+          delta: state.material.delta,
+        },
+        technique: {
+          id: state.technique.id,
+          name: state.technique.name,
+          price: state.technique.price,
+        },
         hood: { ...state.hood },
         front: {
           text: front.text,
@@ -975,6 +1129,10 @@
           colorHex: state.color,
           colorName: state.colorName,
           size: state.size,
+          materialName: state.material.name,
+          materialDelta: state.material.delta,
+          techniqueName: state.technique.name,
+          techniquePrice: techniqueFee(),
           front: designSnapshot.front,
           back: designSnapshot.back,
           hoodContrast: state.hood.contrast,

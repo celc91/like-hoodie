@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261109-real">
+  <link rel="stylesheet" href="styles.css?v=20261109-materials2">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -155,7 +155,7 @@
         <div class="hero-copy">
           <span class="eyebrow"><span class="pulse" aria-hidden="true"></span> Sudaderas personalizadas</span>
           <h1>Tu idea.<br><span class="accent">Tu sudadera.</span></h1>
-          <p class="hero-sub">Convierte lo que llevas dentro en lo que llevas puesto. Elige color y capucha, añade texto o logo y colócalo donde quieras, en el frente o en la espalda. Algodón de 400 g e impresión que no se agrieta.</p>
+          <p class="hero-sub">Convierte lo que llevas dentro en lo que llevas puesto. Elige material, técnica, color y capucha; añade tu texto o logo y colócalo donde quieras, en el frente o en la espalda. Algodón de 400 g e impresión que no se agrieta.</p>
           <div class="hero-actions">
             <a href="#personalizar" class="btn btn-primary">Diseñar la mía
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -216,7 +216,7 @@
         <div class="section-head">
           <span class="eyebrow">El estudio</span>
           <h2>Diseña la tuya<br>en 30 segundos.</h2>
-          <p>Elige color, talla y capucha. Diseña el frente y la espalda, arrastra el texto o el logo y mira el precio al instante.</p>
+          <p>Elige material, técnica, color, talla y capucha. Diseña el frente y la espalda, arrastra el texto o el logo y mira el precio al instante.</p>
         </div>
 
         <div class="studio reveal">
@@ -294,6 +294,38 @@
 
             <div class="control">
               <div class="control-head">
+                <span class="control-label">Material</span>
+                <span class="control-value" data-material-label>Algodón 400 g</span>
+              </div>
+              <div class="option-pills" role="group" aria-label="Material de la sudadera">
+                <button type="button" class="option-pill is-active" data-material="cotton400" data-name="Algodón 400 g" data-delta="0" data-desc="Algodón peinado 400 g/m²: grueso, abrigador y con caída premium." aria-pressed="true">Algodón 400 g <em>Incluido</em></button>
+                <button type="button" class="option-pill" data-material="cotton320" data-name="Algodón 320 g" data-delta="-50" data-desc="Algodón peinado 320 g/m²: más ligero y suave, ideal para todo el año." aria-pressed="false">Algodón 320 g <em>−$50</em></button>
+                <button type="button" class="option-pill" data-material="french300" data-name="French terry 300 g" data-delta="-30" data-desc="French terry 300 g/m²: interior en rizo, transpirable y fresco." aria-pressed="false">French terry <em>−$30</em></button>
+                <button type="button" class="option-pill" data-material="blend350" data-name="Mezcla 50/50" data-delta="-20" data-desc="Mezcla algodón/poliéster 350 g/m²: resistente, menos encogimiento y secado rápido." aria-pressed="false">Mezcla 50/50 <em>−$20</em></button>
+                <button type="button" class="option-pill" data-material="polyester280" data-name="Poliéster técnico" data-delta="20" data-desc="Poliéster técnico 280 g/m²: ligero, secado rápido, ideal para sublimación." aria-pressed="false">Poliéster técnico <em>+$20</em></button>
+              </div>
+              <p class="option-note" data-material-note>Algodón peinado 400 g/m²: grueso, abrigador y con caída premium.</p>
+            </div>
+
+            <div class="control">
+              <div class="control-head">
+                <span class="control-label">Técnica de personalización</span>
+                <span class="control-value" data-technique-label>DTG</span>
+              </div>
+              <div class="option-pills" role="group" aria-label="Técnica de personalización">
+                <button type="button" class="option-pill is-active" data-technique="dtg" data-name="DTG" data-cost="0" data-desc="Impresión directa al tejido, full color. Ideal para algodón." aria-pressed="true">DTG <em>Incluido</em></button>
+                <button type="button" class="option-pill" data-technique="dtf" data-name="DTF" data-cost="39" data-desc="Transfer directo al film: colores vivos y gran durabilidad en casi cualquier tejido." aria-pressed="false">DTF <em>+$39</em></button>
+                <button type="button" class="option-pill" data-technique="bordado" data-name="Bordado" data-cost="149" data-desc="Hilo bordado: acabado premium y muy resistente, ideal para logos y textos cortos." aria-pressed="false">Bordado <em>+$149</em></button>
+                <button type="button" class="option-pill" data-technique="serigrafia" data-name="Serigrafía" data-cost="129" data-desc="Tinta serigráfica: colores planos muy resistentes; incluye preparación de pantalla." aria-pressed="false">Serigrafía <em>+$129</em></button>
+                <button type="button" class="option-pill" data-technique="vinilo" data-name="Vinilo textil" data-cost="49" data-desc="Vinilo termotransferible: acabado mate, perfecto para nombres y números." aria-pressed="false">Vinilo textil <em>+$49</em></button>
+                <button type="button" class="option-pill" data-technique="sublimacion" data-name="Sublimación" data-cost="49" data-desc="Full color sobre poliéster: colores intensos que se integran al tejido." aria-pressed="false">Sublimación <em>+$49</em></button>
+              </div>
+              <p class="option-note" data-technique-note>Impresión directa al tejido, full color. Incluido.</p>
+              <p class="option-warning" data-technique-warning hidden></p>
+            </div>
+
+            <div class="control">
+              <div class="control-head">
                 <span class="control-label">Capucha</span>
                 <span class="control-value" data-hood-label>Igual que el cuerpo</span>
               </div>
@@ -365,7 +397,7 @@
             <div class="price-row">
               <div class="price-block">
                 <span class="price-label">Total</span>
-                <strong class="price" data-price>$899 MXN</strong>
+                <strong class="price" data-price data-price-display>$899 MXN</strong>
                 <span class="price-note" data-price-note>Base $899 MXN · IVA incluido</span>
               </div>
               <button type="button" class="btn btn-primary btn-add" data-add-to-cart> Añadir a la cesta
@@ -574,8 +606,12 @@
             <p>Sí. Aceptamos PNG, JPG y SVG de hasta 2 MB. Para que quede nítido, lo ideal es un archivo con fondo transparente y buena resolución. Si tienes dudas, mándanoslo y lo revisamos antes de imprimir.</p>
           </details>
           <details>
+            <summary>¿Qué material y técnica me convienen?<span class="plus" aria-hidden="true"></span></summary>
+            <p>El algodón 400 g es el más abrigador; el 320 g y el French terry son más ligeros; la mezcla 50/50 es resistente y el poliéster técnico es ideal para sublimación. Para full color, elige DTG o DTF; para logos y textos cortos, bordado; para nombres y números, vinilo; para diseños simples de alto volumen, serigrafía. La sublimación requiere poliéster.</p>
+          </details>
+          <details>
             <summary>¿Puedo personalizar la espalda y la capucha?<span class="plus" aria-hidden="true"></span></summary>
-            <p>Sí. En el diseñador puedes cambiar entre frente y espalda, añadir texto o logo en cada cara y arrastrarlos para colocarlos donde quieras. También puedes elegir una capucha a contraste, el color de los cordones y el color del texto.</p>
+            <p>Sí. En el diseñador puedes cambiar entre frente y espalda, añadir texto o logo en cada cara y arrastrarlos para colocarlos donde quieras. También puedes elegir un forro de capucha a contraste, el color de los cordones y el color del texto.</p>
           </details>
           <details>
             <summary>¿Cuánto tarda en llegar?<span class="plus" aria-hidden="true"></span></summary>
@@ -604,7 +640,7 @@
           <div class="cta-copy">
             <span class="eyebrow">Sin excusas</span>
             <h2>Tu idea merece algo mejor que una sudadera genérica.</h2>
-            <p>Color, talla, texto y logo. Tú decides. Nosotros ponemos el algodón, la tinta y el cuidado.</p>
+            <p>Material, técnica, color, talla, texto y logo. Tú decides. Nosotros ponemos el algodón, la tinta, el hilo y el cuidado.</p>
             <a href="#personalizar" class="btn btn-lime">Empezar a diseñar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
@@ -810,7 +846,7 @@
 
   <div class="toast-region" data-toast-region aria-live="polite"></div>
 
-  <script src="app.js?v=20261109-real"></script>
-  <script src="legal.js?v=20261109-real"></script>
+  <script src="app.js?v=20261109-materials2"></script>
+  <script src="legal.js?v=20261109-materials2"></script>
 </body>
 </html>
