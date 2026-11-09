@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Chama — Lógica de tienda (carrito, configurador y checkout de demo)
+   like hoodie ♡ — Lógica de tienda (carrito, configurador y checkout de demo)
    ========================================================================== */
 
 (function () {
@@ -18,7 +18,8 @@
   const SHIPPING_COST = 99;
   const LOGO_PRICE = 99;
   const XXL_PRICE = 49;
-  const STORAGE_KEY = "chama_cart_v1";
+  const STORAGE_KEY = "likehoodie_cart_v1";
+  const LEGACY_STORAGE_KEY = "chama_cart_v1";
 
   const BASE_PRICES = {
     "#1c1c1f": 899,
@@ -51,6 +52,29 @@
     "sublimacion",
   ];
 
+  const TEXT_FONTS = {
+    bricolage: {
+      name: "Bricolage",
+      className: "font-bricolage",
+    },
+    anton: {
+      name: "Anton",
+      className: "font-anton",
+    },
+    archivo: {
+      name: "Archivo Black",
+      className: "font-archivo",
+    },
+    bebas: {
+      name: "Bebas Neue",
+      className: "font-bebas",
+    },
+    playfair: {
+      name: "Playfair Display",
+      className: "font-playfair",
+    },
+  };
+
   const state = {
     color: "#1c1c1f",
     colorName: "Negro",
@@ -80,6 +104,7 @@
         text: "",
         textColor: "#fffdf8",
         textScale: 1,
+        textFont: "bricolage",
         logo: null,
         logoName: "",
         logoScale: 1,
@@ -89,6 +114,7 @@
         text: "",
         textColor: "#fffdf8",
         textScale: 1,
+        textFont: "bricolage",
         logo: null,
         logoName: "",
         logoScale: 1,
@@ -104,7 +130,9 @@
 
   function loadCart() {
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
+      const raw =
+        window.localStorage.getItem(STORAGE_KEY) ||
+        window.localStorage.getItem(LEGACY_STORAGE_KEY);
       if (!raw) return [];
       const parsed = JSON.parse(raw);
       if (!Array.isArray(parsed)) return [];
@@ -259,6 +287,7 @@
   const logoSizeInput = $("[data-logo-size]");
   const logoSizeValue = $("[data-logo-size-value]");
   const textColorButtons = $$("[data-text-color]");
+  const fontButtons = $$("[data-text-font]");
   const materialButtons = $$("[data-material]");
   const materialLabel = $("[data-material-label]");
   const materialNote = $("[data-material-note]");
@@ -344,13 +373,19 @@
           const percent = Math.round((scale || 1) * 100);
           return percent === 100 ? "" : ` (${percent}%)`;
         };
+        const textMeta = (design) => {
+          const parts = [];
+          const font = TEXT_FONTS[design.textFont];
+          if (font && design.textFont !== "bricolage") parts.push(font.name);
+          const percent = Math.round((design.textScale || 1) * 100);
+          if (percent !== 100) parts.push(`${percent}%`);
+          return parts.length ? ` (${parts.join(", ")})` : "";
+        };
         const customLines = [];
         customLines.push(`Material: ${item.materialName || "Algodón 400 g"}`);
         customLines.push(`Técnica: ${item.techniqueName || "DTG"}`);
         if (front.text) {
-          customLines.push(
-            `Frente: “${front.text}”${scaleLabel(front.textScale)}`
-          );
+          customLines.push(`Frente: “${front.text}”${textMeta(front)}`);
         }
         if (front.logoName) {
           customLines.push(
@@ -358,9 +393,7 @@
           );
         }
         if (back.text) {
-          customLines.push(
-            `Espalda: “${back.text}”${scaleLabel(back.textScale)}`
-          );
+          customLines.push(`Espalda: “${back.text}”${textMeta(back)}`);
         }
         if (back.logoName) {
           customLines.push(
@@ -617,6 +650,15 @@
     });
   }
 
+  function updateTextFontUI() {
+    const design = activeDesign();
+    fontButtons.forEach((button) => {
+      const active = button.dataset.textFont === design.textFont;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  }
+
   function updateHoodUI() {
     if (hoodContrastInput) hoodContrastInput.checked = state.hood.contrast;
     if (hoodColorsRow) hoodColorsRow.hidden = !state.hood.contrast;
@@ -803,6 +845,11 @@
       printText.style.setProperty("--x", `${design.textX}%`);
       printText.style.setProperty("--y", `${design.textY}%`);
       printText.style.setProperty("--item-scale", design.textScale || 1);
+      const font = TEXT_FONTS[design.textFont] || TEXT_FONTS.bricolage;
+      Object.values(TEXT_FONTS).forEach((item) => {
+        printText.classList.remove(item.className);
+      });
+      printText.classList.add(font.className);
       printText.setAttribute(
         "aria-label",
         design.text
@@ -837,6 +884,7 @@
     if (priceNote) priceNote.textContent = priceNoteText();
 
     updateTextColorUI();
+    updateTextFontUI();
     updateHoodUI();
     updateMaterialUI();
     updateTechniqueUI();
@@ -1065,6 +1113,13 @@
     });
   });
 
+  fontButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeDesign().textFont = button.dataset.textFont;
+      updatePreview();
+    });
+  });
+
   if (textSizeInput) {
     textSizeInput.addEventListener("input", () => {
       const design = activeDesign();
@@ -1213,6 +1268,7 @@
           text: front.text,
           textColor: front.textColor,
           textScale: front.textScale,
+          textFont: front.textFont,
           logoName: front.logoName,
           logoScale: front.logoScale,
           textX: front.textX,
@@ -1224,6 +1280,7 @@
           text: back.text,
           textColor: back.textColor,
           textScale: back.textScale,
+          textFont: back.textFont,
           logoName: back.logoName,
           logoScale: back.logoScale,
           textX: back.textX,

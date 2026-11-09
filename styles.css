@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Chama — Sudaderas personalizadas
+   like hoodie ♡ — Sudaderas personalizadas
    ========================================================================== */
 
 :root {
@@ -345,7 +345,7 @@ section[id] {
   font-family: var(--font-display);
   font-size: 21px;
   font-weight: 800;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.02em;
 }
 
 .main-nav {
@@ -902,6 +902,31 @@ section[id] {
   overflow-wrap: anywhere;
 }
 
+.print-text.font-anton {
+  font-family: "Anton", Impact, "Arial Narrow", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.012em;
+}
+
+.print-text.font-archivo {
+  font-family: "Archivo Black", "Arial Black", sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.print-text.font-bebas {
+  font-family: "Bebas Neue", Impact, "Arial Narrow", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.print-text.font-playfair {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .print-kicker {
   display: block;
   margin-bottom: 0.55em;
@@ -1401,6 +1426,88 @@ section[id] {
 
 .text-color.is-active {
   box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
+}
+
+.font-row {
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.font-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.font-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--cream);
+  color: var(--muted);
+  text-align: left;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.font-option:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.font-option.is-active {
+  border-color: var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 var(--orange);
+}
+
+.font-option-sample {
+  font-size: 15px;
+  line-height: 1;
+  color: var(--ink);
+  flex: none;
+}
+
+.font-option-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.font-option[data-text-font="bricolage"] .font-option-sample {
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.font-option[data-text-font="anton"] .font-option-sample {
+  font-family: "Anton", Impact, sans-serif;
+  font-weight: 400;
+}
+
+.font-option[data-text-font="archivo"] .font-option-sample {
+  font-family: "Archivo Black", "Arial Black", sans-serif;
+  font-weight: 400;
+}
+
+.font-option[data-text-font="bebas"] .font-option-sample {
+  font-family: "Bebas Neue", Impact, sans-serif;
+  font-weight: 400;
+}
+
+.font-option[data-text-font="playfair"] .font-option-sample {
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 700;
 }
 
 .upload {

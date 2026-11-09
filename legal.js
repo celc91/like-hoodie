@@ -1,11 +1,11 @@
 /* ==========================================================================
-   Chama — Aviso de cookies y almacenamiento local
+   like hoodie ♡ — Aviso de cookies y almacenamiento local
    ========================================================================== */
 
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "chama_cookie_notice_v1";
+  const STORAGE_KEY = "likehoodie_cookie_notice_v1";
 
   function wasAccepted() {
     try {
