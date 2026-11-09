@@ -13,6 +13,8 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Persistencia:** el carrito se guarda en `localStorage`.
 - **Checkout de demostración:** formulario validado y confirmación de pedido. No procesa pagos reales.
 - **Guía de tallas, FAQ, opiniones y newsletter.**
+- **Páginas legales:** aviso de privacidad, política de cookies y términos y condiciones.
+- **Aviso de cookies:** banner informativo con almacenamiento local para recordar la aceptación.
 - **Responsive:** móvil, tablet y escritorio.
 - **Accesibilidad:** navegación por teclado, foco visible, etiquetas ARIA y respeto por `prefers-reduced-motion`.
 
@@ -46,10 +48,14 @@ El sitio usa rutas relativas, así que funciona sin cambios en la subcarpeta de 
 
 ```text
 .
-├── index.html      # Contenido y estructura
-├── styles.css      # Diseño, responsive y animaciones
-├── app.js          # Configurador, carrito, checkout y modales
-├── preview.png     # Captura para el README
+├── index.html        # Contenido y estructura
+├── styles.css        # Diseño, responsive y animaciones
+├── app.js            # Configurador, carrito, checkout y modales
+├── legal.js          # Aviso de cookies y almacenamiento local
+├── privacidad.html   # Aviso de privacidad
+├── cookies.html      # Política de cookies
+├── terminos.html     # Términos y condiciones
+├── preview.png       # Captura para el README
 └── README.md
 ```
 
@@ -61,6 +67,13 @@ El sitio usa rutas relativas, así que funciona sin cambios en la subcarpeta de 
 - **Coste de envío:** `SHIPPING_COST` en `app.js`.
 - **Productos del catálogo:** tarjetas en `index.html` y sus botones `data-personalize`.
 
+## Antes de publicar la tienda real
+
+- Completa los datos marcados con `[completar]` en `privacidad.html` y `terminos.html`: razón social, RFC, domicilio fiscal y ciudad de jurisdicción.
+- Revisa los documentos legales con un abogado antes de operar comercialmente.
+- Actualiza el aviso de privacidad y los términos cuando conectes pagos reales, newsletter, analítica o envíos.
+- Si añades cookies de analítica o publicidad, actualiza `cookies.html` y pide consentimiento.
+
 ## Nota
 
-El checkout es una demostración visual: valida los datos y muestra una confirmación, pero no realiza ningún cargo. Para cobrar de verdad habría que conectar una pasarela de pago (Stripe, Mercado Pago o similar) y un backend que gestione pedidos, archivos de logo e inventario.
+El checkout es una demostración visual: valida los datos y muestra una confirmación, pero no realiza ningún cargo. Para cobrar de verdad habría que conectar una pasarela de pago (Stripe, Mercado Pago, Openpay o similar) y un backend que gestione pedidos, archivos de logo e inventario.
