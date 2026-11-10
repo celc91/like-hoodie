@@ -91,7 +91,12 @@ El script consulta la **Discovery API** para México, filtra eventos musicales y
 
 `hola@likehoodie.com` recibe correos mediante **Cloudflare Email Routing** y los reenvía a la cuenta de Gmail del administrador. Cloudflare administra los registros MX y SPF del dominio.
 
-Para enviar confirmaciones automáticas de pedido falta conectar un proveedor transaccional como **Resend, Postmark o SendGrid** y desplegar el envío desde una función de servidor.
+Los correos automáticos de pedido se envían con **Resend** desde `hola@likehoodie.com`. La API key se guarda en **Supabase Vault** con el nombre `resend_api_key` y un trigger sobre `orders` envía:
+
+- Confirmación al cliente.
+- Aviso al administrador.
+
+La configuración está en `supabase/email-notifications.sql`.
 
 ## Logos de pedidos
 
