@@ -22,6 +22,7 @@
   let initPromise = null;
   let syncTimer = null;
   let pendingSync = null;
+  let justOrdered = false;
 
   function safeDesign(design) {
     if (!design) return null;
@@ -140,6 +141,8 @@
     try {
       const clean = safeItems(items);
       const { itemCount, subtotal } = cartTotals(clean);
+      if (itemCount > 0) justOrdered = false;
+      if (itemCount === 0 && justOrdered) return;
       const currentId = await findCart();
       if (itemCount === 0 && !currentId) return;
       const payload = {
@@ -208,8 +211,17 @@
     }
   }
 
+  function cancelPendingSync() {
+    if (syncTimer) {
+      window.clearTimeout(syncTimer);
+      syncTimer = null;
+    }
+    pendingSync = null;
+  }
+
   async function placeOrder(order) {
     if (!(await ensure())) return null;
+    cancelPendingSync();
 
     try {
       const items = safeItems(order.items);
@@ -239,7 +251,9 @@
       }
 
       const result = data;
+      cancelPendingSync();
       cartId = null;
+      justOrdered = true;
       try {
         window.localStorage.removeItem(CART_KEY);
       } catch (error) {

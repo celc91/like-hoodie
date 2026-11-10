@@ -556,7 +556,8 @@
       display_status: cartDisplayStatus(cart),
     }));
 
-    const filter = $("#carts-status")?.value || "abandoned";
+    const select = $("#carts-status");
+    const filter = select ? select.value : "abandoned";
     const filtered = filter
       ? cartsCache.filter((cart) => cart.display_status === filter)
       : cartsCache;
