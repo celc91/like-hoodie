@@ -87,6 +87,12 @@ node scripts/sync-ticketmaster.mjs
 
 El script consulta la **Discovery API** para México, filtra eventos musicales y reescribe `eventos.json`. La API key solo se usa en la computadora o en CI; nunca se incluye en el sitio publicado.
 
+## Correo
+
+`hola@likehoodie.com` recibe correos mediante **Cloudflare Email Routing** y los reenvía a la cuenta de Gmail del administrador. Cloudflare administra los registros MX y SPF del dominio.
+
+Para enviar confirmaciones automáticas de pedido falta conectar un proveedor transaccional como **Resend, Postmark o SendGrid** y desplegar el envío desde una función de servidor.
+
 ## Logos de pedidos
 
 Los archivos de logo se suben al bucket privado **`order-logos`** de Supabase Storage. Se aceptan PNG, JPG y WebP de hasta 5 MB. El panel de administración genera enlaces firmados de una hora para verlos o descargarlos desde el detalle de cada pedido.
