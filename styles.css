@@ -4854,8 +4854,13 @@ details[open] .plus::after {
   background: var(--cream-2);
 }
 
-.cal-day.is-blank {
+.cal-day.is-blank,
+.cal-day.is-outside {
   pointer-events: none;
+}
+
+.cal-day.is-outside {
+  color: rgba(22, 22, 24, 0.18);
 }
 
 .cal-day.is-past {
@@ -4941,6 +4946,7 @@ details[open] .plus::after {
 .events-side {
   display: flex;
   flex-direction: column;
+  align-self: stretch;
   min-height: 100%;
   padding-top: 3px;
 }
@@ -5191,6 +5197,8 @@ details[open] .plus::after {
   .events-app {
     grid-template-columns: 1fr;
     gap: 30px;
+    max-width: 700px;
+    margin-inline: auto;
   }
 
   .events-side {

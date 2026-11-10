@@ -184,9 +184,15 @@
       }
     });
 
+    const previousMonthDays = new Date(year, month, 0).getDate();
     let html = "";
-    for (let index = 0; index < offset; index += 1) {
-      html += '<span class="cal-day is-blank" aria-hidden="true"></span>';
+
+    for (let index = offset - 1; index >= 0; index -= 1) {
+      html += `
+        <span class="cal-day is-outside" aria-hidden="true">
+          <span class="cal-day-number">${previousMonthDays - index}</span>
+        </span>
+      `;
     }
 
     for (let day = 1; day <= daysInMonth; day += 1) {
@@ -213,6 +219,15 @@
           <span class="cal-day-number">${day}</span>
           ${count ? `<span class="cal-day-count">${count}</span>` : ""}
         </button>
+      `;
+    }
+
+    const trailingDays = (7 - ((offset + daysInMonth) % 7)) % 7;
+    for (let day = 1; day <= trailingDays; day += 1) {
+      html += `
+        <span class="cal-day is-outside" aria-hidden="true">
+          <span class="cal-day-number">${day}</span>
+        </span>
       `;
     }
 
