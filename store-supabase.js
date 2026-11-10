@@ -31,7 +31,13 @@
       textColor: design.textColor || null,
       textScale: Number(design.textScale) || 1,
       textFont: design.textFont || "bricolage",
-      logoName: design.logoName || "",
+      logoName: String(design.logoName || "").slice(0, 160),
+      logoPath: String(design.logoPath || "").slice(0, 300),
+      logoData:
+        typeof design.logoData === "string" &&
+        design.logoData.startsWith("data:image/")
+          ? design.logoData.slice(0, 1_800_000)
+          : "",
       logoScale: Number(design.logoScale) || 1,
       textX: Number(design.textX) || 50,
       textY: Number(design.textY) || 49,
@@ -219,6 +225,43 @@
     pendingSync = null;
   }
 
+  async function uploadLogo(file, side = "front") {
+    if (!(await ensure())) return null;
+    if (!file || !["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      return null;
+    }
+    if (file.size > 5 * 1024 * 1024) return null;
+
+    const extension =
+      file.type === "image/jpeg"
+        ? "jpg"
+        : file.type === "image/webp"
+          ? "webp"
+          : "png";
+    const safeSide = side === "back" ? "back" : "front";
+    const path = `${user.id}/${safeSide}-${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2, 8)}.${extension}`;
+
+    try {
+      const { error } = await client.storage
+        .from("order-logos")
+        .upload(path, file, {
+          contentType: file.type,
+          cacheControl: "3600",
+          upsert: false,
+        });
+      if (error) {
+        console.warn("No se pudo subir el logo a Storage.", error.message);
+        return null;
+      }
+      return path;
+    } catch (error) {
+      console.warn("No se pudo subir el logo a Storage.", error);
+      return null;
+    }
+  }
+
   async function placeOrder(order) {
     if (!(await ensure())) return null;
     cancelPendingSync();
@@ -286,6 +329,7 @@
     init,
     syncCart,
     track,
+    uploadLogo,
     placeOrder,
   };
 })();

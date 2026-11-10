@@ -8,7 +8,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 
 ## Qué incluye
 
-- **Diseñador en vivo:** color de sudadera, talla, texto, tipografía, color de texto y subida de logo (PNG, JPG o SVG).
+- **Diseñador en vivo:** color de sudadera, talla, texto, tipografía, color de texto y subida de logo (PNG, JPG o WebP).
 - **Materiales:** algodón 400 g, algodón 320 g, French terry, mezcla 50/50 y poliéster técnico, con ajuste de precio y textura visual en el modelo.
 - **Técnicas de personalización:** DTG, DTF, bordado, serigrafía, vinilo textil y sublimación, con costos, acabados visuales y avisos de compatibilidad.
 - **Editor frontal y trasero:** cambia de vista, arrastra el texto y el logo, elige tipografía, ajusta su tamaño y personaliza cada cara por separado.
@@ -87,6 +87,12 @@ node scripts/sync-ticketmaster.mjs
 
 El script consulta la **Discovery API** para México, filtra eventos musicales y reescribe `eventos.json`. La API key solo se usa en la computadora o en CI; nunca se incluye en el sitio publicado.
 
+## Logos de pedidos
+
+Los archivos de logo se suben al bucket privado **`order-logos`** de Supabase Storage. Se aceptan PNG, JPG y WebP de hasta 5 MB. El panel de administración genera enlaces firmados de una hora para verlos o descargarlos desde el detalle de cada pedido.
+
+La configuración del bucket y sus políticas RLS está en `supabase/storage-logos.sql`.
+
 ## Estructura
 
 ```text
@@ -134,4 +140,4 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 
 ## Nota
 
-El checkout es una demostración visual: valida los datos, registra el pedido como demostración y muestra una confirmación, pero no realiza ningún cargo. Para cobrar de verdad habría que conectar una pasarela de pago (Stripe, Mercado Pago, Openpay o similar), validar precios en el servidor y gestionar los archivos de logo en un almacenamiento privado.
+El checkout es una demostración visual: valida los datos, registra el pedido como demostración y muestra una confirmación, pero no realiza ningún cargo. Para cobrar de verdad habría que conectar una pasarela de pago (Stripe, Mercado Pago, Openpay o similar) y validar los precios en el servidor. Los logos ya se guardan en un bucket privado de Supabase Storage y el panel genera enlaces firmados para verlos o descargarlos.

@@ -1,6 +1,7 @@
 -- like hoodie ♡ — esquema de pedidos, carritos y administración
 -- Ejecutar en Supabase → SQL Editor.
 -- Requiere activar "Anonymous sign-ins" en Authentication → Providers.
+-- Después ejecuta storage-logos.sql para crear el bucket privado de logos.
 
 create extension if not exists pgcrypto;
 

@@ -103,6 +103,8 @@
         textFont: "bricolage",
         logo: null,
         logoName: "",
+        logoPath: "",
+        logoData: "",
         logoScale: 1,
         ...DEFAULT_POSITIONS.front,
       },
@@ -113,6 +115,8 @@
         textFont: "bricolage",
         logo: null,
         logoName: "",
+        logoPath: "",
+        logoData: "",
         logoScale: 1,
         ...DEFAULT_POSITIONS.back,
       },
@@ -1270,29 +1274,68 @@
     });
   }
 
+  const LOGO_TYPES = ["image/png", "image/jpeg", "image/webp"];
+  const LOGO_MAX_BYTES = 5 * 1024 * 1024;
+  const LOGO_MAX_DATA_URL = 1_800_000;
+
+  function prepareLogoData(dataUrl, mime) {
+    return new Promise((resolve) => {
+      const image = new Image();
+      image.onload = () => {
+        const make = (maxSide) => {
+          const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.round(image.width * scale));
+          canvas.height = Math.max(1, Math.round(image.height * scale));
+          const context = canvas.getContext("2d");
+          if (!context) return dataUrl;
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+          const outputMime = mime === "image/jpeg" ? "image/jpeg" : "image/png";
+          return canvas.toDataURL(outputMime, 0.9);
+        };
+
+        if (dataUrl.length <= LOGO_MAX_DATA_URL && Math.max(image.width, image.height) <= 1400) {
+          resolve(dataUrl);
+          return;
+        }
+
+        let output = make(1200);
+        if (output.length > LOGO_MAX_DATA_URL) output = make(1000);
+        if (output.length > LOGO_MAX_DATA_URL) output = make(800);
+        resolve(output);
+      };
+      image.onerror = () => resolve(dataUrl);
+      image.src = dataUrl;
+    });
+  }
+
   if (logoInput) {
     logoInput.addEventListener("change", () => {
       const file = logoInput.files && logoInput.files[0];
       if (!file) return;
 
-      if (!file.type.startsWith("image/")) {
-        showToast("Formato no válido. Usa PNG, JPG o SVG.");
+      if (!LOGO_TYPES.includes(file.type)) {
+        showToast("Formato no válido. Usa PNG, JPG o WebP.");
         logoInput.value = "";
         return;
       }
 
-      if (file.size > 2 * 1024 * 1024) {
-        showToast("El logo no puede superar los 2 MB.");
+      if (file.size > LOGO_MAX_BYTES) {
+        showToast("El logo no puede superar los 5 MB.");
         logoInput.value = "";
         return;
       }
 
       const side = state.view;
       const reader = new FileReader();
-      reader.onload = () => {
+      reader.onload = async () => {
         const design = state.designs[side];
-        design.logo = String(reader.result);
+        const source = String(reader.result);
+        design.logo = source;
         design.logoName = file.name;
+        design.logoPath = "";
+        design.logoData = await prepareLogoData(source, file.type);
 
         if (state.view === side) {
           if (uploadFile) uploadFile.hidden = false;
@@ -1302,6 +1345,14 @@
         showToast(
           `Logo ${side === "front" ? "frontal" : "trasero"} cargado.`
         );
+
+        if (window.StoreSupabase?.uploadLogo) {
+          const path = await window.StoreSupabase.uploadLogo(file, side);
+          if (path && design.logo === source) {
+            design.logoPath = path;
+            design.logoData = "";
+          }
+        }
       };
       reader.onerror = () => {
         showToast("No hemos podido leer el archivo. Inténtalo de nuevo.");
@@ -1316,6 +1367,8 @@
       const design = activeDesign();
       design.logo = null;
       design.logoName = "";
+      design.logoPath = "";
+      design.logoData = "";
       if (logoInput) logoInput.value = "";
       if (uploadFile) uploadFile.hidden = true;
       updatePreview();
@@ -1379,6 +1432,8 @@
           textScale: front.textScale,
           textFont: front.textFont,
           logoName: front.logoName,
+          logoPath: front.logoPath || "",
+          logoData: front.logoData || "",
           logoScale: front.logoScale,
           textX: front.textX,
           textY: front.textY,
@@ -1391,6 +1446,8 @@
           textScale: back.textScale,
           textFont: back.textFont,
           logoName: back.logoName,
+          logoPath: back.logoPath || "",
+          logoData: back.logoData || "",
           logoScale: back.logoScale,
           textX: back.textX,
           textY: back.textY,
@@ -1399,7 +1456,12 @@
         },
         basePrice: state.basePrice,
       };
-      const key = JSON.stringify(designSnapshot);
+      const keySnapshot = {
+        ...designSnapshot,
+        front: { ...designSnapshot.front, logoData: "", logoPath: "" },
+        back: { ...designSnapshot.back, logoData: "", logoPath: "" },
+      };
+      const key = JSON.stringify(keySnapshot);
 
       const existing = state.items.find((item) => item.key === key);
       if (existing) {

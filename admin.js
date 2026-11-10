@@ -598,6 +598,53 @@
 
   /* ------------------------------- Detail ------------------------------- */
 
+  async function logoLink(design, side) {
+    if (!design) return "";
+    if (design.logoPath) {
+      const { data, error } = await client.storage
+        .from("order-logos")
+        .createSignedUrl(design.logoPath, 3600);
+      if (!error && data?.signedUrl) {
+        return `<a class="logo-link" href="${escapeHTML(
+          data.signedUrl
+        )}" target="_blank" rel="noopener">Ver logo ${side}</a>`;
+      }
+    }
+    if (
+      typeof design.logoData === "string" &&
+      design.logoData.startsWith("data:image/")
+    ) {
+      return `<a class="logo-link" href="${escapeHTML(
+        design.logoData
+      )}" download="logo-${side.toLowerCase()}.png">Descargar logo ${side}</a>`;
+    }
+    return "";
+  }
+
+  async function orderItemsHtml(items) {
+    return (
+      await Promise.all(
+        items.map(async (item) => {
+          const logos = [
+            await logoLink(item.front, "frente"),
+            await logoLink(item.back, "espalda"),
+          ]
+            .filter(Boolean)
+            .join("");
+          return `<li>
+            <span>${escapeHTML(item.name || "Sudadera")} · ${escapeHTML(
+            item.colorName || ""
+          )} · Talla ${escapeHTML(item.size || "—")} · ${escapeHTML(
+            item.materialName || ""
+          )} · ${escapeHTML(item.techniqueName || "")} · x${escapeHTML(item.qty)}</span>
+            <strong>${formatMoney((Number(item.unitPrice) || 0) * (Number(item.qty) || 0))}</strong>
+            ${logos ? `<span class="detail-logos">${logos}</span>` : ""}
+          </li>`;
+        })
+      )
+    ).join("");
+  }
+
   async function openOrder(id) {
     const { data: order, error } = await client
       .from("orders")
@@ -633,18 +680,7 @@
         }</strong></div>
       </div>
       <ul class="detail-items">
-        ${items
-          .map(
-            (item) => `<li>
-              <span>${escapeHTML(item.name || "Sudadera")} · ${escapeHTML(
-              item.colorName || ""
-            )} · Talla ${escapeHTML(item.size || "—")} · ${escapeHTML(
-              item.materialName || ""
-            )} · ${escapeHTML(item.techniqueName || "")} · x${escapeHTML(item.qty)}</span>
-              <strong>${formatMoney((Number(item.unitPrice) || 0) * (Number(item.qty) || 0))}</strong>
-            </li>`
-          )
-          .join("")}
+        ${await orderItemsHtml(items)}
       </ul>
       <div class="detail-total"><span>Total</span><strong>${formatMoney(
         order.total
