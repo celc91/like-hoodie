@@ -134,6 +134,7 @@ Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos
 ├── cookies.html      # Política de cookies
 ├── terminos.html     # Términos y condiciones
 ├── assets/           # Fotografías de producto y máscaras
+├── vendor/           # Supabase JS fijado localmente
 ├── preview.png       # Captura para el README
 └── README.md
 ```
