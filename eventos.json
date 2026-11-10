@@ -1,0 +1,1214 @@
+{
+  "updated": "2026-11-10T11:30:00-06:00",
+  "source": "https://www.ticketmaster.com.mx/section/conciertos",
+  "events": [
+    {
+      "id": "3D006536F968B27C",
+      "name": "Compañía Nacional de Danza Gala Balanchine, 6+. Ingreso 19:30 h",
+      "start": "2026-11-10T20:00:00",
+      "venue": "Palacio de Bellas Artes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/compania-nacional-de-danza-gala-balanchine-mexico-cdmx-10-11-2026/event/3D006536F968B27C"
+    },
+    {
+      "id": "140064C2E14609A1",
+      "name": "Leire Martínez",
+      "start": "2026-11-10T21:00:00",
+      "venue": "Escenario GNP Seguros",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/leire-martinez-monterrey-10-11-2026/event/140064C2E14609A1"
+    },
+    {
+      "id": "3D0064F2BBD26376",
+      "name": "Andrés Calamaro",
+      "start": "2026-11-11T21:00:00",
+      "venue": "Teatro Diana",
+      "city": "Guadalajara",
+      "url": "https://www.ticketmaster.com.mx/andres-calamaro-guadalajara-11-11-2026/event/3D0064F2BBD26376"
+    },
+    {
+      "id": "3D00647584612B59",
+      "name": "ZZ Top",
+      "start": "2026-11-11T21:00:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/zz-top-ciudad-de-mexico-11-11-2026/event/3D00647584612B59"
+    },
+    {
+      "id": "3D006536F968B27E",
+      "name": "Compañía Nacional de Danza Gala Balanchine, 6+. Ingreso 19:30 h.",
+      "start": "2026-11-12T20:00:00",
+      "venue": "Palacio de Bellas Artes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/compania-nacional-de-danza-gala-balanchine-mexico-cdmx-12-11-2026/event/3D006536F968B27E"
+    },
+    {
+      "id": "3D0064D0BDED47F5",
+      "name": "Pancho Varona en México",
+      "start": "2026-11-12T20:00:00",
+      "venue": "Lunario Del Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/pancho-varona-en-mexico-ciudad-de-mexico-12-11-2026/event/3D0064D0BDED47F5"
+    },
+    {
+      "id": "3D0064368B7A2555",
+      "name": "Elefante: 30 Aniversario",
+      "start": "2026-11-12T20:30:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/elefante-30-aniversario-ciudad-de-mexico-12-11-2026/event/3D0064368B7A2555"
+    },
+    {
+      "id": "140064F28A8D3ABF",
+      "name": "María León",
+      "start": "2026-11-12T20:30:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/maria-leon-mexico-12-11-2026/event/140064F28A8D3ABF"
+    },
+    {
+      "id": "1400646685EA2902",
+      "name": "Siddhartha",
+      "start": "2026-11-12T21:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/siddhartha-monterrey-12-11-2026/event/1400646685EA2902"
+    },
+    {
+      "id": "3D0064B08D245B12",
+      "name": "Lifehouse: Best of Acoustic",
+      "start": "2026-11-12T21:30:00",
+      "venue": "La Maraka",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/lifehouse-best-of-acoustic-mexico-12-11-2026/event/3D0064B08D245B12"
+    },
+    {
+      "id": "3D0064FFD1687E92",
+      "name": "Magno Concierto Sinfónico Congreso Mundial del Mariachi",
+      "start": "2026-11-13T19:00:00",
+      "venue": "Teatro de la Ciudad Esperanza Iris",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/magno-concierto-sinfonico-congreso-mundial-del-mexico-13-11-2026/event/3D0064FFD1687E92"
+    },
+    {
+      "id": "14006482BBA67DBD",
+      "name": "Morat",
+      "start": "2026-11-13T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/morat-ciudad-de-mexico-13-11-2026/event/14006482BBA67DBD"
+    },
+    {
+      "id": "140064EFAA6A6B85",
+      "name": "Andrés Calamaro",
+      "start": "2026-11-13T20:30:00",
+      "venue": "Pepsi Center",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/andres-calamaro-mexico-13-11-2026/event/140064EFAA6A6B85"
+    },
+    {
+      "id": "14006451868B3481",
+      "name": "El Kanka",
+      "start": "2026-11-13T20:30:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/el-kanka-mexico-13-11-2026/event/14006451868B3481"
+    },
+    {
+      "id": "3D006452B03A2BDD",
+      "name": "Majo Aguilar",
+      "start": "2026-11-13T20:30:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/majo-aguilar-ciudad-de-mexico-13-11-2026/event/3D006452B03A2BDD"
+    },
+    {
+      "id": "3D0064EC942445CF",
+      "name": "Carlos Cuevas: El Rey del Bolero",
+      "start": "2026-11-13T21:00:00",
+      "venue": "Lunario Del Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/carlos-cuevas-el-rey-del-bolero-ciudad-de-mexico-13-11-2026/event/3D0064EC942445CF"
+    },
+    {
+      "id": "3D0064CEF8F2C517",
+      "name": "Diezell",
+      "start": "2026-11-13T21:00:00",
+      "venue": "Foro Corona Monterrey",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/diezell-col-centro-monterrey-13-11-2026/event/3D0064CEF8F2C517"
+    },
+    {
+      "id": "3D0064B49FC36493",
+      "name": "Eslabon Armado",
+      "start": "2026-11-13T21:00:00",
+      "venue": "Teatro Diana",
+      "city": "Guadalajara",
+      "url": "https://www.ticketmaster.com.mx/eslabon-armado-guadalajara-13-11-2026/event/3D0064B49FC36493"
+    },
+    {
+      "id": "1400646A812D2A08",
+      "name": "Karol G, Viajando por el mundo, Tropitour",
+      "start": "2026-11-13T21:00:00",
+      "venue": "Estadio GNP Seguros",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/karol-g-viajando-por-el-mundo-ciudad-de-mexico-13-11-2026/event/1400646A812D2A08"
+    },
+    {
+      "id": "140064469724529F",
+      "name": "Matute - Disco Stereo Tour",
+      "start": "2026-11-13T21:00:00",
+      "venue": "Escenario GNP Seguros",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/matute-disco-stereo-tour-monterrey-13-11-2026/event/140064469724529F"
+    },
+    {
+      "id": "14006474E009D790",
+      "name": "ZZ Top",
+      "start": "2026-11-13T21:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/zz-top-monterrey-13-11-2026/event/14006474E009D790"
+    },
+    {
+      "id": "14006474BC788DB5",
+      "name": "Zz Top***SUITES***",
+      "start": "2026-11-13T21:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/zz-topsuites-monterrey-13-11-2026/event/14006474BC788DB5"
+    },
+    {
+      "id": "3D0064B5A239958B",
+      "name": "DLD",
+      "start": "2026-11-13T21:30:00",
+      "venue": "La Maraka",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/dld-mexico-13-11-2026/event/3D0064B5A239958B"
+    },
+    {
+      "id": "3D0064FDF95185AB",
+      "name": "La marimba teje un puente entre México y Japón",
+      "start": "2026-11-14T19:00:00",
+      "venue": "TEATRO SERGIO MAGAÑA",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/la-marimba-teje-un-puente-entre-mexico-14-11-2026/event/3D0064FDF95185AB"
+    },
+    {
+      "id": "140064C3D88BD9DB",
+      "name": "Dimash Qudaibergen",
+      "start": "2026-11-14T20:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/dimash-qudaibergen-monterrey-14-11-2026/event/140064C3D88BD9DB"
+    },
+    {
+      "id": "140064C3DA48DC8F",
+      "name": "Dimash Qudairbergen***SUITES***",
+      "start": "2026-11-14T20:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/dimash-qudairbergensuites-monterrey-14-11-2026/event/140064C3DA48DC8F"
+    },
+    {
+      "id": "3D0064FDABAB4ECE",
+      "name": "Fernando Delgadillo",
+      "start": "2026-11-14T20:00:00",
+      "venue": "Sala Pepsi Black",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/fernando-delgadillo-ciudad-de-mexico-14-11-2026/event/3D0064FDABAB4ECE"
+    },
+    {
+      "id": "140064C9C546F0CA",
+      "name": "Little Jesus",
+      "start": "2026-11-14T20:00:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/little-jesus-mexico-14-11-2026/event/140064C9C546F0CA"
+    },
+    {
+      "id": "3D0064BB8DB22E11",
+      "name": "Miguel Inzunza, noctournos en concierto \"La noche que soñamos juntos\"",
+      "start": "2026-11-14T20:00:00",
+      "venue": "El Cantoral",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/miguel-inzunza-noctournos-en-concierto-la-mexico-14-11-2026/event/3D0064BB8DB22E11"
+    },
+    {
+      "id": "14006482BBA67DBF",
+      "name": "Morat",
+      "start": "2026-11-14T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/morat-ciudad-de-mexico-14-11-2026/event/14006482BBA67DBF"
+    },
+    {
+      "id": "3D006557FA3FCCBD",
+      "name": "Griss Romero en Concierto",
+      "start": "2026-11-14T21:00:00",
+      "venue": "Foro Corona Monterrey",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/griss-romero-en-concierto-col-centro-monterrey-14-11-2026/event/3D006557FA3FCCBD"
+    },
+    {
+      "id": "1400646A82522BC9",
+      "name": "Karol G, Viajando por el mundo, Tropitour",
+      "start": "2026-11-14T21:00:00",
+      "venue": "Estadio GNP Seguros",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/karol-g-viajando-por-el-mundo-ciudad-de-mexico-14-11-2026/event/1400646A82522BC9"
+    },
+    {
+      "id": "1400644698215498",
+      "name": "Matute - Disco Stereo Tour",
+      "start": "2026-11-14T21:00:00",
+      "venue": "Escenario GNP Seguros",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/matute-disco-stereo-tour-monterrey-14-11-2026/event/1400644698215498"
+    },
+    {
+      "id": "3D0064B5B0F8B778",
+      "name": "DLD",
+      "start": "2026-11-14T21:30:00",
+      "venue": "La Maraka",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/dld-mexico-14-11-2026/event/3D0064B5B0F8B778"
+    },
+    {
+      "id": "3D006556DA9CAF84",
+      "name": "Aniversario 142 de la Orquesta Típica de la Ciudad de México",
+      "start": "2026-11-15T12:00:00",
+      "venue": "Teatro de la Ciudad Esperanza Iris",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/aniversario-142-de-la-orquesta-tipica-mexico-15-11-2026/event/3D006556DA9CAF84"
+    },
+    {
+      "id": "3D006536F969B280",
+      "name": "Compañía Nacional de Danza Gala Balanchine, 6+. Ingreso 16:30 h.",
+      "start": "2026-11-15T17:00:00",
+      "venue": "Palacio de Bellas Artes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/compania-nacional-de-danza-gala-balanchine-mexico-cdmx-15-11-2026/event/3D006536F969B280"
+    },
+    {
+      "id": "3D0064A1B9727E05",
+      "name": "Daniel Boaventura Sinfónico",
+      "start": "2026-11-15T19:00:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/daniel-boaventura-sinfonico-ciudad-de-mexico-15-11-2026/event/3D0064A1B9727E05"
+    },
+    {
+      "id": "1400644BBDF6AC79",
+      "name": "La Caravana del Amor",
+      "start": "2026-11-15T19:00:00",
+      "venue": "Escenario GNP Seguros",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/la-caravana-del-amor-monterrey-15-11-2026/event/1400644BBDF6AC79"
+    },
+    {
+      "id": "140064D59D3141CF",
+      "name": "Yolanda del Rio, El Gran Regreso",
+      "start": "2026-11-15T19:00:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/yolanda-del-rio-el-gran-regreso-mexico-15-11-2026/event/140064D59D3141CF"
+    },
+    {
+      "id": "3D0065238D8D2263",
+      "name": "¨MAGNO CONCIERTO¨. 3er Congreso Mundial del Mariachi",
+      "start": "2026-11-15T19:00:00",
+      "venue": "El Cantoral",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/magno-concierto-3er-congreso-mundial-del-mexico-15-11-2026/event/3D0065238D8D2263"
+    },
+    {
+      "id": "1400654EC20EA15E",
+      "name": "debut Presenta: Rapaparty! Feat BBtrickz, Fanta Rosario y más",
+      "start": "2026-11-15T20:00:00",
+      "venue": "Pepsi Center",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/debut-presenta-rapaparty-feat-bbtrickz-fanta-mexico-15-11-2026/event/1400654EC20EA15E"
+    },
+    {
+      "id": "14006482BB9B7DA6",
+      "name": "Morat",
+      "start": "2026-11-15T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/morat-ciudad-de-mexico-15-11-2026/event/14006482BB9B7DA6"
+    },
+    {
+      "id": "1400646A82532BCB",
+      "name": "Karol G, Viajando por el mundo, Tropitour",
+      "start": "2026-11-15T21:00:00",
+      "venue": "Estadio GNP Seguros",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/karol-g-viajando-por-el-mundo-ciudad-de-mexico-15-11-2026/event/1400646A82532BCB"
+    },
+    {
+      "id": "140064BB8A507913",
+      "name": "Estela Nuñez y Jorge Muñiz",
+      "start": "2026-11-16T18:00:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/estela-nunez-y-jorge-muniz-mexico-16-11-2026/event/140064BB8A507913"
+    },
+    {
+      "id": "3D00652BB79D551F",
+      "name": "2026 8TURN 2nd World Tour in Mexico",
+      "start": "2026-11-16T19:30:00",
+      "venue": "La Maraka",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/2026-8turn-2nd-world-tour-in-mexico-16-11-2026/event/3D00652BB79D551F"
+    },
+    {
+      "id": "140064EF9E4E4EBF",
+      "name": "Mon Laferte",
+      "start": "2026-11-16T21:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/mon-laferte-monterrey-16-11-2026/event/140064EF9E4E4EBF"
+    },
+    {
+      "id": "1400652CE7CAB10F",
+      "name": "2026 Hwang In Youp FAN MEETING TOUR in MONTERREY",
+      "start": "2026-11-17T20:00:00",
+      "venue": "Escenario GNP Seguros",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/2026-hwang-in-youp-fan-meeting-monterrey-17-11-2026/event/1400652CE7CAB10F"
+    },
+    {
+      "id": "3D006536F96AB282",
+      "name": "Compañía Nacional de Danza Gala Balanchine, 6+. Ingreso 19:30 h.",
+      "start": "2026-11-17T20:00:00",
+      "venue": "Palacio de Bellas Artes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/compania-nacional-de-danza-gala-balanchine-mexico-cdmx-17-11-2026/event/3D006536F96AB282"
+    },
+    {
+      "id": "14006482BBA77DC1",
+      "name": "Morat",
+      "start": "2026-11-17T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/morat-ciudad-de-mexico-17-11-2026/event/14006482BBA77DC1"
+    },
+    {
+      "id": "3D006491A0255192",
+      "name": "Jerry Rivera.",
+      "start": "2026-11-17T20:30:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/jerry-rivera-ciudad-de-mexico-17-11-2026/event/3D006491A0255192"
+    },
+    {
+      "id": "140064ADE1DDDC9B",
+      "name": "Mon Laferte",
+      "start": "2026-11-17T21:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/mon-laferte-monterrey-17-11-2026/event/140064ADE1DDDC9B"
+    },
+    {
+      "id": "14006546C0FC9A53",
+      "name": "Tributo a la Diva Celebrando a México",
+      "start": "2026-11-18T20:00:00",
+      "venue": "Teatro Hidalgo",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/tributo-a-la-diva-celebrando-a-mexico-18-11-2026/event/14006546C0FC9A53"
+    },
+    {
+      "id": "1400654FC260D5C6",
+      "name": "Concierto por un abrazo",
+      "start": "2026-11-18T20:30:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/concierto-por-un-abrazo-mexico-18-11-2026/event/1400654FC260D5C6"
+    },
+    {
+      "id": "3D00650DB4FE5BBC",
+      "name": "Emmanuel & Mijares",
+      "start": "2026-11-18T20:30:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/emmanuel-mijares-ciudad-de-mexico-18-11-2026/event/3D00650DB4FE5BBC"
+    },
+    {
+      "id": "3D00651D940D2696",
+      "name": "MARO",
+      "start": "2026-11-18T21:00:00",
+      "venue": "Foro Puebla",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/maro-mexico-18-11-2026/event/3D00651D940D2696"
+    },
+    {
+      "id": "3D0064FAB1675A4D",
+      "name": "RaiNao",
+      "start": "2026-11-18T21:00:00",
+      "venue": "Lunario Del Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/rainao-ciudad-de-mexico-18-11-2026/event/3D0064FAB1675A4D"
+    },
+    {
+      "id": "3D006536F96BB286",
+      "name": "Compañía Nacional de Danza Gala Balanchine, 6+. Ingreso 19:30 h.",
+      "start": "2026-11-19T20:00:00",
+      "venue": "Palacio de Bellas Artes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/compania-nacional-de-danza-gala-balanchine-mexico-cdmx-19-11-2026/event/3D006536F96BB286"
+    },
+    {
+      "id": "140064C499605A9D",
+      "name": "Dimash Qudaibergen",
+      "start": "2026-11-19T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/dimash-qudaibergen-ciudad-de-mexico-19-11-2026/event/140064C499605A9D"
+    },
+    {
+      "id": "140064BE8ABA5C83",
+      "name": "Arde Bogota",
+      "start": "2026-11-19T20:30:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/arde-bogota-mexico-19-11-2026/event/140064BE8ABA5C83"
+    },
+    {
+      "id": "3D0064ADC21E979E",
+      "name": "Cafres y Estrambóticos",
+      "start": "2026-11-19T20:30:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/cafres-y-estramboticos-ciudad-de-mexico-19-11-2026/event/3D0064ADC21E979E"
+    },
+    {
+      "id": "14006453E269576B",
+      "name": "Caloncho",
+      "start": "2026-11-19T21:00:00",
+      "venue": "Escenario GNP Seguros",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/caloncho-monterrey-19-11-2026/event/14006453E269576B"
+    },
+    {
+      "id": "3D0064C4B6037318",
+      "name": "María San Felipe \"Por si Volvieras\"",
+      "start": "2026-11-19T21:00:00",
+      "venue": "Lunario Del Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/maria-san-felipe-por-si-volvieras-ciudad-de-mexico-19-11-2026/event/3D0064C4B6037318"
+    },
+    {
+      "id": "3D00655A827618E3",
+      "name": "Roberto Blades, Viti Ruiz y Wilmer Lozano",
+      "start": "2026-11-19T21:00:00",
+      "venue": "Mambo Cafe Insurgentes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/roberto-blades-viti-ruiz-y-wilmer-mexico-19-11-2026/event/3D00655A827618E3"
+    },
+    {
+      "id": "3D0065249EC538A7",
+      "name": "Taburete",
+      "start": "2026-11-19T21:00:00",
+      "venue": "Foro Corona Monterrey",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/taburete-col-centro-monterrey-19-11-2026/event/3D0065249EC538A7"
+    },
+    {
+      "id": "3D0064E79FC01D9A",
+      "name": "Kalimba \"Christmas Soul\"",
+      "start": "2026-11-19T21:30:00",
+      "venue": "La Maraka",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/kalimba-christmas-soul-mexico-19-11-2026/event/3D0064E79FC01D9A"
+    },
+    {
+      "id": "140064C49B1F5DB4",
+      "name": "Dimash Qudaibergen",
+      "start": "2026-11-20T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/dimash-qudaibergen-ciudad-de-mexico-20-11-2026/event/140064C49B1F5DB4"
+    },
+    {
+      "id": "3D0064F28ED428E3",
+      "name": "Los Angeles Azules",
+      "start": "2026-11-20T20:30:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/los-angeles-azules-ciudad-de-mexico-20-11-2026/event/3D0064F28ED428E3"
+    },
+    {
+      "id": "3D0064D69F0A1B7E",
+      "name": "Nuestros Boleros de Cantina. Carlos Carreira y Salvador Aponte",
+      "start": "2026-11-20T20:30:00",
+      "venue": "El Cantoral",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/nuestros-boleros-de-cantina-carlos-carreira-mexico-20-11-2026/event/3D0064D69F0A1B7E"
+    },
+    {
+      "id": "3D0064B59E9E8DA5",
+      "name": "Francisca Valenzuela MALDITA Tour",
+      "start": "2026-11-20T21:00:00",
+      "venue": "Foro Puebla",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/francisca-valenzuela-maldita-tour-mexico-20-11-2026/event/3D0064B59E9E8DA5"
+    },
+    {
+      "id": "3D0064F99B80358E",
+      "name": "La Barranca",
+      "start": "2026-11-20T21:00:00",
+      "venue": "Foro Corona Monterrey",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/la-barranca-col-centro-monterrey-20-11-2026/event/3D0064F99B80358E"
+    },
+    {
+      "id": "1400650CBD867A52",
+      "name": "Lo Mejor del Rock en Español",
+      "start": "2026-11-20T21:00:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/lo-mejor-del-rock-en-espanol-mexico-20-11-2026/event/1400650CBD867A52"
+    },
+    {
+      "id": "1400646D876F4E01",
+      "name": "Los Auténticos Caligaris",
+      "start": "2026-11-20T21:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/los-autenticos-caligaris-monterrey-20-11-2026/event/1400646D876F4E01"
+    },
+    {
+      "id": "140064A8B2CCE5E2",
+      "name": "LP",
+      "start": "2026-11-20T21:00:00",
+      "venue": "Escenario GNP Seguros",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/lp-monterrey-20-11-2026/event/140064A8B2CCE5E2"
+    },
+    {
+      "id": "3D006481E9AB6161",
+      "name": "Morat",
+      "start": "2026-11-20T21:00:00",
+      "venue": "Arena V.F.G.",
+      "city": "Tlajomulco de Zúñiga",
+      "url": "https://www.ticketmaster.com.mx/morat-tlajomulco-de-zuniga-20-11-2026/event/3D006481E9AB6161"
+    },
+    {
+      "id": "3D0064F0E1EF7CDC",
+      "name": "Kalimba \"Christmas Soul\"",
+      "start": "2026-11-20T21:30:00",
+      "venue": "La Maraka",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/kalimba-christmas-soul-mexico-20-11-2026/event/3D0064F0E1EF7CDC"
+    },
+    {
+      "id": "3D006562F2FE87C1",
+      "name": "El Gran Showman (The Greatest Showman) Movie Concert",
+      "start": "2026-11-21T18:00:00",
+      "venue": "Teatro Xola Julio Prieto",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/el-gran-showman-the-greatest-showman-mexico-21-11-2026/event/3D006562F2FE87C1"
+    },
+    {
+      "id": "3D00652AA2454265",
+      "name": "48 FIMNME, CNMO - Tambuco Concierto de Clausura, 8+. Ingreso 18:30 h.",
+      "start": "2026-11-21T19:00:00",
+      "venue": "Palacio de Bellas Artes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/48-fimnme-cnmo-tambuco-concierto-de-mexico-cdmx-21-11-2026/event/3D00652AA2454265"
+    },
+    {
+      "id": "3D0064FDFA588641",
+      "name": "La marimba teje un puente entre México y Japón",
+      "start": "2026-11-21T19:00:00",
+      "venue": "TEATRO SERGIO MAGAÑA",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/la-marimba-teje-un-puente-entre-mexico-21-11-2026/event/3D0064FDFA588641"
+    },
+    {
+      "id": "3D00642992AA291E",
+      "name": "Christian Sands Quartet",
+      "start": "2026-11-21T19:30:00",
+      "venue": "Teatro de la Ciudad Esperanza Iris",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/christian-sands-quartet-mexico-21-11-2026/event/3D00642992AA291E"
+    },
+    {
+      "id": "140064F28F5641F8",
+      "name": "Benny Ibarra",
+      "start": "2026-11-21T20:00:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/benny-ibarra-mexico-21-11-2026/event/140064F28F5641F8"
+    },
+    {
+      "id": "140064FCADEF9CF1",
+      "name": "Cuarteto de Nos",
+      "start": "2026-11-21T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/cuarteto-de-nos-ciudad-de-mexico-21-11-2026/event/140064FCADEF9CF1"
+    },
+    {
+      "id": "3D00653EBCFA6E60",
+      "name": "Javier Corcobado 40 Aniversario - Lado B",
+      "start": "2026-11-21T20:00:00",
+      "venue": "Lunario Del Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/javier-corcobado-40-aniversario-lado-b-ciudad-de-mexico-21-11-2026/event/3D00653EBCFA6E60"
+    },
+    {
+      "id": "3D0064F28F9D2986",
+      "name": "Los Angeles Azules",
+      "start": "2026-11-21T20:00:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/los-angeles-azules-ciudad-de-mexico-21-11-2026/event/3D0064F28F9D2986"
+    },
+    {
+      "id": "14006488A27778BB",
+      "name": "Malcriada",
+      "start": "2026-11-21T20:30:00",
+      "venue": "Pabellón del Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/malcriada-mexico-21-11-2026/event/14006488A27778BB"
+    },
+    {
+      "id": "140064AE8B0C490D",
+      "name": "David Bisbal Tour Eternos 2026",
+      "start": "2026-11-21T21:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/david-bisbal-tour-eternos-2026-monterrey-21-11-2026/event/140064AE8B0C490D"
+    },
+    {
+      "id": "3D0064A5A4A35226",
+      "name": "Luisa Vox",
+      "start": "2026-11-21T21:00:00",
+      "venue": "Foro Corona Monterrey",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/luisa-vox-col-centro-monterrey-21-11-2026/event/3D0064A5A4A35226"
+    },
+    {
+      "id": "14006488DF2AF3CC",
+      "name": "Molotov",
+      "start": "2026-11-21T21:00:00",
+      "venue": "Escenario GNP Seguros",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/molotov-monterrey-21-11-2026/event/14006488DF2AF3CC"
+    },
+    {
+      "id": "3D006481ECD262DE",
+      "name": "Morat",
+      "start": "2026-11-21T21:00:00",
+      "venue": "Arena V.F.G.",
+      "city": "Tlajomulco de Zúñiga",
+      "url": "https://www.ticketmaster.com.mx/morat-tlajomulco-de-zuniga-21-11-2026/event/3D006481ECD262DE"
+    },
+    {
+      "id": "3D0064B9AAD84EF2",
+      "name": "Playa Limbo en El Cantoral, Donde Quiero Estar Tour Acustico",
+      "start": "2026-11-21T21:00:00",
+      "venue": "El Cantoral",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/playa-limbo-en-el-cantoral-donde-mexico-21-11-2026/event/3D0064B9AAD84EF2"
+    },
+    {
+      "id": "3D0064E7E8084DD1",
+      "name": "Kalimba \"Christmas Soul",
+      "start": "2026-11-21T21:30:00",
+      "venue": "La Maraka",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/kalimba-christmas-soul-mexico-21-11-2026/event/3D0064E7E8084DD1"
+    },
+    {
+      "id": "3D0064C584B428C2",
+      "name": "Piaf Sinfónico",
+      "start": "2026-11-22T18:00:00",
+      "venue": "Teatro de la Ciudad Esperanza Iris",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/piaf-sinfonico-mexico-22-11-2026/event/3D0064C584B428C2"
+    },
+    {
+      "id": "3D0064AFB130A07E",
+      "name": "LP",
+      "start": "2026-11-22T19:00:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/lp-ciudad-de-mexico-22-11-2026/event/3D0064AFB130A07E"
+    },
+    {
+      "id": "3D00650DE7AC94F0",
+      "name": "Grupo G. Permanencia Tour.",
+      "start": "2026-11-22T20:00:00",
+      "venue": "El Cantoral",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/grupo-g-permanencia-tour-mexico-22-11-2026/event/3D00650DE7AC94F0"
+    },
+    {
+      "id": "140064BCB657E671",
+      "name": "Soda Stereo",
+      "start": "2026-11-23T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/soda-stereo-ciudad-de-mexico-23-11-2026/event/140064BCB657E671"
+    },
+    {
+      "id": "14006524A02E9742",
+      "name": "Taburete",
+      "start": "2026-11-23T21:00:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/taburete-mexico-23-11-2026/event/14006524A02E9742"
+    },
+    {
+      "id": "14006505C153BCC6",
+      "name": "Love of Lesbian",
+      "start": "2026-11-24T20:00:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/love-of-lesbian-mexico-24-11-2026/event/14006505C153BCC6"
+    },
+    {
+      "id": "14006497BA56AD8F",
+      "name": "Babasonicos",
+      "start": "2026-11-25T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/babasonicos-ciudad-de-mexico-25-11-2026/event/14006497BA56AD8F"
+    },
+    {
+      "id": "3D006473F1D8966D",
+      "name": "Love of Lesbian",
+      "start": "2026-11-25T20:30:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/love-of-lesbian-ciudad-de-mexico-25-11-2026/event/3D006473F1D8966D"
+    },
+    {
+      "id": "3D00651AD6C3B4D2",
+      "name": "Easykid",
+      "start": "2026-11-25T21:00:00",
+      "venue": "Foro Corona Monterrey",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/easykid-col-centro-monterrey-25-11-2026/event/3D00651AD6C3B4D2"
+    },
+    {
+      "id": "140064A395A941C3",
+      "name": "Giant Rooks",
+      "start": "2026-11-25T21:00:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/giant-rooks-mexico-25-11-2026/event/140064A395A941C3"
+    },
+    {
+      "id": "3D0064A6A4695E8E",
+      "name": "\"The Hayley Williams Show\" (Numerado)",
+      "start": "2026-11-26T19:00:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/the-hayley-williams-show-numerado-ciudad-de-mexico-26-11-2026/event/3D0064A6A4695E8E"
+    },
+    {
+      "id": "3D00651AC3109F02",
+      "name": "Leonardo De Lozanne",
+      "start": "2026-11-26T20:00:00",
+      "venue": "Sala Pepsi Black",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/leonardo-de-lozanne-ciudad-de-mexico-26-11-2026/event/3D00651AC3109F02"
+    },
+    {
+      "id": "3D0064D2F0967332",
+      "name": "Helado Negro & Reyna Tropical Presentan: Helado Tropical",
+      "start": "2026-11-26T20:30:00",
+      "venue": "Lunario Del Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/helado-negro-reyna-tropical-presentan-helado-ciudad-de-mexico-26-11-2026/event/3D0064D2F0967332"
+    },
+    {
+      "id": "1400648881B6296D",
+      "name": "Nacho Vegas",
+      "start": "2026-11-26T20:30:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/nacho-vegas-mexico-26-11-2026/event/1400648881B6296D"
+    },
+    {
+      "id": "3D00637695A13056",
+      "name": "Babasonicos",
+      "start": "2026-11-26T21:00:00",
+      "venue": "Teatro Estudio Cavaret",
+      "city": "Zapopan",
+      "url": "https://www.ticketmaster.com.mx/babasonicos-zapopan-26-11-2026/event/3D00637695A13056"
+    },
+    {
+      "id": "14006538AE0FA0EC",
+      "name": "Gera Mx",
+      "start": "2026-11-28T17:00:00",
+      "venue": "Pepsi Center",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/gera-mx-mexico-28-11-2026/event/14006538AE0FA0EC"
+    },
+    {
+      "id": "3D006562F30687CC",
+      "name": "El Gran Showman (The Greatest Showman) Movie Concert",
+      "start": "2026-11-28T18:00:00",
+      "venue": "Teatro Xola Julio Prieto",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/el-gran-showman-the-greatest-showman-mexico-28-11-2026/event/3D006562F30687CC"
+    },
+    {
+      "id": "3D006525865D1CD4",
+      "name": "La Bruja De Texcoco En Concierto",
+      "start": "2026-11-28T19:00:00",
+      "venue": "Teatro de la Ciudad Esperanza Iris",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/la-bruja-de-texcoco-en-concierto-mexico-28-11-2026/event/3D006525865D1CD4"
+    },
+    {
+      "id": "3D0064FDFA588643",
+      "name": "La marimba teje un puente entre México y Japón",
+      "start": "2026-11-28T19:00:00",
+      "venue": "TEATRO SERGIO MAGAÑA",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/la-marimba-teje-un-puente-entre-mexico-28-11-2026/event/3D0064FDFA588643"
+    },
+    {
+      "id": "140064BDC15FC571",
+      "name": "Ruido Ibérico",
+      "start": "2026-11-28T19:00:00",
+      "venue": "Pabellón del Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/ruido-iberico-mexico-28-11-2026/event/140064BDC15FC571"
+    },
+    {
+      "id": "140064AFF2BFC184",
+      "name": "Disco Bahía - El rey del Glam",
+      "start": "2026-11-28T20:00:00",
+      "venue": "Auditorio BB",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/disco-bahia-el-rey-del-glam-mexico-28-11-2026/event/140064AFF2BFC184"
+    },
+    {
+      "id": "3D006528D9B57097",
+      "name": "Gloria Trevi Celebration",
+      "start": "2026-11-28T20:00:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/gloria-trevi-celebration-ciudad-de-mexico-28-11-2026/event/3D006528D9B57097"
+    },
+    {
+      "id": "140064AB8F152FA7",
+      "name": "KATSEYE: THE WILDWORLD TOUR",
+      "start": "2026-11-28T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/katseye-the-wildworld-tour-ciudad-de-mexico-28-11-2026/event/140064AB8F152FA7"
+    },
+    {
+      "id": "140064CAB6418670",
+      "name": "Menudo",
+      "start": "2026-11-28T20:00:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/menudo-mexico-28-11-2026/event/140064CAB6418670"
+    },
+    {
+      "id": "140064B2F4D4F004",
+      "name": "Superarte Justin Q & Lenny T",
+      "start": "2026-11-28T21:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/superarte-justin-q-lenny-t-monterrey-28-11-2026/event/140064B2F4D4F004"
+    },
+    {
+      "id": "3D0065249CFE3719",
+      "name": "Armando Palomas",
+      "start": "2026-11-28T21:00:00",
+      "venue": "Foro Corona Monterrey",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/armando-palomas-col-centro-monterrey-28-11-2026/event/3D0065249CFE3719"
+    },
+    {
+      "id": "140064A5985E5EC9",
+      "name": "La Gusana Ciega - Claroscuro",
+      "start": "2026-11-28T21:00:00",
+      "venue": "Escenario GNP Seguros",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/la-gusana-ciega-claroscuro-monterrey-28-11-2026/event/140064A5985E5EC9"
+    },
+    {
+      "id": "3D00642BB82E6C10",
+      "name": "Nicho Hinojosa & Platanito",
+      "start": "2026-11-28T21:30:00",
+      "venue": "La Maraka",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/nicho-hinojosa-platanito-mexico-28-11-2026/event/3D00642BB82E6C10"
+    },
+    {
+      "id": "3D00655684462D31",
+      "name": "Cabaret Lunario Presenta: Jorge Muñiz con la gente que me gusta",
+      "start": "2026-11-28T22:30:00",
+      "venue": "Lunario Del Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/cabaret-lunario-presenta-jorge-muniz-con-ciudad-de-mexico-28-11-2026/event/3D00655684462D31"
+    },
+    {
+      "id": "3D006562F54289A5",
+      "name": "Cómo Entrenar a tu Dragón, Movie Concert",
+      "start": "2026-11-29T13:30:00",
+      "venue": "Teatro Xola Julio Prieto",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/como-entrenar-a-tu-dragon-movie-mexico-29-11-2026/event/3D006562F54289A5"
+    },
+    {
+      "id": "3D00637BAF26672D",
+      "name": "Los Ángeles Negros",
+      "start": "2026-11-29T18:00:00",
+      "venue": "Teatro Diana",
+      "city": "Guadalajara",
+      "url": "https://www.ticketmaster.com.mx/los-angeles-negros-guadalajara-29-11-2026/event/3D00637BAF26672D"
+    },
+    {
+      "id": "3D0064A786203676",
+      "name": "Rodrigo de la Cadena La Sinfonía de la Memoria II",
+      "start": "2026-11-29T18:00:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/rodrigo-de-la-cadena-la-sinfonia-ciudad-de-mexico-29-11-2026/event/3D0064A786203676"
+    },
+    {
+      "id": "3D00644B838C1954",
+      "name": "Silvio Rodríguez en la voz y guitarra de Manuel García",
+      "start": "2026-11-29T18:00:00",
+      "venue": "Teatro de la Ciudad Esperanza Iris",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/silvio-rodriguez-en-la-voz-y-mexico-29-11-2026/event/3D00644B838C1954"
+    },
+    {
+      "id": "3D00649DA67C5086",
+      "name": "Electrify y Los Daniels",
+      "start": "2026-11-29T19:00:00",
+      "venue": "Lunario Del Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/electrify-y-los-daniels-ciudad-de-mexico-29-11-2026/event/3D00649DA67C5086"
+    },
+    {
+      "id": "140064D3C3209B7F",
+      "name": "The Mars Volta",
+      "start": "2026-11-29T20:00:00",
+      "venue": "Pepsi Center",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/the-mars-volta-mexico-29-11-2026/event/140064D3C3209B7F"
+    },
+    {
+      "id": "3D00650DBC7A62D4",
+      "name": "Yuri",
+      "start": "2026-12-01T20:30:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/yuri-ciudad-de-mexico-01-12-2026/event/3D00650DBC7A62D4"
+    },
+    {
+      "id": "140064D6AB3A5467",
+      "name": "Eslabon Armado",
+      "start": "2026-12-02T21:00:00",
+      "venue": "Teatro Metropólitan",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/eslabon-armado-mexico-02-12-2026/event/140064D6AB3A5467"
+    },
+    {
+      "id": "3D0064F686811745",
+      "name": "Moenia",
+      "start": "2026-12-02T21:30:00",
+      "venue": "La Maraka",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/moenia-mexico-02-12-2026/event/3D0064F686811745"
+    },
+    {
+      "id": "3D00652CB07E8EBC",
+      "name": "Daphne Michelle en Vivo",
+      "start": "2026-12-03T20:00:00",
+      "venue": "Lunario Del Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/daphne-michelle-en-vivo-ciudad-de-mexico-03-12-2026/event/3D00652CB07E8EBC"
+    },
+    {
+      "id": "3D00650FD6DE9600",
+      "name": "Emmanuel Sinfónico",
+      "start": "2026-12-03T20:30:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/emmanuel-sinfonico-ciudad-de-mexico-03-12-2026/event/3D00650FD6DE9600"
+    },
+    {
+      "id": "14006453B3E6C5F7",
+      "name": "Bruno Mars - The Romantic Tour",
+      "start": "2026-12-03T21:00:00",
+      "venue": "Estadio GNP Seguros",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/bruno-mars-the-romantic-tour-ciudad-de-mexico-03-12-2026/event/14006453B3E6C5F7"
+    },
+    {
+      "id": "3D0064E7EBC9508C",
+      "name": "Kalimba \"Christmas Soul\"",
+      "start": "2026-12-03T21:30:00",
+      "venue": "La Maraka",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/kalimba-christmas-soul-mexico-03-12-2026/event/3D0064E7EBC9508C"
+    },
+    {
+      "id": "140064F6BD947B3F",
+      "name": "Caifanes",
+      "start": "2026-12-04T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/caifanes-ciudad-de-mexico-04-12-2026/event/140064F6BD947B3F"
+    },
+    {
+      "id": "3D0064AE92BB6148",
+      "name": "David Bisbal",
+      "start": "2026-12-04T20:30:00",
+      "venue": "Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/david-bisbal-ciudad-de-mexico-04-12-2026/event/3D0064AE92BB6148"
+    },
+    {
+      "id": "14006542E1D9E803",
+      "name": "Germaín y Maurizio Ruiz juntos por última vez, ex Ángeles Negros",
+      "start": "2026-12-04T20:30:00",
+      "venue": "Teatro Tepeyac",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/germain-y-maurizio-ruiz-juntos-por-mexico-04-12-2026/event/14006542E1D9E803"
+    },
+    {
+      "id": "14006519AABA6B22",
+      "name": "La Esfinge",
+      "start": "2026-12-04T20:30:00",
+      "venue": "Pabellón del Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/la-esfinge-mexico-04-12-2026/event/14006519AABA6B22"
+    },
+    {
+      "id": "3D0064F995572FA9",
+      "name": "TOUR LIT KILLAH",
+      "start": "2026-12-04T20:30:00",
+      "venue": "Foro Puebla",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/tour-lit-killah-mexico-04-12-2026/event/3D0064F995572FA9"
+    },
+    {
+      "id": "3D006465FF787E4B",
+      "name": "Ana Torroja",
+      "start": "2026-12-04T21:00:00",
+      "venue": "Teatro Diana",
+      "city": "Guadalajara",
+      "url": "https://www.ticketmaster.com.mx/ana-torroja-guadalajara-04-12-2026/event/3D006465FF787E4B"
+    },
+    {
+      "id": "14006453BC22D8B6",
+      "name": "Bruno Mars - The Romantic Tour",
+      "start": "2026-12-04T21:00:00",
+      "venue": "Estadio GNP Seguros",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/bruno-mars-the-romantic-tour-ciudad-de-mexico-04-12-2026/event/14006453BC22D8B6"
+    },
+    {
+      "id": "140064B2A75464C3",
+      "name": "I Love Dance 2026",
+      "start": "2026-12-04T21:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/i-love-dance-2026-monterrey-04-12-2026/event/140064B2A75464C3"
+    },
+    {
+      "id": "140065419C947319",
+      "name": "I Love Dance 2026 Beyond Numerado",
+      "start": "2026-12-04T21:00:00",
+      "venue": "Auditorio Banamex",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/i-love-dance-2026-beyond-numerado-monterrey-04-12-2026/event/140065419C947319"
+    },
+    {
+      "id": "3D006535982C3013",
+      "name": "Junior Klan en Pleno Vuelo",
+      "start": "2026-12-04T21:00:00",
+      "venue": "Lunario Del Auditorio Nacional",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/junior-klan-en-pleno-vuelo-ciudad-de-mexico-04-12-2026/event/3D006535982C3013"
+    },
+    {
+      "id": "3D006533A68E3525",
+      "name": "Pablo Preciado",
+      "start": "2026-12-04T21:00:00",
+      "venue": "Foro Corona Monterrey",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/pablo-preciado-col-centro-monterrey-04-12-2026/event/3D006533A68E3525"
+    },
+    {
+      "id": "3D0064E7E6D64CE6",
+      "name": "Kalimba \"Christmas Soul\"",
+      "start": "2026-12-04T21:30:00",
+      "venue": "La Maraka",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/kalimba-christmas-soul-mexico-04-12-2026/event/3D0064E7E6D64CE6"
+    },
+    {
+      "id": "3D00651A85A02338",
+      "name": "Banda Machos",
+      "start": "2026-12-05T20:00:00",
+      "venue": "Monumental Plaza De Toros México",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/banda-machos-mexico-05-12-2026/event/3D00651A85A02338"
+    },
+    {
+      "id": "140064F0DBFCEA8D",
+      "name": "Caifanes",
+      "start": "2026-12-05T20:00:00",
+      "venue": "Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/caifanes-ciudad-de-mexico-05-12-2026/event/140064F0DBFCEA8D"
+    },
+    {
+      "id": "3D006518AF86319A",
+      "name": "Morenito de Fuego Tour Montando el Cerro de la Silla",
+      "start": "2026-12-05T20:00:00",
+      "venue": "Foro Corona Monterrey",
+      "city": "Monterrey",
+      "url": "https://www.ticketmaster.com.mx/morenito-de-fuego-tour-montando-el-col-centro-monterrey-05-12-2026/event/3D006518AF86319A"
+    },
+    {
+      "id": "3D006529FFF38F56",
+      "name": "YUKI CHIBA FIRST NORTH AMERICA HEADLINE TOUR",
+      "start": "2026-12-05T20:00:00",
+      "venue": "Foro Puebla",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/yuki-chiba-first-north-america-headline-mexico-05-12-2026/event/3D006529FFF38F56"
+    },
+    {
+      "id": "14006516EE5086C0",
+      "name": "La Esfinge",
+      "start": "2026-12-05T20:30:00",
+      "venue": "Pabellón del Palacio de los Deportes",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/la-esfinge-mexico-05-12-2026/event/14006516EE5086C0"
+    },
+    {
+      "id": "3D006497BA9D83CE",
+      "name": "Motel",
+      "start": "2026-12-05T20:30:00",
+      "venue": "Teatro Estudio Cavaret",
+      "city": "Zapopan",
+      "url": "https://www.ticketmaster.com.mx/motel-zapopan-05-12-2026/event/3D006497BA9D83CE"
+    },
+    {
+      "id": "1400651584CF2A66",
+      "name": "Natalia Lacunza",
+      "start": "2026-12-05T20:30:00",
+      "venue": "Auditorio BB",
+      "city": "Ciudad de México",
+      "url": "https://www.ticketmaster.com.mx/natalia-lacunza-mexico-05-12-2026/event/1400651584CF2A66"
+    }
+  ]
+}

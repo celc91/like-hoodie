@@ -65,6 +65,24 @@ Para configurarlo:
 
 Mientras `supabase-config.js` tenga los valores de ejemplo, la tienda funciona en modo demostración y el panel muestra un aviso de configuración.
 
+## Calendario de conciertos
+
+La sección **Eventos** (`#eventos`) muestra un calendario con los próximos conciertos en México y enlaza cada evento con su página de venta en **Ticketmaster México**.
+
+Los datos viven en `eventos.json`. Es una fotografía de la cartelera, así que los horarios, recintos y disponibilidad pueden cambiar; confirma siempre en Ticketmaster antes de comprar.
+
+Para actualizar la cartelera con la API oficial:
+
+1. Crea una API key gratuita en [developer.ticketmaster.com](https://developer.ticketmaster.com/).
+2. Ejecuta el sincronizador:
+
+```powershell
+$env:TICKETMASTER_API_KEY = "TU_API_KEY"
+node scripts/sync-ticketmaster.mjs
+```
+
+El script consulta la **Discovery API** para México, filtra eventos musicales y reescribe `eventos.json`. La API key solo se usa en la computadora o en CI; nunca se incluye en el sitio publicado.
+
 ## Estructura
 
 ```text
@@ -72,12 +90,15 @@ Mientras `supabase-config.js` tenga los valores de ejemplo, la tienda funciona e
 ├── index.html        # Contenido y estructura
 ├── styles.css        # Diseño, responsive y animaciones
 ├── app.js            # Configurador, carrito, checkout y modales
+├── eventos.js        # Calendario de conciertos
+├── eventos.json      # Cartelera de Ticketmaster México
 ├── store-supabase.js # Sincronización de carritos, pedidos y eventos
 ├── supabase-config.js# URL y publishable key de Supabase
 ├── admin.html        # Panel de administración
 ├── admin.js          # Lógica del panel
 ├── admin.css         # Diseño del panel
 ├── supabase/         # Esquema SQL y guía de configuración
+├── scripts/          # Sincronización de la cartelera de eventos
 ├── legal.js          # Aviso de cookies y almacenamiento local
 ├── privacidad.html   # Aviso de privacidad
 ├── cookies.html      # Política de cookies
