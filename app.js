@@ -81,7 +81,6 @@
     basePrice: 899,
     size: "M",
     view: "front",
-    spin: 0,
     material: {
       id: "cotton400",
       name: "Algodón 400 g",
@@ -95,9 +94,6 @@
       desc: "Impresión directa al tejido, full color. Ideal para algodón.",
     },
     hood: {
-      contrast: false,
-      color: "#f2603c",
-      colorName: "Naranja",
       cord: "#fffdf8",
     },
     designs: {
@@ -275,9 +271,6 @@
   const printText = $("[data-print-text]");
   const printLogo = $("[data-print-logo]");
   const viewButtons = $$(".view-tab");
-  const hoodieStage = $("[data-hoodie-stage]");
-  const spinInput = $("[data-spin]");
-  const spinValue = $("[data-spin-value]");
   const toolButtons = $$("[data-personalize-tool]");
   const toolPanels = $$("[data-personalize-panel]");
   const editingLabel = $("[data-editing-label]");
@@ -306,10 +299,7 @@
   const uploadFile = $("[data-upload-file]");
   const fileName = $("[data-file-name]");
   const removeLogoButton = $("[data-remove-logo]");
-  const hoodContrastInput = $("[data-hood-contrast]");
-  const hoodColorsRow = $("[data-hood-colors]");
-  const hoodColorButtons = $$("[data-hood-color]");
-  const hoodLabel = $("[data-hood-label]");
+  const cordLabel = $("[data-cord-label]");
   const cordColorButtons = $$("[data-cord-color]");
   const priceEl = $("[data-price-display]");
   const priceNote = $("[data-price-note]");
@@ -405,11 +395,6 @@
         if (back.logoName) {
           customLines.push(
             `Logo espalda: ${back.logoName}${scaleLabel(back.logoScale)}`
-          );
-        }
-        if (item.hoodContrast) {
-          customLines.push(
-            `Forro de capucha a contraste${item.hoodColorName ? ` (${item.hoodColorName})` : ""}`
           );
         }
         const customHTML = customLines
@@ -666,28 +651,16 @@
     });
   }
 
-  function updateHoodUI() {
-    if (hoodContrastInput) hoodContrastInput.checked = state.hood.contrast;
-    if (hoodColorsRow) hoodColorsRow.hidden = !state.hood.contrast;
-    if (hoodLabel) {
-      hoodLabel.textContent = state.hood.contrast
-        ? state.hood.colorName
-        : "Igual que el cuerpo";
-    }
-
-    hoodColorButtons.forEach((button) => {
-      const active =
-        button.dataset.hoodColor.toLowerCase() === state.hood.color.toLowerCase();
-      button.classList.toggle("is-active", active);
-      button.setAttribute("aria-pressed", String(active));
-    });
-
+  function updateCordUI() {
+    let activeName = "";
     cordColorButtons.forEach((button) => {
       const active =
         button.dataset.cordColor.toLowerCase() === state.hood.cord.toLowerCase();
       button.classList.toggle("is-active", active);
       button.setAttribute("aria-pressed", String(active));
+      if (active) activeName = button.dataset.name || "";
     });
+    if (cordLabel && activeName) cordLabel.textContent = activeName;
   }
 
   function updateMaterialUI() {
@@ -844,26 +817,13 @@
     if (hoodiePreview) {
       const isFront = state.view === "front";
       const isDark = state.color.toLowerCase() === "#1c1c1f";
-      const hex = state.color.replace("#", "");
-      const red = parseInt(hex.slice(0, 2), 16) || 0;
-      const green = parseInt(hex.slice(2, 4), 16) || 0;
-      const blue = parseInt(hex.slice(4, 6), 16) || 0;
-      const isLightHoodie =
-        (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255 > 0.42;
       hoodiePreview.style.setProperty("--fabric-color", state.color);
       hoodiePreview.style.setProperty(
         "--tint-mask",
         `url("assets/hoodie-${isFront ? "front" : "back"}.png")`
       );
-      hoodiePreview.style.setProperty(
-        "--hood-mask",
-        `url("assets/hood-mask-${isFront ? "front" : "back"}.svg")`
-      );
       hoodiePreview.style.setProperty("--cord-color", state.hood.cord);
-      hoodiePreview.style.setProperty("--hood-color", state.hood.color);
       hoodiePreview.classList.toggle("is-dark", isDark);
-      hoodiePreview.classList.toggle("hood-light", isLightHoodie);
-      hoodiePreview.classList.toggle("has-hood-contrast", state.hood.contrast);
 
       MATERIAL_IDS.forEach((id) => {
         hoodiePreview.classList.toggle(
@@ -945,170 +905,12 @@
 
     updateTextColorUI();
     updateTextFontUI();
-    updateHoodUI();
+    updateCordUI();
     updateMaterialUI();
     updateTechniqueUI();
   }
 
-  let spinFrame = null;
-  let spinTimeout = null;
-
-  function updateSpinUI() {
-    const degrees = Math.round(state.spin);
-    if (spinValue) spinValue.textContent = `${degrees}°`;
-    if (spinInput) {
-      if (document.activeElement !== spinInput) {
-        spinInput.value = String(degrees % 360);
-      }
-      const side = state.spin > 90 && state.spin < 270 ? "Espalda" : "Frente";
-      spinInput.setAttribute(
-        "aria-valuetext",
-        `${side}, ${degrees} grados`
-      );
-    }
-  }
-
-  function applySpinVisual() {
-    if (!hoodiePreview) return;
-    const cos = Math.cos((state.spin * Math.PI) / 180);
-    const visibleAngle = cos < 0 ? state.spin - 180 : state.spin;
-    const brightness = 1 - 0.16 * (1 - Math.abs(cos));
-    hoodiePreview.style.setProperty(
-      "--spin-y",
-      `${visibleAngle.toFixed(2)}deg`
-    );
-    hoodiePreview.style.setProperty(
-      "--spin-brightness",
-      brightness.toFixed(3)
-    );
-    updateSpinUI();
-  }
-
-  function setSpin(angle) {
-    state.spin = ((angle % 360) + 360) % 360;
-    const nextView =
-      Math.cos((state.spin * Math.PI) / 180) < 0 ? "back" : "front";
-    if (nextView !== state.view) {
-      setView(nextView, { keepSpin: true });
-    }
-    applySpinVisual();
-  }
-
-  function cancelSpinAnimation() {
-    if (spinFrame !== null) {
-      cancelAnimationFrame(spinFrame);
-      spinFrame = null;
-    }
-    if (spinTimeout !== null) {
-      clearTimeout(spinTimeout);
-      spinTimeout = null;
-    }
-  }
-
-  function animateSpinTo(target) {
-    cancelSpinAnimation();
-    const start = state.spin;
-    let delta = target - start;
-    if (delta > 180) delta -= 360;
-    if (delta < -180) delta += 360;
-
-    if (
-      Math.abs(delta) < 0.5 ||
-      (window.matchMedia &&
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-    ) {
-      setSpin(target);
-      return;
-    }
-
-    const duration = 520;
-    const startTime = performance.now();
-
-    const frame = (now) => {
-      const progress = Math.min(1, (now - startTime) / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setSpin(start + delta * eased);
-      if (progress < 1) {
-        spinFrame = requestAnimationFrame(frame);
-      } else {
-        spinFrame = null;
-        if (spinTimeout !== null) {
-          clearTimeout(spinTimeout);
-          spinTimeout = null;
-        }
-      }
-    };
-
-    spinFrame = requestAnimationFrame(frame);
-    spinTimeout = setTimeout(() => {
-      spinTimeout = null;
-      if (spinFrame !== null) {
-        cancelAnimationFrame(spinFrame);
-        spinFrame = null;
-      }
-      setSpin(target);
-    }, duration + 220);
-  }
-
-  function setupStageRotation() {
-    if (!hoodieStage) return;
-
-    let activePointer = null;
-    let startX = 0;
-    let startAngle = 0;
-    let moved = false;
-
-    hoodieStage.addEventListener("pointerdown", (event) => {
-      if (
-        event.target instanceof Element &&
-        event.target.closest(".editor-item")
-      ) {
-        return;
-      }
-      if (event.pointerType === "mouse" && event.button !== 0) return;
-
-      cancelSpinAnimation();
-      activePointer = event.pointerId;
-      startX = event.clientX;
-      startAngle = state.spin;
-      moved = false;
-      hoodieStage.classList.add("is-rotating");
-      try {
-        hoodieStage.setPointerCapture(event.pointerId);
-      } catch (error) {
-        /* Algunos navegadores no permiten capturar el puntero. */
-      }
-    });
-
-    hoodieStage.addEventListener("pointermove", (event) => {
-      if (event.pointerId !== activePointer) return;
-      const width = hoodieStage.getBoundingClientRect().width || 320;
-      const deltaX = event.clientX - startX;
-      if (Math.abs(deltaX) > 4) moved = true;
-      setSpin(startAngle + (deltaX / width) * 360);
-    });
-
-    const endRotation = (event) => {
-      if (event.pointerId !== activePointer) return;
-      activePointer = null;
-      hoodieStage.classList.remove("is-rotating");
-      try {
-        hoodieStage.releasePointerCapture(event.pointerId);
-      } catch (error) {
-        /* La captura pudo haberse perdido. */
-      }
-      if (!moved) return;
-      const nearest = Math.round(state.spin / 180) * 180;
-      if (Math.abs(state.spin - nearest) <= 16) {
-        animateSpinTo(nearest);
-      }
-    };
-
-    hoodieStage.addEventListener("pointerup", endRotation);
-    hoodieStage.addEventListener("pointercancel", endRotation);
-  }
-
-  function setView(view, options = {}) {
+  function setView(view) {
     if (!state.designs[view]) return;
     state.view = view;
 
@@ -1140,12 +942,6 @@
     if (logoInput) logoInput.value = "";
     if (uploadFile) uploadFile.hidden = !design.logo;
     if (fileName) fileName.textContent = design.logoName || "";
-
-    if (!options.keepSpin) {
-      cancelSpinAnimation();
-      state.spin = view === "front" ? 0 : 180;
-      applySpinVisual();
-    }
 
     updatePreview();
   }
@@ -1337,18 +1133,8 @@
   });
 
   viewButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const target = button.dataset.view === "front" ? 0 : 180;
-      animateSpinTo(target);
-    });
+    button.addEventListener("click", () => setView(button.dataset.view));
   });
-
-  if (spinInput) {
-    spinInput.addEventListener("input", () => {
-      cancelSpinAnimation();
-      setSpin(Number(spinInput.value));
-    });
-  }
 
   if (textInput) {
     textInput.addEventListener("input", () => {
@@ -1390,22 +1176,6 @@
       updatePreview();
     });
   }
-
-  if (hoodContrastInput) {
-    hoodContrastInput.addEventListener("change", () => {
-      state.hood.contrast = hoodContrastInput.checked;
-      updatePreview();
-    });
-  }
-
-  hoodColorButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      state.hood.contrast = true;
-      state.hood.color = button.dataset.hoodColor;
-      state.hood.colorName = button.dataset.name;
-      updatePreview();
-    });
-  });
 
   cordColorButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -1481,7 +1251,6 @@
 
   setupDraggable(printText);
   setupDraggable(printLogo);
-  setupStageRotation();
 
   if (addToCartButton) {
     addToCartButton.addEventListener("click", () => {
@@ -1517,7 +1286,7 @@
           name: state.technique.name,
           price: state.technique.price,
         },
-        hood: { ...state.hood },
+        hood: { cord: state.hood.cord },
         front: {
           text: front.text,
           textColor: front.textColor,
@@ -1563,9 +1332,6 @@
           techniquePrice: techniqueFee(),
           front: designSnapshot.front,
           back: designSnapshot.back,
-          hoodContrast: state.hood.contrast,
-          hoodColor: state.hood.color,
-          hoodColorName: state.hood.colorName,
           cordColor: state.hood.cord,
           unitPrice,
           qty: 1,

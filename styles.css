@@ -810,37 +810,6 @@ section[id] {
   pointer-events: none;
 }
 
-.hood-tint {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  background: var(--hood-color, #f2603c);
-  -webkit-mask-image: var(--hood-mask);
-  mask-image: var(--hood-mask);
-  -webkit-mask-size: 100% 100%;
-  mask-size: 100% 100%;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  opacity: 0;
-  mix-blend-mode: screen;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
-.hoodie.has-hood-contrast .hood-tint {
-  opacity: 0.94;
-}
-
-.hoodie.hood-light .hood-tint {
-  mix-blend-mode: multiply;
-}
-
-.hoodie.hood-light.has-hood-contrast .hood-tint {
-  opacity: 0.9;
-}
-
 .hoodie.is-dark .fabric-tint {
   display: none;
 }
@@ -1233,13 +1202,6 @@ section[id] {
   flex: 1;
   min-height: 470px;
   padding: 24px 0;
-  cursor: grab;
-  touch-action: pan-y;
-  user-select: none;
-}
-
-.hoodie-stage.is-rotating {
-  cursor: grabbing;
 }
 
 .hoodie-stage::before {
@@ -1254,10 +1216,6 @@ section[id] {
 
 .hoodie--studio {
   width: min(82%, 390px);
-  transform: perspective(1100px) rotateY(var(--spin-y, 0deg));
-  transform-origin: center;
-  filter: brightness(var(--spin-brightness, 1));
-  will-change: transform, filter;
 }
 
 .preview-meta {
@@ -4163,7 +4121,7 @@ details[open] .plus::after {
 }
 
 /* --------------------------------------------------------------------------
-   Editor de diseño: vista frontal/trasera, arrastre y capucha
+   Editor de diseño: vista frontal/trasera y arrastre
    -------------------------------------------------------------------------- */
 
 .preview-top {
@@ -4249,52 +4207,6 @@ details[open] .plus::after {
   width: 13px;
   height: 13px;
   flex: none;
-}
-
-.spin-control {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0 8px 10px;
-  padding: 8px 12px;
-  border: 1px solid rgba(22, 22, 24, 0.1);
-  border-radius: 999px;
-  background: rgba(255, 253, 248, 0.55);
-}
-
-.spin-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
-.spin-label svg {
-  width: 13px;
-  height: 13px;
-}
-
-.spin-range {
-  flex: 1;
-  min-width: 0;
-  height: 18px;
-  margin: 0;
-  accent-color: var(--orange);
-  cursor: ew-resize;
-}
-
-.spin-value {
-  min-width: 34px;
-  font-size: 10px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink);
-  text-align: right;
 }
 
 .editor-layer {
@@ -4522,88 +4434,8 @@ details[open] .plus::after {
   color: var(--ink-soft);
 }
 
-.switch-row {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 2px 0;
-  font-size: 11.5px;
-  color: var(--ink-soft);
-  cursor: pointer;
-}
-
-.switch-row input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.switch {
-  position: relative;
-  width: 34px;
-  height: 20px;
-  border-radius: 999px;
-  background: rgba(22, 22, 24, 0.18);
-  transition: background 0.2s ease;
-  flex: none;
-}
-
-.switch::after {
-  content: "";
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
-  transition: transform 0.2s ease;
-}
-
-.switch-row input:checked + .switch {
-  background: var(--orange);
-}
-
-.switch-row input:checked + .switch::after {
-  transform: translateX(14px);
-}
-
-.switch-row input:focus-visible + .switch {
-  outline: 3px solid var(--orange);
-  outline-offset: 2px;
-}
-
-.hood-colors {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.hood-swatch {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--sw);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-
-.hood-swatch:hover {
-  transform: scale(1.08);
-}
-
-.hood-swatch.is-active {
-  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
-  transform: scale(0.94);
-}
-
-.cord-row {
-  margin-top: 10px;
+.cord-colors {
+  justify-content: flex-start;
 }
 
 .cord-color {
