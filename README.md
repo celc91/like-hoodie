@@ -17,8 +17,10 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Precio dinámico:** base por color, material, técnica, suplemento de talla XXL y extra por logo en cada cara.
 - **Catálogo:** cuatro modelos con selección directa al configurador.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
-- **Persistencia:** el carrito se guarda en `localStorage`.
-- **Checkout de demostración:** formulario validado y confirmación de pedido. No procesa pagos reales.
+- **Persistencia:** el carrito se guarda en `localStorage` y se sincroniza con Supabase.
+- **Checkout de demostración:** formulario validado, confirmación de pedido y registro del pedido en Supabase. No procesa pagos reales.
+- **Panel de administración:** pedidos, estados, carritos abandonados, métricas, embudo y exportación CSV, protegido con Supabase Auth.
+- **Analítica propia:** eventos de visita, carrito y checkout guardados en Supabase.
 - **Guía de tallas, FAQ, opiniones y newsletter.**
 - **Páginas legales:** aviso de privacidad, política de cookies y términos y condiciones.
 - **Aviso de cookies:** banner informativo con almacenamiento local para recordar la aceptación.
@@ -51,6 +53,18 @@ python -m http.server 4173
 
 El sitio usa rutas relativas, así que funciona sin cambios en la subcarpeta de GitHub Pages.
 
+## Pedidos y administración
+
+La tienda guarda carritos, pedidos y eventos en **Supabase**. El panel está en `admin.html` y requiere iniciar sesión con un usuario administrador.
+
+Para configurarlo:
+
+1. Sigue los pasos de [`supabase/README.md`](supabase/README.md).
+2. Pega la URL y la anon key del proyecto en `supabase-config.js`.
+3. Publica los cambios en GitHub Pages.
+
+Mientras `supabase-config.js` tenga los valores de ejemplo, la tienda funciona en modo demostración y el panel muestra un aviso de configuración.
+
 ## Estructura
 
 ```text
@@ -58,6 +72,12 @@ El sitio usa rutas relativas, así que funciona sin cambios en la subcarpeta de 
 ├── index.html        # Contenido y estructura
 ├── styles.css        # Diseño, responsive y animaciones
 ├── app.js            # Configurador, carrito, checkout y modales
+├── store-supabase.js # Sincronización de carritos, pedidos y eventos
+├── supabase-config.js# URL y anon key de Supabase
+├── admin.html        # Panel de administración
+├── admin.js          # Lógica del panel
+├── admin.css         # Diseño del panel
+├── supabase/         # Esquema SQL y guía de configuración
 ├── legal.js          # Aviso de cookies y almacenamiento local
 ├── privacidad.html   # Aviso de privacidad
 ├── cookies.html      # Política de cookies
@@ -83,9 +103,10 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 
 - Completa los datos marcados con `[completar]` en `privacidad.html` y `terminos.html`: razón social, RFC, domicilio fiscal y ciudad de jurisdicción.
 - Revisa los documentos legales con un abogado antes de operar comercialmente.
-- Actualiza el aviso de privacidad y los términos cuando conectes pagos reales, newsletter, analítica o envíos.
+- Configura Supabase (`supabase/README.md`), crea el usuario administrador y pega la URL y la anon key en `supabase-config.js`.
+- Actualiza el aviso de privacidad y los términos cuando conectes pagos reales, newsletter o envíos.
 - Si añades cookies de analítica o publicidad, actualiza `cookies.html` y pide consentimiento.
 
 ## Nota
 
-El checkout es una demostración visual: valida los datos y muestra una confirmación, pero no realiza ningún cargo. Para cobrar de verdad habría que conectar una pasarela de pago (Stripe, Mercado Pago, Openpay o similar) y un backend que gestione pedidos, archivos de logo e inventario.
+El checkout es una demostración visual: valida los datos, registra el pedido como demostración y muestra una confirmación, pero no realiza ningún cargo. Para cobrar de verdad habría que conectar una pasarela de pago (Stripe, Mercado Pago, Openpay o similar), validar precios en el servidor y gestionar los archivos de logo en un almacenamiento privado.

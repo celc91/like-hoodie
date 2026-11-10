@@ -849,6 +849,10 @@
             <input id="f-email" name="email" type="email" required autocomplete="email" placeholder="ana@email.com">
           </div>
           <div class="field">
+            <label for="f-phone">Teléfono / WhatsApp (opcional)</label>
+            <input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="55 1234 5678">
+          </div>
+          <div class="field">
             <label for="f-address">Dirección</label>
             <input id="f-address" name="address" type="text" required autocomplete="street-address" placeholder="Calle, número, piso">
           </div>
@@ -866,7 +870,7 @@
             <span>Total a pagar</span>
             <strong data-checkout-total>$0 MXN</strong>
           </div>
-          <button type="submit" class="btn btn-primary btn-block">Pagar ahora</button>
+          <button type="submit" class="btn btn-primary btn-block">Confirmar pedido</button>
           <p class="checkout-note">Al continuar aceptas los <a href="terminos.html">términos</a> y la <a href="privacidad.html">política de privacidad</a>.</p>
         </form>
       </div>
@@ -876,7 +880,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
         <h2>¡Pedido confirmado!</h2>
-        <p>Gracias por confiar en like hoodie ♡. Te hemos enviado los detalles y el seguimiento a tu email.</p>
+        <p>Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo. Te contactaremos cuando se active el pago real.</p>
         <p class="order-number">Pedido <strong data-order-number>CH-00000</strong></p>
         <button type="button" class="btn btn-dark btn-block" data-close-checkout>Volver a la tienda</button>
       </div>
@@ -916,7 +920,10 @@
     <span class="option-tooltip-desc" data-tooltip-desc></span>
   </div>
 
-  <script src="app.js?v=20261110-gallery3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20261110-admin2"></script>
+  <script src="store-supabase.js?v=20261110-admin5"></script>
+  <script src="app.js?v=20261110-admin4"></script>
   <script src="legal.js?v=20261110-gallery3"></script>
 </body>
 </html>

@@ -36,7 +36,7 @@
         <span class="eyebrow">Legal</span>
         <h1>Política de cookies</h1>
         <p>Qué guardamos en tu navegador, para qué sirve y cómo puedes borrarlo cuando quieras.</p>
-        <span class="legal-updated">Última actualización: 9 de noviembre de 2026</span>
+        <span class="legal-updated">Última actualización: 10 de noviembre de 2026</span>
       </div>
     </div>
 
@@ -63,13 +63,13 @@
       <article class="legal-content">
         <div class="legal-callout">
           <strong>En pocas palabras</strong>
-          No usamos cookies de publicidad ni de analítica. Solo guardamos información esencial en el almacenamiento local de tu navegador para que el carrito funcione y para recordar que ya viste este aviso.
+          No usamos cookies de publicidad. Guardamos información esencial en tu navegador para que el carrito funcione y usamos una sesión anónima de Supabase para asociar tu carrito y tus pedidos. No te identificamos por tu nombre hasta que completas un pedido.
         </div>
 
         <section id="que-son">
           <h2>1. Qué son las cookies y el almacenamiento local</h2>
           <p>Las <strong>cookies</strong> son pequeños archivos que un sitio web guarda en tu navegador. El <strong>almacenamiento local</strong> (localStorage) funciona de forma parecida, pero guarda datos dentro del navegador sin enviarlos automáticamente en cada petición.</p>
-          <p>like hoodie ♡ utiliza almacenamiento local, no cookies publicitarias. Puedes borrarlo desde la configuración de tu navegador en cualquier momento.</p>
+          <p>like hoodie ♡ utiliza almacenamiento local y una sesión anónima de Supabase, no cookies publicitarias. Puedes borrarlo desde la configuración de tu navegador en cualquier momento.</p>
         </section>
 
         <section id="usamos">
@@ -97,10 +97,28 @@
                   <td>Recordar que ya cerraste el aviso de cookies.</td>
                   <td>Hasta que borres los datos del navegador.</td>
                 </tr>
+                <tr>
+                  <td><code>likehoodie_cart_id_v1</code></td>
+                  <td>Almacenamiento local esencial</td>
+                  <td>Recordar el identificador del carrito sincronizado con Supabase.</td>
+                  <td>Hasta que borres los datos del navegador.</td>
+                </tr>
+                <tr>
+                  <td><code>likehoodie-store-auth</code></td>
+                  <td>Sesión anónima esencial</td>
+                  <td>Mantener la sesión anónima de Supabase para asociar el carrito y los pedidos sin pedirte una cuenta.</td>
+                  <td>Hasta que cierres sesión o borres los datos del navegador.</td>
+                </tr>
+                <tr>
+                  <td><code>likehoodie-admin-auth</code></td>
+                  <td>Sesión del panel</td>
+                  <td>Mantener la sesión del administrador en la página de administración.</td>
+                  <td>Hasta que cierres sesión o borres los datos del navegador.</td>
+                </tr>
               </tbody>
             </table>
           </div>
-          <p>Estos datos se quedan en tu dispositivo. No los usamos para identificarte personalmente ni para mostrarte publicidad.</p>
+          <p>El carrito y los pedidos se sincronizan con Supabase para que puedas recuperar tu compra y para que podamos gestionarla. No los usamos para identificarte personalmente ni para mostrarte publicidad.</p>
         </section>
 
         <section id="terceros">
@@ -109,9 +127,10 @@
           <ul>
             <li><strong>GitHub Pages</strong> aloja el sitio web y puede generar registros de seguridad y acceso.</li>
             <li><strong>Google Fonts</strong> entrega las tipografías del sitio. Google puede registrar la IP y datos técnicos de la solicitud; no lo usamos para publicidad.</li>
+            <li><strong>Supabase</strong> guarda la sesión anónima, los carritos, los pedidos y los eventos de uso. Puede registrar datos técnicos para prestar el servicio y proteger la base de datos.</li>
             <li><strong>Pasarela de pagos:</strong> cuando se active, el pago se realizará en su página segura y se regirá por sus propias políticas de cookies y privacidad.</li>
           </ul>
-          <p>No usamos cookies de redes sociales, publicidad comportamental, píxeles de seguimiento ni herramientas de analítica como Google Analytics.</p>
+          <p>No usamos cookies de redes sociales, publicidad comportamental, píxeles de seguimiento ni Google Analytics. Los eventos de uso son propios y se guardan en Supabase para las métricas del negocio.</p>
         </section>
 
         <section id="gestionar">
@@ -128,7 +147,7 @@
 
         <section id="consentimiento">
           <h2>5. Consentimiento</h2>
-          <p>El almacenamiento que usamos es estrictamente necesario para que el carrito y el aviso funcionen. El aviso que ves en el sitio es informativo; no instalamos cookies no esenciales.</p>
+          <p>El almacenamiento y la sesión anónima que usamos son estrictamente necesarios para que el carrito, el checkout y el aviso funcionen. El aviso que ves en el sitio es informativo; no instalamos cookies no esenciales.</p>
           <p>Si en el futuro añadimos analítica, publicidad o cookies de terceros no esenciales, actualizaremos esta política y solicitaremos tu consentimiento antes de activarlas.</p>
         </section>
 

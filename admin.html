@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Administración — like hoodie ♡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css?v=20261110-admin2">
+</head>
+<body>
+  <div class="login" id="login-view">
+    <div class="login-card">
+      <a class="admin-brand" href="index.html">
+        <span class="admin-mark">♥</span>
+        <span>like hoodie ♡</span>
+      </a>
+      <p class="eyebrow">Panel de administración</p>
+      <h1>Entra a tu negocio.</h1>
+      <p class="login-sub">Pedidos, carritos abandonados y métricas en un solo lugar.</p>
+
+      <form id="login-form" autocomplete="on">
+        <label for="admin-email">Correo</label>
+        <input id="admin-email" name="email" type="email" required autocomplete="username" placeholder="tu@email.com">
+        <label for="admin-password">Contraseña</label>
+        <input id="admin-password" name="password" type="password" required autocomplete="current-password" placeholder="••••••••">
+        <button class="btn" type="submit" id="login-button">Entrar</button>
+        <p class="form-error" id="login-error" role="alert" hidden></p>
+      </form>
+
+      <p class="setup-note" id="setup-note" hidden>
+        Falta configurar Supabase. Edita <code>supabase-config.js</code> y sigue los pasos de <code>supabase/README.md</code>.
+      </p>
+
+      <a class="back-link" href="index.html">← Volver a la tienda</a>
+    </div>
+  </div>
+
+  <div class="app" id="app-view" hidden>
+    <header class="topbar">
+      <div class="topbar-inner">
+        <a class="admin-brand" href="index.html">
+          <span class="admin-mark">♥</span>
+          <span>like hoodie ♡</span>
+        </a>
+        <nav class="tabs" aria-label="Secciones del panel">
+          <button class="tab is-active" data-section="resumen" type="button">Resumen</button>
+          <button class="tab" data-section="pedidos" type="button">Pedidos</button>
+          <button class="tab" data-section="carritos" type="button">Carritos</button>
+        </nav>
+        <div class="topbar-actions">
+          <button class="btn btn-ghost" type="button" id="refresh-button">Actualizar</button>
+          <button class="btn btn-ghost" type="button" id="logout-button">Salir</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <section class="section" data-panel="resumen">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Resumen</p>
+            <h1>Tu negocio, en claro.</h1>
+          </div>
+          <span class="updated" id="updated-at"></span>
+        </div>
+
+        <div class="kpis">
+          <article class="kpi">
+            <span>Pedidos hoy</span>
+            <strong id="kpi-orders-today">—</strong>
+            <small id="kpi-orders-30">—</small>
+          </article>
+          <article class="kpi">
+            <span>Ingresos 30 días</span>
+            <strong id="kpi-revenue-30">—</strong>
+            <small id="kpi-aov">—</small>
+          </article>
+          <article class="kpi">
+            <span>Carritos abandonados</span>
+            <strong id="kpi-abandoned">—</strong>
+            <small id="kpi-open">—</small>
+          </article>
+          <article class="kpi">
+            <span>Conversión 30 días</span>
+            <strong id="kpi-conversion">—</strong>
+            <small id="kpi-converted">—</small>
+          </article>
+        </div>
+
+        <div class="grid-2">
+          <article class="card chart-card">
+            <div class="card-head">
+              <h2>Pedidos últimos 14 días</h2>
+              <span class="muted">Cantidad</span>
+            </div>
+            <div class="chart" id="orders-chart"></div>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <h2>Lo que más piden</h2>
+              <span class="muted">Últimos 30 días</span>
+            </div>
+            <div class="top-lists">
+              <div>
+                <h3>Técnica</h3>
+                <ul id="top-techniques" class="rank-list"></ul>
+              </div>
+              <div>
+                <h3>Material</h3>
+                <ul id="top-materials" class="rank-list"></ul>
+              </div>
+              <div>
+                <h3>Color</h3>
+                <ul id="top-colors" class="rank-list"></ul>
+              </div>
+              <div>
+                <h3>Talla</h3>
+                <ul id="top-sizes" class="rank-list"></ul>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" data-panel="pedidos" hidden>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Pedidos</p>
+            <h1>Órdenes y estados.</h1>
+          </div>
+          <button class="btn btn-dark" type="button" id="export-orders">Exportar CSV</button>
+        </div>
+
+        <div class="toolbar">
+          <input type="search" id="orders-search" placeholder="Buscar por número, nombre o correo" aria-label="Buscar pedidos">
+          <select id="orders-status" aria-label="Filtrar pedidos por estado">
+            <option value="">Todos los estados</option>
+            <option value="pending">Pendiente</option>
+            <option value="confirmed">Confirmado</option>
+            <option value="production">En producción</option>
+            <option value="shipped">Enviado</option>
+            <option value="delivered">Entregado</option>
+            <option value="cancelled">Cancelado</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Pedido</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Artículos</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="orders-body"></tbody>
+          </table>
+          <p class="empty" id="orders-empty" hidden>No hay pedidos con estos filtros.</p>
+        </div>
+
+        <div class="pager">
+          <button class="btn btn-ghost" type="button" id="orders-prev">Anterior</button>
+          <span id="orders-page">Página 1</span>
+          <button class="btn btn-ghost" type="button" id="orders-next">Siguiente</button>
+        </div>
+      </section>
+
+      <section class="section" data-panel="carritos" hidden>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Carritos</p>
+            <h1>Oportunidades pendientes.</h1>
+          </div>
+          <button class="btn btn-dark" type="button" id="export-carts">Exportar CSV</button>
+        </div>
+
+        <div class="toolbar">
+          <select id="carts-status" aria-label="Filtrar carritos">
+            <option value="abandoned">Abandonados</option>
+            <option value="open">Activos</option>
+            <option value="converted">Convertidos</option>
+            <option value="">Todos</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Última actividad</th>
+                <th>Artículos</th>
+                <th>Valor</th>
+                <th>Paso</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="carts-body"></tbody>
+          </table>
+          <p class="empty" id="carts-empty" hidden>No hay carritos con estos filtros.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="order-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="order-modal-title">
+    <div class="modal-card">
+      <button class="modal-close" type="button" data-close-order aria-label="Cerrar">×</button>
+      <div id="order-detail"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js?v=20261110-admin2"></script>
+  <script src="admin.js?v=20261110-admin4"></script>
+</body>
+</html>

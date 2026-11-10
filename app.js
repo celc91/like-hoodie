@@ -82,6 +82,7 @@
     size: "M",
     view: "front",
     angle: 0,
+    cartStep: "cart",
     material: {
       id: "cotton400",
       name: "Algodón 400 g",
@@ -154,6 +155,7 @@
     } catch (error) {
       /* El carrito sigue funcionando en memoria. */
     }
+    window.StoreSupabase?.syncCart(state.items, state.cartStep || "cart");
   }
 
   function uid() {
@@ -537,6 +539,12 @@
     checkoutModal.classList.add("is-open");
     checkoutModal.setAttribute("aria-hidden", "false");
     document.body.classList.add("is-locked");
+    state.cartStep = "checkout";
+    saveCart();
+    window.StoreSupabase?.track("begin_checkout", {
+      total: totals().total,
+      items: state.items.length,
+    });
     window.setTimeout(() => {
       const firstField = $("#f-name");
       if (firstField) firstField.focus({ preventScroll: true });
@@ -572,27 +580,80 @@
   }
 
   if (checkoutForm) {
-    checkoutForm.addEventListener("submit", (event) => {
+    checkoutForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!checkoutForm.checkValidity()) {
         checkoutForm.reportValidity();
         return;
       }
 
-      orderNumber.textContent =
-        "CH-" + Math.floor(10000 + Math.random() * 90000);
+      const data = new FormData(checkoutForm);
+      const customer = {
+        name: String(data.get("name") || "").trim(),
+        email: String(data.get("email") || "").trim(),
+        phone: String(data.get("phone") || "").trim(),
+        address: String(data.get("address") || "").trim(),
+        city: String(data.get("city") || "").trim(),
+        zip: String(data.get("zip") || "").trim(),
+      };
+      const { subtotal, shipping, total } = totals();
+      const analytics = window.StoreSupabase;
+      const submitButton = checkoutForm.querySelector('button[type="submit"]');
+      let orderLabel = "CH-" + Math.floor(10000 + Math.random() * 90000);
+
+      if (analytics?.configured) {
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.dataset.originalLabel = submitButton.textContent;
+          submitButton.textContent = "Guardando pedido…";
+        }
+
+        const saved = await analytics.placeOrder({
+          customer,
+          items: state.items,
+          subtotal,
+          shipping,
+          total,
+        });
+
+        if (!saved) {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent =
+              submitButton.dataset.originalLabel || "Confirmar pedido";
+          }
+          showToast(
+            "No pudimos registrar el pedido. Revisa tu conexión e inténtalo de nuevo."
+          );
+          return;
+        }
+
+        orderLabel = `LH-${saved.number}`;
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent =
+            submitButton.dataset.originalLabel || "Confirmar pedido";
+        }
+      }
+
+      orderNumber.textContent = orderLabel;
       checkoutFormView.hidden = true;
       checkoutSuccess.hidden = false;
       checkoutSuccess.scrollIntoView({ block: "nearest" });
 
       state.items = [];
+      state.cartStep = "cart";
       saveCart();
       renderCart();
 
       const focusTarget = $("button", checkoutSuccess);
       if (focusTarget) window.setTimeout(() => focusTarget.focus(), 120);
 
-      showToast("Pedido de demostración confirmado. ¡Gracias!");
+      showToast(
+        analytics?.configured
+          ? "Pedido confirmado. ¡Gracias!"
+          : "Pedido de demostración confirmado. ¡Gracias!"
+      );
     });
   }
 
@@ -1309,6 +1370,7 @@
 
       const front = state.designs.front;
       const back = state.designs.back;
+      state.cartStep = "cart";
       const unitPrice =
         state.basePrice +
         state.material.delta +
@@ -1384,6 +1446,12 @@
       saveCart();
       renderCart();
       openCart();
+      window.StoreSupabase?.track("add_to_cart", {
+        total: unitPrice,
+        size: state.size,
+        material: state.material.name,
+        technique: state.technique.name,
+      });
 
       if (cartCount) {
         cartCount.classList.remove("is-pulsing");
@@ -1509,4 +1577,8 @@
   setView(state.view);
   setTool("texto");
   renderCart();
+  window.StoreSupabase?.init();
+  if (state.items.length) {
+    window.StoreSupabase?.syncCart(state.items, "cart");
+  }
 })();

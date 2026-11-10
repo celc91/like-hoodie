@@ -36,7 +36,7 @@
         <span class="eyebrow">Legal</span>
         <h1>Aviso de privacidad</h1>
         <p>Qué datos personales tratamos, para qué los usamos, con quién los compartimos y cómo puedes ejercer tus derechos.</p>
-        <span class="legal-updated">Última actualización: 9 de noviembre de 2026</span>
+        <span class="legal-updated">Última actualización: 10 de noviembre de 2026</span>
       </div>
     </div>
 
@@ -70,7 +70,7 @@
       <article class="legal-content">
         <div class="legal-callout">
           <strong>Versión de lanzamiento</strong>
-          El checkout de esta web es una demostración: no procesa pagos reales ni genera pedidos. Los datos que escribas en él no se envían a nuestros servidores; el carrito se guarda únicamente en tu navegador. Actualizaremos este aviso cuando se active una pasarela de pago real.
+          El checkout registra pedidos de demostración y no procesa pagos reales. Los datos del pedido se guardan en Supabase para poder gestionarlo; el logo se procesa en tu navegador y no se sube. Actualizaremos este aviso cuando se active una pasarela de pago real.
         </div>
 
         <section id="responsable">
@@ -116,6 +116,11 @@
                   <td>Al configurar o comprar una sudadera.</td>
                 </tr>
                 <tr>
+                  <td>Carrito y uso</td>
+                  <td>Identificador anónimo de sesión, artículos del carrito, paso del proceso y eventos de uso.</td>
+                  <td>Al navegar, configurar una sudadera o iniciar el checkout.</td>
+                </tr>
+                <tr>
                   <td>Facturación</td>
                   <td>RFC, razón social y domicilio fiscal, cuando solicites factura.</td>
                   <td>Al pedir tu comprobante fiscal.</td>
@@ -138,7 +143,7 @@
               </tbody>
             </table>
           </div>
-          <p>El carrito de compra se guarda en el almacenamiento local de tu navegador. El logo que subes se procesa localmente para la vista previa y, en esta versión de demostración, no se envía ni se conserva en nuestros servidores.</p>
+          <p>El carrito, los pedidos y los eventos de uso se guardan en Supabase, nuestro proveedor de base de datos y autenticación. El logo que subes se procesa localmente para la vista previa y no se envía en esta versión; solo se guarda su nombre como referencia del pedido.</p>
           <p>El formulario de newsletter de esta versión también es demostrativo: no envía tu correo a nuestros servidores. Cuando activemos el servicio, actualizaremos este aviso y te pediremos consentimiento.</p>
         </section>
 
@@ -171,6 +176,7 @@
           <p>Para operar la tienda podemos compartir datos con proveedores que actúan como encargados o terceros, únicamente para las finalidades descritas:</p>
           <ul>
             <li><strong>Hosting:</strong> GitHub Pages, para alojar el sitio.</li>
+            <li><strong>Base de datos y autenticación:</strong> Supabase, para guardar carritos, pedidos y eventos.</li>
             <li><strong>Tipografías:</strong> Google Fonts, para mostrar las fuentes del sitio.</li>
             <li><strong>Pagos:</strong> la pasarela que se active para procesar cobros. Actualmente no hay cobros reales.</li>
             <li><strong>Envíos:</strong> paqueterías y servicios de mensajería.</li>
@@ -217,7 +223,7 @@
 
         <section id="cookies">
           <h2>11. Cookies y almacenamiento local</h2>
-          <p>Usamos almacenamiento local esencial para recordar tu carrito y el aviso de cookies. No usamos cookies de publicidad ni analítica. Consulta el detalle en nuestra <a href="cookies.html">Política de cookies</a>.</p>
+          <p>Usamos almacenamiento local esencial para recordar tu carrito y el aviso de cookies, y una sesión anónima de Supabase para asociar tu carrito y tus pedidos. No usamos cookies de publicidad. Consulta el detalle en nuestra <a href="cookies.html">Política de cookies</a>.</p>
         </section>
 
         <section id="cambios">
