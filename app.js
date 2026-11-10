@@ -261,6 +261,14 @@
   const checkoutForm = $("[data-checkout-form]");
   const checkoutTotal = $("[data-checkout-total]");
   const orderNumber = $("[data-order-number]");
+  const checkoutNote = $("[data-checkout-note]");
+  const checkoutSuccessTitle = $("[data-checkout-success-title]");
+  const checkoutSuccessMessage = $("[data-checkout-success-message]");
+  const retryPaymentButton = $("[data-retry-payment]");
+  const paymentBanner = $("[data-payment-banner]");
+  const paymentBannerTitle = $("[data-payment-banner-title]");
+  const paymentBannerText = $("[data-payment-banner-text]");
+  const closePaymentBanner = $("[data-close-payment-banner]");
 
   const sizeModal = $("[data-size-modal]");
 
@@ -314,6 +322,9 @@
   const toastRegion = $("[data-toast-region]");
 
   let lastFocusedElement = null;
+  let paymentProvider = "demo";
+  let lastPendingOrder = null;
+  let paymentPollTimer = null;
 
   /* ---------------------------------------------------------------------- */
   /* Toasts                                                                  */
@@ -534,6 +545,12 @@
     checkoutForm.reset();
     checkoutFormView.hidden = false;
     checkoutSuccess.hidden = true;
+    if (checkoutSuccessTitle) checkoutSuccessTitle.textContent = "¡Pedido confirmado!";
+    if (checkoutSuccessMessage) {
+      checkoutSuccessMessage.textContent =
+        "Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo. Te contactaremos cuando se active el pago real.";
+    }
+    if (retryPaymentButton) retryPaymentButton.hidden = true;
     checkoutTotal.textContent = formatPrice(totals().total);
     checkoutModal.classList.add("is-open");
     checkoutModal.setAttribute("aria-hidden", "false");
@@ -578,6 +595,25 @@
     });
   }
 
+  function showCheckoutResult(title, message, options = {}) {
+    if (checkoutSuccessTitle) checkoutSuccessTitle.textContent = title;
+    if (checkoutSuccessMessage) checkoutSuccessMessage.textContent = message;
+    if (retryPaymentButton) retryPaymentButton.hidden = !options.retry;
+    checkoutFormView.hidden = true;
+    checkoutSuccess.hidden = false;
+    checkoutSuccess.scrollIntoView({ block: "nearest" });
+    if (options.focus !== false) {
+      const focusTarget = $("[data-close-checkout]", checkoutSuccess);
+      if (focusTarget) window.setTimeout(() => focusTarget.focus(), 120);
+    }
+  }
+
+  function restoreSubmitButton(button) {
+    if (!button) return;
+    button.disabled = false;
+    button.textContent = button.dataset.originalLabel || "Confirmar pedido";
+  }
+
   if (checkoutForm) {
     checkoutForm.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -599,6 +635,7 @@
       const analytics = window.StoreSupabase;
       const submitButton = checkoutForm.querySelector('button[type="submit"]');
       let orderLabel = "CH-" + Math.floor(10000 + Math.random() * 90000);
+      let savedOrder = null;
 
       if (analytics?.configured) {
         if (submitButton) {
@@ -616,44 +653,251 @@
         });
 
         if (!saved) {
-          if (submitButton) {
-            submitButton.disabled = false;
-            submitButton.textContent =
-              submitButton.dataset.originalLabel || "Confirmar pedido";
-          }
+          restoreSubmitButton(submitButton);
           showToast(
             "No pudimos registrar el pedido. Revisa tu conexión e inténtalo de nuevo."
           );
           return;
         }
 
+        savedOrder = saved;
         orderLabel = `LH-${saved.number}`;
-        if (submitButton) {
-          submitButton.disabled = false;
-          submitButton.textContent =
-            submitButton.dataset.originalLabel || "Confirmar pedido";
+        restoreSubmitButton(submitButton);
+
+        state.items = [];
+        state.cartStep = "cart";
+        saveCart();
+        renderCart();
+
+        const needsPayment =
+          saved.paymentStatus === "pending" || saved.paymentMethod === "clip";
+
+        if (needsPayment) {
+          lastPendingOrder = saved;
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Abriendo pago seguro…";
+          }
+
+          try {
+            const checkout = await analytics.createClipCheckout(saved.id);
+
+            if (checkout?.alreadyPaid) {
+              orderNumber.textContent = orderLabel;
+              showCheckoutResult(
+                "Pago confirmado",
+                "Recibimos tu pago. Tu pedido quedó confirmado y empezaremos a prepararlo."
+              );
+              showToast("Pago confirmado. ¡Gracias!");
+              return;
+            }
+
+            if (checkout?.enabled && checkout.url) {
+              window.location.assign(checkout.url);
+              return;
+            }
+
+            orderNumber.textContent = orderLabel;
+            showCheckoutResult(
+              "Pedido registrado",
+              "Tu pedido quedó guardado, pero el pago en línea todavía no está disponible. Escríbenos a hola@likehoodie.com para completarlo.",
+              { retry: true }
+            );
+            showToast("El pago en línea no está disponible todavía.");
+            return;
+          } catch (error) {
+            orderNumber.textContent = orderLabel;
+            showCheckoutResult(
+              "Pedido registrado",
+              "No pudimos abrir la página de pago. Tu pedido quedó guardado; puedes reintentar el pago o escribirnos a hola@likehoodie.com.",
+              { retry: true }
+            );
+            showToast(error?.message || "No se pudo abrir el pago.");
+            return;
+          } finally {
+            restoreSubmitButton(submitButton);
+          }
         }
       }
 
+      if (!savedOrder) {
+        state.items = [];
+        state.cartStep = "cart";
+        saveCart();
+        renderCart();
+      }
+
       orderNumber.textContent = orderLabel;
-      checkoutFormView.hidden = true;
-      checkoutSuccess.hidden = false;
-      checkoutSuccess.scrollIntoView({ block: "nearest" });
-
-      state.items = [];
-      state.cartStep = "cart";
-      saveCart();
-      renderCart();
-
-      const focusTarget = $("button", checkoutSuccess);
-      if (focusTarget) window.setTimeout(() => focusTarget.focus(), 120);
-
+      showCheckoutResult(
+        "¡Pedido confirmado!",
+        analytics?.configured
+          ? "Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo. Te contactaremos cuando se active el pago real."
+          : "Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo."
+      );
       showToast(
         analytics?.configured
           ? "Pedido confirmado. ¡Gracias!"
           : "Pedido de demostración confirmado. ¡Gracias!"
       );
     });
+  }
+
+  if (retryPaymentButton) {
+    retryPaymentButton.addEventListener("click", async () => {
+      if (!lastPendingOrder || !window.StoreSupabase?.configured) return;
+      retryPaymentButton.disabled = true;
+      retryPaymentButton.textContent = "Abriendo pago…";
+
+      try {
+        const checkout = await window.StoreSupabase.createClipCheckout(
+          lastPendingOrder.id
+        );
+
+        if (checkout?.alreadyPaid) {
+          showCheckoutResult(
+            "Pago confirmado",
+            "Recibimos tu pago. Tu pedido quedó confirmado y empezaremos a prepararlo."
+          );
+          return;
+        }
+
+        if (checkout?.enabled && checkout.url) {
+          window.location.assign(checkout.url);
+          return;
+        }
+
+        showToast("El pago todavía no está disponible. Inténtalo más tarde.");
+      } catch (error) {
+        showToast(error?.message || "No se pudo abrir el pago.");
+      } finally {
+        retryPaymentButton.disabled = false;
+        retryPaymentButton.textContent = "Reintentar pago";
+      }
+    });
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Pagos con Clip                                                          */
+  /* ---------------------------------------------------------------------- */
+
+  async function loadPaymentConfig() {
+    if (!window.StoreSupabase?.configured) return;
+
+    try {
+      const config = await window.StoreSupabase.getConfig();
+      paymentProvider =
+        config?.payment_provider === "clip" ? "clip" : "demo";
+      if (checkoutNote) {
+        checkoutNote.textContent =
+          paymentProvider === "clip"
+            ? "Al confirmar, te llevaremos a la página segura de Clip para completar el pago."
+            : "Pedido de demostración: no se realizará ningún cargo real.";
+      }
+    } catch (error) {
+      paymentProvider = "demo";
+    }
+  }
+
+  function setPaymentBanner(state, title, text) {
+    if (!paymentBanner) return;
+    paymentBanner.hidden = false;
+    paymentBanner.classList.remove("is-success", "is-error", "is-pending");
+    if (state === "success") paymentBanner.classList.add("is-success");
+    else if (state === "error") paymentBanner.classList.add("is-error");
+    else paymentBanner.classList.add("is-pending");
+    if (paymentBannerTitle) paymentBannerTitle.textContent = title;
+    if (paymentBannerText) paymentBannerText.textContent = text;
+  }
+
+  function dismissPaymentBanner() {
+    if (paymentBanner) paymentBanner.hidden = true;
+    if (paymentPollTimer) {
+      window.clearTimeout(paymentPollTimer);
+      paymentPollTimer = null;
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.delete("pago");
+    url.searchParams.delete("pedido");
+    window.history.replaceState({}, "", url.pathname + url.search + url.hash);
+  }
+
+  async function pollPaymentStatus(number, attempt = 0) {
+    if (!window.StoreSupabase?.configured) return;
+
+    const order = await window.StoreSupabase.getOrderPayment(number);
+    if (order) {
+      if (order.payment_status === "paid") {
+        setPaymentBanner(
+          "success",
+          "Pago confirmado",
+          "Recibimos tu pago. Tu pedido quedó confirmado y empezaremos a prepararlo."
+        );
+        return;
+      }
+      if (
+        order.payment_status === "failed" ||
+        order.payment_status === "cancelled"
+      ) {
+        setPaymentBanner(
+          "error",
+          "Pago no completado",
+          "El cargo no se completó. Puedes volver a intentarlo desde la tienda."
+        );
+        return;
+      }
+    }
+
+    if (attempt >= 6) {
+      setPaymentBanner(
+        "pending",
+        "Pago en revisión",
+        "Si ya pagaste, te confirmaremos por correo en cuanto Clip procese el pago."
+      );
+      return;
+    }
+
+    paymentPollTimer = window.setTimeout(
+      () => pollPaymentStatus(number, attempt + 1),
+      5000
+    );
+  }
+
+  function initPaymentBanner() {
+    const params = new URLSearchParams(window.location.search);
+    const stateParam = params.get("pago");
+    if (!stateParam) return;
+
+    const number = params.get("pedido") || "";
+    const label = number ? ` · ${number}` : "";
+
+    if (stateParam === "exito") {
+      setPaymentBanner(
+        "pending",
+        "Pago recibido",
+        `Estamos confirmando tu pago con Clip${label}. Esto puede tardar unos segundos.`
+      );
+      if (number) pollPaymentStatus(number);
+      return;
+    }
+
+    if (stateParam === "error") {
+      setPaymentBanner(
+        "error",
+        "Pago no completado",
+        "No se realizó el cargo. Puedes volver a intentarlo desde la tienda."
+      );
+      return;
+    }
+
+    setPaymentBanner(
+      "pending",
+      "Pago pendiente",
+      "Tu pedido quedó registrado. Si ya pagaste, lo confirmaremos en cuanto Clip procese el pago."
+    );
+  }
+
+  if (closePaymentBanner) {
+    closePaymentBanner.addEventListener("click", dismissPaymentBanner);
   }
 
   /* ---------------------------------------------------------------------- */
@@ -1657,4 +1901,6 @@
   if (state.items.length) {
     window.StoreSupabase?.syncCart(state.items, "cart");
   }
+  loadPaymentConfig();
+  initPaymentBanner();
 })();

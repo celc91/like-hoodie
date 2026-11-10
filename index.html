@@ -30,10 +30,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261110-events9">
+  <link rel="stylesheet" href="styles.css?v=20261110-clip1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
+
+  <div class="payment-banner" data-payment-banner hidden role="status" aria-live="polite">
+    <div class="payment-banner-copy">
+      <strong data-payment-banner-title>Pago</strong>
+      <span data-payment-banner-text></span>
+    </div>
+    <button type="button" class="payment-banner-close" data-close-payment-banner aria-label="Cerrar aviso">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+    </button>
+  </div>
 
   <!-- Sprite reutilizable de la sudadera -->
   <svg class="svg-sprite" aria-hidden="true" width="0" height="0" focusable="false">
@@ -840,7 +850,7 @@
     <div class="container footer-bottom">
       <p>© 2026 like hoodie ♡. Hecho con algodón y buenas ideas.</p>
       <div class="payments" aria-label="Métodos de pago">
-        <span>VISA</span><span>MASTERCARD</span><span>PAYPAL</span><span>APPLE PAY</span>
+        <span>VISA</span><span>MASTERCARD</span><span>OXXO</span><span>CLIP</span>
       </div>
       <div class="legal">
         <a href="privacidad.html">Privacidad</a>
@@ -902,7 +912,7 @@
       <div data-checkout-form-view>
         <span class="eyebrow">Checkout</span>
         <h2 id="checkout-title">Datos de envío</h2>
-        <p class="modal-sub">Pedido de demostración: no se realizará ningún cargo real.</p>
+        <p class="modal-sub" data-checkout-note>Pedido de demostración: no se realizará ningún cargo real.</p>
 
         <form data-checkout-form>
           <div class="field">
@@ -944,9 +954,10 @@
         <span class="success-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
-        <h2>¡Pedido confirmado!</h2>
-        <p>Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo. Te contactaremos cuando se active el pago real.</p>
+        <h2 data-checkout-success-title>¡Pedido confirmado!</h2>
+        <p data-checkout-success-message>Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo. Te contactaremos cuando se active el pago real.</p>
         <p class="order-number">Pedido <strong data-order-number>CH-00000</strong></p>
+        <button type="button" class="btn btn-primary btn-block" data-retry-payment hidden>Reintentar pago</button>
         <button type="button" class="btn btn-dark btn-block" data-close-checkout>Volver a la tienda</button>
       </div>
     </div>
@@ -987,8 +998,8 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="store-supabase.js?v=20261110-sec1"></script>
-  <script src="app.js?v=20261110-sec1"></script>
+  <script src="store-supabase.js?v=20261110-clip1"></script>
+  <script src="app.js?v=20261110-clip1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="legal.js?v=20261110-gallery3"></script>
 </body>

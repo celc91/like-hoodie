@@ -88,12 +88,58 @@ El panel tiene `noindex` y no muestra datos sin iniciar sesión. Aun así, se re
 
 - Los visitantes solo pueden leer y modificar **su propio carrito**.
 - Los pedidos se crean únicamente con la función `public.place_order()`, que recalcula subtotal, envío y total en el servidor. No se permite insertar pedidos directamente desde el navegador.
+- `place_order()` valida cada precio contra `public.product_prices` y rechaza cualquier pedido cuyo `unitPrice` no coincida.
 - Los pedidos solo los puede leer el administrador; el cliente puede ver los suyos.
 - Nadie puede cambiar su rol a administrador desde la web.
 - No se guardan datos de tarjetas.
 - Los carritos abandonados no guardan nombre, correo ni teléfono.
 - Los pedidos guardan los datos necesarios para producir y enviar.
-- `place_order()` usa el `unitPrice` que envía el navegador para calcular el total. Antes de activar pagos reales, valida los precios contra una tabla de productos o una función de servidor para que nadie pueda manipularlos.
+
+## 8. Pagos con Clip
+
+La integración usa **Checkout redireccionado** y dos Edge Functions:
+
+- `clip-checkout`: recibe el ID del pedido, valida la sesión y crea el link de pago con el total de `orders.total`.
+- `clip-webhook`: recibe el aviso de Clip, consulta `GET /v2/checkout/{id}` y actualiza el pedido.
+
+### Orden de SQL
+
+En un proyecto nuevo ejecuta:
+
+1. `schema.sql`
+2. `storage-logos.sql`
+3. `security-hardening.sql`
+4. `clip-payments.sql`
+5. `email-notifications.sql`
+
+`clip-payments.sql` crea `store_settings` con `clip_enabled = 'false'`. Mientras esté en `false`, el checkout sigue siendo demostración.
+
+### Secretos
+
+```powershell
+npx supabase login
+npx supabase link --project-ref qrblsclpzoaxfaggsrda
+npx supabase secrets set CLIP_API_KEY=... CLIP_API_SECRET=... CLIP_WEBHOOK_SECRET=... SITE_URL=https://likehoodie.com
+```
+
+No subas estos valores al repositorio. La CLI lee `config.toml` y despliega ambas funciones sin verificación JWT automática; la función de checkout valida el token del usuario y el webhook valida su secreto.
+
+### Desplegar
+
+```powershell
+npx supabase functions deploy clip-checkout
+npx supabase functions deploy clip-webhook
+```
+
+### Activar
+
+```sql
+update public.store_settings
+   set value = 'true', updated_at = now()
+ where key = 'clip_enabled';
+```
+
+Para volver a demostración, cambia el valor a `'false'`. La función pública `store_config()` solo expone `payment_provider` (`demo` o `clip`) para que la tienda muestre el aviso correcto.
 
 ## Privacidad
 

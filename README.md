@@ -98,6 +98,68 @@ Los correos automáticos de pedido se envían con **Resend** desde `hola@likehoo
 
 La configuración está en `supabase/email-notifications.sql`.
 
+## Pagos con Clip
+
+La integración con **Clip Checkout redireccionado** está creada en `supabase/functions/`:
+
+- `clip-checkout`: valida la sesión, lee el total autoritativo del pedido y crea el link de pago.
+- `clip-webhook`: recibe el aviso de Clip, consulta el estado real y marca el pedido como pagado.
+
+Está **desactivada por defecto**. Mientras `store_settings.clip_enabled = 'false'`, el checkout sigue siendo una demostración y no se crea ningún cargo.
+
+### Activar
+
+1. Ejecuta `supabase/clip-payments.sql` en Supabase → SQL Editor.
+2. Instala la CLI y vincula el proyecto:
+
+   ```powershell
+   npx supabase login
+   npx supabase link --project-ref qrblsclpzoaxfaggsrda
+   ```
+
+3. Configura los secretos. No los pongas en el repositorio:
+
+   ```powershell
+   npx supabase secrets set CLIP_API_KEY=... CLIP_API_SECRET=... CLIP_WEBHOOK_SECRET=... SITE_URL=https://likehoodie.com
+   ```
+
+   `CLIP_WEBHOOK_SECRET` debe ser una cadena aleatoria larga. El webhook queda en:
+
+   `https://qrblsclpzoaxfaggsrda.supabase.co/functions/v1/clip-webhook?secret=...`
+
+4. Despliega las funciones:
+
+   ```powershell
+   npx supabase functions deploy clip-checkout
+   npx supabase functions deploy clip-webhook
+   ```
+
+5. Activa el cobro:
+
+   ```sql
+   update public.store_settings
+      set value = 'true', updated_at = now()
+    where key = 'clip_enabled';
+   ```
+
+6. Haz un pedido de prueba. Clip debe mostrar su página de pago y, al completar, el pedido debe aparecer como **Pagado** en el panel.
+
+### Volver a demostración
+
+```sql
+update public.store_settings
+   set value = 'false', updated_at = now()
+ where key = 'clip_enabled';
+```
+
+### Seguridad
+
+- Las credenciales de Clip viven en los secrets de Supabase, nunca en el navegador.
+- El monto se toma de `orders.total`; el navegador no puede cambiarlo.
+- El webhook no confía en el cuerpo: consulta `GET /v2/checkout/{id}`.
+- Los enlaces de pago se reutilizan mientras estén activos para evitar cobros duplicados.
+- Un webhook repetido no vuelve a marcar el pedido ni duplica los correos.
+
 ## Logos de pedidos
 
 Los archivos de logo se suben al bucket privado **`order-logos`** de Supabase Storage. Se aceptan PNG, JPG y WebP de hasta 5 MB. El panel de administración genera enlaces firmados de una hora para verlos o descargarlos desde el detalle de cada pedido.
@@ -109,9 +171,11 @@ La configuración del bucket y sus políticas RLS está en `supabase/storage-log
 - `supabase/security-hardening.sql` valida precios en el servidor, limita pedidos por usuario/correo, restringe permisos de funciones y permite borrar los logos propios.
 - `supabase/storage-logos.sql` define el bucket privado y sus políticas.
 - `supabase/email-notifications.sql` envía los correos de pedido con Resend.
+- `supabase/clip-payments.sql` prepara los estados de pago y la configuración de Clip.
+- `supabase/functions/` contiene las Edge Functions de Clip.
 - `vendor/supabase-js.min.js` fija Supabase JS 2.119.0 en local para evitar dependencias flotantes de CDN.
 
-Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos.sql`, `security-hardening.sql` y `email-notifications.sql`.
+Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos.sql`, `security-hardening.sql`, `clip-payments.sql` y `email-notifications.sql`.
 
 ## Estructura
 
@@ -156,9 +220,10 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 - Completa los datos marcados con `[completar]` en `privacidad.html` y `terminos.html`: razón social, RFC, domicilio fiscal y ciudad de jurisdicción.
 - Revisa los documentos legales con un abogado antes de operar comercialmente.
 - Configura Supabase (`supabase/README.md`), crea el usuario administrador y pega la URL y la publishable key en `supabase-config.js`.
+- Completa el KYC de Clip, configura sus credenciales y activa `clip_enabled` cuando quieras cobrar de verdad.
 - Actualiza el aviso de privacidad y los términos cuando conectes pagos reales, newsletter o envíos.
 - Si añades cookies de analítica o publicidad, actualiza `cookies.html` y pide consentimiento.
 
 ## Nota
 
-El checkout es una demostración visual: valida los datos, registra el pedido como demostración y muestra una confirmación, pero no realiza ningún cargo. Para cobrar de verdad habría que conectar una pasarela de pago (Stripe, Mercado Pago, Openpay o similar) y validar los precios en el servidor. Los logos ya se guardan en un bucket privado de Supabase Storage y el panel genera enlaces firmados para verlos o descargarlos.
+El checkout sigue en modo demostración: valida los datos, registra el pedido y muestra una confirmación, pero no realiza ningún cargo. La integración con **Clip** ya está preparada y desactivada; se activa con `store_settings.clip_enabled = 'true'` después de configurar las credenciales y desplegar las Edge Functions. Los precios se validan en el servidor, los logos se guardan en un bucket privado de Supabase Storage y el panel genera enlaces firmados para verlos o descargarlos.

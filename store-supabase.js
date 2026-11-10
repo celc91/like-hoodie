@@ -23,6 +23,7 @@
   let syncTimer = null;
   let pendingSync = null;
   let justOrdered = false;
+  let configCache = null;
 
   function safeDesign(design) {
     if (!design) return null;
@@ -338,9 +339,73 @@
         item_count: itemCount,
       });
 
-      return { id: result.id, number: result.number };
+      return {
+        id: result.id,
+        number: result.number,
+        paymentMethod: result.payment_method || "demo",
+        paymentStatus: result.payment_status || "demo",
+      };
     } catch (error) {
       console.warn("No se pudo guardar el pedido.", error);
+      return null;
+    }
+  }
+
+  async function getConfig() {
+    if (configCache) return configCache;
+    if (!(await ensure())) {
+      return { payment_provider: "demo" };
+    }
+
+    try {
+      const { data, error } = await client.rpc("store_config");
+      configCache =
+        !error && data && typeof data === "object"
+          ? data
+          : { payment_provider: "demo" };
+    } catch (error) {
+      configCache = { payment_provider: "demo" };
+    }
+    return configCache;
+  }
+
+  async function createClipCheckout(orderId) {
+    if (!(await ensure())) {
+      throw new Error("La tienda no está configurada.");
+    }
+
+    const { data, error } = await client.functions.invoke("clip-checkout", {
+      body: { orderId: String(orderId || "") },
+    });
+
+    if (error) {
+      let message = "No se pudo abrir el pago con Clip.";
+      try {
+        const payload = await error.context?.json();
+        if (payload?.error) message = payload.error;
+      } catch (parseError) {
+        /* Usar el mensaje genérico. */
+      }
+      throw new Error(message);
+    }
+
+    return data && typeof data === "object" ? data : { enabled: false };
+  }
+
+  async function getOrderPayment(number) {
+    const value = Number(String(number == null ? "" : number).replace(/\D/g, ""));
+    if (!Number.isInteger(value) || value <= 0) return null;
+    if (!(await ensure())) return null;
+
+    try {
+      const { data, error } = await client
+        .from("orders")
+        .select("number,payment_method,payment_status,paid_at")
+        .eq("number", value)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    } catch (error) {
       return null;
     }
   }
@@ -360,5 +425,8 @@
     track,
     uploadLogo,
     placeOrder,
+    getConfig,
+    createClipCheckout,
+    getOrderPayment,
   };
 })();

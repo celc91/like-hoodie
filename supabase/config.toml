@@ -1,0 +1,11 @@
+# like hoodie ♡ — configuración de Supabase CLI
+# La verificación JWT se hace dentro de cada función para controlar CORS
+# y para que el webhook público de Clip pueda validar su propio secreto.
+
+project_id = "like-hoodie"
+
+[functions.clip-checkout]
+verify_jwt = false
+
+[functions.clip-webhook]
+verify_jwt = false

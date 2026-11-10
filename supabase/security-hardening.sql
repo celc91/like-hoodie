@@ -40,6 +40,20 @@ on conflict (kind, key) do update set amount = excluded.amount;
 alter table public.product_prices enable row level security;
 revoke all on table public.product_prices from anon, authenticated;
 
+-- Configuración de la tienda (pago demo o Clip). Solo la lee el servidor.
+create table if not exists public.store_settings (
+  key text primary key,
+  value text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.store_settings enable row level security;
+revoke all on table public.store_settings from anon, authenticated;
+
+insert into public.store_settings (key, value)
+values ('clip_enabled', 'false')
+on conflict (key) do nothing;
+
 create or replace function public.item_unit_price(p_item jsonb)
 returns integer
 language plpgsql
@@ -161,6 +175,8 @@ declare
   v_total integer := 0;
   v_free_shipping integer := 1200;
   v_shipping_cost integer := 99;
+  v_payment_method text := 'demo';
+  v_payment_status text := 'demo';
   v_order public.orders;
   v_name text;
   v_email text;
@@ -247,6 +263,14 @@ begin
   end;
   v_total := v_subtotal + v_shipping;
 
+  if exists (
+    select 1 from public.store_settings
+     where key = 'clip_enabled' and value = 'true'
+  ) then
+    v_payment_method := 'clip';
+    v_payment_status := 'pending';
+  end if;
+
   insert into public.orders (
     user_id, cart_id, status, customer_name, email, phone, address, city, zip,
     notes, items, item_count, subtotal, shipping, total, payment_method, payment_status
@@ -257,7 +281,7 @@ begin
     left(coalesce(p_customer->>'city', ''), 120),
     left(coalesce(p_customer->>'zip', ''), 20),
     left(coalesce(p_notes, ''), 500),
-    p_items, v_count, v_subtotal, v_shipping, v_total, 'demo', 'demo'
+    p_items, v_count, v_subtotal, v_shipping, v_total, v_payment_method, v_payment_status
   )
   returning * into v_order;
 
@@ -267,7 +291,12 @@ begin
       where id = p_cart_id and user_id = v_uid;
   end if;
 
-  return jsonb_build_object('id', v_order.id, 'number', v_order.number);
+  return jsonb_build_object(
+    'id', v_order.id,
+    'number', v_order.number,
+    'payment_method', v_payment_method,
+    'payment_status', v_payment_status
+  );
 end;
 $$;
 

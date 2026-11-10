@@ -514,6 +514,15 @@ a { color: inherit; }
 .status-open { background: rgba(47, 125, 79, 0.13); color: #235e3b; }
 .status-abandoned { background: rgba(255, 77, 31, 0.12); color: #a92e16; }
 .status-converted { background: rgba(43, 108, 176, 0.12); color: #24547f; }
+.status-demo { background: rgba(22, 22, 24, 0.08); color: #6f6a60; }
+.status-paid { background: rgba(47, 125, 79, 0.13); color: #235e3b; }
+.status-failed { background: rgba(169, 46, 22, 0.12); color: #a92e16; }
+.status-refunded { background: rgba(126, 76, 181, 0.12); color: #5c2f8a; }
+
+.order-payment {
+  display: block;
+  margin-top: 4px;
+}
 .status-empty { background: rgba(22, 22, 24, 0.07); color: #6f6a60; }
 
 .link-btn {

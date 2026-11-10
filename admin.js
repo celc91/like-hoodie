@@ -28,6 +28,15 @@
     cancelled: "Cancelado",
   };
 
+  const PAYMENT_LABELS = {
+    demo: "Demostración",
+    pending: "Pago pendiente",
+    paid: "Pagado",
+    failed: "Pago fallido",
+    cancelled: "Pago cancelado",
+    refunded: "Reembolsado",
+  };
+
   let client = null;
   let currentUser = null;
   let currentSection = "resumen";
@@ -118,6 +127,13 @@
     };
     return `<span class="badge status-${escapeHTML(status)}">${escapeHTML(
       labels[status] || status
+    )}</span>`;
+  }
+
+  function paymentBadge(status) {
+    const value = String(status || "demo");
+    return `<span class="badge status-${escapeHTML(value)}">${escapeHTML(
+      PAYMENT_LABELS[value] || value
     )}</span>`;
   }
 
@@ -426,7 +442,10 @@
             <td><span class="items-summary">${itemsSummary(order.items)} · ${itemsCount(
             order.items
           )} u.</span></td>
-            <td><strong>${formatMoney(order.total)}</strong></td>
+            <td>
+              <strong>${formatMoney(order.total)}</strong>
+              <span class="order-payment">${paymentBadge(order.payment_status)}</span>
+            </td>
             <td>
               <select class="status-select order-status-select" data-id="${escapeHTML(
                 order.id
@@ -671,9 +690,25 @@
           [order.city, order.zip].filter(Boolean).join(" · ") || "—"
         )}</strong></div>
         <div><span>Dirección</span><strong>${escapeHTML(order.address || "—")}</strong></div>
-        <div><span>Pago</span><strong>${escapeHTML(order.payment_method || "—")} · ${
-          order.payment_status === "demo" ? "demo" : escapeHTML(order.payment_status || "—")
-        }</strong></div>
+        <div><span>Pago</span><strong>${escapeHTML(
+          order.payment_method === "clip" ? "Clip" : "Demostración"
+        )} · ${escapeHTML(
+          PAYMENT_LABELS[order.payment_status] || order.payment_status || "—"
+        )}</strong></div>
+        ${
+          order.payment_reference
+            ? `<div><span>Referencia de pago</span><strong>${escapeHTML(
+                order.payment_reference
+              )}</strong></div>`
+            : ""
+        }
+        ${
+          order.paid_at
+            ? `<div><span>Pagado</span><strong>${escapeHTML(
+                formatDate(order.paid_at)
+              )}</strong></div>`
+            : ""
+        }
       </div>
       <ul class="detail-items">
         ${await orderItemsHtml(items)}
@@ -776,11 +811,12 @@
       return;
     }
     const rows = [
-      ["Pedido", "Fecha", "Estado", "Cliente", "Email", "Teléfono", "Dirección", "Ciudad", "CP", "Artículos", "Subtotal", "Envío", "Total", "Notas"],
+      ["Pedido", "Fecha", "Estado", "Pago", "Cliente", "Email", "Teléfono", "Dirección", "Ciudad", "CP", "Artículos", "Subtotal", "Envío", "Total", "Notas"],
       ...(data || []).map((order) => [
         `LH-${order.number}`,
         order.created_at,
         STATUS_LABELS[order.status] || order.status,
+        PAYMENT_LABELS[order.payment_status] || order.payment_status || "",
         order.customer_name,
         order.email,
         order.phone || "",
