@@ -4385,6 +4385,60 @@ details[open] .plus::after {
   color: var(--lime);
 }
 
+.option-tooltip {
+  position: fixed;
+  z-index: 240;
+  max-width: min(310px, calc(100vw - 24px));
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: var(--ink);
+  color: var(--cream);
+  box-shadow: 0 12px 30px rgba(22, 22, 24, 0.24);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.14s ease, transform 0.14s ease;
+}
+
+.option-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.option-tooltip::after {
+  content: "";
+  position: absolute;
+  left: var(--arrow-left, 50%);
+  bottom: -4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 1px;
+  background: var(--ink);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.option-tooltip.is-below::after {
+  top: -4px;
+  bottom: auto;
+}
+
+.option-tooltip-title {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lime);
+}
+
+.option-tooltip-desc {
+  display: block;
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: var(--cream);
+}
+
 .option-note {
   margin: 8px 0 0;
   font-size: 10.5px;

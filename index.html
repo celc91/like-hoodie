@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261109-fonts-brand">
+  <link rel="stylesheet" href="styles.css?v=20261109-tooltips2">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -913,7 +913,12 @@
 
   <div class="toast-region" data-toast-region aria-live="polite"></div>
 
-  <script src="app.js?v=20261109-fonts-brand"></script>
-  <script src="legal.js?v=20261109-fonts-brand"></script>
+  <div class="option-tooltip" id="option-tooltip" data-option-tooltip role="tooltip" aria-hidden="true">
+    <span class="option-tooltip-title" data-tooltip-title></span>
+    <span class="option-tooltip-desc" data-tooltip-desc></span>
+  </div>
+
+  <script src="app.js?v=20261109-tooltips2"></script>
+  <script src="legal.js?v=20261109-tooltips2"></script>
 </body>
 </html>

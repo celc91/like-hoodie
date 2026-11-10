@@ -288,6 +288,9 @@
   const logoSizeValue = $("[data-logo-size-value]");
   const textColorButtons = $$("[data-text-color]");
   const fontButtons = $$("[data-text-font]");
+  const optionTooltip = $("[data-option-tooltip]");
+  const tooltipTitle = $("[data-tooltip-title]");
+  const tooltipDesc = $("[data-tooltip-desc]");
   const materialButtons = $$("[data-material]");
   const materialLabel = $("[data-material-label]");
   const materialNote = $("[data-material-note]");
@@ -754,6 +757,55 @@
     });
   }
 
+  let tooltipTarget = null;
+
+  function positionOptionTooltip(button) {
+    const rect = button.getBoundingClientRect();
+    const tip = optionTooltip.getBoundingClientRect();
+    const gap = 10;
+    let left = rect.left + rect.width / 2 - tip.width / 2;
+    left = Math.max(12, Math.min(left, window.innerWidth - tip.width - 12));
+
+    let top = rect.top - tip.height - gap;
+    let below = false;
+    if (top < 12) {
+      top = rect.bottom + gap;
+      below = true;
+    }
+
+    optionTooltip.style.left = `${left}px`;
+    optionTooltip.style.top = `${top}px`;
+    const arrow = rect.left + rect.width / 2 - left;
+    optionTooltip.style.setProperty(
+      "--arrow-left",
+      `${Math.min(Math.max(arrow, 14), tip.width - 14)}px`
+    );
+    optionTooltip.classList.toggle("is-below", below);
+  }
+
+  function showOptionTooltip(button) {
+    if (!optionTooltip || !button.dataset.desc) return;
+    if (window.matchMedia && window.matchMedia("(hover: none)").matches) return;
+
+    tooltipTitle.textContent = button.dataset.name || "";
+    tooltipDesc.textContent = button.dataset.desc;
+    optionTooltip.classList.add("is-visible");
+    optionTooltip.setAttribute("aria-hidden", "false");
+    button.setAttribute("aria-describedby", "option-tooltip");
+    tooltipTarget = button;
+    positionOptionTooltip(button);
+  }
+
+  function hideOptionTooltip() {
+    if (!optionTooltip) return;
+    optionTooltip.classList.remove("is-visible");
+    optionTooltip.setAttribute("aria-hidden", "true");
+    if (tooltipTarget) {
+      tooltipTarget.removeAttribute("aria-describedby");
+      tooltipTarget = null;
+    }
+  }
+
   function priceNoteText() {
     const parts = [`Base ${formatPrice(state.basePrice)}`];
 
@@ -1085,6 +1137,25 @@
       };
       updatePreview();
     });
+  });
+
+  $$("[data-desc]").forEach((button) => {
+    button.addEventListener("mouseenter", () => showOptionTooltip(button));
+    button.addEventListener("mouseleave", hideOptionTooltip);
+    button.addEventListener("focus", () => showOptionTooltip(button));
+    button.addEventListener("blur", hideOptionTooltip);
+    button.addEventListener("click", hideOptionTooltip);
+  });
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (tooltipTarget) positionOptionTooltip(tooltipTarget);
+    },
+    { passive: true }
+  );
+  window.addEventListener("resize", () => {
+    if (tooltipTarget) positionOptionTooltip(tooltipTarget);
   });
 
   toolButtons.forEach((button) => {
