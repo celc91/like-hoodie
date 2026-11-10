@@ -11,7 +11,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Diseñador en vivo:** color de sudadera, talla, texto, tipografía, color de texto y subida de logo (PNG, JPG o SVG).
 - **Materiales:** algodón 400 g, algodón 320 g, French terry, mezcla 50/50 y poliéster técnico, con ajuste de precio y textura visual en el modelo.
 - **Técnicas de personalización:** DTG, DTF, bordado, serigrafía, vinilo textil y sublimación, con costos, acabados visuales y avisos de compatibilidad.
-- **Editor frontal y trasero:** cambia de vista, arrastra el texto y el logo, elige tipografía, ajusta su tamaño y personaliza cada cara por separado.
+- **Editor frontal y trasero:** gira la sudadera 360°, cambia de vista, arrastra el texto y el logo, elige tipografía, ajusta su tamaño y personaliza cada cara por separado.
 - **Capucha personalizable:** forro de capucha a contraste y color de cordones.
 - **Precio dinámico:** base por color, material, técnica, suplemento de talla XXL y extra por logo en cada cara.
 - **Catálogo:** cuatro modelos con selección directa al configurador.

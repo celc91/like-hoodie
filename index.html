@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261109-tooltips2">
+  <link rel="stylesheet" href="styles.css?v=20261109-spin4">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -216,7 +216,7 @@
         <div class="section-head">
           <span class="eyebrow">El estudio</span>
           <h2>Diseña la tuya<br>en 30 segundos.</h2>
-          <p>Elige material, técnica, color, talla y capucha. Diseña el frente y la espalda, arrastra el texto o el logo, elige tipografía, ajusta su tamaño y mira el precio al instante.</p>
+          <p>Elige material, técnica, color, talla y capucha. Diseña el frente y la espalda, gira la sudadera 360°, arrastra el texto o el logo, elige tipografía, ajusta su tamaño y mira el precio al instante.</p>
         </div>
 
         <div class="studio reveal">
@@ -230,7 +230,7 @@
               <span class="live"><i aria-hidden="true"></i> En vivo</span>
             </div>
 
-            <div class="hoodie-stage">
+            <div class="hoodie-stage" data-hoodie-stage>
               <div class="hoodie hoodie--studio is-dark" data-preview-hoodie style="--fabric-color:#1c1c1f;--tint-mask:url('assets/hoodie-front.png');--hood-mask:url('assets/hood-mask-front.svg')">
                 <div class="fabric-tint" data-fabric-tint aria-hidden="true"></div>
                 <img class="hoodie-photo" data-hoodie-photo src="assets/hoodie-front.png" alt="Vista frontal de tu sudadera personalizada" width="1003" height="1229">
@@ -253,8 +253,17 @@
 
             <p class="editor-hint">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 4v16M4 12h16M8 8l4-4 4 4M8 16l4 4 4-4M8 8 4 12l4 4M16 8l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Arrastra el texto o el logo y ajusta su tamaño.
+              Arrastra la sudadera para girarla y el texto o logo para moverlos.
             </p>
+
+            <div class="spin-control">
+              <span class="spin-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66" stroke-linecap="round"/><path d="M20 4v5h-5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Girar
+              </span>
+              <input class="spin-range" type="range" min="0" max="360" step="1" value="0" data-spin aria-label="Girar la sudadera 360 grados">
+              <span class="spin-value" data-spin-value>0°</span>
+            </div>
 
             <div class="preview-meta">
               <span><i class="mini-swatch" data-preview-swatch aria-hidden="true"></i><span data-preview-color-name>Negro</span></span>
@@ -678,7 +687,7 @@
           </details>
           <details>
             <summary>¿Puedo personalizar la espalda y la capucha?<span class="plus" aria-hidden="true"></span></summary>
-            <p>Sí. En el diseñador puedes cambiar entre frente y espalda, añadir texto o logo en cada cara, arrastrarlos para colocarlos donde quieras, elegir la tipografía y ajustar su tamaño con los controles. También puedes elegir un forro de capucha a contraste, el color de los cordones y el color del texto.</p>
+            <p>Sí. En el diseñador puedes girar la sudadera 360°, cambiar entre frente y espalda, añadir texto o logo en cada cara, arrastrarlos para colocarlos donde quieras, elegir la tipografía y ajustar su tamaño con los controles. También puedes elegir un forro de capucha a contraste, el color de los cordones y el color del texto.</p>
           </details>
           <details>
             <summary>¿Cuánto tarda en llegar?<span class="plus" aria-hidden="true"></span></summary>
@@ -918,7 +927,7 @@
     <span class="option-tooltip-desc" data-tooltip-desc></span>
   </div>
 
-  <script src="app.js?v=20261109-tooltips2"></script>
-  <script src="legal.js?v=20261109-tooltips2"></script>
+  <script src="app.js?v=20261109-spin4"></script>
+  <script src="legal.js?v=20261109-spin4"></script>
 </body>
 </html>
