@@ -1461,15 +1461,47 @@
     });
   }
 
+  function scrollToDesigner() {
+    const section = $("#personalizar");
+    if (!section) return;
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.setTimeout(() => {
+      if (section.getBoundingClientRect().top > 120) {
+        section.scrollIntoView({ behavior: "auto", block: "start" });
+      }
+    }, 650);
+  }
+
   personalizeButtons.forEach((button) => {
     button.addEventListener("click", () => {
       selectColor(button.dataset.color, button.dataset.name);
       setView("front");
-      const section = $("#personalizar");
-      if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
+      scrollToDesigner();
       showToast(`${button.dataset.name}: lista para personalizar.`);
     });
   });
+
+  /* ---------------------------------------------------------------------- */
+  /* Inspiración desde el calendario de conciertos                           */
+  /* ---------------------------------------------------------------------- */
+
+  function designWithText(text) {
+    const clean = String(text || "").trim().toUpperCase().slice(0, 16);
+    if (!clean) return;
+
+    setTool("texto");
+    setView("front");
+
+    const design = activeDesign();
+    design.text = clean;
+    if (textInput) textInput.value = clean;
+    if (charCount) charCount.textContent = String(clean.length);
+    updatePreview();
+    scrollToDesigner();
+    showToast(`“${clean}” lista para personalizar.`);
+  }
+
+  window.likeHoodieDesignWith = designWithText;
 
   /* ---------------------------------------------------------------------- */
   /* Cabecera y menú móvil                                                   */

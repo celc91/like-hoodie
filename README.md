@@ -67,9 +67,9 @@ Mientras `supabase-config.js` tenga los valores de ejemplo, la tienda funciona e
 
 ## Calendario de conciertos
 
-La sección **Eventos** (`#eventos`) muestra un calendario con los próximos conciertos en México y enlaza cada evento con su página de venta en **Ticketmaster México**.
+La sección **Eventos** (`#eventos`) es una fuente de inspiración: muestra los próximos conciertos en México para que cada persona imagine y diseñe su sudadera con el artista, la ciudad o la fecha. Cada evento tiene un botón **Diseñar** que lleva al personalizador con un texto sugerido, y un enlace secundario para comprar boletos en **Ticketmaster México**.
 
-Los datos viven en `eventos.json`. Es una fotografía de la cartelera, así que los horarios, recintos y disponibilidad pueden cambiar; confirma siempre en Ticketmaster antes de comprar.
+Los datos viven en `eventos.json`. Es una fotografía de la cartelera, así que los horarios, recintos y disponibilidad pueden cambiar; confirma siempre en Ticketmaster antes de comprar. like hoodie ♡ no vende boletos ni participa en esa transacción.
 
 Para actualizar la cartelera con la API oficial:
 

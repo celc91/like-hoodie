@@ -5081,30 +5081,53 @@ details[open] .plus::after {
   line-height: 1.4;
 }
 
-.event-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 11px;
+.event-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.event-design {
+  padding: 8px 12px;
+  border: 0;
   border-radius: 999px;
   background: var(--lime);
   color: var(--ink);
+  font: inherit;
   font-size: 9.5px;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
+  cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-.event-cta svg {
-  width: 12px;
-  height: 12px;
-}
-
-.event-cta:hover {
+.event-design:hover {
   background: var(--orange);
   color: var(--paper);
+}
+
+.event-ticket {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: rgba(244, 239, 230, 0.62);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+}
+
+.event-ticket svg {
+  width: 10px;
+  height: 10px;
+}
+
+.event-ticket:hover {
+  color: var(--lime);
 }
 
 .events-more {
@@ -5263,8 +5286,10 @@ details[open] .plus::after {
     grid-row: span 2;
   }
 
-  .event-cta {
+  .event-actions {
     grid-column: 2;
+    flex-direction: row;
+    align-items: center;
     justify-self: start;
   }
 

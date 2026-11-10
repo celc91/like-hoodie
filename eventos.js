@@ -121,6 +121,29 @@
     return `${date.getDate()} ${MONTHS_SHORT[date.getMonth()]}`;
   };
 
+  const suggestionFor = (event) => {
+    const date = keyToDate(event.dateKey);
+    const month = MONTHS_SHORT[date.getMonth()].toUpperCase();
+    const base = String(event.name)
+      .split(/\s+[-–—]\s+|[,:–—]/)[0]
+      .replace(/\b(tour|live|concierto|festival|presenta|presentan)\b/gi, " ")
+      .replace(/[\s\-–—]+$/, "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const words = base.split(" ").filter(Boolean);
+    let name = "";
+
+    for (const word of words) {
+      const next = name ? `${name} ${word}` : word;
+      if (next.length > 12 && name) break;
+      name = next;
+    }
+
+    name = (name || base).slice(0, 16).trim();
+    const suffix = ` ${date.getDate()} ${month}`;
+    return name.length + suffix.length <= 16 ? `${name}${suffix}` : name;
+  };
+
   const monthLabel = (date) =>
     `${capitalize(MONTHS[date.getMonth()])} ${date.getFullYear()}`;
 
@@ -128,6 +151,7 @@
 
   const eventCard = (event) => {
     const [time, period] = formatTime(event.start).split(" ");
+    const designText = suggestionFor(event);
     return `
       <article class="event-card">
         <div class="event-time">
@@ -138,12 +162,22 @@
           <h4>${escapeHTML(event.name)}</h4>
           <p>${escapeHTML(event.venue)} <span aria-hidden="true">·</span> ${escapeHTML(event.city)}</p>
         </div>
-        <a class="event-cta" href="${escapeHTML(event.url)}" target="_blank" rel="noopener noreferrer">
-          Boletos
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
+        <div class="event-actions">
+          <button
+            type="button"
+            class="event-design"
+            data-design-event="${escapeHTML(designText)}"
+            aria-label="Diseñar una sudadera inspirada en ${escapeHTML(event.name)}"
+          >
+            Diseñar
+          </button>
+          <a class="event-ticket" href="${escapeHTML(event.url)}" target="_blank" rel="noopener noreferrer">
+            Boletos
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
       </article>
     `;
   };
@@ -401,6 +435,20 @@
   });
 
   list.addEventListener("click", (event) => {
+    const designButton = event.target.closest("[data-design-event]");
+    if (designButton) {
+      const text = designButton.dataset.designEvent;
+      if (typeof window.likeHoodieDesignWith === "function") {
+        window.likeHoodieDesignWith(text);
+      } else {
+        const section = document.querySelector("#personalizar");
+        if (section) {
+          section.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+      return;
+    }
+
     const nextEvent = event.target.closest("[data-next-event]");
     if (nextEvent) {
       state.selected = nextEvent.dataset.nextEvent;
