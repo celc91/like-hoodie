@@ -111,7 +111,7 @@ begin
     'https://api.resend.com/emails',
     jsonb_build_object(
       'from', 'like hoodie ♡ <hola@likehoodie.com>',
-      'to', jsonb_build_array('lugocarlos91@gmail.com'),
+      'to', jsonb_build_array('hola@likehoodie.com'),
       'reply_to', coalesce(nullif(new.email, ''), 'hola@likehoodie.com'),
       'subject', 'Nuevo pedido LH-' || new.number || ' — like hoodie ♡',
       'html', v_admin_html

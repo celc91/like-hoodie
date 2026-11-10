@@ -219,11 +219,7 @@
       loginButton.textContent = "Entrar";
 
       if (error) {
-        setLoginError(
-          error.message === "Invalid login credentials"
-            ? "Correo o contraseña incorrectos."
-            : error.message
-        );
+        setLoginError("No se pudo iniciar sesión. Revisa tus datos e inténtalo de nuevo.");
         return;
       }
 
@@ -612,7 +608,7 @@
     }
     if (
       typeof design.logoData === "string" &&
-      design.logoData.startsWith("data:image/")
+      /^data:image\/(png|jpeg|webp);base64,/.test(design.logoData)
     ) {
       return `<a class="logo-link" href="${escapeHTML(
         design.logoData
@@ -752,7 +748,9 @@
   /* -------------------------------- CSV --------------------------------- */
 
   function csvCell(value) {
-    return `"${String(value == null ? "" : value).replace(/"/g, '""')}"`;
+    let text = String(value == null ? "" : value);
+    if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
+    return `"${text.replace(/"/g, '""')}"`;
   }
 
   function downloadCSV(filename, rows) {

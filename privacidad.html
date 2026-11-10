@@ -70,7 +70,7 @@
       <article class="legal-content">
         <div class="legal-callout">
           <strong>Versión de lanzamiento</strong>
-          El checkout registra pedidos de demostración y no procesa pagos reales. Los datos del pedido se guardan en Supabase para poder gestionarlo; el logo se procesa en tu navegador y no se sube. Actualizaremos este aviso cuando se active una pasarela de pago real.
+          El checkout registra pedidos de demostración y no procesa pagos reales. Los datos del pedido se guardan en Supabase para poder gestionarlo. El logo se procesa en tu navegador para la vista previa y se sube a un bucket privado de Supabase Storage para poder imprimir tu pedido; solo el administrador puede verlo mediante enlaces temporales. Actualizaremos este aviso cuando se active una pasarela de pago real.
         </div>
 
         <section id="responsable">
@@ -143,7 +143,7 @@
               </tbody>
             </table>
           </div>
-          <p>El carrito, los pedidos y los eventos de uso se guardan en Supabase, nuestro proveedor de base de datos y autenticación. El logo que subes se procesa localmente para la vista previa y no se envía en esta versión; solo se guarda su nombre como referencia del pedido.</p>
+          <p>El carrito, los pedidos y los eventos de uso se guardan en Supabase, nuestro proveedor de base de datos y autenticación. El logo que subes se procesa en tu navegador para la vista previa y se sube a un bucket privado de Supabase Storage para poder imprimir tu pedido. El administrador accede mediante enlaces firmados temporales.</p>
           <p>El formulario de newsletter de esta versión también es demostrativo: no envía tu correo a nuestros servidores. Cuando activemos el servicio, actualizaremos este aviso y te pediremos consentimiento.</p>
         </section>
 
@@ -177,11 +177,12 @@
           <ul>
             <li><strong>Hosting:</strong> GitHub Pages, para alojar el sitio.</li>
             <li><strong>Base de datos y autenticación:</strong> Supabase, para guardar carritos, pedidos y eventos.</li>
+            <li><strong>Almacenamiento de archivos:</strong> Supabase Storage, para guardar los logos de los pedidos en un bucket privado.</li>
             <li><strong>Tipografías:</strong> Google Fonts, para mostrar las fuentes del sitio.</li>
             <li><strong>Cartelera de eventos:</strong> Ticketmaster México, solo si decides abrir un concierto o su cartelera. No le enviamos tus datos; al hacer clic sales de nuestro sitio y se aplican sus propias políticas.</li>
             <li><strong>Pagos:</strong> la pasarela que se active para procesar cobros. Actualmente no hay cobros reales.</li>
             <li><strong>Envíos:</strong> paqueterías y servicios de mensajería.</li>
-            <li><strong>Comunicaciones:</strong> proveedor de correo transaccional o newsletter.</li>
+            <li><strong>Correo:</strong> Cloudflare Email Routing para recibir mensajes en hola@likehoodie.com y Resend para enviar confirmaciones de pedido.</li>
             <li><strong>Autoridades:</strong> cuando exista una obligación legal o requerimiento válido.</li>
           </ul>
           <p>Algunos proveedores pueden estar ubicados fuera de México, por lo que podría existir una transferencia internacional. Al usar el sitio y proporcionar tus datos, aceptas esas transferencias necesarias para la operación. Puedes solicitar más información en el correo de contacto.</p>

@@ -35,7 +35,7 @@
       logoPath: String(design.logoPath || "").slice(0, 300),
       logoData:
         typeof design.logoData === "string" &&
-        design.logoData.startsWith("data:image/")
+        /^data:image\/(png|jpeg|webp);base64,/.test(design.logoData)
           ? design.logoData.slice(0, 1_800_000)
           : "",
       logoScale: Number(design.logoScale) || 1,
@@ -46,15 +46,44 @@
     };
   }
 
+  const MATERIAL_IDS_BY_NAME = {
+    "Algodón 400 g": "cotton400",
+    "Algodón 320 g": "cotton320",
+    "French terry 300 g": "french300",
+    "French terry": "french300",
+    "Mezcla 50/50": "blend350",
+    "Poliéster técnico": "polyester280",
+  };
+
+  const TECHNIQUE_IDS_BY_NAME = {
+    DTG: "dtg",
+    DTF: "dtf",
+    Bordado: "bordado",
+    Serigrafía: "serigrafia",
+    "Vinilo textil": "vinilo",
+    Sublimación: "sublimacion",
+  };
+
   function safeItems(items) {
     if (!Array.isArray(items)) return [];
     return items.slice(0, 50).map((item) => ({
       name: String(item.name || "Sudadera personalizada").slice(0, 120),
       qty: Math.max(1, Math.min(99, Number(item.qty) || 1)),
       unitPrice: Math.max(0, Number(item.unitPrice) || 0),
+      colorHex: /^#[0-9a-f]{6}$/i.test(String(item.colorHex || ""))
+        ? String(item.colorHex).toLowerCase()
+        : "",
       colorName: item.colorName || "",
       size: item.size || "",
+      materialId:
+        item.materialId ||
+        MATERIAL_IDS_BY_NAME[item.materialName] ||
+        "",
       materialName: item.materialName || "",
+      techniqueId:
+        item.techniqueId ||
+        TECHNIQUE_IDS_BY_NAME[item.techniqueName] ||
+        "",
       techniqueName: item.techniqueName || "",
       front: safeDesign(item.front),
       back: safeDesign(item.back),

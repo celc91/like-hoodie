@@ -98,6 +98,15 @@
       return map[character];
     });
 
+  const safeExternalUrl = (value) => {
+    try {
+      const url = new URL(String(value));
+      return url.protocol === "https:" ? url.href : "";
+    } catch (error) {
+      return "";
+    }
+  };
+
   const capitalize = (value) =>
     value.charAt(0).toUpperCase() + value.slice(1);
 
@@ -152,6 +161,7 @@
   const eventCard = (event) => {
     const [time, period] = formatTime(event.start).split(" ");
     const designText = suggestionFor(event);
+    const ticketUrl = safeExternalUrl(event.url);
     return `
       <article class="event-card">
         <div class="event-time">
@@ -171,12 +181,18 @@
           >
             Diseñar
           </button>
-          <a class="event-ticket" href="${escapeHTML(event.url)}" target="_blank" rel="noopener noreferrer">
+          ${
+            ticketUrl
+              ? `<a class="event-ticket" href="${escapeHTML(
+                  ticketUrl
+                )}" target="_blank" rel="noopener noreferrer">
             Boletos
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-          </a>
+          </a>`
+              : ""
+          }
         </div>
       </article>
     `;

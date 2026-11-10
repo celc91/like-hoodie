@@ -104,6 +104,15 @@ Los archivos de logo se suben al bucket privado **`order-logos`** de Supabase St
 
 La configuración del bucket y sus políticas RLS está en `supabase/storage-logos.sql`.
 
+## Seguridad
+
+- `supabase/security-hardening.sql` valida precios en el servidor, limita pedidos por usuario/correo, restringe permisos de funciones y permite borrar los logos propios.
+- `supabase/storage-logos.sql` define el bucket privado y sus políticas.
+- `supabase/email-notifications.sql` envía los correos de pedido con Resend.
+- `vendor/supabase-js.min.js` fija Supabase JS 2.119.0 en local para evitar dependencias flotantes de CDN.
+
+Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos.sql`, `security-hardening.sql` y `email-notifications.sql`.
+
 ## Estructura
 
 ```text
