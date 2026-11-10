@@ -81,6 +81,7 @@
     basePrice: 899,
     size: "M",
     view: "front",
+    angle: 0,
     material: {
       id: "cotton400",
       name: "Algodón 400 g",
@@ -271,6 +272,9 @@
   const printText = $("[data-print-text]");
   const printLogo = $("[data-print-logo]");
   const viewButtons = $$(".view-tab");
+  const viewThumbs = $$("[data-angle]");
+  const hintText = $("[data-hint-text]");
+  const studio = $(".studio");
   const toolButtons = $$("[data-personalize-tool]");
   const toolPanels = $$("[data-personalize-panel]");
   const editingLabel = $("[data-editing-label]");
@@ -816,14 +820,20 @@
 
     if (hoodiePreview) {
       const isFront = state.view === "front";
+      const isSide = state.angle === 90 || state.angle === 270;
+      const imageFile = isSide
+        ? "hoodie-side-right.png?v=20261110"
+        : `hoodie-${isFront ? "front" : "back"}.png`;
       const isDark = state.color.toLowerCase() === "#1c1c1f";
       hoodiePreview.style.setProperty("--fabric-color", state.color);
       hoodiePreview.style.setProperty(
         "--tint-mask",
-        `url("assets/hoodie-${isFront ? "front" : "back"}.png")`
+        `url("assets/${imageFile}")`
       );
       hoodiePreview.style.setProperty("--cord-color", state.hood.cord);
       hoodiePreview.classList.toggle("is-dark", isDark);
+      hoodiePreview.classList.toggle("is-side-view", isSide);
+      hoodiePreview.classList.toggle("is-left-view", state.angle === 270);
 
       MATERIAL_IDS.forEach((id) => {
         hoodiePreview.classList.toggle(
@@ -839,14 +849,22 @@
       });
 
       if (hoodiePhoto) {
-        hoodiePhoto.src = `assets/hoodie-${isFront ? "front" : "back"}.png`;
-        hoodiePhoto.alt = `Vista ${
-          isFront ? "frontal" : "trasera"
-        } de tu sudadera personalizada`;
-        hoodiePhoto.width = isFront ? 1003 : 999;
+        hoodiePhoto.src = `assets/${imageFile}`;
+        hoodiePhoto.alt = isSide
+          ? "Vista de perfil de tu sudadera personalizada"
+          : `Vista ${
+              isFront ? "frontal" : "trasera"
+            } de tu sudadera personalizada`;
+        hoodiePhoto.width = 1003;
         hoodiePhoto.height = 1229;
       }
-      if (cordOverlay) cordOverlay.hidden = !isFront;
+      if (cordOverlay) cordOverlay.hidden = !isFront || isSide;
+      if (studio) studio.classList.toggle("is-side-view", isSide);
+      if (hintText) {
+        hintText.textContent = isSide
+          ? "Vista de perfil. Elige Frente o Espalda para editar el diseño."
+          : "Arrastra el texto o el logo y ajusta su tamaño.";
+      }
     }
 
     previewNames.forEach((element) => {
@@ -910,9 +928,30 @@
     updateTechniqueUI();
   }
 
+  function updateGalleryUI() {
+    viewThumbs.forEach((button) => {
+      const active = Number(button.dataset.angle) === state.angle;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  }
+
+  function setAngle(angle) {
+    const normalized = ((Number(angle) % 360) + 360) % 360;
+    if (normalized === 90 || normalized === 270) {
+      state.angle = normalized;
+      updateGalleryUI();
+      updatePreview();
+      return;
+    }
+    setView(normalized === 180 ? "back" : "front");
+  }
+
   function setView(view) {
     if (!state.designs[view]) return;
     state.view = view;
+    state.angle = view === "front" ? 0 : 180;
+    updateGalleryUI();
 
     viewButtons.forEach((button) => {
       const active = button.dataset.view === view;
@@ -1134,6 +1173,10 @@
 
   viewButtons.forEach((button) => {
     button.addEventListener("click", () => setView(button.dataset.view));
+  });
+
+  viewThumbs.forEach((button) => {
+    button.addEventListener("click", () => setAngle(button.dataset.angle));
   });
 
   if (textInput) {

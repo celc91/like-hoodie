@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261109-sin-capucha">
+  <link rel="stylesheet" href="styles.css?v=20261110-gallery3">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -252,8 +252,23 @@
 
             <p class="editor-hint">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 4v16M4 12h16M8 8l4-4 4 4M8 16l4 4 4-4M8 8 4 12l4 4M16 8l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Arrastra el texto o el logo y ajusta su tamaño.
+              <span data-hint-text>Arrastra el texto o el logo y ajusta su tamaño.</span>
             </p>
+
+            <div class="view-gallery" role="group" aria-label="Vistas de la sudadera">
+              <button type="button" class="view-thumb is-active" data-angle="0" aria-pressed="true" aria-label="Vista frontal">
+                <img src="assets/hoodie-front.png" alt="">
+              </button>
+              <button type="button" class="view-thumb" data-angle="90" aria-pressed="false" aria-label="Perfil derecho">
+                <img src="assets/hoodie-side-right.png?v=20261110" alt="">
+              </button>
+              <button type="button" class="view-thumb" data-angle="180" aria-pressed="false" aria-label="Vista trasera">
+                <img src="assets/hoodie-back.png" alt="">
+              </button>
+              <button type="button" class="view-thumb" data-angle="270" aria-pressed="false" aria-label="Perfil izquierdo">
+                <img class="is-mirrored" src="assets/hoodie-side-right.png?v=20261110" alt="">
+              </button>
+            </div>
 
             <div class="preview-meta">
               <span><i class="mini-swatch" data-preview-swatch aria-hidden="true"></i><span data-preview-color-name>Negro</span></span>
@@ -661,7 +676,7 @@
           </details>
           <details>
             <summary>¿Puedo personalizar la espalda?<span class="plus" aria-hidden="true"></span></summary>
-            <p>Sí. En el diseñador puedes cambiar entre frente y espalda, añadir texto o logo en cada cara, arrastrarlos para colocarlos donde quieras, elegir la tipografía y ajustar su tamaño con los controles. También puedes elegir el color de los cordones y el color del texto.</p>
+            <p>Sí. En el diseñador puedes cambiar entre frente y espalda, añadir texto o logo en cada cara, arrastrarlos para colocarlos donde quieras, elegir la tipografía y ajustar su tamaño con los controles. También puedes ver la sudadera de frente, de perfil y de espalda desde la galería de vistas, elegir el color de los cordones y el color del texto.</p>
           </details>
           <details>
             <summary>¿Cuánto tarda en llegar?<span class="plus" aria-hidden="true"></span></summary>
@@ -901,7 +916,7 @@
     <span class="option-tooltip-desc" data-tooltip-desc></span>
   </div>
 
-  <script src="app.js?v=20261109-sin-capucha"></script>
-  <script src="legal.js?v=20261109-sin-capucha"></script>
+  <script src="app.js?v=20261110-gallery3"></script>
+  <script src="legal.js?v=20261110-gallery3"></script>
 </body>
 </html>
