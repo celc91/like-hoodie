@@ -60,7 +60,7 @@ La tienda guarda carritos, pedidos y eventos en **Supabase**. El panel está en 
 Para configurarlo:
 
 1. Sigue los pasos de [`supabase/README.md`](supabase/README.md).
-2. Pega la URL y la anon key del proyecto en `supabase-config.js`.
+2. Pega la URL y la publishable key del proyecto en `supabase-config.js`.
 3. Publica los cambios en GitHub Pages.
 
 Mientras `supabase-config.js` tenga los valores de ejemplo, la tienda funciona en modo demostración y el panel muestra un aviso de configuración.
@@ -73,7 +73,7 @@ Mientras `supabase-config.js` tenga los valores de ejemplo, la tienda funciona e
 ├── styles.css        # Diseño, responsive y animaciones
 ├── app.js            # Configurador, carrito, checkout y modales
 ├── store-supabase.js # Sincronización de carritos, pedidos y eventos
-├── supabase-config.js# URL y anon key de Supabase
+├── supabase-config.js# URL y publishable key de Supabase
 ├── admin.html        # Panel de administración
 ├── admin.js          # Lógica del panel
 ├── admin.css         # Diseño del panel
@@ -103,7 +103,7 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 
 - Completa los datos marcados con `[completar]` en `privacidad.html` y `terminos.html`: razón social, RFC, domicilio fiscal y ciudad de jurisdicción.
 - Revisa los documentos legales con un abogado antes de operar comercialmente.
-- Configura Supabase (`supabase/README.md`), crea el usuario administrador y pega la URL y la anon key en `supabase-config.js`.
+- Configura Supabase (`supabase/README.md`), crea el usuario administrador y pega la URL y la publishable key en `supabase-config.js`.
 - Actualiza el aviso de privacidad y los términos cuando conectes pagos reales, newsletter o envíos.
 - Si añades cookies de analítica o publicidad, actualiza `cookies.html` y pide consentimiento.
 

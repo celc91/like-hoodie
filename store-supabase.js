@@ -1,14 +1,14 @@
 // like hoodie ♡ — sincronización de carritos y pedidos con Supabase
-// La anon key es pública; las políticas RLS limitan el acceso.
+// La publishable key es pública; las políticas RLS limitan el acceso.
 (() => {
   const config = window.LIKEHOODIE_SUPABASE || {};
   const configured =
     typeof config.url === "string" &&
-    typeof config.anonKey === "string" &&
+    typeof config.publishableKey === "string" &&
     config.url.startsWith("https://") &&
     !config.url.includes("TU-PROYECTO") &&
-    config.anonKey.length > 40 &&
-    !config.anonKey.includes("TU_ANON");
+    config.publishableKey.length > 40 &&
+    !config.publishableKey.includes("TU_PUBLISHABLE");
 
   const CART_KEY = "likehoodie_cart_id_v1";
   const sdkAvailable = Boolean(
@@ -69,7 +69,7 @@
   async function ensure() {
     if (!enabled) return false;
     if (!client) {
-      client = window.supabase.createClient(config.url, config.anonKey, {
+      client = window.supabase.createClient(config.url, config.publishableKey, {
         auth: {
           storageKey: "likehoodie-store-auth",
           persistSession: true,

@@ -51,21 +51,21 @@ El usuario administrador podrá entrar en `admin.html`.
 
 ## 5. Conectar la web
 
-En **Project Settings → API** copia:
+En **Project Settings → API Keys** copia:
 
 - **Project URL**
-- **anon public key**
+- **Publishable key** (empieza con `sb_publishable_`)
 
 Edita `supabase-config.js` en la raíz del proyecto:
 
 ```js
 window.LIKEHOODIE_SUPABASE = {
   url: "https://TU-PROYECTO.supabase.co",
-  anonKey: "TU_ANON_KEY",
+  publishableKey: "TU_PUBLISHABLE_KEY",
 };
 ```
 
-La `anon key` es pública y está protegida por RLS. **Nunca** pongas la `service_role key` en el frontend.
+La `publishable key` es pública y está protegida por RLS. **Nunca** pongas la `secret key` ni la antigua `service_role key` en el frontend. Las legacy API keys se retirarán a principios de 2027.
 
 ## 6. Publicar
 

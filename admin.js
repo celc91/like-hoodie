@@ -2,11 +2,11 @@
   const config = window.LIKEHOODIE_SUPABASE || {};
   const configured =
     typeof config.url === "string" &&
-    typeof config.anonKey === "string" &&
+    typeof config.publishableKey === "string" &&
     config.url.startsWith("https://") &&
     !config.url.includes("TU-PROYECTO") &&
-    config.anonKey.length > 40 &&
-    !config.anonKey.includes("TU_ANON");
+    config.publishableKey.length > 40 &&
+    !config.publishableKey.includes("TU_PUBLISHABLE");
 
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -177,7 +177,7 @@
       return;
     }
 
-    client = window.supabase.createClient(config.url, config.anonKey, {
+    client = window.supabase.createClient(config.url, config.publishableKey, {
       auth: {
         storageKey: "likehoodie-admin-auth",
         persistSession: true,
