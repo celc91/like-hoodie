@@ -2,7 +2,7 @@
 
 Tienda online de demostración para vender sudaderas personalizadas. Incluye catálogo, configurador en vivo, carrito persistente y checkout simulado. Todo con HTML, CSS y JavaScript sin dependencias ni proceso de build.
 
-**Sitio:** https://celc91.github.io/like-hoodie/
+**Sitio:** https://likehoodie.com/
 
 ![Vista previa de like hoodie ♡](preview.png)
 
@@ -48,9 +48,14 @@ python -m http.server 4173
 2. Entra en **Settings → Pages**.
 3. En **Build and deployment**, selecciona **Deploy from a branch**.
 4. Elige la rama `main`, carpeta `/ (root)` y guarda.
-5. GitHub publicará la web en `https://TU-USUARIO.github.io/NOMBRE-DEL-REPO/`.
+5. El sitio se publica en `https://likehoodie.com/`.
 
-El sitio usa rutas relativas, así que funciona sin cambios en la subcarpeta de GitHub Pages.
+El archivo `CNAME` ya contiene el dominio personalizado. En el proveedor de DNS (Cloudflare) deben existir estos registros, sin proxy:
+
+- `A @` → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
+- `CNAME www` → `celc91.github.io`.
+
+Cuando GitHub verifique el dominio y emita el certificado, activa **Enforce HTTPS** en **Settings → Pages**.
 
 ## Pedidos y administración
 
