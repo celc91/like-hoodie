@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261110-events8">
+  <link rel="stylesheet" href="styles.css?v=20261110-events9">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -38,11 +38,11 @@
       <path d="M166 82c3-20 16-31 34-31s31 11 34 31c-6 20-19 29-34 29s-28-9-34-29Z" fill="rgba(0,0,0,.20)"/>
       <!-- cordones -->
       <path d="M182 122c-4 26-5 48-10 76" stroke="rgba(0,0,0,.35)" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path d="M182 122c-4 26-5 48-10 76" style="stroke: var(--cord-color, rgba(255,255,255,.8))" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-      <circle cx="171" cy="202" r="4" stroke="rgba(0,0,0,.3)" stroke-width="1" style="fill: var(--cord-color, rgba(255,255,255,.8))"/>
+      <path d="M182 122c-4 26-5 48-10 76" stroke="rgba(255,255,255,.8)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <circle cx="171" cy="202" r="4" stroke="rgba(0,0,0,.3)" stroke-width="1" fill="rgba(255,255,255,.8)"/>
       <path d="M218 122c4 26 5 48 10 76" stroke="rgba(0,0,0,.35)" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <path d="M218 122c4 26 5 48 10 76" style="stroke: var(--cord-color, rgba(255,255,255,.8))" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-      <circle cx="229" cy="202" r="4" stroke="rgba(0,0,0,.3)" stroke-width="1" style="fill: var(--cord-color, rgba(255,255,255,.8))"/>
+      <path d="M218 122c4 26 5 48 10 76" stroke="rgba(255,255,255,.8)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+      <circle cx="229" cy="202" r="4" stroke="rgba(0,0,0,.3)" stroke-width="1" fill="rgba(255,255,255,.8)"/>
       <!-- bolsillo canguro -->
       <path d="M130 278c23-9 117-9 140 0l-8 92c-38 8-86 8-124 0Z" fill="rgba(0,0,0,.07)" stroke="rgba(0,0,0,.14)" stroke-width="2"/>
       <path d="M130 278c23-9 117-9 140 0" fill="none" stroke="rgba(0,0,0,.16)" stroke-width="2.5"/>
@@ -237,14 +237,6 @@
                 <div class="fabric-tint" data-fabric-tint aria-hidden="true"></div>
                 <img class="hoodie-photo" data-hoodie-photo src="assets/hoodie-front.png" alt="Vista frontal de tu sudadera personalizada" width="1003" height="1229">
                 <div class="material-texture" data-material-texture aria-hidden="true"></div>
-                <svg class="cord-overlay" data-cord-overlay viewBox="0 0 1003 1229" aria-hidden="true">
-                  <path class="cord-under" d="M474 170C468 250 463 360 457 512"/>
-                  <path class="cord-line" d="M474 170C468 250 463 360 457 512"/>
-                  <circle class="cord-tip" cx="457" cy="512" r="5"/>
-                  <path class="cord-under" d="M536 170C542 250 547 360 553 512"/>
-                  <path class="cord-line" d="M536 170C542 250 547 360 553 512"/>
-                  <circle class="cord-tip" cx="553" cy="512" r="5"/>
-                </svg>
                 <div class="editor-layer" data-editor-layer>
                   <span class="print-text editor-item" data-print-text data-print-type="text" tabindex="0" role="button" aria-label="Texto del diseño. Arrastra para moverlo."></span>
                   <img class="print-logo editor-item" data-print-logo data-print-type="logo" alt="" tabindex="0" role="button" draggable="false" hidden>
@@ -341,19 +333,6 @@
               </div>
               <p class="option-note" data-technique-note>Impresión directa al tejido, full color. Incluido.</p>
               <p class="option-warning" data-technique-warning hidden></p>
-            </div>
-
-            <div class="control">
-              <div class="control-head">
-                <span class="control-label">Cordones</span>
-                <span class="control-value" data-cord-label>Crema</span>
-              </div>
-              <div class="text-colors cord-colors" role="group" aria-label="Color de los cordones">
-                <button type="button" class="cord-color is-active" style="--tc:#fffdf8" data-cord-color="#fffdf8" data-name="Crema" aria-label="Cordones crema" aria-pressed="true"></button>
-                <button type="button" class="cord-color" style="--tc:#1c1c1f" data-cord-color="#1c1c1f" data-name="Negro" aria-label="Cordones negros" aria-pressed="false"></button>
-                <button type="button" class="cord-color" style="--tc:#cdf25a" data-cord-color="#cdf25a" data-name="Lima" aria-label="Cordones lima" aria-pressed="false"></button>
-                <button type="button" class="cord-color" style="--tc:#ff4d1f" data-cord-color="#ff4d1f" data-name="Naranja" aria-label="Cordones naranja" aria-pressed="false"></button>
-              </div>
             </div>
 
             <div class="personalize">
@@ -745,7 +724,7 @@
           </details>
           <details>
             <summary>¿Puedo personalizar la espalda?<span class="plus" aria-hidden="true"></span></summary>
-            <p>Sí. En el diseñador puedes cambiar entre frente y espalda, añadir texto o logo en cada cara, arrastrarlos para colocarlos donde quieras, elegir la tipografía y ajustar su tamaño con los controles. También puedes ver la sudadera de frente, de perfil y de espalda desde la galería de vistas, elegir el color de los cordones y el color del texto.</p>
+            <p>Sí. En el diseñador puedes cambiar entre frente y espalda, añadir texto o logo en cada cara, arrastrarlos para colocarlos donde quieras, elegir la tipografía y ajustar su tamaño con los controles. También puedes ver la sudadera de frente, de perfil y de espalda desde la galería de vistas y elegir el color del texto.</p>
           </details>
           <details>
             <summary>¿Cuánto tarda en llegar?<span class="plus" aria-hidden="true"></span></summary>
@@ -993,7 +972,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
   <script src="store-supabase.js?v=20261110-pub1"></script>
-  <script src="app.js?v=20261110-events3"></script>
+  <script src="app.js?v=20261110-events4"></script>
   <script src="eventos.js?v=20261110-events6"></script>
   <script src="legal.js?v=20261110-gallery3"></script>
 </body>

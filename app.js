@@ -95,9 +95,6 @@
       price: 0,
       desc: "Impresión directa al tejido, full color. Ideal para algodón.",
     },
-    hood: {
-      cord: "#fffdf8",
-    },
     designs: {
       front: {
         text: "",
@@ -265,7 +262,6 @@
 
   const hoodiePreview = $("[data-preview-hoodie]");
   const hoodiePhoto = $("[data-hoodie-photo]");
-  const cordOverlay = $("[data-cord-overlay]");
   const previewNames = $$("[data-preview-color-name]");
   const previewSwatch = $("[data-preview-swatch]");
   const previewSize = $("[data-preview-size]");
@@ -306,8 +302,6 @@
   const uploadFile = $("[data-upload-file]");
   const fileName = $("[data-file-name]");
   const removeLogoButton = $("[data-remove-logo]");
-  const cordLabel = $("[data-cord-label]");
-  const cordColorButtons = $$("[data-cord-color]");
   const priceEl = $("[data-price-display]");
   const priceNote = $("[data-price-note]");
   const addToCartButton = $("[data-add-to-cart]");
@@ -717,18 +711,6 @@
     });
   }
 
-  function updateCordUI() {
-    let activeName = "";
-    cordColorButtons.forEach((button) => {
-      const active =
-        button.dataset.cordColor.toLowerCase() === state.hood.cord.toLowerCase();
-      button.classList.toggle("is-active", active);
-      button.setAttribute("aria-pressed", String(active));
-      if (active) activeName = button.dataset.name || "";
-    });
-    if (cordLabel && activeName) cordLabel.textContent = activeName;
-  }
-
   function updateMaterialUI() {
     if (materialLabel) materialLabel.textContent = state.material.name;
 
@@ -892,7 +874,6 @@
         "--tint-mask",
         `url("assets/${imageFile}")`
       );
-      hoodiePreview.style.setProperty("--cord-color", state.hood.cord);
       hoodiePreview.classList.toggle("is-dark", isDark);
       hoodiePreview.classList.toggle("is-side-view", isSide);
       hoodiePreview.classList.toggle("is-left-view", state.angle === 270);
@@ -920,7 +901,6 @@
         hoodiePhoto.width = 1003;
         hoodiePhoto.height = 1229;
       }
-      if (cordOverlay) cordOverlay.hidden = !isFront || isSide;
       if (studio) studio.classList.toggle("is-side-view", isSide);
       if (personalizePanel) {
         if (isSide) {
@@ -994,7 +974,6 @@
 
     updateTextColorUI();
     updateTextFontUI();
-    updateCordUI();
     updateMaterialUI();
     updateTechniqueUI();
   }
@@ -1291,13 +1270,6 @@
     });
   }
 
-  cordColorButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      state.hood.cord = button.dataset.cordColor;
-      updatePreview();
-    });
-  });
-
   if (logoInput) {
     logoInput.addEventListener("change", () => {
       const file = logoInput.files && logoInput.files[0];
@@ -1401,7 +1373,6 @@
           name: state.technique.name,
           price: state.technique.price,
         },
-        hood: { cord: state.hood.cord },
         front: {
           text: front.text,
           textColor: front.textColor,
@@ -1447,7 +1418,6 @@
           techniquePrice: techniqueFee(),
           front: designSnapshot.front,
           back: designSnapshot.back,
-          cordColor: state.hood.cord,
           unitPrice,
           qty: 1,
         });
