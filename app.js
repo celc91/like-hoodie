@@ -277,6 +277,7 @@
   const viewThumbs = $$("[data-angle]");
   const hintText = $("[data-hint-text]");
   const studio = $(".studio");
+  const personalizePanel = $(".personalize");
   const toolButtons = $$("[data-personalize-tool]");
   const toolPanels = $$("[data-personalize-panel]");
   const editingLabel = $("[data-editing-label]");
@@ -921,6 +922,15 @@
       }
       if (cordOverlay) cordOverlay.hidden = !isFront || isSide;
       if (studio) studio.classList.toggle("is-side-view", isSide);
+      if (personalizePanel) {
+        if (isSide) {
+          personalizePanel.setAttribute("inert", "");
+          personalizePanel.setAttribute("aria-hidden", "true");
+        } else {
+          personalizePanel.removeAttribute("inert");
+          personalizePanel.removeAttribute("aria-hidden");
+        }
+      }
       if (hintText) {
         hintText.textContent = isSide
           ? "Vista de perfil. Elige Frente o Espalda para editar el diseño."
