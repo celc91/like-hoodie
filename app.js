@@ -419,6 +419,13 @@
           .map((line) => `<p class="cart-custom">${escapeHTML(line)}</p>`)
           .join("");
         const isDark = color.toLowerCase() === "#1c1c1f";
+        const thumbLabel = (front.text || "").trim();
+        const thumbRad = ((front.textRotate || 0) * Math.PI) / 180;
+        const thumbDenom = Math.max(
+          1,
+          0.6 * Math.max(3, thumbLabel.length) * Math.abs(Math.cos(thumbRad)) + Math.abs(Math.sin(thumbRad))
+        );
+        const thumbFont = Math.min(11, Math.max(6, Math.floor(44 / thumbDenom)));
         return `
           <article class="cart-item" data-id="${escapeHTML(item.id)}">
             <div class="cart-thumb" aria-hidden="true">
@@ -426,7 +433,7 @@
                 ${isDark ? "" : '<div class="fabric-tint"></div>'}
                 <img class="hoodie-photo" src="assets/hoodie-front.png" alt="" width="1003" height="1229" loading="lazy">
                 <div class="print-area print-area--thumb">
-                  ${front.text ? `<span class="print-text" style="color:${escapeHTML(front.textColor || "#fffdf9")};transform:rotate(${escapeHTML(String(front.textRotate || 0))}deg)">${escapeHTML(front.text)}</span>` : ""}
+                  ${front.text ? `<span class="print-text" style="font-size:${thumbFont}px;color:${escapeHTML(front.textColor || "#fffdf9")};transform:rotate(${escapeHTML(String(front.textRotate || 0))}deg)">${escapeHTML(front.text)}</span>` : ""}
                   ${front.logoData ? `<img class="print-logo" src="${front.logoData}" alt="" style="transform:rotate(${escapeHTML(String(front.logoRotate || 0))}deg)">` : ""}
                 </div>
               </div>
