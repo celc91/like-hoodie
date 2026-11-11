@@ -2,7 +2,7 @@
 
 ## Archivos
 
-- `perfil-like-hoodie.png` — 1080 × 1080 px. Sudadera de espalda con el diseño de la marca, pensada para el recorte circular de Facebook.
+- `perfil-like-hoodie.png` — 1080 × 1080 px. Sudadera de frente con el diseño de la marca en el bolsillo, pensada para el recorte circular de Facebook.
 - `portada-like-hoodie.png` — 1640 × 624 px. Versión 2x del tamaño recomendado (820 × 312 px). Incluye el sticker de $300 MXN.
 - `plan-de-contenido.md` — descripción de la página, copy inicial, pilares, calendario de 4 semanas, ideas de reels, historias, hashtags y métricas.
 
