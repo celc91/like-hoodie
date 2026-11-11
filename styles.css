@@ -5948,3 +5948,11 @@ p {
   max-width: 100%;
   transform-origin: center;
 }
+
+/* miniatura rasterizada del diseÃ±o */
+.cart-thumb-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}

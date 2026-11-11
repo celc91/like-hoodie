@@ -349,6 +349,95 @@
   /* Cesta                                                                   */
   /* ---------------------------------------------------------------------- */
 
+  /* Miniatura real del diseño: canvas con la prenda y el estampado */
+  const THUMB_HOODIE = new Image();
+  THUMB_HOODIE.src = "assets/hoodie-front.png";
+  const thumbCache = new Map();
+  THUMB_HOODIE.addEventListener("load", () => {
+    thumbCache.clear();
+    if (state.items && state.items.length) renderCart();
+  });
+
+  const THUMB_FONTS = {
+    bricolage: { family: "Bricolage Grotesque", weight: 800 },
+    anton: { family: "Anton", weight: 400 },
+    archivo: { family: "Archivo Black", weight: 400 },
+    bebas: { family: "Bebas Neue", weight: 400 },
+    playfair: { family: "Playfair Display", weight: 700 },
+  };
+
+  function thumbWrap(ctx, text, maxWidth) {
+    const words = text.split(/\s+/).filter(Boolean);
+    const lines = [];
+    let line = "";
+    for (const word of words) {
+      const candidate = line ? line + " " + word : word;
+      if (line && ctx.measureText(candidate).width > maxWidth) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = candidate;
+      }
+    }
+    if (line) lines.push(line);
+    return lines.length ? lines : [text];
+  }
+
+  function makeThumb(front, colorHex, isDark) {
+    if (!THUMB_HOODIE.complete || !THUMB_HOODIE.naturalWidth) return "";
+    if (!front || !front.text) return "";
+
+    const W = 240;
+    const H = Math.round((W * THUMB_HOODIE.naturalHeight) / THUMB_HOODIE.naturalWidth);
+    const canvas = document.createElement("canvas");
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext("2d");
+
+    if (isDark) {
+      ctx.filter = "brightness(0.27) contrast(1.06)";
+      ctx.drawImage(THUMB_HOODIE, 0, 0, W, H);
+      ctx.filter = "none";
+    } else {
+      ctx.drawImage(THUMB_HOODIE, 0, 0, W, H);
+      ctx.globalCompositeOperation = "source-atop";
+      ctx.fillStyle = colorHex;
+      ctx.globalAlpha = 0.88;
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "multiply";
+      ctx.globalAlpha = 0.35;
+      ctx.drawImage(THUMB_HOODIE, 0, 0, W, H);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = "source-over";
+    }
+
+    const cx = ((front.textX ?? 50) / 100) * W;
+    const cy = ((front.textY ?? 49) / 100) * H;
+    const scale = front.textScale || 1;
+    const rotation = ((front.textRotate || 0) * Math.PI) / 180;
+    const cfg = THUMB_FONTS[front.textFont] || THUMB_FONTS.bricolage;
+    const size = W * 0.082;
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(rotation);
+    ctx.scale(scale, scale);
+    ctx.font = cfg.weight + " " + size + 'px "' + cfg.family + '", sans-serif';
+    ctx.fillStyle = front.textColor || "#fffdf9";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    if ("letterSpacing" in ctx) ctx.letterSpacing = (size * 0.02).toFixed(2) + "px";
+
+    const lines = thumbWrap(ctx, front.text.toUpperCase(), W * 0.42);
+    const lineHeight = size * 0.9;
+    const startY = -((lines.length - 1) * lineHeight) / 2;
+    lines.forEach((line, i) => ctx.fillText(line, 0, startY + i * lineHeight));
+    ctx.restore();
+
+    return canvas.toDataURL("image/png");
+  }
+
   function renderCart() {
     const count = state.items.reduce((sum, item) => sum + item.qty, 0);
     const { subtotal, shipping, total } = totals();
@@ -384,6 +473,13 @@
           logoName: item.logoName || "",
         };
         const back = item.back || {};
+        const isDark = color.toLowerCase() === "#1c1c1f";
+        const thumbKey = item.key || item.id;
+        let thumbSrc = thumbCache.get(thumbKey);
+        if (!thumbSrc) {
+          thumbSrc = makeThumb(front, color, isDark);
+          if (thumbSrc) thumbCache.set(thumbKey, thumbSrc);
+        }
         const scaleLabel = (scale) => {
           const percent = Math.round((scale || 1) * 100);
           return percent === 100 ? "" : ` (${percent}%)`;
@@ -418,18 +514,17 @@
         const customHTML = customLines
           .map((line) => `<p class="cart-custom">${escapeHTML(line)}</p>`)
           .join("");
-        const isDark = color.toLowerCase() === "#1c1c1f";
         return `
           <article class="cart-item" data-id="${escapeHTML(item.id)}">
             <div class="cart-thumb" aria-hidden="true">
-              <div class="hoodie ${isDark ? "is-dark" : ""}" style="--fabric-color:${color};--tint-mask:url('assets/hoodie-front.png')">
+              ${thumbSrc ? `<img class="cart-thumb-img" src="${thumbSrc}" alt="">` : `<div class="hoodie ${isDark ? "is-dark" : ""}" style="--fabric-color:${color};--tint-mask:url('assets/hoodie-front.png')">
                 ${isDark ? "" : '<div class="fabric-tint"></div>'}
                 <img class="hoodie-photo" src="assets/hoodie-front.png" alt="" width="1003" height="1229" loading="lazy">
                 <div class="print-area print-area--thumb">
                   ${front.text ? `<span class="print-text editor-item font-${escapeHTML(front.textFont || "bricolage")}" style="--x:${front.textX}%;--y:${front.textY}%;--item-scale:${front.textScale || 1};--item-rotate:${front.textRotate || 0}deg;color:${escapeHTML(front.textColor || "#fffdf9")}">${escapeHTML(front.text)}</span>` : ""}
                   ${front.logoData ? `<img class="print-logo editor-item" src="${front.logoData}" alt="" style="--x:${front.logoX}%;--y:${front.logoY}%;--item-scale:${front.logoScale || 1};--item-rotate:${front.logoRotate || 0}deg">` : ""}
                 </div>
-              </div>
+              </div>`}
             </div>
             <div class="cart-info">
               <div class="cart-item-top">
