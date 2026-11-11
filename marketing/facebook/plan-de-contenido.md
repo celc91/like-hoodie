@@ -1,5 +1,7 @@
 # like hoodie ♡ — Página de Facebook
 
+> **Nota sobre el sticker de portada:** la imagen muestra **$300 MXN**. En la tienda los precios actuales empiezan en $899 MXN. Si los $300 son un anticipo, una promoción o el precio de otro producto, conviene aclararlo en la descripción o cambiar la palabra “DESDE” por “ANTICIPO” o “PROMO” para evitar confusiones.
+
 ## 1. Ficha de la página
 
 | Campo | Propuesta |
