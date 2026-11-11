@@ -299,6 +299,13 @@
           </div>
 
           <div class="studio-controls">
+            <div class="studio-sticky" aria-hidden="false">
+              <div>
+                <span class="ss-label">Total</span>
+                <strong class="ss-price" data-price-mirror>$899 MXN</strong>
+              </div>
+              <button type="button" class="btn btn-primary" data-add-mirror>Añadir a la cesta</button>
+            </div>
             <div class="control">
               <div class="control-head">
                 <span class="control-label">Color de la sudadera</span>
@@ -400,6 +407,14 @@
                       <button type="button" class="text-color" style="--tc:#1c1c1f" data-text-color="#1c1c1f" aria-label="Texto negro" aria-pressed="false"></button>
                       <button type="button" class="text-color" style="--tc:#ff4d1f" data-text-color="#ff4d1f" aria-label="Texto naranja" aria-pressed="false"></button>
                       <button type="button" class="text-color" style="--tc:#cdf25a" data-text-color="#cdf25a" aria-label="Texto lima" aria-pressed="false"></button>
+                      <button type="button" class="text-color" style="--tc:#f6c9d2" data-text-color="#f6c9d2" aria-label="Texto rosa" aria-pressed="false"></button>
+                      <button type="button" class="text-color" style="--tc:#e0384a" data-text-color="#e0384a" aria-label="Texto rojo" aria-pressed="false"></button>
+                      <button type="button" class="text-color" style="--tc:#8b5cf6" data-text-color="#8b5cf6" aria-label="Texto violeta" aria-pressed="false"></button>
+                      <button type="button" class="text-color" style="--tc:#2f6fd0" data-text-color="#2f6fd0" aria-label="Texto azul" aria-pressed="false"></button>
+                      <button type="button" class="text-color" style="--tc:#2f855a" data-text-color="#2f855a" aria-label="Texto verde" aria-pressed="false"></button>
+                      <button type="button" class="text-color" style="--tc:#ffcf4d" data-text-color="#ffcf4d" aria-label="Texto amarillo" aria-pressed="false"></button>
+                      <button type="button" class="text-color" style="--tc:#d9a441" data-text-color="#d9a441" aria-label="Texto dorado" aria-pressed="false"></button>
+                      <button type="button" class="text-color" style="--tc:#9c9488" data-text-color="#9c9488" aria-label="Texto gris" aria-pressed="false"></button>
                     </div>
                   </div>
                   <div class="font-row">
@@ -432,7 +447,7 @@
                       <label class="control-label" for="text-size">Tamaño del texto</label>
                       <span class="control-value" data-text-size-value>100%</span>
                     </div>
-                    <input class="size-range" id="text-size" type="range" min="50" max="150" step="5" value="100" data-text-size aria-label="Tamaño del texto">
+                    <input class="size-range" id="text-size" type="range" min="50" max="220" step="5" value="100" data-text-size aria-label="Tamaño del texto">
                   </div>
                 </div>
               </div>
@@ -460,7 +475,7 @@
                       <label class="control-label" for="logo-size">Tamaño del logo</label>
                       <span class="control-value" data-logo-size-value>100%</span>
                     </div>
-                    <input class="size-range" id="logo-size" type="range" min="50" max="200" step="5" value="100" data-logo-size aria-label="Tamaño del logo">
+                    <input class="size-range" id="logo-size" type="range" min="50" max="220" step="5" value="100" data-logo-size aria-label="Tamaño del logo">
                   </div>
                 </div>
               </div>
@@ -905,6 +920,7 @@
   <!-- CHECKOUT -->
   <div class="modal" data-checkout-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
     <div class="modal-panel">
+      <div class="sheet-grab" aria-hidden="true"></div>
       <button type="button" class="icon-btn modal-close" data-close-checkout aria-label="Cerrar checkout">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
       </button>
@@ -966,6 +982,7 @@
   <!-- MODAL TALLAS -->
   <div class="modal" data-size-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="size-title">
     <div class="modal-panel modal-panel--sizes">
+      <div class="sheet-grab" aria-hidden="true"></div>
       <button type="button" class="icon-btn modal-close" data-close-sizes aria-label="Cerrar guía de tallas">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
       </button>
@@ -999,7 +1016,7 @@
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
   <script src="store-supabase.js?v=20261110-clip1"></script>
-  <script src="app.js?v=20261110-clip1"></script>
+  <script src="app.js?v=20261111-rot1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="legal.js?v=20261110-gallery3"></script>
 </body>

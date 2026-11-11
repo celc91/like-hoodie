@@ -316,6 +316,8 @@
   const removeLogoButton = $("[data-remove-logo]");
   const priceEl = $("[data-price-display]");
   const priceNote = $("[data-price-note]");
+  const priceMirrorEl = $("[data-price-mirror]");
+  const addMirrorButton = $("[data-add-mirror]");
   const addToCartButton = $("[data-add-to-cart]");
   const personalizeButtons = $$("[data-personalize]");
   const newsletterForms = $$("[data-newsletter]");
@@ -423,6 +425,10 @@
               <div class="hoodie ${isDark ? "is-dark" : ""}" style="--fabric-color:${color};--tint-mask:url('assets/hoodie-front.png')">
                 ${isDark ? "" : '<div class="fabric-tint"></div>'}
                 <img class="hoodie-photo" src="assets/hoodie-front.png" alt="" width="1003" height="1229" loading="lazy">
+                <div class="print-area print-area--thumb">
+                  ${front.text ? `<span class="print-text" style="color:${escapeHTML(front.textColor || "#fffdf9")};transform:rotate(${escapeHTML(String(front.textRotate || 0))}deg)">${escapeHTML(front.text)}</span>` : ""}
+                  ${front.logoData ? `<img class="print-logo" src="${front.logoData}" alt="" style="transform:rotate(${escapeHTML(String(front.logoRotate || 0))}deg)">` : ""}
+                </div>
               </div>
             </div>
             <div class="cart-info">
@@ -467,6 +473,8 @@
     closeMenu();
     lastFocusedElement = document.activeElement;
     renderCart();
+    cartDrawer.style.removeProperty("transform");
+    if (overlay) overlay.style.removeProperty("opacity");
     cartDrawer.classList.add("is-open");
     overlay.classList.add("is-open");
     cartDrawer.setAttribute("aria-hidden", "false");
@@ -533,6 +541,204 @@
   openCartButtons.forEach((button) => button.addEventListener("click", openCart));
   closeCartButtons.forEach((button) => button.addEventListener("click", () => closeCart()));
   if (overlay) overlay.addEventListener("click", () => closeCart());
+
+  /* ---------------------------------------------------------------------
+     Panel de la cesta: arrastre 1:1, goma elástica, proyección de impulso
+     y spring crítico con traspaso de velocidad.
+     --------------------------------------------------------------------- */
+  const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  function projectMomentum(velocity, deceleration = 0.998) {
+    return ((velocity / 1000) * deceleration) / (1 - deceleration);
+  }
+
+  // Spring crítico (sin rebote). Devuelve una función para cancelarlo.
+  function runSpring(from, to, initialVelocity, onFrame, onDone) {
+    const response = 0.34; // segundos
+    const damping = 1;     // crítico
+    const omega = (2 * Math.PI) / response;
+    let value = from;
+    let velocity = initialVelocity;
+    let last = performance.now();
+    let frame = 0;
+
+    function step(now) {
+      const dt = Math.min((now - last) / 1000, 1 / 30);
+      last = now;
+      const acceleration = -omega * omega * (value - to) - 2 * damping * omega * velocity;
+      velocity += acceleration * dt;
+      value += velocity * dt;
+
+      if (Math.abs(value - to) < 0.4 && Math.abs(velocity) < 12) {
+        onFrame(to);
+        if (onDone) onDone();
+        return;
+      }
+
+      onFrame(value);
+      frame = requestAnimationFrame(step);
+    }
+
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }
+
+  if (cartDrawer) {
+    let drag = null;
+    let cancelSettle = null;
+    let ignoreClick = false;
+    let ignoreClickTimer = 0;
+
+    const drawerWidth = () => cartDrawer.getBoundingClientRect().width || 1;
+    const currentOffset = () => {
+      const value = getComputedStyle(cartDrawer).transform;
+      if (!value || value === "none") return 0;
+      try {
+        return new DOMMatrixReadOnly(value).m41 || 0;
+      } catch (error) {
+        return 0;
+      }
+    };
+
+    cartDrawer.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+      if (!cartDrawer.classList.contains("is-open")) return;
+      if (reduceMotionQuery.matches) return;
+
+      const wasSettling = Boolean(cancelSettle);
+      if (cancelSettle) {
+        cancelSettle();
+        cancelSettle = null;
+      }
+      // se retoma desde la posición real en pantalla (interrumpible)
+      const live = currentOffset();
+      cartDrawer.classList.remove("is-dragging");
+
+      drag = {
+        id: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        base: live,
+        offset: 0,
+        velocity: 0,
+        lastTime: performance.now(),
+        lastOffset: 0,
+        tracking: false,
+        settling: wasSettling,
+      };
+    });
+
+    cartDrawer.addEventListener("pointermove", (event) => {
+      if (!drag || drag.id !== event.pointerId) return;
+
+      const dx = event.clientX - drag.startX;
+      const dy = event.clientY - drag.startY;
+
+      if (!drag.tracking) {
+        if (Math.hypot(dx, dy) < 10) return;
+        // si el gesto es vertical, es scroll del contenido: soltamos
+        if (Math.abs(dy) > Math.abs(dx)) {
+          drag = null;
+          return;
+        }
+        drag.tracking = true;
+        drag.lastTime = performance.now();
+        drag.lastOffset = drag.base;
+        try {
+          cartDrawer.setPointerCapture(event.pointerId);
+        } catch (error) {
+          /* puntero sintético o ya liberado */
+        }
+        cartDrawer.classList.add("is-dragging");
+      }
+
+      const width = drawerWidth();
+      const raw = drag.base + dx;
+      // goma elástica si se pasa hacia la izquierda
+      const offset = raw < 0 ? raw * 0.25 : raw;
+      drag.offset = Math.min(offset, width * 1.04);
+
+      const now = performance.now();
+      const dt = Math.max(now - drag.lastTime, 1);
+      if (dt < 120) {
+        const instant = ((drag.offset - drag.lastOffset) / dt) * 1000;
+        // suavizado exponencial: pesa más el movimiento reciente
+        drag.velocity = drag.velocity * 0.3 + instant * 0.7;
+        drag.velocity = Math.max(-4000, Math.min(4000, drag.velocity));
+      }
+      drag.lastTime = now;
+      drag.lastOffset = drag.offset;
+
+      cartDrawer.style.transform = `translate3d(${drag.offset}px, 0, 0)`;
+      if (overlay) {
+        overlay.style.opacity = String(1 - Math.min(drag.offset / width, 1) * 0.65);
+      }
+    });
+
+    // Lleva el panel a un destino con un spring crítico, desde la posición
+    // real en pantalla y con la velocidad que traía el dedo.
+    function settle(target, velocity, shouldClose) {
+      const width = drawerWidth();
+      cancelSettle = runSpring(
+        currentOffset(),
+        target,
+        velocity,
+        (value) => {
+          cartDrawer.style.transform = `translate3d(${value}px, 0, 0)`;
+          if (overlay) {
+            overlay.style.opacity = String(1 - Math.min(value / width, 1) * 0.65);
+          }
+        },
+        () => {
+          cancelSettle = null;
+          cartDrawer.classList.remove("is-dragging");
+          if (shouldClose) closeCart();
+          cartDrawer.style.removeProperty("transform");
+          if (overlay) overlay.style.removeProperty("opacity");
+        }
+      );
+    }
+
+    function endDrag(event) {
+      if (!drag || drag.id !== event.pointerId) return;
+
+      if (!drag.tracking) {
+        // fue un toque: si venía de un cierre a medias, vuelve a abrirse
+        if (drag.settling) settle(0, 0, false);
+        drag = null;
+        return;
+      }
+
+      const width = drawerWidth();
+      const from = drag.offset;
+      const velocity = drag.velocity;
+      const projected = from + projectMomentum(velocity);
+      const shouldClose = projected > width * 0.42 || velocity > 520;
+
+      drag = null;
+      ignoreClick = true;
+      window.clearTimeout(ignoreClickTimer);
+      ignoreClickTimer = window.setTimeout(() => {
+        ignoreClick = false;
+      }, 350);
+
+      settle(shouldClose ? width * 1.04 : 0, velocity, shouldClose);
+    }
+
+    cartDrawer.addEventListener("pointerup", endDrag);
+    cartDrawer.addEventListener("pointercancel", endDrag);
+
+    // un arrastre no debe disparar el click del elemento que quedó debajo
+    cartDrawer.addEventListener(
+      "click",
+      (event) => {
+        if (!ignoreClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+      },
+      true
+    );
+  }
 
   /* ---------------------------------------------------------------------- */
   /* Checkout                                                                */
@@ -1182,6 +1388,7 @@
       printText.style.setProperty("--x", `${design.textX}%`);
       printText.style.setProperty("--y", `${design.textY}%`);
       printText.style.setProperty("--item-scale", design.textScale || 1);
+      printText.style.setProperty("--item-rotate", `${design.textRotate || 0}deg`);
       const font = TEXT_FONTS[design.textFont] || TEXT_FONTS.bricolage;
       Object.values(TEXT_FONTS).forEach((item) => {
         printText.classList.remove(item.className);
@@ -1208,6 +1415,7 @@
       printLogo.style.setProperty("--x", `${design.logoX}%`);
       printLogo.style.setProperty("--y", `${design.logoY}%`);
       printLogo.style.setProperty("--item-scale", design.logoScale || 1);
+      printLogo.style.setProperty("--item-rotate", `${design.logoRotate || 0}deg`);
     }
 
     const total =
@@ -1219,11 +1427,15 @@
 
     if (priceEl) priceEl.textContent = formatPrice(total);
     if (priceNote) priceNote.textContent = priceNoteText();
+    if (priceMirrorEl) priceMirrorEl.textContent = formatPrice(total);
 
     updateTextColorUI();
     updateTextFontUI();
     updateMaterialUI();
     updateTechniqueUI();
+    // el repintado reescribe el contenido: las asas deben volver
+    setupHandles(printText);
+    setupHandles(printLogo);
   }
 
   function updateGalleryUI() {
@@ -1304,6 +1516,137 @@
     });
 
     updatePreview();
+  }
+
+
+  /* Asas de tamaño y rotación directamente sobre la prenda */
+  function setupHandles(element) {
+    if (!element || element.querySelector(".edit-handle")) return;
+    const type = element.dataset.printType;
+    if (!type) return;
+
+    const iconResize =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+    const iconRotate =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.2-6.9"/><path d="M21 3v6h-6"/></svg>';
+
+    const build = (kind, label, icon) => {
+      const handle = document.createElement("span");
+      handle.className = "edit-handle edit-handle--" + kind;
+      handle.setAttribute("role", "button");
+      handle.setAttribute("tabindex", "0");
+      handle.setAttribute("aria-label", label);
+      handle.innerHTML = icon;
+      element.appendChild(handle);
+      return handle;
+    };
+
+    const resizeHandle = build("resize", "Redimensionar. Arrastra o usa las flechas verticales.", iconResize);
+    const rotateHandle = build("rotate", "Rotar. Arrastra o usa las flechas horizontales.", iconRotate);
+
+    let mode = null;
+    let pointerId = null;
+    let startDist = 1;
+    let startScale = 1;
+    let startAngle = 0;
+    let startRotate = 0;
+
+    const design = () => state.designs[state.view];
+    const scaleKey = type === "text" ? "textScale" : "logoScale";
+    const rotateKey = type === "text" ? "textRotate" : "logoRotate";
+
+    const centerOf = () => {
+      const rect = element.getBoundingClientRect();
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    };
+
+    function setScale(value) {
+      const input = type === "text" ? textSizeInput : logoSizeInput;
+      const output = type === "text" ? textSizeValue : logoSizeValue;
+      const min = input && input.min ? Number(input.min) / 100 : 0.5;
+      const max = input && input.max ? Number(input.max) / 100 : 2;
+      const next = Math.min(max, Math.max(min, value));
+      design()[scaleKey] = next;
+      element.style.setProperty("--item-scale", next);
+      if (input) input.value = String(Math.round(next * 100));
+      if (output) output.textContent = Math.round(next * 100) + "%";
+    }
+
+    function setRotate(value) {
+      let next = value;
+      while (next > 180) next -= 360;
+      while (next < -180) next += 360;
+      design()[rotateKey] = Math.round(next);
+      element.style.setProperty("--item-rotate", next + "deg");
+    }
+
+    function begin(event, which) {
+      event.preventDefault();
+      event.stopPropagation();
+      mode = which;
+      pointerId = event.pointerId;
+      const center = centerOf();
+      if (which === "resize") {
+        startDist = Math.max(14, Math.hypot(event.clientX - center.x, event.clientY - center.y));
+        startScale = design()[scaleKey] || 1;
+      } else {
+        startAngle = (Math.atan2(event.clientY - center.y, event.clientX - center.x) * 180) / Math.PI;
+        startRotate = design()[rotateKey] || 0;
+      }
+      try {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      } catch (error) {
+        /* puntero sintético */
+      }
+      element.classList.add("is-dragging");
+    }
+
+    function move(event) {
+      if (!mode || event.pointerId !== pointerId) return;
+      event.preventDefault();
+      const center = centerOf();
+      if (mode === "resize") {
+        const dist = Math.hypot(event.clientX - center.x, event.clientY - center.y);
+        setScale((startScale * dist) / startDist);
+      } else {
+        const angle = (Math.atan2(event.clientY - center.y, event.clientX - center.x) * 180) / Math.PI;
+        let next = startRotate + (angle - startAngle);
+        if (event.shiftKey) next = Math.round(next / 15) * 15;
+        setRotate(next);
+      }
+    }
+
+    function end(event) {
+      if (!mode) return;
+      mode = null;
+      pointerId = null;
+      element.classList.remove("is-dragging");
+      try {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      } catch (error) {
+        /* la captura pudo perderse */
+      }
+    }
+
+    [resizeHandle, rotateHandle].forEach((handle) => {
+      handle.addEventListener("pointerdown", (event) => begin(event, handle === resizeHandle ? "resize" : "rotate"));
+      handle.addEventListener("pointermove", move);
+      handle.addEventListener("pointerup", end);
+      handle.addEventListener("pointercancel", end);
+
+      handle.addEventListener("keydown", (event) => {
+        const key = event.key;
+        if (key !== "ArrowUp" && key !== "ArrowDown" && key !== "ArrowLeft" && key !== "ArrowRight") return;
+        event.preventDefault();
+        event.stopPropagation();
+        const step = event.shiftKey ? 10 : 5;
+        if (handle === resizeHandle) {
+          setScale((design()[scaleKey] || 1) + (key === "ArrowUp" ? 0.05 : -0.05));
+        } else {
+          setRotate((design()[rotateKey] || 0) + (key === "ArrowRight" ? step : -step));
+        }
+      });
+    });
   }
 
   function setupDraggable(element) {
@@ -1634,9 +1977,28 @@
 
   setupDraggable(printText);
   setupDraggable(printLogo);
+  setupHandles(printText);
+  setupHandles(printLogo);
+
+  if (addMirrorButton && addToCartButton) {
+    addMirrorButton.addEventListener("click", () => addToCartButton.click());
+  }
 
   if (addToCartButton) {
     addToCartButton.addEventListener("click", () => {
+      // no se puede comprar una sudadera "personalizada" sin diseño
+      const hasDesign = ["front", "back"].some((view) => {
+        const design = state.designs[view];
+        if (!design) return false;
+        return Boolean((design.text && design.text.trim()) || design.logoName);
+      });
+      if (!hasDesign) {
+        showToast("Añade un texto o un logo antes de añadir a la cesta.");
+        const editor = $("[data-print-text]");
+        if (editor) editor.focus({ preventScroll: true });
+        return;
+      }
+
       if (
         state.technique.id === "sublimacion" &&
         state.material.id !== "polyester280"
@@ -1674,11 +2036,13 @@
           text: front.text,
           textColor: front.textColor,
           textScale: front.textScale,
+          textRotate: front.textRotate || 0,
           textFont: front.textFont,
           logoName: front.logoName,
           logoPath: front.logoPath || "",
           logoData: front.logoData || "",
           logoScale: front.logoScale,
+          logoRotate: front.logoRotate || 0,
           textX: front.textX,
           textY: front.textY,
           logoX: front.logoX,
@@ -1688,11 +2052,13 @@
           text: back.text,
           textColor: back.textColor,
           textScale: back.textScale,
+          textRotate: back.textRotate || 0,
           textFont: back.textFont,
           logoName: back.logoName,
           logoPath: back.logoPath || "",
           logoData: back.logoData || "",
           logoScale: back.logoScale,
+          logoRotate: back.logoRotate || 0,
           textX: back.textX,
           textY: back.textY,
           logoX: back.logoX,
@@ -1903,4 +2269,162 @@
   }
   loadPaymentConfig();
   initPaymentBanner();
+})();
+
+/* --------------------------------------------------------------------------
+   Modales: cierre por arrastre desde el asa superior (hoja en mÃ³vil)
+   -------------------------------------------------------------------------- */
+(function sheetDrag() {
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const project = (velocity, deceleration = 0.998) =>
+    ((velocity / 1000) * deceleration) / (1 - deceleration);
+
+  function spring(from, to, initialVelocity, onFrame, onDone) {
+    const omega = (2 * Math.PI) / 0.34;
+    let value = from;
+    let velocity = initialVelocity;
+    let last = performance.now();
+    let frame = 0;
+
+    function step(now) {
+      const dt = Math.min((now - last) / 1000, 1 / 30);
+      last = now;
+      const acceleration = -omega * omega * (value - to) - 2 * omega * velocity;
+      velocity += acceleration * dt;
+      value += velocity * dt;
+
+      if (Math.abs(value - to) < 0.4 && Math.abs(velocity) < 12) {
+        onFrame(to);
+        if (onDone) onDone();
+        return;
+      }
+
+      onFrame(value);
+      frame = requestAnimationFrame(step);
+    }
+
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }
+
+  document.querySelectorAll(".sheet-grab").forEach((grab) => {
+    const panel = grab.closest(".modal-panel");
+    const modal = grab.closest(".modal");
+    if (!panel || !modal) return;
+
+    const closeButton = modal.querySelector("[data-close-checkout], [data-close-sizes]");
+    let drag = null;
+    let settle = null;
+    let ignoreClick = false;
+    let ignoreClickTimer = 0;
+
+    grab.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || reduceMotion.matches) return;
+      if (settle) {
+        settle();
+        settle = null;
+      }
+      drag = {
+        id: event.pointerId,
+        startY: event.clientY,
+        offset: 0,
+        velocity: 0,
+        lastTime: performance.now(),
+        lastOffset: 0,
+        tracking: false,
+      };
+      try {
+        grab.setPointerCapture(event.pointerId);
+      } catch (error) {
+        /* puntero sintÃ©tico */
+      }
+    });
+
+    grab.addEventListener("pointermove", (event) => {
+      if (!drag || drag.id !== event.pointerId) return;
+
+      const dy = event.clientY - drag.startY;
+      if (!drag.tracking) {
+        if (Math.abs(dy) < 8) return;
+        drag.tracking = true;
+        drag.lastTime = performance.now();
+        panel.classList.add("is-dragging");
+      }
+
+      // hacia arriba ofrece resistencia, hacia abajo sigue el dedo
+      const offset = dy < 0 ? dy * 0.25 : dy;
+      drag.offset = offset;
+
+      const now = performance.now();
+      const dt = Math.max(now - drag.lastTime, 1);
+      if (dt < 120) {
+        const instant = ((offset - drag.lastOffset) / dt) * 1000;
+        drag.velocity = drag.velocity * 0.3 + instant * 0.7;
+        drag.velocity = Math.max(-4000, Math.min(4000, drag.velocity));
+      }
+      drag.lastTime = now;
+      drag.lastOffset = offset;
+
+      panel.style.transform = `translate3d(0, ${offset}px, 0)`;
+    });
+
+    function endDrag(event) {
+      if (!drag || drag.id !== event.pointerId) return;
+      if (!drag.tracking) {
+        drag = null;
+        return;
+      }
+
+      const height = panel.getBoundingClientRect().height;
+      const from = drag.offset;
+      const velocity = drag.velocity;
+      const projected = from + project(velocity);
+      const shouldClose = projected > Math.min(height * 0.35, 220) || velocity > 900;
+
+      drag = null;
+      ignoreClick = true;
+      window.clearTimeout(ignoreClickTimer);
+      ignoreClickTimer = window.setTimeout(() => {
+        ignoreClick = false;
+      }, 350);
+
+      settle = spring(
+        from,
+        shouldClose ? height : 0,
+        velocity,
+        (value) => {
+          panel.style.transform = `translate3d(0, ${value}px, 0)`;
+        },
+        () => {
+          settle = null;
+          panel.classList.remove("is-dragging");
+          if (shouldClose) {
+            // el panel ya está fuera de pantalla: sin transición para que
+            // no se vea reentrar mientras el fondo se desvanece
+            panel.style.transition = "none";
+            if (closeButton) closeButton.click();
+            panel.style.removeProperty("transform");
+            requestAnimationFrame(() => {
+              panel.style.removeProperty("transition");
+            });
+          } else {
+            panel.style.removeProperty("transform");
+          }
+        }
+      );
+    }
+
+    grab.addEventListener("pointerup", endDrag);
+    grab.addEventListener("pointercancel", endDrag);
+
+    grab.addEventListener(
+      "click",
+      (event) => {
+        if (!ignoreClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+      },
+      true
+    );
+  });
 })();

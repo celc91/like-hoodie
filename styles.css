@@ -1,5 +1,5 @@
-/* ==========================================================================
-   like hoodie ♡ — Sudaderas personalizadas
+﻿/* ==========================================================================
+   like hoodie â™¡ â€” Sudaderas personalizadas
    ========================================================================== */
 
 :root {
@@ -816,8 +816,8 @@ section[id] {
 
 .hoodie.is-dark .hoodie-photo {
   mix-blend-mode: normal;
-  filter: brightness(calc(0.18 * var(--mat-brightness, 1)))
-    contrast(calc(1.14 * var(--mat-contrast, 1)))
+  filter: brightness(calc(0.27 * var(--mat-brightness, 1)))
+    contrast(calc(1.06 * var(--mat-contrast, 1)))
     saturate(var(--mat-saturate, 1))
     drop-shadow(0 28px 32px rgba(22, 22, 24, 0.24));
 }
@@ -1055,7 +1055,7 @@ section[id] {
 }
 
 /* --------------------------------------------------------------------------
-   Cabeceras de sección
+   Cabeceras de secciÃ³n
    -------------------------------------------------------------------------- */
 
 .section-head {
@@ -1125,7 +1125,8 @@ section[id] {
   border-radius: 32px;
   background: var(--paper);
   box-shadow: var(--shadow);
-  overflow: hidden;
+  /* clip en vez de hidden: recorta igual pero no rompe position: sticky */
+  overflow: clip;
 }
 
 .studio-preview {
@@ -1597,7 +1598,7 @@ section[id] {
 }
 
 /* --------------------------------------------------------------------------
-   Catálogo
+   CatÃ¡logo
    -------------------------------------------------------------------------- */
 
 .catalog {
@@ -1755,7 +1756,7 @@ section[id] {
 }
 
 /* --------------------------------------------------------------------------
-   Cómo funciona
+   CÃ³mo funciona
    -------------------------------------------------------------------------- */
 
 .steps {
@@ -3677,7 +3678,7 @@ details[open] .plus::after {
 }
 
 /* --------------------------------------------------------------------------
-   Páginas legales
+   PÃ¡ginas legales
    -------------------------------------------------------------------------- */
 
 .legal-header {
@@ -4182,7 +4183,7 @@ details[open] .plus::after {
 }
 
 /* --------------------------------------------------------------------------
-   Editor de diseño: vista frontal/trasera y arrastre
+   Editor de diseÃ±o: vista frontal/trasera y arrastre
    -------------------------------------------------------------------------- */
 
 .preview-top {
@@ -4326,7 +4327,7 @@ details[open] .plus::after {
 }
 
 .studio.is-side-view .personalize::after {
-  content: "Vista de perfil\A Elige Frente o Espalda para editar tu diseño.";
+  content: "Vista de perfil\A Elige Frente o Espalda para editar tu diseÃ±o.";
   position: absolute;
   inset: 0;
   z-index: 4;
@@ -4358,7 +4359,7 @@ details[open] .plus::after {
   left: var(--x, 50%);
   top: var(--y, 42%);
   z-index: 3;
-  transform: translate(-50%, -50%) scale(var(--item-scale, 1));
+  transform: translate(-50%, -50%) rotate(var(--item-rotate, 0deg)) scale(var(--item-scale, 1));
   border-radius: 3px;
   outline: 1.5px dashed transparent;
   outline-offset: 5px;
@@ -4593,7 +4594,7 @@ details[open] .plus::after {
 }
 
 /* --------------------------------------------------------------------------
-   Controles de personalización estilo FOS
+   Controles de personalizaciÃ³n estilo FOS
    -------------------------------------------------------------------------- */
 
 .personalize {
@@ -4769,7 +4770,7 @@ details[open] .plus::after {
 }
 
 /* --------------------------------------------------------------------------
-   Calendario de conciertos (Ticketmaster México)
+   Calendario de conciertos (Ticketmaster MÃ©xico)
    -------------------------------------------------------------------------- */
 
 .events {
@@ -5386,4 +5387,576 @@ details[open] .plus::after {
   .event-main h4 {
     font-size: 15.5px;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Pulido de interacciÃƒÂ³n Ã¢â‚¬â€ principios Apple Design
+   -------------------------------------------------------------------------- */
+
+/* 1 Ã‚Â· El feedback nace en pointer-down, no en el click */
+.btn:active,
+.btn-primary:active,
+.btn-dark:active,
+.btn-ghost:active,
+.btn-outline:active,
+.btn-lime:active,
+.link-btn:active,
+.icon-btn:active,
+.cart-button:active,
+.menu-toggle:active,
+.calendar-btn:active {
+  transform: scale(0.97);
+  transition-duration: 90ms;
+}
+
+/* 2 Ã‚Â· Zonas tÃƒÂ¡ctiles de 44 px */
+.icon-btn,
+.cart-button,
+.menu-toggle {
+  width: 44px;
+  height: 44px;
+}
+
+/* 3 Ã‚Â· Borde de scroll suave en vez de una lÃƒÂ­nea dura */
+.site-header::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -16px 0;
+  height: 16px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(244, 239, 230, 0.6), rgba(244, 239, 230, 0));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.site-header.is-scrolled::after {
+  opacity: 1;
+}
+
+/* 4 Ã‚Â· Panel de la cesta arrastrable (seguimiento 1:1 en JS) */
+.cart-drawer {
+  touch-action: pan-y;
+  will-change: transform;
+}
+
+.cart-drawer.is-dragging {
+  transition: none !important;
+}
+
+.cart-drawer.is-dragging * {
+  user-select: none;
+}
+
+/* 5 Ã‚Â· Transparencia y contraste */
+@media (prefers-reduced-transparency: reduce) {
+  .site-header,
+  .legal-header {
+    background: var(--paper);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .overlay {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(12, 12, 14, 0.64);
+  }
+}
+
+@media (prefers-contrast: more) {
+  .site-header,
+  .legal-header {
+    background: var(--paper);
+    border-bottom-color: var(--ink);
+  }
+
+  .overlay {
+    background: rgba(0, 0, 0, 0.74);
+  }
+
+  .btn-ghost,
+  .btn-outline {
+    border-color: var(--ink);
+  }
+}
+
+/* 6 Ã‚Â· Movimiento reducido (al final, para ganar en cascada) */
+@media (prefers-reduced-motion: reduce) {
+  .btn:active,
+  .btn-primary:active,
+  .btn-dark:active,
+  .icon-btn:active,
+  .cart-button:active,
+  .menu-toggle:active,
+  .calendar-btn:active {
+    transform: none;
+  }
+
+  .cart-drawer,
+  .overlay {
+    transition-duration: 0.01ms !important;
+  }
+
+  .site-header::after {
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Sistema visual Ã¢â‚¬â€ color, tipografÃƒÂ­a y composiciÃƒÂ³n
+   (capa final: redefine tokens y ritmo sin tocar la estructura)
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* neutros cÃƒÂ¡lidos, mÃƒÂ¡s coherentes entre sÃƒÂ­ */
+  --cream: #f7f2e9;
+  --cream-2: #efe7d8;
+  --paper: #fffdf9;
+  --ink: #17130f;
+  --ink-2: #221c17;
+  --ink-soft: #55504a;
+  --muted: #7b756c;
+  --line: rgba(23, 19, 15, 0.14);
+
+  /* un solo acento principal, un paso menos fluorescente */
+  --orange: #f0451a;
+  --orange-dark: #d43a12;
+  --lime: #dcf07e;
+  --pink: #f6c9d2;
+
+  --radius: 22px;
+  --shadow: 0 18px 44px rgba(23, 19, 15, 0.08);
+  --max: 1160px;
+}
+
+/* --- TipografÃƒÂ­a ---------------------------------------------------------- */
+
+body {
+  font-size: 16.5px;
+  line-height: 1.62;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-optical-sizing: auto;
+  text-wrap: balance;
+  letter-spacing: -0.04em;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+.hero h1 {
+  font-size: clamp(3.1rem, 7.2vw, 6.6rem);
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  margin: 20px 0 24px;
+}
+
+.hero-sub {
+  max-width: 46ch;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.section-head h2 {
+  font-size: clamp(2.1rem, 4.4vw, 3.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.042em;
+}
+
+.section-head p {
+  max-width: 52ch;
+  color: var(--muted);
+}
+
+.eyebrow {
+  letter-spacing: 0.16em;
+}
+
+/* --- ComposiciÃƒÂ³n --------------------------------------------------------- */
+
+.container {
+  width: min(var(--max), calc(100% - 56px));
+}
+
+.hero {
+  padding-top: clamp(28px, 4vw, 56px);
+}
+
+.studio-section,
+.catalog,
+.steps,
+.reviews,
+.faq,
+.events {
+  padding-block: clamp(78px, 8.6vw, 124px);
+}
+
+.section-head {
+  margin-bottom: clamp(34px, 4vw, 54px);
+}
+
+/* --- Coherencia de color en los elementos existentes --------------------- */
+
+.hero-blob {
+  background: radial-gradient(circle at 32% 28%, #ff7d5a, var(--orange) 62%, var(--orange-dark));
+}
+
+.btn-primary {
+  box-shadow: 0 12px 26px rgba(240, 69, 26, 0.24);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 16px 30px rgba(240, 69, 26, 0.28);
+}
+
+@media (max-width: 640px) {
+  .container {
+    width: calc(100% - 40px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   MenÃƒÂº mÃƒÂ³vil y modales Ã¢â‚¬â€ misma lÃƒÂ³gica de movimiento que el panel de cesta
+   -------------------------------------------------------------------------- */
+
+/* Apertura continua con origen en el botÃƒÂ³n que la provoca */
+@media (max-width: 960px) {
+  .mobile-menu {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    border-top-width: 0;
+    overflow: hidden;
+    transform-origin: top right;
+    transition:
+      grid-template-rows 0.36s cubic-bezier(0.22, 0.8, 0.25, 1),
+      opacity 0.22s ease,
+      border-top-width 0.22s ease;
+  }
+
+  .mobile-menu > * {
+    min-height: 0;
+  }
+  .mobile-menu nav {
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: padding 0.3s cubic-bezier(0.22, 0.8, 0.25, 1);
+  }
+
+  .site-header.menu-open .mobile-menu nav {
+    padding-top: 14px;
+    padding-bottom: 20px;
+  }
+
+  .site-header.menu-open .mobile-menu {
+    display: grid;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    border-top-width: 1px;
+  }
+  /* el menú se lee como capa, no como fondo */
+  .site-header.menu-open .mobile-menu {
+    background: var(--paper);
+    box-shadow: 0 24px 40px rgba(23, 19, 15, 0.09);
+  }
+
+  .mobile-menu nav > * {
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.3s cubic-bezier(0.22, 0.8, 0.25, 1);
+  }
+
+  .site-header.menu-open .mobile-menu nav > * {
+    opacity: 1;
+    transform: none;
+  }
+
+  .site-header.menu-open .mobile-menu nav > *:nth-child(1) { transition-delay: 0.04s; }
+  .site-header.menu-open .mobile-menu nav > *:nth-child(2) { transition-delay: 0.07s; }
+  .site-header.menu-open .mobile-menu nav > *:nth-child(3) { transition-delay: 0.1s; }
+  .site-header.menu-open .mobile-menu nav > *:nth-child(4) { transition-delay: 0.13s; }
+  .site-header.menu-open .mobile-menu nav > *:nth-child(5) { transition-delay: 0.16s; }
+  .site-header.menu-open .mobile-menu nav > *:nth-child(6) { transition-delay: 0.19s; }
+}
+
+/* Modal: material mÃƒÂ¡s presente y entrada con mÃƒÂ¡s recorrido */
+.modal {
+  background: rgba(12, 12, 14, 0.55);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+}
+
+.modal-panel {
+  transform: translateY(22px) scale(0.965);
+  transition: transform 0.38s cubic-bezier(0.2, 0.9, 0.25, 1);
+  will-change: transform;
+}
+
+.modal.is-open .modal-panel {
+  transform: none;
+}
+
+.modal-panel.is-dragging {
+  transition: none !important;
+}
+
+/* Asa de arrastre: solo en mÃƒÂ³vil, donde el modal pasa a ser una hoja */
+.sheet-grab {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .modal {
+    place-items: end center;
+    padding: 0;
+  }
+
+  .modal-panel {
+    width: 100%;
+    max-height: 92dvh;
+    padding-top: 30px;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .sheet-grab {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .sheet-grab::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 42px;
+    height: 5px;
+    margin-left: -21px;
+    border-radius: 999px;
+    background: rgba(23, 19, 15, 0.18);
+  }
+}
+
+/* Ajuste de mÃƒÂ¡rgenes laterales por breakpoint (composiciÃƒÂ³n) */
+@media (max-width: 760px) {
+  .container {
+    width: calc(100% - 36px);
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: calc(100% - 32px);
+  }
+}
+
+/* Movimiento reducido para lo nuevo */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu,
+  .mobile-menu nav > *,
+  .modal-panel {
+    transition-duration: 0.01ms !important;
+  }
+
+  .mobile-menu nav > * {
+    transform: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Precio siempre visible y diseÃ±o en la miniatura de la cesta
+   -------------------------------------------------------------------------- */
+
+.studio-sticky {
+  position: sticky;
+  top: 92px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: -6px 0 2px;
+  padding: 10px 12px 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 253, 249, 0.88);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  box-shadow: 0 10px 24px rgba(23, 19, 15, 0.06);
+}
+
+.studio-sticky .ss-label {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.studio-sticky .ss-price {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.studio-sticky .btn {
+  padding: 11px 18px;
+  font-size: 14px;
+}
+
+@media (max-width: 960px) {
+  .studio-sticky {
+    top: 84px;
+  }
+}
+
+@media (max-width: 480px) {
+  .studio-sticky .ss-price {
+    font-size: 19px;
+  }
+
+  .studio-sticky .btn {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}
+
+/* El diseÃ±o elegido se ve tambiÃ©n en la cesta */
+.print-area--thumb {
+  top: 32%;
+  width: 50%;
+  gap: 4px;
+}
+
+.print-area--thumb .print-text {
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.print-area--thumb .print-logo {
+  max-width: 70%;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   Asas de tamaÃ±o y rotaciÃ³n sobre la prenda
+   -------------------------------------------------------------------------- */
+
+.editor-item {
+  --handle-size: 30px;
+}
+
+.edit-handle {
+  position: absolute;
+  z-index: 7;
+  display: grid;
+  place-items: center;
+  width: var(--handle-size);
+  height: var(--handle-size);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  touch-action: none;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+/* zona de toque ampliada, sin agrandar el cÃ­rculo */
+.edit-handle::after {
+  content: "";
+  position: absolute;
+  inset: -9px;
+  border-radius: 50%;
+}
+
+.edit-handle svg {
+  width: 15px;
+  height: 15px;
+  pointer-events: none;
+}
+
+.edit-handle--resize {
+  right: -16px;
+  bottom: -16px;
+  cursor: nwse-resize;
+}
+
+.edit-handle--rotate {
+  right: -16px;
+  top: -16px;
+  cursor: grab;
+  background: var(--ink);
+}
+
+.edit-handle--rotate:active {
+  cursor: grabbing;
+}
+
+.editor-item .edit-handle {
+  opacity: 0.55;
+  pointer-events: auto;
+}
+
+.editor-item:hover .edit-handle,
+.editor-item:focus .edit-handle,
+.editor-item.is-dragging .edit-handle,
+.edit-handle:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (hover: none) {
+  .edit-handle {
+    opacity: 0.95;
+    pointer-events: auto;
+  }
+}
+
+/* la paleta de texto ahora necesita envolver */
+.text-colors {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .editor-item {
+    --handle-size: 26px;
+  }
+
+  .edit-handle svg {
+    width: 13px;
+    height: 13px;
+  }
+}
+
+/* la miniatura recorta el diseÃ±o rotado en vez de desbordar */
+.print-area--thumb {
+  overflow: hidden;
+}
+
+.print-area--thumb .print-text {
+  max-width: 100%;
+  transform-origin: center;
 }
