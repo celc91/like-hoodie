@@ -440,7 +440,8 @@
     return { ok: false, reason: error.code || "error", message: error.message };
   }
 
-  // Devuelve el descuento de un cupón si es válido
+  // Devuelve el descuento de un cupón si es válido.
+  // La tabla no es legible desde el navegador: se consulta por función.
   async function findCoupon(code) {
     const clean = String(code || "").trim().toUpperCase();
     if (!/^[A-Z0-9-]{3,32}$/.test(clean)) return { ok: false, reason: "invalid" };
@@ -448,25 +449,41 @@
     const ok = await ensure();
     if (!ok) return { ok: false, reason: "offline" };
 
-    const { data, error } = await client
+    // vía nueva: función del servidor (no expone la tabla)
+    const { data, error } = await client.rpc("check_coupon", { p_code: clean });
+
+    if (!error && data) {
+      if (!data.valid) {
+        return { ok: false, reason: data.reason || "notfound" };
+      }
+      return { ok: true, code: data.code, percent: Number(data.percent) };
+    }
+
+    // compatibilidad mientras no se haya ejecutado security-fixes.sql
+    if (error && error.code !== "PGRST202" && error.code !== "42883") {
+      console.error("No se pudo validar el cupón:", error);
+      return { ok: false, reason: "error" };
+    }
+
+    const { data: row, error: rowError } = await client
       .from("coupons")
       .select("code,percent,active,max_uses,used_count,expires_at")
       .eq("code", clean)
       .maybeSingle();
 
-    if (error) {
-      console.error("No se pudo validar el cupón:", error);
+    if (rowError) {
+      console.error("No se pudo validar el cupón:", rowError);
       return { ok: false, reason: "error" };
     }
-    if (!data || !data.active) return { ok: false, reason: "notfound" };
-    if (data.expires_at && new Date(data.expires_at).getTime() < Date.now()) {
+    if (!row || !row.active) return { ok: false, reason: "notfound" };
+    if (row.expires_at && new Date(row.expires_at).getTime() < Date.now()) {
       return { ok: false, reason: "expired" };
     }
-    if (data.max_uses && data.used_count >= data.max_uses) {
+    if (row.max_uses && row.used_count >= row.max_uses) {
       return { ok: false, reason: "exhausted" };
     }
 
-    return { ok: true, code: data.code, percent: Number(data.percent) };
+    return { ok: true, code: row.code, percent: Number(row.percent) };
   }
 
   window.StoreSupabase = {
