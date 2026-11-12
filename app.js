@@ -512,6 +512,7 @@
         exhausted: "Ese código ya no tiene usos disponibles.",
         offline: "Sin conexión. Inténtalo de nuevo.",
         invalid: "Escribe un código válido.",
+        rate: "Demasiados intentos. Espera unos minutos.",
       };
       setCouponNote(messages[result.reason] || "No pudimos validar el código.", true);
       return;
