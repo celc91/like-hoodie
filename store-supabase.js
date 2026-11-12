@@ -340,6 +340,14 @@
         item_count: itemCount,
       });
 
+      if (window.LikeHoodieConsent && typeof window.LikeHoodieConsent.track === "function") {
+        window.LikeHoodieConsent.track("order_created", {
+          value: order.total,
+          currency: "MXN",
+          transaction_id: result.number,
+        });
+      }
+
       return {
         id: result.id,
         number: result.number,

@@ -6116,3 +6116,63 @@ p {
     justify-content: center;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Aviso de cookies: panel de preferencias
+   -------------------------------------------------------------------------- */
+
+.cookie-notice .consent-main {
+  display: grid;
+  gap: 12px;
+}
+
+.cookie-notice .cookie-actions {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.cookie-notice .cookie-actions .btn {
+  flex: 0 1 auto;
+}
+
+.consent-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.consent-option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--cream);
+  cursor: pointer;
+}
+
+.consent-option input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  accent-color: var(--lime);
+  cursor: pointer;
+}
+
+.consent-option small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: rgba(247, 242, 233, 0.68);
+}
+
+@media (max-width: 560px) {
+  .cookie-notice .cookie-actions {
+    flex-direction: column;
+  }
+
+  .cookie-notice .cookie-actions .btn {
+    width: 100%;
+  }
+}

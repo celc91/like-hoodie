@@ -520,6 +520,10 @@
 
     state.coupon = { code: result.code, percent: result.percent, verified: true };
     storeCoupon(state.coupon);
+    window.LikeHoodieConsent?.track("coupon_applied", {
+      coupon: result.code,
+      percent: result.percent,
+    });
     setCouponNote("");
     renderCart();
     showToast(`Cupón ${result.code} aplicado: −${result.percent} %`);
@@ -1015,6 +1019,11 @@
     saveCart();
     window.StoreSupabase?.track("begin_checkout", {
       total: totals().total,
+      items: state.items.length,
+    });
+    window.LikeHoodieConsent?.track("begin_checkout", {
+      value: totals().total,
+      currency: "MXN",
       items: state.items.length,
     });
     window.setTimeout(() => {
@@ -2357,6 +2366,12 @@
         material: state.material.name,
         technique: state.technique.name,
       });
+      window.LikeHoodieConsent?.track("add_to_cart", {
+        value: unitPrice,
+        currency: "MXN",
+        content_name: "Sudadera personalizada",
+        content_type: "product",
+      });
 
       if (cartCount) {
         cartCount.classList.remove("is-pulsing");
@@ -2499,6 +2514,7 @@
       if (button) button.disabled = false;
 
       if (result.ok) {
+        window.LikeHoodieConsent?.track("newsletter_signup", { method: "club" });
         form.reset();
 
         if (result.sent) {

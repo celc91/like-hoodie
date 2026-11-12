@@ -1,8 +1,8 @@
 /* ==========================================================================
-   like hoodie ♡ — Aviso de cookies y preferencias
+   like hoodie ♡ — aviso de cookies y preferencias
    --------------------------------------------------------------------------
-   Dos opciones: aceptar analítica o quedarse solo con lo esencial.
-   La elección se guarda y se puede cambiar desde cookies.html.
+   Tres caminos: aceptar todo, solo lo esencial, o configurar por separado
+   analítica y publicidad. La elección se puede cambiar desde cookies.html.
    ========================================================================== */
 
 (function () {
@@ -21,6 +21,36 @@
     }, 300);
   }
 
+  function save(state) {
+    if (consent) consent.set(state);
+    removeNotice();
+  }
+
+  function panelHTML() {
+    const current = (consent && consent.get()) || { analytics: false, ads: false };
+    return (
+      '<div class="consent-panel">' +
+      "<p><strong>Elige qué permites.</strong></p>" +
+      '<label class="consent-option">' +
+      '<input type="checkbox" data-consent-toggle="analytics"' +
+      (current.analytics ? " checked" : "") +
+      ">" +
+      "<span><strong>Analítica</strong><small>Google Analytics: qué páginas y pasos se usan.</small></span>" +
+      "</label>" +
+      '<label class="consent-option">' +
+      '<input type="checkbox" data-consent-toggle="ads"' +
+      (current.ads ? " checked" : "") +
+      ">" +
+      "<span><strong>Publicidad</strong><small>Meta Pixel: medir campañas en Facebook e Instagram.</small></span>" +
+      "</label>" +
+      '<div class="cookie-actions">' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-consent-action="cancel">Cancelar</button>' +
+      '<button type="button" class="btn btn-lime btn-sm" data-consent-action="save">Guardar</button>' +
+      "</div>" +
+      "</div>"
+    );
+  }
+
   function buildNotice() {
     if (notice) return;
 
@@ -29,12 +59,15 @@
     notice.setAttribute("role", "region");
     notice.setAttribute("aria-label", "Preferencias de cookies");
     notice.innerHTML =
-      '<p><strong>Cookies y analítica.</strong> Usamos almacenamiento esencial para tu carrito. ' +
-      "Si lo aceptas, cargamos Google Analytics para saber qué funciona en la tienda. " +
-      'Puedes decirlo después en <a href="cookies.html">Cookies</a>.</p>' +
+      '<div class="consent-main">' +
+      "<p><strong>Cookies y medición.</strong> Usamos almacenamiento esencial para tu carrito. " +
+      "Con tu permiso, cargamos analítica y, si lo aceptas, publicidad para medir campañas. " +
+      'Puedes cambiarlo en <a href="cookies.html">Cookies</a>.</p>' +
       '<div class="cookie-actions">' +
-      '<button type="button" class="btn btn-ghost btn-sm" data-consent="denied">Solo esenciales</button>' +
-      '<button type="button" class="btn btn-lime btn-sm" data-consent="granted">Aceptar analítica</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-consent-action="essential">Solo esenciales</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-consent-action="config">Configurar</button>' +
+      '<button type="button" class="btn btn-lime btn-sm" data-consent-action="all">Aceptar todo</button>' +
+      "</div>" +
       "</div>";
 
     document.body.appendChild(notice);
@@ -43,17 +76,34 @@
     });
 
     notice.addEventListener("click", function (event) {
-      const button = event.target.closest("[data-consent]");
+      const button = event.target.closest("[data-consent-action]");
       if (!button) return;
-      if (consent) consent.set(button.getAttribute("data-consent"));
-      removeNotice();
+      const action = button.getAttribute("data-consent-action");
+
+      if (action === "all") return save({ analytics: true, ads: true });
+      if (action === "essential") return save({ analytics: false, ads: false });
+      if (action === "config") {
+        notice.innerHTML = panelHTML();
+        notice.classList.add("is-configuring");
+        return;
+      }
+      if (action === "cancel") {
+        removeNotice();
+        return;
+      }
+      if (action === "save") {
+        const analytics = notice.querySelector('[data-consent-toggle="analytics"]');
+        const ads = notice.querySelector('[data-consent-toggle="ads"]');
+        return save({
+          analytics: Boolean(analytics && analytics.checked),
+          ads: Boolean(ads && ads.checked),
+        });
+      }
     });
   }
 
-  // abre el aviso desde cualquier página (botón "cambiar preferencias")
   document.addEventListener("likehoodie:consent-open", buildNotice);
 
-  // si aún no hay decisión, se muestra
   if (!consent || !consent.get()) {
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", buildNotice);
