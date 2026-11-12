@@ -6,8 +6,12 @@
 -- ===========================================================================
 
 alter table public.newsletter_subscribers
+  drop constraint if exists newsletter_email_len;
+alter table public.newsletter_subscribers
   add constraint newsletter_email_len check (length(email) <= 254);
 
+alter table public.newsletter_subscribers
+  drop constraint if exists newsletter_email_format;
 alter table public.newsletter_subscribers
   add constraint newsletter_email_format
   check (email ~* '^[^@[:space:]]+@[^@[:space:]]+\.[a-z]{2,}$');
