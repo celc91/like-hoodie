@@ -8,6 +8,18 @@
 --      El token se genera en Events Manager → Configuración → Conversions API.
 --
 -- Si falta el token, el disparador no hace nada: no rompe ningún pedido.
+--
+-- Cómo se consigue el token (lo que Meta exige de verdad, comprobado en 2026):
+--   · El botón de Events Manager queda deshabilitado mientras el portafolio
+--     no tenga una app propia, y el error solo aparece en Business Settings:
+--     "an app must be part of this business portfolio".
+--   · Esa app debe estar asignada al System User de Conversions API
+--     (Business Settings → Apps → Assign people → el system user).
+--   · Después: Business Settings → System users → Generate token →
+--     app + permisos ads_management y business_management.
+--
+-- El token no caduca si se elige "Never". Para rotarlo:
+--   Business Settings → System users → Revoke tokens → Generate token.
 
 create extension if not exists pgcrypto;
 
