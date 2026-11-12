@@ -2567,6 +2567,30 @@
   }
 
   /* ---------------------------------------------------------------------- */
+  /* Barra de compra del configurador (móvil)                                */
+  /* ---------------------------------------------------------------------- */
+
+  const studioSection = $(".studio");
+  const studioSummary = $(".studio-summary");
+
+  if (studioSection && studioSummary) {
+    if ("IntersectionObserver" in window) {
+      const summaryObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            studioSummary.classList.toggle("is-visible", entry.isIntersecting);
+          });
+        },
+        { threshold: 0, rootMargin: "-12% 0px 0px 0px" }
+      );
+
+      summaryObserver.observe(studioSection);
+    } else {
+      studioSummary.classList.add("is-visible");
+    }
+  }
+
+  /* ---------------------------------------------------------------------- */
   /* Inicio                                                                  */
   /* ---------------------------------------------------------------------- */
 

@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261111-spam1">
+  <link rel="stylesheet" href="styles.css?v=20261112-studio1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -258,7 +258,7 @@
           <p>Elige material, técnica, color y talla. Diseña el frente y la espalda, arrastra el texto o el logo, elige tipografía, ajusta su tamaño y mira el precio al instante.</p>
         </div>
 
-        <div class="studio reveal">
+        <div class="studio">
           <div class="studio-preview">
             <div class="preview-top">
               <span>Vista previa</span>
@@ -301,22 +301,27 @@
               </button>
             </div>
 
-            <div class="preview-meta">
-              <span><i class="mini-swatch" data-preview-swatch aria-hidden="true"></i><span data-preview-color-name>Negro</span></span>
-              <span data-preview-material>Algodón 400 g</span>
-              <span data-preview-technique>DTG</span>
-              <span>Talla <strong data-preview-size>M</strong></span>
+            <div class="studio-summary">
+              <p class="summary-line">
+                <span class="summary-color"><i class="mini-swatch" data-preview-swatch aria-hidden="true"></i><span data-preview-color-name>Negro</span></span>
+                <span data-preview-material>Algodón 400 g</span>
+                <span data-preview-technique>DTG</span>
+                <span>Talla <strong data-preview-size>M</strong></span>
+              </p>
+              <div class="price-row">
+                <div class="price-block">
+                  <span class="price-label">Total</span>
+                  <strong class="price" data-price data-price-display>$899 MXN</strong>
+                  <span class="price-note" data-price-note>Base $899 MXN · IVA incluido</span>
+                </div>
+                <button type="button" class="btn btn-primary btn-add" data-add-to-cart> Añadir a la cesta
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
             </div>
           </div>
 
           <div class="studio-controls">
-            <div class="studio-sticky" aria-hidden="false">
-              <div>
-                <span class="ss-label">Total</span>
-                <strong class="ss-price" data-price-mirror>$899 MXN</strong>
-              </div>
-              <button type="button" class="btn btn-primary" data-add-mirror>Añadir a la cesta</button>
-            </div>
             <div class="control">
               <div class="control-head">
                 <span class="control-label">Color de la sudadera</span>
@@ -353,7 +358,7 @@
                 <span class="control-value" data-material-label>Algodón 400 g</span>
               </div>
               <div class="option-pills" role="group" aria-label="Material de la sudadera">
-                <button type="button" class="option-pill is-active" data-material="cotton400" data-name="Algodón 400 g" data-delta="0" data-desc="Algodón peinado 400 g/m²: grueso, abrigador y con caída premium." aria-pressed="true">Algodón 400 g <em>Incluido</em></button>
+                <button type="button" class="option-pill is-active" data-material="cotton400" data-name="Algodón 400 g" data-delta="0" data-desc="Algodón peinado 400 g/m²: grueso, abrigador y con caída premium." aria-pressed="true">Algodón 400 g</button>
                 <button type="button" class="option-pill" data-material="cotton320" data-name="Algodón 320 g" data-delta="-50" data-desc="Algodón peinado 320 g/m²: más ligero y suave, ideal para todo el año." aria-pressed="false">Algodón 320 g <em>−$50</em></button>
                 <button type="button" class="option-pill" data-material="french300" data-name="French terry 300 g" data-delta="-30" data-desc="French terry 300 g/m²: interior en rizo, transpirable y fresco." aria-pressed="false">French terry <em>−$30</em></button>
                 <button type="button" class="option-pill" data-material="blend350" data-name="Mezcla 50/50" data-delta="-20" data-desc="Mezcla algodón/poliéster 350 g/m²: resistente, menos encogimiento y secado rápido." aria-pressed="false">Mezcla 50/50 <em>−$20</em></button>
@@ -368,7 +373,7 @@
                 <span class="control-value" data-technique-label>DTG</span>
               </div>
               <div class="option-pills" role="group" aria-label="Técnica de personalización">
-                <button type="button" class="option-pill is-active" data-technique="dtg" data-name="DTG" data-cost="0" data-desc="Impresión directa al tejido, full color. Ideal para algodón." aria-pressed="true">DTG <em>Incluido</em></button>
+                <button type="button" class="option-pill is-active" data-technique="dtg" data-name="DTG" data-cost="0" data-desc="Impresión directa al tejido, full color. Ideal para algodón." aria-pressed="true">DTG</button>
                 <button type="button" class="option-pill" data-technique="dtf" data-name="DTF" data-cost="39" data-desc="Transfer directo al film: colores vivos y gran durabilidad en casi cualquier tejido." aria-pressed="false">DTF <em>+$39</em></button>
                 <button type="button" class="option-pill" data-technique="bordado" data-name="Bordado" data-cost="149" data-desc="Hilo bordado: acabado premium y muy resistente, ideal para logos y textos cortos." aria-pressed="false">Bordado <em>+$149</em></button>
                 <button type="button" class="option-pill" data-technique="serigrafia" data-name="Serigrafía" data-cost="129" data-desc="Tinta serigráfica: colores planos muy resistentes; incluye preparación de pantalla." aria-pressed="false">Serigrafía <em>+$129</em></button>
@@ -412,7 +417,9 @@
                   </div>
                   <input class="text-input" id="custom-text" type="text" maxlength="16" placeholder="EJ. SIN EXCUSAS" autocomplete="off" data-text-input>
                   <div class="text-color-row">
-                    <span>Color del texto</span>
+                    <div class="control-head">
+                      <span class="control-label">Color del texto</span>
+                    </div>
                     <div class="text-colors" role="group" aria-label="Color del texto">
                       <button type="button" class="text-color is-active" style="--tc:#fffdf8" data-text-color="#fffdf8" aria-label="Texto blanco" aria-pressed="true"></button>
                       <button type="button" class="text-color" style="--tc:#1c1c1f" data-text-color="#1c1c1f" aria-label="Texto negro" aria-pressed="false"></button>
@@ -420,16 +427,12 @@
                       <button type="button" class="text-color" style="--tc:#cdf25a" data-text-color="#cdf25a" aria-label="Texto lima" aria-pressed="false"></button>
                       <button type="button" class="text-color" style="--tc:#f6c9d2" data-text-color="#f6c9d2" aria-label="Texto rosa" aria-pressed="false"></button>
                       <button type="button" class="text-color" style="--tc:#e0384a" data-text-color="#e0384a" aria-label="Texto rojo" aria-pressed="false"></button>
-                      <button type="button" class="text-color" style="--tc:#8b5cf6" data-text-color="#8b5cf6" aria-label="Texto violeta" aria-pressed="false"></button>
                       <button type="button" class="text-color" style="--tc:#2f6fd0" data-text-color="#2f6fd0" aria-label="Texto azul" aria-pressed="false"></button>
-                      <button type="button" class="text-color" style="--tc:#2f855a" data-text-color="#2f855a" aria-label="Texto verde" aria-pressed="false"></button>
                       <button type="button" class="text-color" style="--tc:#ffcf4d" data-text-color="#ffcf4d" aria-label="Texto amarillo" aria-pressed="false"></button>
-                      <button type="button" class="text-color" style="--tc:#d9a441" data-text-color="#d9a441" aria-label="Texto dorado" aria-pressed="false"></button>
-                      <button type="button" class="text-color" style="--tc:#9c9488" data-text-color="#9c9488" aria-label="Texto gris" aria-pressed="false"></button>
                     </div>
                   </div>
                   <div class="font-row">
-                    <span>Tipografía</span>
+                    <span class="control-label">Tipografía</span>
                     <div class="font-options" role="group" aria-label="Tipografía del texto">
                       <button type="button" class="font-option is-active" data-text-font="bricolage" aria-pressed="true">
                         <span class="font-option-sample" aria-hidden="true">Aa</span>
@@ -490,17 +493,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div class="price-row">
-              <div class="price-block">
-                <span class="price-label">Total</span>
-                <strong class="price" data-price data-price-display>$899 MXN</strong>
-                <span class="price-note" data-price-note>Base $899 MXN · IVA incluido</span>
-              </div>
-              <button type="button" class="btn btn-primary btn-add" data-add-to-cart> Añadir a la cesta
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
             </div>
           </div>
         </div>
@@ -1039,7 +1031,7 @@
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
   <script src="store-supabase.js?v=20261112-capi1"></script>
-  <script src="app.js?v=20261111-optin2"></script>
+  <script src="app.js?v=20261112-studio1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>
