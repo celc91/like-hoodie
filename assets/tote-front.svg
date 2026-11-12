@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1003 1229" width="1003" height="1229" role="img" aria-label="Tote bag de lona">
+  <defs>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8f897f" stop-opacity=".45"/>
+      <stop offset=".09" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".91" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#8f897f" stop-opacity=".45"/>
+    </linearGradient>
+    <linearGradient id="vert" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9b958b" stop-opacity=".26"/>
+      <stop offset=".18" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".76" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#8f897f" stop-opacity=".28"/>
+    </linearGradient>
+    <linearGradient id="strapFill" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8f897f" stop-opacity=".22"/>
+      <stop offset=".35" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".65" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#8f897f" stop-opacity=".28"/>
+    </linearGradient>
+    <linearGradient id="mouth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6f6a63"/>
+      <stop offset=".62" stop-color="#9a948a"/>
+      <stop offset="1" stop-color="#c9c4bb"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".4" cy=".3" r=".66">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur18"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="blur8"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="weave" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.72 0.9" numOctaves="3" seed="5" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".10"/></feComponentTransfer>
+    </filter>
+    <clipPath id="bag">
+      <path d="M165 470h673v604c0 30-14 46-44 46H209c-30 0-44-16-44-46z"/>
+    </clipPath>
+  </defs>
+
+  <g transform="translate(501 604) scale(1.18) translate(-501 -618)">
+
+  <!-- asas -->
+  <g fill="#fffdfa">
+    <path d="M328 560V116a30 30 0 0 1 60 0v444z"/>
+    <path d="M615 560V116a30 30 0 0 1 60 0v444z"/>
+  </g>
+  <g fill="url(#strapFill)">
+    <path d="M328 560V116a30 30 0 0 1 60 0v444z"/>
+    <path d="M615 560V116a30 30 0 0 1 60 0v444z"/>
+  </g>
+  <g fill="none" stroke="#8f897f" stroke-opacity=".32" stroke-width="1.6" stroke-dasharray="7 8">
+    <path d="M336 550V118a22 22 0 0 1 44 0v432"/>
+    <path d="M623 550V118a22 22 0 0 1 44 0v432"/>
+  </g>
+
+  <!-- cuerpo -->
+  <g clip-path="url(#bag)">
+    <rect x="155" y="464" width="693" height="666" fill="#fffdfa"/>
+    <ellipse cx="420" cy="660" rx="380" ry="330" fill="url(#glow)"/>
+
+    <g filter="url(#blur18)" opacity=".55">
+      <path d="M262 560c22 190 8 360-24 500" stroke="#8f897f" stroke-opacity=".22" stroke-width="28" fill="none"/>
+      <path d="M734 560c-18 190-4 360 26 500" stroke="#8f897f" stroke-opacity=".2" stroke-width="28" fill="none"/>
+      <path d="M470 600c14 170 16 300 6 420" stroke="#8f897f" stroke-opacity=".13" stroke-width="30" fill="none"/>
+      <path d="M548 600c-12 170-14 300-4 420" stroke="#ffffff" stroke-opacity=".75" stroke-width="36" fill="none"/>
+    </g>
+
+    <rect x="155" y="464" width="693" height="666" fill="url(#edge)"/>
+    <rect x="155" y="464" width="693" height="666" fill="url(#vert)"/>
+    <rect x="155" y="464" width="693" height="666" fill="#7d776e" filter="url(#weave)" opacity=".5"/>
+  </g>
+
+  <!-- boca -->
+  <ellipse cx="501" cy="470" rx="337" ry="26" fill="url(#mouth)"/>
+  <path d="M164 470c0-15 151-26 337-26s337 11 337 26" fill="none" stroke="#6f6a63" stroke-opacity=".5" stroke-width="3"/>
+  <path d="M164 474c0 12 151 21 337 21s337-9 337-21" fill="none" stroke="#ffffff" stroke-opacity=".5" stroke-width="4"/>
+
+  <!-- dobladillo -->
+  <path d="M165 470h673v46H165z" fill="#fffdfa"/>
+  <path d="M165 470h673v46H165z" fill="url(#edge)"/>
+  <path d="M165 504h673v12H165z" fill="#ffffff" opacity=".5"/>
+  <g stroke="#8f897f" stroke-opacity=".34" stroke-width="1.6" stroke-dasharray="7 7" fill="none">
+    <path d="M174 498h655"/>
+  </g>
+
+  <!-- base -->
+  <path d="M165 1062h673v12c0 28-14 46-44 46H209c-30 0-44-18-44-46z" fill="#fffdfa"/>
+  <path d="M165 1062h673v12c0 28-14 46-44 46H209c-30 0-44-18-44-46z" fill="url(#vert)"/>
+  <g stroke="#8f897f" stroke-opacity=".3" stroke-width="1.6" stroke-dasharray="7 7" fill="none">
+    <path d="M174 1074h655"/>
+  </g>
+
+  <!-- sombra de contacto -->
+  <ellipse cx="501" cy="1148" rx="310" ry="24" fill="#161618" opacity=".10" filter="url(#blur8)"/>
+  </g>
+</svg>

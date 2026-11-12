@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261112-vistas1">
+  <link rel="stylesheet" href="styles.css?v=20261112-tote1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -298,7 +298,7 @@
                 <span class="summary-color"><i class="mini-swatch" data-preview-swatch aria-hidden="true"></i><span data-preview-color-name>Negro</span></span>
                 <span data-preview-material>Algodón 400 g</span>
                 <span data-preview-technique>DTG</span>
-                <span>Talla <strong data-preview-size>M</strong></span>
+                <span><span data-size-label>Talla</span> <strong data-preview-size>M</strong></span>
               </p>
               <div class="price-row">
                 <div class="price-block">
@@ -314,9 +314,14 @@
           </div>
 
           <div class="studio-controls">
+            <div class="product-switch" role="group" aria-label="Qué quieres personalizar">
+              <button type="button" class="product-tab is-active" data-product-tab="hoodie" aria-pressed="true">Sudadera</button>
+              <button type="button" class="product-tab" data-product-tab="tote" aria-pressed="false">Tote bag</button>
+            </div>
+
             <div class="control">
               <div class="control-head">
-                <span class="control-label">Color de la sudadera</span>
+                <span class="control-label">Color</span>
                 <span class="control-value" data-preview-color-name>Negro</span>
               </div>
               <div class="swatches" role="group" aria-label="Color de la sudadera">
@@ -329,6 +334,7 @@
               </div>
             </div>
 
+            <div class="product-panel" data-product-panel="hoodie">
             <div class="control">
               <div class="control-head">
                 <span class="control-label">Talla</span>
@@ -374,6 +380,45 @@
               </div>
               <p class="option-note" data-technique-note>Impresión directa al tejido, full color. Incluido.</p>
               <p class="option-warning" data-technique-warning hidden></p>
+            </div>
+            </div>
+
+            <div class="product-panel" data-product-panel="tote" hidden>
+              <div class="control">
+                <div class="control-head">
+                  <span class="control-label">Medidas</span>
+                  <span class="control-value">38 × 42 cm</span>
+                </div>
+                <p class="option-note">Lona con asa de 65 cm. Área de impresión de hasta 28 × 32 cm por cara.</p>
+              </div>
+
+              <div class="control">
+                <div class="control-head">
+                  <span class="control-label">Material</span>
+                  <span class="control-value" data-material-label>Loneta 12 oz</span>
+                </div>
+                <div class="option-pills" role="group" aria-label="Material del tote">
+                  <button type="button" class="option-pill is-active" data-material="loneta12" data-name="Loneta 12 oz" data-delta="0" data-desc="Lona de algodón 12 oz: firme, con cuerpo y caída recta." aria-pressed="true">Loneta 12 oz</button>
+                  <button type="button" class="option-pill" data-material="loneta10" data-name="Loneta 10 oz" data-delta="-40" data-desc="Lona de algodón 10 oz: más ligera y suave al colgar." aria-pressed="false">Loneta 10 oz <em>−$40</em></button>
+                  <button type="button" class="option-pill" data-material="reciclada" data-name="Lona reciclada" data-delta="30" data-desc="Algodón reciclado 12 oz: misma resistencia, menor huella." aria-pressed="false">Lona reciclada <em>+$30</em></button>
+                </div>
+                <p class="option-note" data-material-note>Lona de algodón 12 oz: firme, con cuerpo y caída recta. Incluido.</p>
+              </div>
+
+              <div class="control">
+                <div class="control-head">
+                  <span class="control-label">Técnica de personalización</span>
+                  <span class="control-value" data-technique-label>DTF</span>
+                </div>
+                <div class="option-pills" role="group" aria-label="Técnica del tote">
+                  <button type="button" class="option-pill is-active" data-technique="dtf" data-name="DTF" data-cost="0" data-desc="Transfer directo al film: colores vivos y muy duradero en lona." aria-pressed="true">DTF</button>
+                  <button type="button" class="option-pill" data-technique="serigrafia" data-name="Serigrafía" data-cost="129" data-desc="Tinta serigráfica: colores planos muy resistentes; incluye preparación de pantalla." aria-pressed="false">Serigrafía <em>+$129</em></button>
+                  <button type="button" class="option-pill" data-technique="vinilo" data-name="Vinilo textil" data-cost="49" data-desc="Vinilo termotransferible: acabado mate, perfecto para nombres y números." aria-pressed="false">Vinilo textil <em>+$49</em></button>
+                  <button type="button" class="option-pill" data-technique="bordado" data-name="Bordado" data-cost="99" data-desc="Hilo bordado: acabado premium y muy resistente, ideal para logos y textos cortos." aria-pressed="false">Bordado <em>+$99</em></button>
+                </div>
+                <p class="option-note" data-technique-note>Transfer directo al film: colores vivos y muy duradero en lona. Incluido.</p>
+                <p class="option-warning" data-technique-warning hidden></p>
+              </div>
             </div>
 
             <div class="personalize">
@@ -1023,7 +1068,7 @@
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
   <script src="store-supabase.js?v=20261112-capi1"></script>
-  <script src="app.js?v=20261112-vistas1"></script>
+  <script src="app.js?v=20261112-tote1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>

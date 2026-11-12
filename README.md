@@ -8,7 +8,8 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 
 ## Qué incluye
 
-- **Diseñador en vivo:** color de sudadera, talla, texto, tipografía, color de texto y subida de logo (PNG, JPG o WebP).
+- **Diseñador en vivo:** sudadera o tote bag, color, talla o medida, texto, tipografía, color de texto y subida de logo (PNG, JPG o WebP).
+- **Productos:** sudadera de algodón en cinco materiales y tote bag de lona en tres, cada uno con su precio base, sus colores y sus técnicas.
 - **Materiales:** algodón 400 g, algodón 320 g, French terry, mezcla 50/50 y poliéster técnico, con ajuste de precio y textura visual en el modelo.
 - **Técnicas de personalización:** DTG, DTF, bordado, serigrafía, vinilo textil y sublimación, con costos, acabados visuales y avisos de compatibilidad.
 - **Editor frontal y trasero:** cambia de vista, arrastra el texto y el logo, elige tipografía, ajusta su tamaño y personaliza cada cara por separado.

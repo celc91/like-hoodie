@@ -30,6 +30,68 @@
     "#efb7c4": 899,
   };
 
+  /* Cada producto define sus imágenes, su precio base por color y sus valores
+     por defecto. Así el configurador sirve para la sudadera y para el tote. */
+  const PRODUCTS = {
+    hoodie: {
+      label: "Sudadera",
+      itemName: "Sudadera personalizada",
+      images: {
+        front: "assets/hoodie-front.png",
+        back: "assets/hoodie-back.png",
+      },
+      prices: BASE_PRICES,
+      fallbackPrice: 899,
+      defaults: {
+        size: "M",
+        material: {
+          id: "cotton400",
+          name: "Algodón 400 g",
+          delta: 0,
+          desc: "Algodón peinado 400 g/m²: grueso, abrigador y con caída premium.",
+        },
+        technique: {
+          id: "dtg",
+          name: "DTG",
+          price: 0,
+          desc: "Impresión directa al tejido, full color. Ideal para algodón.",
+        },
+      },
+    },
+    tote: {
+      label: "Tote bag",
+      itemName: "Tote bag personalizado",
+      images: {
+        front: "assets/tote-front.svg",
+        back: "assets/tote-back.svg",
+      },
+      prices: {
+        "#efe6d6": 349,
+        "#1c1c1f": 379,
+        "#cdf25a": 379,
+        "#f2603c": 379,
+        "#26324f": 379,
+        "#efb7c4": 379,
+      },
+      fallbackPrice: 379,
+      defaults: {
+        size: "Única",
+        material: {
+          id: "loneta12",
+          name: "Loneta 12 oz",
+          delta: 0,
+          desc: "Lona de algodón 12 oz: firme, con cuerpo y caída recta.",
+        },
+        technique: {
+          id: "dtf",
+          name: "DTF",
+          price: 0,
+          desc: "Transfer directo al film: colores vivos y muy duradero en lona.",
+        },
+      },
+    },
+  };
+
   const DEFAULT_POSITIONS = {
     front: { textX: 50, textY: 49, logoX: 50, logoY: 32 },
     back: { textX: 50, textY: 49, logoX: 50, logoY: 32 },
@@ -82,6 +144,7 @@
     size: "M",
     view: "front",
     angle: 0,
+    product: "hoodie",
     cartStep: "cart",
     coupon: null,
     material: {
@@ -229,12 +292,15 @@
   }
 
   function clampPosition(value, type = "text", axis = "x") {
+    const isTote = state.product === "tote";
     if (axis === "x") {
-      const min = type === "text" ? 23 : 15;
-      const max = type === "text" ? 77 : 85;
+      const min = isTote ? 22 : type === "text" ? 23 : 15;
+      const max = isTote ? 78 : type === "text" ? 77 : 85;
       return Math.max(min, Math.min(max, value));
     }
-    return Math.max(10, Math.min(90, value));
+    const minY = isTote ? 38 : 10;
+    const maxY = isTote ? 92 : 90;
+    return Math.max(minY, Math.min(maxY, value));
   }
 
   /* ---------------------------------------------------------------------- */
@@ -281,11 +347,15 @@
   const previewNames = $$("[data-preview-color-name]");
   const previewSwatch = $("[data-preview-swatch]");
   const previewSize = $("[data-preview-size]");
+  const sizeLabelEl = $("[data-size-label]");
   const previewMaterial = $("[data-preview-material]");
   const previewTechnique = $("[data-preview-technique]");
   const printText = $("[data-print-text]");
   const printLogo = $("[data-print-logo]");
   const viewThumbs = $$("[data-angle]");
+  const galleryThumbs = $$(".view-thumb img");
+  const productTabs = $$("[data-product-tab]");
+  const productPanels = $$("[data-product-panel]");
   const hintText = $("[data-hint-text]");
   const studio = $(".studio");
   const personalizePanel = $(".personalize");
@@ -307,12 +377,12 @@
   const tooltipTitle = $("[data-tooltip-title]");
   const tooltipDesc = $("[data-tooltip-desc]");
   const materialButtons = $$("[data-material]");
-  const materialLabel = $("[data-material-label]");
-  const materialNote = $("[data-material-note]");
+  const materialLabels = $$("[data-material-label]");
+  const materialNotes = $$("[data-material-note]");
   const techniqueButtons = $$("[data-technique]");
-  const techniqueLabel = $("[data-technique-label]");
-  const techniqueNote = $("[data-technique-note]");
-  const techniqueWarning = $("[data-technique-warning]");
+  const techniqueLabels = $$("[data-technique-label]");
+  const techniqueNotes = $$("[data-technique-note]");
+  const techniqueWarnings = $$("[data-technique-warning]");
   const logoInput = $("[data-logo-input]");
   const uploadFile = $("[data-upload-file]");
   const fileName = $("[data-file-name]");
@@ -358,13 +428,20 @@
   /* ---------------------------------------------------------------------- */
 
   /* Miniatura real del diseño: canvas con la prenda y el estampado */
-  const THUMB_HOODIE = new Image();
-  THUMB_HOODIE.src = "assets/hoodie-front.png";
   const thumbCache = new Map();
-  THUMB_HOODIE.addEventListener("load", () => {
-    thumbCache.clear();
-    if (state.items && state.items.length) renderCart();
-  });
+  const THUMB_IMAGES = {};
+
+  Object.entries({ hoodie: "assets/hoodie-front.png", tote: "assets/tote-front.svg" }).forEach(
+    ([id, src]) => {
+      const image = new Image();
+      image.src = src;
+      image.addEventListener("load", () => {
+        thumbCache.clear();
+        if (state.items && state.items.length) renderCart();
+      });
+      THUMB_IMAGES[id] = image;
+    }
+  );
 
   const THUMB_FONTS = {
     bricolage: { family: "Bricolage Grotesque", weight: 800 },
@@ -391,12 +468,13 @@
     return lines.length ? lines : [text];
   }
 
-  function makeThumb(front, colorHex, isDark) {
-    if (!THUMB_HOODIE.complete || !THUMB_HOODIE.naturalWidth) return "";
+  function makeThumb(front, colorHex, isDark, product) {
+    const source = THUMB_IMAGES[product] || THUMB_IMAGES.hoodie;
+    if (!source || !source.complete || !source.naturalWidth) return "";
     if (!front || !front.text) return "";
 
     const W = 240;
-    const H = Math.round((W * THUMB_HOODIE.naturalHeight) / THUMB_HOODIE.naturalWidth);
+    const H = Math.round((W * source.naturalHeight) / source.naturalWidth);
     const canvas = document.createElement("canvas");
     canvas.width = W;
     canvas.height = H;
@@ -404,10 +482,10 @@
 
     if (isDark) {
       ctx.filter = "brightness(0.27) contrast(1.06)";
-      ctx.drawImage(THUMB_HOODIE, 0, 0, W, H);
+      ctx.drawImage(source, 0, 0, W, H);
       ctx.filter = "none";
     } else {
-      ctx.drawImage(THUMB_HOODIE, 0, 0, W, H);
+      ctx.drawImage(source, 0, 0, W, H);
       ctx.globalCompositeOperation = "source-atop";
       ctx.fillStyle = colorHex;
       ctx.globalAlpha = 0.88;
@@ -415,7 +493,7 @@
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = "multiply";
       ctx.globalAlpha = 0.35;
-      ctx.drawImage(THUMB_HOODIE, 0, 0, W, H);
+      ctx.drawImage(source, 0, 0, W, H);
       ctx.globalAlpha = 1;
       ctx.globalCompositeOperation = "source-over";
     }
@@ -589,10 +667,13 @@
         };
         const back = item.back || {};
         const isDark = color.toLowerCase() === "#1c1c1f";
+        const productId = item.product || "hoodie";
+        const product = PRODUCTS[productId] || PRODUCTS.hoodie;
+        const thumbImage = product.images.front;
         const thumbKey = item.key || item.id;
         let thumbSrc = thumbCache.get(thumbKey);
         if (!thumbSrc) {
-          thumbSrc = makeThumb(front, color, isDark);
+          thumbSrc = makeThumb(front, color, isDark, productId);
           if (thumbSrc) thumbCache.set(thumbKey, thumbSrc);
         }
         const scaleLabel = (scale) => {
@@ -632,9 +713,9 @@
         return `
           <article class="cart-item" data-id="${escapeHTML(item.id)}">
             <div class="cart-thumb" aria-hidden="true">
-              ${thumbSrc ? `<img class="cart-thumb-img" src="${thumbSrc}" alt="">` : `<div class="hoodie ${isDark ? "is-dark" : ""}" style="--fabric-color:${color};--tint-mask:url('assets/hoodie-front.png')">
+              ${thumbSrc ? `<img class="cart-thumb-img" src="${thumbSrc}" alt="">` : `<div class="hoodie ${isDark ? "is-dark" : ""}" style="--fabric-color:${color};--tint-mask:url('${thumbImage}')">
                 ${isDark ? "" : '<div class="fabric-tint"></div>'}
-                <img class="hoodie-photo" src="assets/hoodie-front.png" alt="" width="1003" height="1229" loading="lazy">
+                <img class="hoodie-photo" src="${thumbImage}" alt="" width="1003" height="1229" loading="lazy">
                 <div class="print-area print-area--thumb">
                   ${front.text ? `<span class="print-text editor-item font-${escapeHTML(front.textFont || "bricolage")}" style="--x:${front.textX}%;--y:${front.textY}%;--item-scale:${front.textScale || 1};--item-rotate:${front.textRotate || 0}deg;color:${escapeHTML(front.textColor || "#fffdf9")}">${escapeHTML(front.text)}</span>` : ""}
                   ${front.logoData ? `<img class="print-logo editor-item" src="${front.logoData}" alt="" style="--x:${front.logoX}%;--y:${front.logoY}%;--item-scale:${front.logoScale || 1};--item-rotate:${front.logoRotate || 0}deg">` : ""}
@@ -643,10 +724,10 @@
             </div>
             <div class="cart-info">
               <div class="cart-item-top">
-                <h3>${escapeHTML(item.name || "Sudadera personalizada")}</h3>
-                <button type="button" class="remove" data-remove-item="${escapeHTML(item.id)}" aria-label="Quitar ${escapeHTML(item.name || "sudadera")} de la cesta">×</button>
+                <h3>${escapeHTML(item.name || product.itemName)}</h3>
+                <button type="button" class="remove" data-remove-item="${escapeHTML(item.id)}" aria-label="Quitar ${escapeHTML(item.name || product.itemName)} de la cesta">×</button>
               </div>
-              <p class="cart-meta">${escapeHTML(item.colorName || "Negro")} · Talla ${escapeHTML(item.size || "M")}</p>
+              <p class="cart-meta">${escapeHTML(item.colorName || "Negro")} · ${item.size === "Única" ? "Medida única" : "Talla " + escapeHTML(item.size || "M")}</p>
               ${customHTML}
               <div class="cart-item-bottom">
                 <div class="qty" role="group" aria-label="Cantidad de ${escapeHTML(item.name || "sudadera")}">
@@ -1423,7 +1504,9 @@
   }
 
   function updateMaterialUI() {
-    if (materialLabel) materialLabel.textContent = state.material.name;
+    materialLabels.forEach((label) => {
+      label.textContent = state.material.name;
+    });
 
     materialButtons.forEach((button) => {
       const active = button.dataset.material === state.material.id;
@@ -1431,7 +1514,7 @@
       button.setAttribute("aria-pressed", String(active));
     });
 
-    if (materialNote) {
+    if (materialNotes.length) {
       const delta = state.material.delta;
       const suffix =
         delta === 0
@@ -1439,12 +1522,16 @@
           : delta > 0
             ? ` +${formatPrice(delta)}.`
             : ` Ahorras ${formatPrice(Math.abs(delta))}.`;
-      materialNote.textContent = state.material.desc + suffix;
+      materialNotes.forEach((note) => {
+        note.textContent = state.material.desc + suffix;
+      });
     }
   }
 
   function updateTechniqueUI() {
-    if (techniqueLabel) techniqueLabel.textContent = state.technique.name;
+    techniqueLabels.forEach((label) => {
+      label.textContent = state.technique.name;
+    });
 
     techniqueButtons.forEach((button) => {
       const active = button.dataset.technique === state.technique.id;
@@ -1452,17 +1539,19 @@
       button.setAttribute("aria-pressed", String(active));
     });
 
-    if (techniqueNote) {
+    if (techniqueNotes.length) {
       let suffix = " Incluido.";
       if (state.technique.price > 0) {
         suffix = hasAnyDesign()
           ? ` Se suma ${formatPrice(state.technique.price)} una vez por pedido.`
           : ` Se sumará ${formatPrice(state.technique.price)} cuando añadas texto o logo.`;
       }
-      techniqueNote.textContent = state.technique.desc + suffix;
+      techniqueNotes.forEach((note) => {
+        note.textContent = state.technique.desc + suffix;
+      });
     }
 
-    if (techniqueWarning) {
+    if (techniqueWarnings.length) {
       let warning = "";
       if (
         state.technique.id === "sublimacion" &&
@@ -1477,8 +1566,10 @@
         warning =
           "El DTG rinde mejor sobre algodón. En poliéster recomendamos DTF o sublimación.";
       }
-      techniqueWarning.hidden = !warning;
-      techniqueWarning.textContent = warning;
+      techniqueWarnings.forEach((element) => {
+        element.hidden = !warning;
+        element.textContent = warning;
+      });
     }
   }
 
@@ -1575,19 +1666,13 @@
 
     if (hoodiePreview) {
       const isFront = state.view === "front";
-      const isSide = state.angle === 90 || state.angle === 270;
-      const imageFile = isSide
-        ? "hoodie-side-right.png?v=20261110"
-        : `hoodie-${isFront ? "front" : "back"}.png`;
+      const product = PRODUCTS[state.product] || PRODUCTS.hoodie;
+      const imageFile = product.images[isFront ? "front" : "back"];
       const isDark = state.color.toLowerCase() === "#1c1c1f";
       hoodiePreview.style.setProperty("--fabric-color", state.color);
-      hoodiePreview.style.setProperty(
-        "--tint-mask",
-        `url("assets/${imageFile}")`
-      );
+      hoodiePreview.style.setProperty("--tint-mask", `url("${imageFile}")`);
       hoodiePreview.classList.toggle("is-dark", isDark);
-      hoodiePreview.classList.toggle("is-side-view", isSide);
-      hoodiePreview.classList.toggle("is-left-view", state.angle === 270);
+      hoodiePreview.classList.remove("is-side-view", "is-left-view");
 
       MATERIAL_IDS.forEach((id) => {
         hoodiePreview.classList.toggle(
@@ -1603,29 +1688,18 @@
       });
 
       if (hoodiePhoto) {
-        hoodiePhoto.src = `assets/${imageFile}`;
-        hoodiePhoto.alt = isSide
-          ? "Vista de perfil de tu sudadera personalizada"
-          : `Vista ${
-              isFront ? "frontal" : "trasera"
-            } de tu sudadera personalizada`;
+        hoodiePhoto.src = imageFile;
+        hoodiePhoto.alt = `Vista ${isFront ? "frontal" : "trasera"} de tu ${product.label.toLowerCase()}`;
         hoodiePhoto.width = 1003;
         hoodiePhoto.height = 1229;
       }
-      if (studio) studio.classList.toggle("is-side-view", isSide);
+      if (studio) studio.classList.remove("is-side-view");
       if (personalizePanel) {
-        if (isSide) {
-          personalizePanel.setAttribute("inert", "");
-          personalizePanel.setAttribute("aria-hidden", "true");
-        } else {
-          personalizePanel.removeAttribute("inert");
-          personalizePanel.removeAttribute("aria-hidden");
-        }
+        personalizePanel.removeAttribute("inert");
+        personalizePanel.removeAttribute("aria-hidden");
       }
       if (hintText) {
-        hintText.textContent = isSide
-          ? "Vista de perfil. Elige Frente o Espalda para editar el diseño."
-          : "Arrastra el texto o el logo y ajusta su tamaño.";
+        hintText.textContent = "Arrastra el texto o el logo y ajusta su tamaño.";
       }
     }
 
@@ -1634,7 +1708,9 @@
     });
 
     if (previewSwatch) previewSwatch.style.background = state.color;
-    if (previewSize) previewSize.textContent = state.size;
+    const isSingleSize = state.size === "Única";
+    if (previewSize) previewSize.textContent = isSingleSize ? "38×42 cm" : state.size;
+    if (sizeLabelEl) sizeLabelEl.textContent = isSingleSize ? "Medidas" : "Talla";
     if (previewMaterial) previewMaterial.textContent = state.material.name;
     if (previewTechnique) previewTechnique.textContent = state.technique.name;
 
@@ -1702,6 +1778,50 @@
     });
   }
 
+  const productSelections = {};
+
+  function setProduct(id) {
+    const next = PRODUCTS[id] ? id : "hoodie";
+    if (state.product !== next) {
+      productSelections[state.product] = {
+        size: state.size,
+        material: { ...state.material },
+        technique: { ...state.technique },
+      };
+    }
+    const product = PRODUCTS[next];
+    const saved = productSelections[next];
+    state.product = next;
+    state.basePrice = product.prices[state.color] || product.fallbackPrice;
+    state.size = saved ? saved.size : product.defaults.size;
+    state.material = saved ? { ...saved.material } : { ...product.defaults.material };
+    state.technique = saved ? { ...saved.technique } : { ...product.defaults.technique };
+
+    productTabs.forEach((button) => {
+      const active = button.dataset.productTab === state.product;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+
+    productPanels.forEach((panel) => {
+      panel.hidden = panel.dataset.productPanel !== state.product;
+    });
+
+    sizeButtons.forEach((button) => {
+      const active = button.dataset.size === state.size;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+
+    galleryThumbs.forEach((image, index) => {
+      image.src = index === 0 ? product.images.front : product.images.back;
+    });
+
+    updateMaterialUI();
+    updateTechniqueUI();
+    updatePreview();
+  }
+
   function setAngle(angle) {
     const normalized = ((Number(angle) % 360) + 360) % 360;
     setView(normalized >= 135 && normalized < 315 ? "back" : "front");
@@ -1742,7 +1862,8 @@
   function selectColor(hex, name) {
     state.color = hex;
     state.colorName = name;
-    state.basePrice = BASE_PRICES[hex] || state.basePrice;
+    const product = PRODUCTS[state.product] || PRODUCTS.hoodie;
+    state.basePrice = product.prices[hex] || product.fallbackPrice || state.basePrice;
 
     const recommendation = contrastFor(hex);
     ["front", "back"].forEach((side) => {
@@ -2060,6 +2181,10 @@
     button.addEventListener("click", () => setAngle(button.dataset.angle));
   });
 
+  productTabs.forEach((button) => {
+    button.addEventListener("click", () => setProduct(button.dataset.productTab));
+  });
+
   if (textInput) {
     textInput.addEventListener("input", () => {
       const design = activeDesign();
@@ -2301,6 +2426,7 @@
           logoY: back.logoY,
         },
         basePrice: state.basePrice,
+        product: state.product,
       };
       const keySnapshot = {
         ...designSnapshot,
@@ -2316,7 +2442,8 @@
         state.items.push({
           id: uid(),
           key,
-          name: "Sudadera personalizada",
+          product: state.product,
+          name: PRODUCTS[state.product].itemName,
           colorHex: state.color,
           colorName: state.colorName,
           size: state.size,
@@ -2345,7 +2472,7 @@
       window.LikeHoodieConsent?.track("add_to_cart", {
         value: unitPrice,
         currency: "MXN",
-        content_name: "Sudadera personalizada",
+        content_name: PRODUCTS[state.product].itemName,
         content_type: "product",
       });
 

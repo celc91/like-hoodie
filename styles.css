@@ -4263,19 +4263,19 @@ details[open] .plus::after {
   padding: 8px 8px 6px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: rgba(255, 253, 248, 0.55);
+  background: #e9e1d3;
   cursor: pointer;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 .view-thumb:hover {
   border-color: var(--ink);
-  background: rgba(255, 255, 255, 0.85);
+  background: #efe7d9;
 }
 
 .view-thumb.is-active {
   border-color: var(--ink);
-  background: #fff;
+  background: #f3ebde;
   box-shadow: 0 0 0 1px var(--ink);
 }
 
@@ -6426,4 +6426,62 @@ p {
   .studio-summary {
     transition: none;
   }
+}
+
+/* ==========================================================================
+   Configurador · selector de producto (sudadera / tote)
+   ========================================================================== */
+
+.product-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--cream);
+}
+
+.product-tab {
+  padding: 11px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.product-tab:hover {
+  color: var(--ink);
+}
+
+.product-tab.is-active {
+  background: var(--ink);
+  color: var(--cream);
+}
+
+.product-tab:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* El panel sustituye al bloque de controles de cada producto */
+.product-panel {
+  display: grid;
+  gap: 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.product-panel[hidden] {
+  display: none;
+}
+
+.product-panel > .control + .control {
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
 }

@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1003 1229" width="1003" height="1229" role="img" aria-label="Tote bag de lona, vista trasera">
+  <defs>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8f897f" stop-opacity=".45"/>
+      <stop offset=".09" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".91" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#8f897f" stop-opacity=".45"/>
+    </linearGradient>
+    <linearGradient id="vert" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9b958b" stop-opacity=".24"/>
+      <stop offset=".18" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".76" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#8f897f" stop-opacity=".28"/>
+    </linearGradient>
+    <linearGradient id="strapFill" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8f897f" stop-opacity=".22"/>
+      <stop offset=".35" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".65" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#8f897f" stop-opacity=".28"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".4" cy=".3" r=".66">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur18"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="blur8"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="weave" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.72 0.9" numOctaves="3" seed="13" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".10"/></feComponentTransfer>
+    </filter>
+    <clipPath id="bag">
+      <path d="M165 470h673v604c0 30-14 46-44 46H209c-30 0-44-16-44-46z"/>
+    </clipPath>
+  </defs>
+
+  <g transform="translate(501 604) scale(1.18) translate(-501 -618)">
+
+  <!-- asas -->
+  <g fill="#fffdfa">
+    <path d="M328 560V116a30 30 0 0 1 60 0v444z"/>
+    <path d="M615 560V116a30 30 0 0 1 60 0v444z"/>
+  </g>
+  <g fill="url(#strapFill)">
+    <path d="M328 560V116a30 30 0 0 1 60 0v444z"/>
+    <path d="M615 560V116a30 30 0 0 1 60 0v444z"/>
+  </g>
+  <g fill="none" stroke="#8f897f" stroke-opacity=".32" stroke-width="1.6" stroke-dasharray="7 8">
+    <path d="M336 550V118a22 22 0 0 1 44 0v432"/>
+    <path d="M623 550V118a22 22 0 0 1 44 0v432"/>
+  </g>
+
+  <!-- cuerpo -->
+  <g clip-path="url(#bag)">
+    <rect x="155" y="464" width="693" height="666" fill="#fffdfa"/>
+    <ellipse cx="420" cy="660" rx="380" ry="330" fill="url(#glow)"/>
+
+    <g filter="url(#blur18)" opacity=".55">
+      <path d="M262 560c22 190 8 360-24 500" stroke="#8f897f" stroke-opacity=".22" stroke-width="28" fill="none"/>
+      <path d="M734 560c-18 190-4 360 26 500" stroke="#8f897f" stroke-opacity=".2" stroke-width="28" fill="none"/>
+      <path d="M470 600c14 170 16 300 6 420" stroke="#8f897f" stroke-opacity=".13" stroke-width="30" fill="none"/>
+      <path d="M548 600c-12 170-14 300-4 420" stroke="#ffffff" stroke-opacity=".75" stroke-width="36" fill="none"/>
+    </g>
+
+    <rect x="155" y="464" width="693" height="666" fill="url(#edge)"/>
+    <rect x="155" y="464" width="693" height="666" fill="url(#vert)"/>
+    <rect x="155" y="464" width="693" height="666" fill="#7d776e" filter="url(#weave)" opacity=".5"/>
+
+    <!-- costura central -->
+    <path d="M501 476v620" stroke="#8f897f" stroke-opacity=".2" stroke-width="3"/>
+    <path d="M494 476v620" stroke="#ffffff" stroke-opacity=".7" stroke-width="2"/>
+  </g>
+
+  <!-- borde superior -->
+  <path d="M165 470h673v42H165z" fill="#fffdfa"/>
+  <path d="M165 470h673v42H165z" fill="url(#vert)"/>
+  <path d="M165 470h673v6H165z" fill="#ffffff" opacity=".55"/>
+  <g stroke="#8f897f" stroke-opacity=".32" stroke-width="1.6" stroke-dasharray="7 7" fill="none">
+    <path d="M174 496h655"/>
+  </g>
+
+  <!-- base -->
+  <path d="M165 1062h673v12c0 28-14 46-44 46H209c-30 0-44-18-44-46z" fill="#fffdfa"/>
+  <path d="M165 1062h673v12c0 28-14 46-44 46H209c-30 0-44-18-44-46z" fill="url(#vert)"/>
+  <g stroke="#8f897f" stroke-opacity=".3" stroke-width="1.6" stroke-dasharray="7 7" fill="none">
+    <path d="M174 1074h655"/>
+  </g>
+
+  <!-- sombra de contacto -->
+  <ellipse cx="501" cy="1148" rx="310" ry="24" fill="#161618" opacity=".10" filter="url(#blur8)"/>
+  </g>
+</svg>
