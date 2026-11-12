@@ -247,6 +247,35 @@
     }
   }
 
+  // Meta CAPI: el servidor solo envía la compra de quien aceptó publicidad.
+  // La decisión se guarda en la base de datos, no en el navegador.
+  function adsAllowed() {
+    try {
+      const api = window.LikeHoodieConsent;
+      const state = api && typeof api.get === "function" ? api.get() : null;
+      return Boolean(state && state.ads);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async function setAdConsent(granted) {
+    if (!(await ensure())) return false;
+    try {
+      const { error } = await client.rpc("set_ad_consent", {
+        p_granted: Boolean(granted),
+      });
+      return !error;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  document.addEventListener("likehoodie:consent", function (event) {
+    const ads = Boolean(event.detail && event.detail.ads);
+    setAdConsent(ads);
+  });
+
   function cancelPendingSync() {
     if (syncTimer) {
       window.clearTimeout(syncTimer);
@@ -311,6 +340,10 @@
         zip: String(order.customer?.zip || "").trim(),
       };
 
+      // Deja registrado el permiso de publicidad justo antes de crear el pedido,
+      // por si la decisión se tomó en otra pestaña o en una visita anterior.
+      await setAdConsent(adsAllowed());
+
       const { data, error } = await client.rpc("place_order", {
         p_customer: row,
         p_items: items,
@@ -341,11 +374,15 @@
       });
 
       if (window.LikeHoodieConsent && typeof window.LikeHoodieConsent.track === "function") {
-        window.LikeHoodieConsent.track("order_created", {
-          value: order.total,
-          currency: "MXN",
-          transaction_id: result.number,
-        });
+        window.LikeHoodieConsent.track(
+          "order_created",
+          {
+            value: order.total,
+            currency: "MXN",
+            transaction_id: result.number,
+          },
+          { eventId: "lh-" + result.number }
+        );
       }
 
       return {
@@ -520,5 +557,6 @@
     getOrderPayment,
     subscribeNewsletter,
     findCoupon,
+    setAdConsent,
   };
 })();

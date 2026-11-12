@@ -157,14 +157,19 @@
   };
 
   // Envía un evento a las plataformas que la persona haya aceptado
-  function track(name, params) {
+  function track(name, params, options) {
     const state = read();
     if (!state) return;
     if (state.analytics && typeof window.gtag === "function" && GA_EVENTS[name]) {
       window.gtag("event", GA_EVENTS[name], params || {});
     }
     if (state.ads && typeof window.fbq === "function" && META_EVENTS[name]) {
-      window.fbq("track", META_EVENTS[name], params || {});
+      const eventId = options && options.eventId;
+      if (eventId) {
+        window.fbq("track", META_EVENTS[name], params || {}, { eventID: String(eventId) });
+      } else {
+        window.fbq("track", META_EVENTS[name], params || {});
+      }
     }
   }
 
