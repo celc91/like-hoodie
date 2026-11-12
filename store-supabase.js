@@ -438,8 +438,37 @@
     return data && typeof data === "object" ? data : { enabled: false };
   }
 
-  async function getOrderPayment(number) {
-    const value = Number(String(number == null ? "" : number).replace(/\D/g, ""));
+  async function payClipOrder(orderId, token, customer) {
+    if (!(await ensure())) {
+      throw new Error("La tienda no está configurada.");
+    }
+
+    const { data, error } = await client.functions.invoke("clip-pay", {
+      body: {
+        orderId: String(orderId || ""),
+        token: String(token || ""),
+        customer: {
+          email: String(customer?.email || ""),
+          phone: String(customer?.phone || ""),
+        },
+      },
+    });
+
+    if (error) {
+      let message = "No se pudo procesar el pago con Clip.";
+      try {
+        const payload = await error.context?.json();
+        if (payload?.error) message = payload.error;
+      } catch (parseError) {
+        /* Usar el mensaje genérico. */
+      }
+      throw new Error(message);
+    }
+
+    return data && typeof data === "object" ? data : { status: "error" };
+  }
+
+  async function getOrderPayment(number) {    const value = Number(String(number == null ? "" : number).replace(/\D/g, ""));
     if (!Number.isInteger(value) || value <= 0) return null;
     if (!(await ensure())) return null;
 
@@ -554,6 +583,7 @@
     placeOrder,
     getConfig,
     createClipCheckout,
+    payClipOrder,
     getOrderPayment,
     subscribeNewsletter,
     findCoupon,

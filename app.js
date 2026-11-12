@@ -355,6 +355,9 @@
   const sandboxPay = $("[data-sandbox-pay]");
   const sandboxCards = $("[data-sandbox-cards]");
   const sandboxError = $("[data-sandbox-error]");
+  const clipCardPanel = $("[data-clip-card]");
+  const clipCardMount = $("#clip-card-mount");
+  const clipCardError = $("[data-clip-card-error]");
   const paymentBanner = $("[data-payment-banner]");
   const paymentBannerTitle = $("[data-payment-banner-title]");
   const paymentBannerText = $("[data-payment-banner-text]");
@@ -1101,6 +1104,59 @@
     { pan: "377770520127013", brand: "Amex", status: "rejected", reason: "No autorizada por el emisor" },
   ];
   let sandboxApproved = null;
+  let sandboxOrder = null;
+
+  /* Checkout Transparente real de Clip (sandbox).
+     La API Key pública se configura en clip-config.js; debe empezar con test_. */
+  const clipPublicKey = String(window.LIKEHOODIE_CLIP?.publicKey || "").trim();
+  const clipSandboxReady = /^test_/i.test(clipPublicKey);
+  let clipSdk = null;
+  let clipCard = null;
+  let clipSdkPromise = null;
+
+  function loadClipSdk() {
+    if (window.ClipSDK) return Promise.resolve();
+    if (clipSdkPromise) return clipSdkPromise;
+    clipSdkPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://sdk.clip.mx/js/clip-sdk.js";
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("No se pudo cargar el SDK de Clip."));
+      document.head.appendChild(script);
+    });
+    return clipSdkPromise;
+  }
+
+  async function mountClipCard(amount) {
+    if (!clipSandboxReady || !clipCardMount) return;
+    await loadClipSdk();
+    if (!window.ClipSDK) throw new Error("SDK de Clip no disponible.");
+    if (!clipCard) {
+      clipSdk = new window.ClipSDK(clipPublicKey, { env: "prod" });
+      clipCard = clipSdk.element.create("card", {
+        paymentAmount: Number(amount) || 1,
+        locale: "es",
+        theme: "light",
+      });
+      clipCard.mount("clip-card-mount");
+    } else if (typeof clipCard.setAmount === "function") {
+      clipCard.setAmount(Number(amount) || 1);
+    }
+  }
+
+  function showClipCardError(message) {
+    if (!clipCardError) return;
+    clipCardError.textContent = message;
+    clipCardError.hidden = false;
+    clipCardError.scrollIntoView({ block: "nearest" });
+  }
+
+  function clipSandboxActive() {
+    return Boolean(
+      clipSandboxReady && clipCardPanel && !clipCardPanel.hidden
+    );
+  }
 
   function sandboxRequested() {
     const params = new URLSearchParams(window.location.search);
@@ -1138,9 +1194,26 @@
 
   function updateSandboxUI() {
     if (!sandboxPay) return;
-    const show = sandboxRequested() && paymentProvider === "demo";
-    sandboxPay.hidden = !show;
-    if (!show) return;
+    const sandbox = sandboxRequested() && paymentProvider === "demo";
+    const real = sandbox && clipSandboxReady;
+    if (clipCardPanel) clipCardPanel.hidden = !real;
+    sandboxPay.hidden = !sandbox || real;
+    if (!sandbox) return;
+
+    if (real) {
+      mountClipCard(totals().total).catch(() => {
+        // Si el SDK o la clave fallan, se usa el simulador local.
+        if (clipCardPanel) clipCardPanel.hidden = true;
+        sandboxPay.hidden = false;
+        renderSandboxCards();
+      });
+      if (checkoutNote) {
+        checkoutNote.textContent =
+          "Sandbox de Clip: el pago se procesa con credenciales de prueba. No se cobra dinero real.";
+      }
+      return;
+    }
+
     renderSandboxCards();
     if (checkoutNote) {
       checkoutNote.textContent =
@@ -1168,9 +1241,14 @@
     lastFocusedElement = document.activeElement;
     checkoutForm.reset();
     sandboxApproved = null;
+    sandboxOrder = null;
     if (sandboxError) {
       sandboxError.hidden = true;
       sandboxError.textContent = "";
+    }
+    if (clipCardError) {
+      clipCardError.hidden = true;
+      clipCardError.textContent = "";
     }
     checkoutFormView.hidden = false;
     checkoutSuccess.hidden = true;
@@ -1280,6 +1358,88 @@
       const submitButton = checkoutForm.querySelector('button[type="submit"]');
       let orderLabel = "CH-" + Math.floor(10000 + Math.random() * 90000);
       let savedOrder = null;
+
+      /* Checkout Transparente real de Clip (sandbox) */
+      if (clipSandboxActive()) {
+        if (clipCardError) clipCardError.hidden = true;
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.dataset.originalLabel = submitButton.textContent;
+          submitButton.textContent = "Procesando pago…";
+        }
+
+        let tokenData;
+        try {
+          if (!clipCard) throw new Error("El formulario de pago no está listo.");
+          tokenData = await clipCard.cardToken();
+        } catch (error) {
+          restoreSubmitButton(submitButton);
+          showClipCardError(
+            error?.message || "No se pudo validar la tarjeta. Revisa los datos."
+          );
+          return;
+        }
+        if (!tokenData?.id) {
+          restoreSubmitButton(submitButton);
+          showClipCardError("No se pudo tokenizar la tarjeta.");
+          return;
+        }
+
+        if (!sandboxOrder) {
+          const saved = await analytics?.placeOrder({
+            customer,
+            items: state.items,
+            subtotal,
+            shipping,
+            total,
+            coupon: state.coupon ? state.coupon.code : null,
+          });
+          if (!saved) {
+            restoreSubmitButton(submitButton);
+            showToast(
+              "No pudimos registrar el pedido. Revisa tu conexión e inténtalo de nuevo."
+            );
+            return;
+          }
+          sandboxOrder = saved;
+        }
+
+        let result;
+        try {
+          result = await analytics.payClipOrder(sandboxOrder.id, tokenData.id, {
+            email: customer.email,
+            phone: customer.phone,
+          });
+        } catch (error) {
+          restoreSubmitButton(submitButton);
+          showClipCardError(error?.message || "No se pudo procesar el pago.");
+          return;
+        }
+
+        if (result?.status === "approved") {
+          state.items = [];
+          state.cartStep = "cart";
+          saveCart();
+          renderCart();
+          orderNumber.textContent = `LH-${sandboxOrder.number}`;
+          showCheckoutResult(
+            "Pago aprobado (Clip sandbox)",
+            `Pago aprobado con Clip. Folio ${
+              result.receiptNo || result.paymentId || "—"
+            }. Pedido LH-${sandboxOrder.number}. Es una transacción de prueba: no se cobró dinero real.`
+          );
+          showToast("Pago sandbox aprobado. Pedido registrado.");
+          return;
+        }
+
+        restoreSubmitButton(submitButton);
+        const reason =
+          result?.statusDetail?.message ||
+          result?.message ||
+          "revisa los datos de la tarjeta";
+        showClipCardError(`Pago rechazado: ${reason}.`);
+        return;
+      }
 
       /* Simulación de pago con tarjetas de prueba de Clip */
       const sandboxCard =

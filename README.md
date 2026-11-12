@@ -170,6 +170,32 @@ Tarjetas incluidas en el simulador:
 
 El simulador se oculta automáticamente cuando `payment_provider = 'clip'`, para no mezclarlo con cobros reales. La lógica está en `app.js` (`CLIP_TEST_CARDS` y `updateSandboxUI`) y el panel en `index.html` (`data-sandbox-pay`).
 
+### Sandbox real con Checkout Transparente
+
+Además del simulador, la web puede cobrar de verdad contra el **sandbox de Clip** usando el SDK de Checkout Transparente:
+
+1. Crea credenciales de prueba en el Panel de Desarrollador de Clip y copia la **API Key** (empieza con `test_`).
+2. Pega la clave en `clip-config.js`:
+
+   ```js
+   window.LIKEHOODIE_CLIP = { publicKey: "test_..." };
+   ```
+
+3. Configura los secretos de Supabase y despliega la función:
+
+   ```powershell
+   npx supabase secrets set CLIP_API_KEY=test_...
+   npx supabase functions deploy clip-pay
+   ```
+
+4. Abre el checkout con `?sandbox=1`, escribe los datos de envío y paga con una de las tarjetas de prueba. El SDK monta el formulario de tarjeta de Clip; el token se cobra en el servidor con `POST /payments`.
+
+La función `clip-pay` **solo acepta claves `test_`** (para evitar cobros reales por error). Si algún día quieres usarla con producción, añade `CLIP_ALLOW_LIVE=1` y la clave real.
+
+> Si `clip-config.js` está vacío o el SDK no carga, la web vuelve automáticamente al simulador local de tarjetas.
+
+**Nota de seguridad:** la API Key del SDK es pública por diseño (Clip la usa en su iframe). La clave secreta (`CLIP_API_SECRET`) y el webhook siguen siendo privados y viven solo en los secrets de Supabase.
+
 ### Volver a demostración
 
 ```sql

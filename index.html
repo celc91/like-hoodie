@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261112-sandbox1">
+  <link rel="stylesheet" href="styles.css?v=20261112-sandbox2">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -1038,6 +1038,16 @@
             <div class="sandbox-cards" data-sandbox-cards role="radiogroup" aria-label="Tarjetas de prueba de Clip"></div>
             <p class="sandbox-error" data-sandbox-error role="alert" hidden></p>
           </div>
+
+          <div class="clip-card" data-clip-card hidden>
+            <div class="sandbox-pay__head">
+              <span class="sandbox-badge">Sandbox</span>
+              <span>Tarjeta con la API de Clip</span>
+            </div>
+            <p class="sandbox-help">Pago real contra el sandbox de Clip con credenciales de prueba. No se cobra dinero real.</p>
+            <div id="clip-card-mount" class="clip-card__mount"></div>
+            <p class="sandbox-error" data-clip-card-error role="alert" hidden></p>
+          </div>
           <div class="checkout-summary">
             <span>Total a pagar</span>
             <strong data-checkout-total>$0 MXN</strong>
@@ -1098,7 +1108,8 @@
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
   <script src="store-supabase.js?v=20261112-capi1"></script>
-  <script src="app.js?v=20261112-sandbox1"></script>
+  <script src="clip-config.js?v=20261112-sandbox2"></script>
+<script src="app.js?v=20261112-sandbox2"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>

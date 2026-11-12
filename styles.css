@@ -3062,6 +3062,20 @@ details[open] .plus::after {
   line-height: 1.4;
 }
 
+/* Checkout Transparente real de Clip (SDK) */
+.clip-card {
+  margin: 4px 0 18px;
+  padding: 12px 14px 10px;
+  border: 1px solid rgba(22, 22, 24, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.clip-card__mount {
+  min-height: 258px;
+  margin-top: 8px;
+}
+
 .checkout-summary strong {
   font-family: var(--font-display);
   font-size: 26px;
