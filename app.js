@@ -83,6 +83,7 @@
     view: "front",
     angle: 0,
     cartStep: "cart",
+    coupon: null,
     material: {
       id: "cotton400",
       name: "Algodón 400 g",
@@ -201,9 +202,12 @@
       (sum, item) => sum + item.unitPrice * item.qty,
       0
     );
+    const discount = state.coupon
+      ? Math.min(subtotal, Math.round((subtotal * state.coupon.percent) / 100))
+      : 0;
     const shipping =
       subtotal === 0 || subtotal >= FREE_SHIPPING ? 0 : SHIPPING_COST;
-    return { subtotal, shipping, total: subtotal + shipping };
+    return { subtotal, discount, shipping, total: Math.max(0, subtotal - discount + shipping) };
   }
 
   function activeDesign() {
@@ -318,6 +322,13 @@
   const priceNote = $("[data-price-note]");
   const priceMirrorEl = $("[data-price-mirror]");
   const addMirrorButton = $("[data-add-mirror]");
+  const couponInput = $("[data-coupon-input]");
+  const couponApply = $("[data-coupon-apply]");
+  const couponNote = $("[data-coupon-note]");
+  const couponLine = $("[data-coupon-line]");
+  const couponValue = $("[data-coupon-value]");
+  const couponLabel = $("[data-coupon-label]");
+  const checkoutCoupon = $("[data-checkout-coupon]");
   const addToCartButton = $("[data-add-to-cart]");
   const personalizeButtons = $$("[data-personalize]");
   const newsletterForms = $$("[data-newsletter]");
@@ -438,9 +449,111 @@
     return canvas.toDataURL("image/png");
   }
 
+  /* Cupones ---------------------------------------------------------------- */
+
+  const COUPON_KEY = "likehoodie.coupon";
+
+  function loadStoredCoupon() {
+    try {
+      const raw = localStorage.getItem(COUPON_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || !parsed.code || !parsed.percent) return null;
+      return { code: String(parsed.code), percent: Number(parsed.percent) };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function storeCoupon(coupon) {
+    try {
+      if (coupon) {
+        localStorage.setItem(COUPON_KEY, JSON.stringify({ code: coupon.code, percent: coupon.percent }));
+      } else {
+        localStorage.removeItem(COUPON_KEY);
+      }
+    } catch (error) {
+      /* almacenamiento no disponible */
+    }
+  }
+
+  function setCouponNote(text, isError = false) {
+    if (!couponNote) return;
+    couponNote.textContent = text || "";
+    couponNote.hidden = !text;
+    couponNote.classList.toggle("is-error", Boolean(isError));
+  }
+
+  async function applyCoupon() {
+    const code = (couponInput && couponInput.value ? couponInput.value : "").trim();
+    if (!code) return;
+
+    if (!window.StoreSupabase || typeof window.StoreSupabase.findCoupon !== "function") {
+      setCouponNote("No pudimos validar el código. Inténtalo más tarde.", true);
+      return;
+    }
+
+    if (couponApply) {
+      couponApply.disabled = true;
+      couponApply.textContent = "…";
+    }
+
+    const result = await window.StoreSupabase.findCoupon(code);
+
+    if (couponApply) {
+      couponApply.disabled = false;
+      couponApply.textContent = state.coupon ? "Quitar" : "Aplicar";
+    }
+
+    if (!result.ok) {
+      const messages = {
+        notfound: "Ese código no existe.",
+        expired: "Ese código ya caducó.",
+        exhausted: "Ese código ya no tiene usos disponibles.",
+        offline: "Sin conexión. Inténtalo de nuevo.",
+        invalid: "Escribe un código válido.",
+      };
+      setCouponNote(messages[result.reason] || "No pudimos validar el código.", true);
+      return;
+    }
+
+    state.coupon = { code: result.code, percent: result.percent, verified: true };
+    storeCoupon(state.coupon);
+    setCouponNote("");
+    renderCart();
+    showToast(`Cupón ${result.code} aplicado: −${result.percent} %`);
+  }
+
+  function removeCoupon() {
+    state.coupon = null;
+    storeCoupon(null);
+    if (couponInput) couponInput.value = "";
+    setCouponNote("");
+    renderCart();
+    showToast("Cupón quitado.");
+  }
+
+  // Si el cupón venía guardado de otra visita, se vuelve a validar
+  async function revalidateCoupon() {
+    if (!state.coupon || state.coupon.verified) return;
+    if (!window.StoreSupabase || typeof window.StoreSupabase.findCoupon !== "function") return;
+    const result = await window.StoreSupabase.findCoupon(state.coupon.code);
+    if (!result.ok) {
+      state.coupon = null;
+      storeCoupon(null);
+      setCouponNote("Ese cupón ya no es válido.", true);
+    } else {
+      state.coupon = { code: result.code, percent: result.percent, verified: true };
+      storeCoupon(state.coupon);
+    }
+    renderCart();
+  }
+
+  state.coupon = loadStoredCoupon();
+
   function renderCart() {
     const count = state.items.reduce((sum, item) => sum + item.qty, 0);
-    const { subtotal, shipping, total } = totals();
+    const { subtotal, discount, shipping, total } = totals();
 
     if (cartCount) {
       cartCount.textContent = String(count);
@@ -552,6 +665,22 @@
     shippingEl.textContent = shipping === 0 ? "Gratis" : formatPrice(shipping);
     totalEl.textContent = formatPrice(total);
 
+    // cupón
+    if (couponApply) {
+      couponApply.textContent = state.coupon ? "Quitar" : "Aplicar";
+    }
+    if (couponInput) {
+      couponInput.value = state.coupon ? state.coupon.code : "";
+      couponInput.disabled = Boolean(state.coupon);
+    }
+    if (couponLine) {
+      couponLine.hidden = !state.coupon || discount <= 0;
+      if (state.coupon && couponLabel && couponValue) {
+        couponLabel.textContent = `Descuento ${state.coupon.code} (−${state.coupon.percent} %)`;
+        couponValue.textContent = "−" + formatPrice(discount);
+      }
+    }
+
     const missing = Math.max(0, FREE_SHIPPING - subtotal);
     if (missing <= 0) {
       shippingMessage.textContent = "¡Enhorabuena! Tienes envío gratis.";
@@ -568,6 +697,7 @@
     closeMenu();
     lastFocusedElement = document.activeElement;
     renderCart();
+    revalidateCoupon();
     cartDrawer.style.removeProperty("transform");
     if (overlay) overlay.style.removeProperty("opacity");
     cartDrawer.classList.add("is-open");
@@ -636,6 +766,21 @@
   openCartButtons.forEach((button) => button.addEventListener("click", openCart));
   closeCartButtons.forEach((button) => button.addEventListener("click", () => closeCart()));
   if (overlay) overlay.addEventListener("click", () => closeCart());
+
+  if (couponApply) {
+    couponApply.addEventListener("click", () => {
+      if (state.coupon) removeCoupon();
+      else applyCoupon();
+    });
+  }
+
+  if (couponInput) {
+    couponInput.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      applyCoupon();
+    });
+  }
 
   /* ---------------------------------------------------------------------
      Panel de la cesta: arrastre 1:1, goma elástica, proyección de impulso
@@ -853,6 +998,15 @@
     }
     if (retryPaymentButton) retryPaymentButton.hidden = true;
     checkoutTotal.textContent = formatPrice(totals().total);
+    if (checkoutCoupon) {
+      const summary = totals();
+      if (state.coupon && summary.discount > 0) {
+        checkoutCoupon.textContent = `Incluye cupón ${state.coupon.code} (−${state.coupon.percent} %): −${formatPrice(summary.discount)}`;
+        checkoutCoupon.hidden = false;
+      } else {
+        checkoutCoupon.hidden = true;
+      }
+    }
     checkoutModal.classList.add("is-open");
     checkoutModal.setAttribute("aria-hidden", "false");
     document.body.classList.add("is-locked");
@@ -951,6 +1105,7 @@
           subtotal,
           shipping,
           total,
+          coupon: state.coupon ? state.coupon.code : null,
         });
 
         if (!saved) {
@@ -2315,14 +2470,38 @@
   /* ---------------------------------------------------------------------- */
 
   newsletterForms.forEach((form) => {
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!form.checkValidity()) {
         form.reportValidity();
         return;
       }
-      form.reset();
-      showToast("¡Dentro! Revisa tu email para el 10 % de bienvenida.");
+
+      const field = form.querySelector('input[type="email"]');
+      const button = form.querySelector('button[type="submit"]');
+      const email = field ? field.value : "";
+      if (button) button.disabled = true;
+
+      let result = { ok: false, reason: "unsupported" };
+      if (window.StoreSupabase?.subscribeNewsletter) {
+        result = await window.StoreSupabase.subscribeNewsletter(email);
+      }
+
+      if (button) button.disabled = false;
+
+      if (result.ok) {
+        form.reset();
+        const success = document.createElement("div");
+        success.className = "newsletter-success";
+        success.innerHTML =
+          "<strong>¡Dentro!</strong> Tu código de bienvenida es " +
+          '<span class="newsletter-code">BIENVENIDA10</span> · 10 % en tu primer pedido.' +
+          (result.duplicate ? " Ya estabas en la lista." : "");
+        form.replaceWith(success);
+        showToast("¡Bienvenido al club! Tu código es BIENVENIDA10.");
+      } else {
+        showToast("No pudimos guardar tu correo. Inténtalo de nuevo en un momento.");
+      }
     });
   });
 

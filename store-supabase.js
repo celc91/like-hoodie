@@ -316,6 +316,7 @@
         p_items: items,
         p_cart_id: cartId || null,
         p_notes: String(order.notes || "").slice(0, 500),
+        p_coupon: order.coupon ? String(order.coupon).slice(0, 32) : null,
       });
 
       if (error || !data) {
@@ -418,6 +419,56 @@
     return ok;
   }
 
+  // Alta en la lista del Club like hoodie
+  async function subscribeNewsletter(email) {
+    const clean = String(email || "").trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(clean)) {
+      return { ok: false, reason: "invalid" };
+    }
+
+    const ok = await ensure();
+    if (!ok) return { ok: false, reason: "offline" };
+
+    const { error } = await client
+      .from("newsletter_subscribers")
+      .insert({ email: clean, source: "web" });
+
+    if (!error) return { ok: true };
+    if (error.code === "23505") return { ok: true, duplicate: true };
+
+    console.error("No se pudo guardar el correo:", error);
+    return { ok: false, reason: error.code || "error", message: error.message };
+  }
+
+  // Devuelve el descuento de un cupón si es válido
+  async function findCoupon(code) {
+    const clean = String(code || "").trim().toUpperCase();
+    if (!/^[A-Z0-9-]{3,32}$/.test(clean)) return { ok: false, reason: "invalid" };
+
+    const ok = await ensure();
+    if (!ok) return { ok: false, reason: "offline" };
+
+    const { data, error } = await client
+      .from("coupons")
+      .select("code,percent,active,max_uses,used_count,expires_at")
+      .eq("code", clean)
+      .maybeSingle();
+
+    if (error) {
+      console.error("No se pudo validar el cupón:", error);
+      return { ok: false, reason: "error" };
+    }
+    if (!data || !data.active) return { ok: false, reason: "notfound" };
+    if (data.expires_at && new Date(data.expires_at).getTime() < Date.now()) {
+      return { ok: false, reason: "expired" };
+    }
+    if (data.max_uses && data.used_count >= data.max_uses) {
+      return { ok: false, reason: "exhausted" };
+    }
+
+    return { ok: true, code: data.code, percent: Number(data.percent) };
+  }
+
   window.StoreSupabase = {
     configured: enabled,
     init,
@@ -428,5 +479,7 @@
     getConfig,
     createClipCheckout,
     getOrderPayment,
+    subscribeNewsletter,
+    findCoupon,
   };
 })();

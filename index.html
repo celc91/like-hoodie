@@ -915,7 +915,16 @@
     </div>
 
     <div class="cart-foot" data-cart-foot>
+      <div class="coupon-box">
+        <label class="sr-only" for="coupon-code">Código de descuento</label>
+        <div class="coupon-row">
+          <input id="coupon-code" type="text" data-coupon-input placeholder="Código de descuento" autocomplete="off" spellcheck="false">
+          <button type="button" class="coupon-apply" data-coupon-apply>Aplicar</button>
+        </div>
+        <p class="coupon-note" data-coupon-note hidden></p>
+      </div>
       <div class="cart-line"><span>Subtotal</span><span data-subtotal>$0 MXN</span></div>
+      <div class="cart-line coupon-line" data-coupon-line hidden><span data-coupon-label>Descuento</span><span data-coupon-value>—</span></div>
       <div class="cart-line"><span>Envío</span><span data-shipping>—</span></div>
       <div class="cart-total"><span>Total</span><strong data-total>$0 MXN</strong></div>
       <button type="button" class="btn btn-primary btn-block" data-checkout>Finalizar compra</button>
@@ -970,6 +979,7 @@
             <span>Total a pagar</span>
             <strong data-checkout-total>$0 MXN</strong>
           </div>
+          <p class="checkout-coupon" data-checkout-coupon hidden></p>
           <button type="submit" class="btn btn-primary btn-block">Confirmar pedido</button>
           <p class="checkout-note">Al continuar aceptas los <a href="terminos.html">términos</a> y la <a href="privacidad.html">política de privacidad</a>.</p>
         </form>
