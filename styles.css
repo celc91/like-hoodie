@@ -4507,20 +4507,18 @@ details[open] .plus::after {
   top: var(--area-y, 15%);
   width: var(--area-w, 52%);
   height: var(--area-h, 44%);
-  border: 1px dashed rgba(255, 255, 255, 0.55);
-  border-radius: 14px;
+  border: 1px solid rgba(70, 70, 70, 0.42);
+  border-radius: 2px;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.16) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
-  background-size: 25% 25%;
-  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.4));
+    linear-gradient(to right, rgba(80, 80, 80, 0.34) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(80, 80, 80, 0.34) 1px, transparent 1px);
+  background-size: 10% 10%;
 }
 
 .print-grid__v,
 .print-grid__h {
   position: absolute;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.28);
+  background: none;
 }
 
 .print-grid__v {
@@ -4528,6 +4526,12 @@ details[open] .plus::after {
   top: 0;
   bottom: 0;
   width: 1px;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(255, 77, 31, 0.7) 50%,
+    transparent 50%
+  );
+  background-size: 1px 9px;
   transform: translateX(-0.5px);
 }
 
@@ -4536,34 +4540,13 @@ details[open] .plus::after {
   left: 0;
   right: 0;
   height: 1px;
+  background-image: linear-gradient(
+    to right,
+    rgba(255, 77, 31, 0.7) 50%,
+    transparent 50%
+  );
+  background-size: 9px 1px;
   transform: translateY(-0.5px);
-}
-
-.print-grid__dot {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 10px;
-  height: 10px;
-  margin: -5px 0 0 -5px;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  background: var(--orange);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 12px rgba(255, 77, 31, 0.55);
-}
-
-.print-grid__label {
-  position: absolute;
-  left: 50%;
-  top: calc(50% + 11px);
-  transform: translateX(-50%);
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
-  white-space: nowrap;
 }
 
 .editor-item {
