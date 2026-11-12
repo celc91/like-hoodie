@@ -1231,6 +1231,15 @@ section[id] {
   transform: scale(0.92);
 }
 
+.stage-zoom__btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.stage-zoom__btn:disabled:hover {
+  background: transparent;
+}
+
 .stage-zoom__value {
   min-width: 44px;
   text-align: center;

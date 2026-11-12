@@ -2375,6 +2375,8 @@
     studioHoodie.style.setProperty("--zoom", zoomLevel);
     studioHoodie.style.transform = `translate3d(${zoomPanX}px, ${zoomPanY}px, 0) scale(${zoomLevel})`;
     if (zoomValueEl) zoomValueEl.textContent = Math.round(zoomLevel * 100) + "%";
+    if (zoomInButton) zoomInButton.disabled = zoomLevel >= 2.499;
+    if (zoomOutButton) zoomOutButton.disabled = zoomLevel <= 1.001;
     if (hoodieStage) hoodieStage.classList.toggle("is-zoomed", zoomLevel > 1.001);
     if (zoomResetButton) zoomResetButton.disabled = zoomLevel <= 1.001;
   }
