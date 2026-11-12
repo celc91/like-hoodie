@@ -320,8 +320,6 @@
   const removeLogoButton = $("[data-remove-logo]");
   const priceEl = $("[data-price-display]");
   const priceNote = $("[data-price-note]");
-  const priceMirrorEl = $("[data-price-mirror]");
-  const addMirrorButton = $("[data-add-mirror]");
   const couponInput = $("[data-coupon-input]");
   const couponApply = $("[data-coupon-apply]");
   const couponNote = $("[data-coupon-note]");
@@ -1687,7 +1685,6 @@
 
     if (priceEl) priceEl.textContent = formatPrice(total);
     if (priceNote) priceNote.textContent = priceNoteText();
-    if (priceMirrorEl) priceMirrorEl.textContent = formatPrice(total);
 
     updateTextColorUI();
     updateTextFontUI();
@@ -2239,10 +2236,6 @@
   setupDraggable(printLogo);
   setupHandles(printText);
   setupHandles(printLogo);
-
-  if (addMirrorButton && addToCartButton) {
-    addMirrorButton.addEventListener("click", () => addToCartButton.click());
-  }
 
   if (addToCartButton) {
     addToCartButton.addEventListener("click", () => {

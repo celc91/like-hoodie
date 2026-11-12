@@ -5777,81 +5777,6 @@ p {
 }
 
 /* --------------------------------------------------------------------------
-   Precio siempre visible y diseÃ±o en la miniatura de la cesta
-   -------------------------------------------------------------------------- */
-
-.studio-sticky {
-  position: sticky;
-  top: 92px;
-  z-index: 6;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin: -6px 0 2px;
-  padding: 10px 12px 10px 16px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: rgba(255, 253, 249, 0.88);
-  backdrop-filter: blur(14px) saturate(150%);
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
-  box-shadow: 0 10px 24px rgba(23, 19, 15, 0.06);
-}
-
-.studio-sticky .ss-label {
-  display: block;
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-.studio-sticky .ss-price {
-  display: block;
-  margin-top: 2px;
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.03em;
-}
-
-.studio-sticky .btn {
-  padding: 11px 18px;
-  font-size: 14px;
-}
-
-@media (max-width: 960px) {
-  .studio-sticky {
-    top: 84px;
-  }
-}
-
-@media (max-width: 480px) {
-  .studio-sticky .ss-price {
-    font-size: 19px;
-  }
-
-  .studio-sticky .btn {
-    padding: 10px 14px;
-    font-size: 13px;
-  }
-}
-
-/* El diseÃ±o elegido se ve tambiÃ©n en la cesta */
-.print-area--thumb {
-  top: 31%;
-  width: 44%;
-}
-
-.print-area--thumb .print-text {
-  font-size: 8.2cqw;
-}
-
-
-
-/* --------------------------------------------------------------------------
    Asas de tamaÃ±o y rotaciÃ³n sobre la prenda
    -------------------------------------------------------------------------- */
 
@@ -6221,7 +6146,7 @@ p {
     position: sticky;
     top: 84px;
     align-self: start;
-    height: clamp(560px, calc(100vh - 104px), 800px);
+    height: clamp(520px, calc(100vh - 170px), 700px);
   }
 
   /* la prenda se adapta a la altura disponible, no al revés */
