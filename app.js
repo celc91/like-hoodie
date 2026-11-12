@@ -352,6 +352,7 @@
   const previewTechnique = $("[data-preview-technique]");
   const printText = $("[data-print-text]");
   const printLogo = $("[data-print-logo]");
+  const printLogoImg = printLogo ? printLogo.querySelector("img") : null;
   const viewThumbs = $$("[data-angle]");
   const galleryThumbs = $$(".view-thumb img");
   const productTabs = $$("[data-product-tab]");
@@ -1737,18 +1738,28 @@
 
     if (printLogo) {
       if (design.logo) {
-        printLogo.src = design.logo;
-        printLogo.alt = `Logo de la vista ${state.view === "front" ? "frontal" : "trasera"}`;
+        if (printLogoImg) {
+          printLogoImg.src = design.logo;
+          printLogoImg.alt = `Logo de la vista ${state.view === "front" ? "frontal" : "trasera"}`;
+        }
         printLogo.hidden = false;
       } else {
-        printLogo.removeAttribute("src");
-        printLogo.alt = "";
+        if (printLogoImg) {
+          printLogoImg.removeAttribute("src");
+          printLogoImg.alt = "";
+        }
         printLogo.hidden = true;
       }
       printLogo.style.setProperty("--x", `${design.logoX}%`);
       printLogo.style.setProperty("--y", `${design.logoY}%`);
       printLogo.style.setProperty("--item-scale", design.logoScale || 1);
       printLogo.style.setProperty("--item-rotate", `${design.logoRotate || 0}deg`);
+      printLogo.setAttribute(
+        "aria-label",
+        design.logoName
+          ? `Logo "${design.logoName}". Arrastra para moverlo, usa las asas para cambiar el tamaño o rotarlo.`
+          : "Logo del diseño. Arrastra para moverlo, usa las asas para cambiar el tamaño o rotarlo."
+      );
     }
 
     const total =
@@ -1930,7 +1941,7 @@
       const output = type === "text" ? textSizeValue : logoSizeValue;
       const min = input && input.min ? Number(input.min) / 100 : 0.5;
       const max = input && input.max ? Number(input.max) / 100 : 2;
-      const next = Math.min(max, Math.max(min, value));
+      const next = Math.min(max, Math.max(min, Math.round(value * 100) / 100));
       design()[scaleKey] = next;
       element.style.setProperty("--item-scale", next);
       if (input) input.value = String(Math.round(next * 100));
@@ -1942,7 +1953,7 @@
       while (next > 180) next -= 360;
       while (next < -180) next += 360;
       design()[rotateKey] = Math.round(next);
-      element.style.setProperty("--item-rotate", next + "deg");
+      element.style.setProperty("--item-rotate", Math.round(next) + "deg");
     }
 
     function begin(event, which) {
@@ -2339,6 +2350,113 @@
       showToast("Diseño centrado de nuevo.");
     });
   }
+
+  /* Zoom y desplazamiento de la prenda dentro del estudio */
+  const hoodieStage = $(".hoodie-stage");
+  const studioHoodie = $("[data-preview-hoodie]");
+  const zoomInButton = $("[data-zoom-in]");
+  const zoomOutButton = $("[data-zoom-out]");
+  const zoomResetButton = $("[data-zoom-reset]");
+  const zoomValueEl = $("[data-zoom-value]");
+  let zoomLevel = 1;
+  let zoomPanX = 0;
+  let zoomPanY = 0;
+
+  function applyStudioZoom() {
+    if (!studioHoodie) return;
+    const maxX = (studioHoodie.offsetWidth * (zoomLevel - 1)) / 2;
+    const maxY = (studioHoodie.offsetHeight * (zoomLevel - 1)) / 2;
+    zoomPanX = Math.max(-maxX, Math.min(maxX, zoomPanX));
+    zoomPanY = Math.max(-maxY, Math.min(maxY, zoomPanY));
+    if (zoomLevel <= 1.001) {
+      zoomPanX = 0;
+      zoomPanY = 0;
+    }
+    studioHoodie.style.setProperty("--zoom", zoomLevel);
+    studioHoodie.style.transform = `translate3d(${zoomPanX}px, ${zoomPanY}px, 0) scale(${zoomLevel})`;
+    if (zoomValueEl) zoomValueEl.textContent = Math.round(zoomLevel * 100) + "%";
+    if (hoodieStage) hoodieStage.classList.toggle("is-zoomed", zoomLevel > 1.001);
+    if (zoomResetButton) zoomResetButton.disabled = zoomLevel <= 1.001;
+  }
+
+  function setStudioZoom(next) {
+    zoomLevel = Math.max(1, Math.min(2.5, Math.round(next * 100) / 100));
+    applyStudioZoom();
+  }
+
+  if (zoomInButton) zoomInButton.addEventListener("click", () => setStudioZoom(zoomLevel + 0.25));
+  if (zoomOutButton) zoomOutButton.addEventListener("click", () => setStudioZoom(zoomLevel - 0.25));
+  if (zoomResetButton) {
+    zoomResetButton.addEventListener("click", () => {
+      zoomPanX = 0;
+      zoomPanY = 0;
+      setStudioZoom(1);
+    });
+  }
+
+  if (hoodieStage) {
+    hoodieStage.addEventListener(
+      "wheel",
+      (event) => {
+        if (!event.ctrlKey) return;
+        event.preventDefault();
+        setStudioZoom(zoomLevel + (event.deltaY < 0 ? 0.15 : -0.15));
+      },
+      { passive: false }
+    );
+  }
+
+  let studioPan = null;
+  if (hoodieStage) {
+    hoodieStage.addEventListener("pointerdown", (event) => {
+      if (zoomLevel <= 1.001) return;
+      if (event.target.closest(".edit-handle, .editor-item")) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      studioPan = {
+        id: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+        panX: zoomPanX,
+        panY: zoomPanY,
+      };
+      hoodieStage.classList.add("is-panning");
+      try {
+        hoodieStage.setPointerCapture(event.pointerId);
+      } catch (error) {
+        /* puntero sintético */
+      }
+    });
+
+    hoodieStage.addEventListener("pointermove", (event) => {
+      if (!studioPan || event.pointerId !== studioPan.id) return;
+      zoomPanX = studioPan.panX + (event.clientX - studioPan.x);
+      zoomPanY = studioPan.panY + (event.clientY - studioPan.y);
+      applyStudioZoom();
+    });
+
+    const stopStudioPan = (event) => {
+      if (!studioPan) return;
+      studioPan = null;
+      hoodieStage.classList.remove("is-panning");
+      try {
+        hoodieStage.releasePointerCapture(event.pointerId);
+      } catch (error) {
+        /* la captura pudo perderse */
+      }
+    };
+    hoodieStage.addEventListener("pointerup", stopStudioPan);
+    hoodieStage.addEventListener("pointercancel", stopStudioPan);
+
+    hoodieStage.addEventListener("dblclick", (event) => {
+      if (event.target.closest(".edit-handle, .editor-item")) return;
+      zoomPanX = 0;
+      zoomPanY = 0;
+      setStudioZoom(1);
+    });
+  }
+
+  applyStudioZoom();
+  window.addEventListener("resize", applyStudioZoom);
 
   setupDraggable(printText);
   setupDraggable(printLogo);

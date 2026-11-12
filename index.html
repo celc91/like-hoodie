@@ -272,8 +272,17 @@
                 <div class="material-texture" data-material-texture aria-hidden="true"></div>
                 <div class="editor-layer" data-editor-layer>
                   <span class="print-text editor-item" data-print-text data-print-type="text" tabindex="0" role="button" aria-label="Texto del diseño. Arrastra para moverlo."></span>
-                  <img class="print-logo editor-item" data-print-logo data-print-type="logo" alt="" tabindex="0" role="button" draggable="false" hidden>
+                  <div class="print-logo editor-item" data-print-logo data-print-type="logo" tabindex="0" role="button" aria-label="Logo del diseño. Arrastra para moverlo, usa las asas para cambiar el tamaño o rotarlo." hidden>
+                    <img alt="" draggable="false">
+                  </div>
                 </div>
+              </div>
+
+              <div class="stage-zoom" role="group" aria-label="Zoom de la prenda">
+                <button type="button" class="stage-zoom__btn" data-zoom-out aria-label="Alejar">−</button>
+                <span class="stage-zoom__value" data-zoom-value>100%</span>
+                <button type="button" class="stage-zoom__btn" data-zoom-in aria-label="Acercar">+</button>
+                <button type="button" class="stage-zoom__reset" data-zoom-reset>1:1</button>
               </div>
             </div>
 

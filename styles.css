@@ -1174,6 +1174,94 @@ section[id] {
   flex: 1;
   min-height: 470px;
   padding: 24px 0;
+  overflow: hidden;
+}
+
+.hoodie-stage.is-zoomed {
+  cursor: grab;
+}
+
+.hoodie-stage.is-panning {
+  cursor: grabbing;
+}
+
+.hoodie--studio {
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.stage-zoom {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(22, 22, 24, 0.08);
+  background: rgba(255, 253, 249, 0.94);
+  box-shadow: 0 8px 22px rgba(22, 22, 24, 0.1);
+  backdrop-filter: blur(6px);
+}
+
+.stage-zoom__btn {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.stage-zoom__btn:hover {
+  background: rgba(255, 77, 31, 0.12);
+}
+
+.stage-zoom__btn:active {
+  transform: scale(0.92);
+}
+
+.stage-zoom__value {
+  min-width: 44px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.stage-zoom__reset {
+  height: 28px;
+  margin-left: 2px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(22, 22, 24, 0.06);
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.stage-zoom__reset:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.stage-zoom__reset:not(:disabled):hover {
+  background: rgba(22, 22, 24, 0.1);
 }
 
 .hoodie-stage::before {
@@ -4390,12 +4478,20 @@ details[open] .plus::after {
 }
 
 .print-logo.editor-item {
-  width: auto;
+  width: max-content;
   max-width: 26%;
   max-height: 14cqw;
   margin: 0;
-  object-fit: contain;
   filter: drop-shadow(0 4px 6px rgba(22, 22, 24, 0.16));
+}
+
+.print-logo.editor-item > img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 14cqw;
+  object-fit: contain;
+  -webkit-user-drag: none;
 }
 
 .hoodie.technique-bordado .print-text {
@@ -5830,6 +5926,12 @@ p {
 .editor-item .edit-handle {
   opacity: 0.55;
   pointer-events: auto;
+}
+
+/* al hacer zoom en la prenda, las asas conservan su tamaño en pantalla */
+.hoodie--studio .edit-handle {
+  transform: scale(calc(1 / var(--zoom, 1)));
+  transform-origin: center center;
 }
 
 .editor-item:hover .edit-handle,
