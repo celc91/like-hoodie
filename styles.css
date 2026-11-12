@@ -4503,10 +4503,10 @@ details[open] .plus::after {
 
 .print-grid__area {
   position: absolute;
-  left: var(--area-x, 31%);
-  top: var(--area-y, 19%);
-  width: var(--area-w, 38%);
-  height: var(--area-h, 34%);
+  left: var(--area-x, 24%);
+  top: var(--area-y, 15%);
+  width: var(--area-w, 52%);
+  height: var(--area-h, 44%);
   border: 1px dashed rgba(255, 255, 255, 0.55);
   border-radius: 14px;
   background-image:
@@ -6053,9 +6053,9 @@ p {
   pointer-events: auto;
 }
 
-/* al hacer zoom en la prenda, las asas conservan su tamaño en pantalla */
-.hoodie--studio .edit-handle {
-  transform: scale(calc(1 / var(--zoom, 1)));
+/* las asas conservan su tamaño en pantalla: se compensa el zoom y la escala del logo */
+.edit-handle {
+  transform: scale(var(--handle-scale, 1));
   transform-origin: center center;
 }
 

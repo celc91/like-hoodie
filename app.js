@@ -188,12 +188,29 @@
     items: loadCart(),
   };
 
+  /* Estado del zoom de la prenda (se declara pronto para usarlo en las asas) */
+  let zoomLevel = 1;
+  let zoomPanX = 0;
+  let zoomPanY = 0;
+
   /* ---------------------------------------------------------------------- */
   /* Utilidades                                                              */
   /* ---------------------------------------------------------------------- */
 
-  function loadCart() {
-    try {
+  /* Mantiene las asas al mismo tamaño en pantalla aunque el logo o el zoom crezcan */
+  function updateHandleScale(element) {
+    if (!element) return;
+    const type = element.dataset.printType;
+    if (!type) return;
+    const design = state.designs[state.view];
+    const scale = type === "text" ? design.textScale || 1 : design.logoScale || 1;
+    element.style.setProperty(
+      "--handle-scale",
+      String(1 / Math.max(0.01, scale * zoomLevel))
+    );
+  }
+
+  function loadCart() {    try {
       const raw =
         window.localStorage.getItem(STORAGE_KEY) ||
         window.localStorage.getItem(LEGACY_STORAGE_KEY);
@@ -1779,6 +1796,8 @@
     // el repintado reescribe el contenido: las asas deben volver
     setupHandles(printText);
     setupHandles(printLogo);
+    updateHandleScale(printText);
+    updateHandleScale(printLogo);
   }
 
   function updateGalleryUI() {
@@ -1793,7 +1812,7 @@
 
   /* Guías de centrado: área de impresión orientativa por producto */
   const PRINT_AREAS = {
-    hoodie: { x: 31, y: 19, w: 38, h: 34 },
+    hoodie: { x: 24, y: 15, w: 52, h: 44 },
     tote: { x: 12, y: 36, w: 76, h: 48 },
   };
   const printGrid = $("[data-print-grid]");
@@ -1989,6 +2008,7 @@
       const next = Math.min(max, Math.max(min, Math.round(value * 100) / 100));
       design()[scaleKey] = next;
       element.style.setProperty("--item-scale", next);
+      updateHandleScale(element);
       if (input) input.value = String(Math.round(next * 100));
       if (output) output.textContent = Math.round(next * 100) + "%";
     }
@@ -2403,9 +2423,6 @@
   const zoomOutButton = $("[data-zoom-out]");
   const zoomResetButton = $("[data-zoom-reset]");
   const zoomValueEl = $("[data-zoom-value]");
-  let zoomLevel = 1;
-  let zoomPanX = 0;
-  let zoomPanY = 0;
 
   function applyStudioZoom() {
     if (!studioHoodie) return;
@@ -2419,6 +2436,8 @@
     }
     studioHoodie.style.setProperty("--zoom", zoomLevel);
     studioHoodie.style.transform = `translate3d(${zoomPanX}px, ${zoomPanY}px, 0) scale(${zoomLevel})`;
+    updateHandleScale(printText);
+    updateHandleScale(printLogo);
     if (zoomValueEl) zoomValueEl.textContent = Math.round(zoomLevel * 100) + "%";
     if (zoomInButton) zoomInButton.disabled = zoomLevel >= 2.499;
     if (zoomOutButton) zoomOutButton.disabled = zoomLevel <= 1.001;
@@ -2457,7 +2476,7 @@
   if (hoodieStage) {
     hoodieStage.addEventListener("pointerdown", (event) => {
       if (zoomLevel <= 1.001) return;
-      if (event.target.closest(".edit-handle, .editor-item")) return;
+      if (event.target.closest(".stage-zoom, button, a, input, .edit-handle, .editor-item")) return;
       if (event.pointerType === "mouse" && event.button !== 0) return;
       studioPan = {
         id: event.pointerId,
@@ -2495,7 +2514,7 @@
     hoodieStage.addEventListener("pointercancel", stopStudioPan);
 
     hoodieStage.addEventListener("dblclick", (event) => {
-      if (event.target.closest(".edit-handle, .editor-item")) return;
+      if (event.target.closest(".stage-zoom, button, a, input, .edit-handle, .editor-item")) return;
       zoomPanX = 0;
       zoomPanY = 0;
       setStudioZoom(1);
