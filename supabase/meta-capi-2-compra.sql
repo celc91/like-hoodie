@@ -1,9 +1,9 @@
 -- Meta Conversions API · PASO 2 de 2
 -- Compra enviada desde el servidor, solo si la persona aceptó publicidad.
 --
--- Requisitos antes de ejecutar:
+-- Antes de ejecutar:
 --   1. Haber ejecutado meta-capi-1-consentimiento.sql
---   2. Tener el token del píxel en Vault (una sola vez, en el SQL Editor):
+--   2. Guardar el token del píxel en Vault, una sola vez:
 --        select vault.create_secret('EAAG...', 'meta_capi_token', 'Meta CAPI');
 --      El token se genera en Events Manager → Configuración → Conversions API.
 --
@@ -78,7 +78,7 @@ begin
   end if;
   v_user := v_user || jsonb_build_object('country', 'mx');
 
-  -- 4. Evento Purchase (mismo event_id que el navegador → Meta lo deduplica)
+  -- 4. Purchase con el mismo event_id que el navegador → Meta deduplica
   perform net.http_post(
     'https://graph.facebook.com/v21.0/1848760170029669/events?access_token=' || v_token,
     jsonb_build_object(
@@ -116,28 +116,3 @@ drop trigger if exists orders_meta_purchase on public.orders;
 create trigger orders_meta_purchase
   after insert on public.orders
   for each row execute function public.notify_meta_purchase();
-
--- ---------------------------------------------------------------------------
--- Diagnóstico: última respuesta de Meta (solo administradores)
--- ---------------------------------------------------------------------------
-
-create or replace function public.meta_last_response()
-returns jsonb
-language sql
-stable
-security definer
-set search_path = public, net
-as $fn$
-  select jsonb_build_object(
-    'status', r.status_code,
-    'body', left(r.content, 800),
-    'cuando', r.created
-  )
-  from net._http_response r
-  order by r.id desc
-  limit 1;
-$fn$;
-
-revoke all on function public.meta_last_response() from public;
-revoke all on function public.meta_last_response() from anon;
-grant execute on function public.meta_last_response() to authenticated;

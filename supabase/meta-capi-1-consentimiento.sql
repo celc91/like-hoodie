@@ -1,8 +1,10 @@
 -- Meta Conversions API · PASO 1 de 2
--- Consentimiento publicitario por persona.
+-- Consentimiento publicitario por persona + diagnóstico.
 --
 -- Ejecuta esto en Supabase → SQL Editor → Run.
 -- Es idempotente: puedes volver a ejecutarlo sin miedo.
+
+create extension if not exists pg_net;
 
 -- ---------------------------------------------------------------------------
 -- Tabla: quién ha aceptado publicidad (se escribe desde la web)
@@ -36,7 +38,7 @@ begin
     return;
   end if;
 
-  insert into public.ad_consent as c (user_id, granted, updated_at)
+  insert into public.ad_consent (user_id, granted, updated_at)
   values (auth.uid(), coalesce(p_granted, false), now())
   on conflict (user_id) do update
     set granted = excluded.granted,
@@ -47,3 +49,28 @@ $fn$;
 revoke all on function public.set_ad_consent(boolean) from public;
 revoke all on function public.set_ad_consent(boolean) from anon;
 grant execute on function public.set_ad_consent(boolean) to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Diagnóstico: última respuesta de Meta (solo administradores)
+-- ---------------------------------------------------------------------------
+
+create or replace function public.meta_last_response()
+returns jsonb
+language sql
+stable
+security definer
+set search_path = public, net
+as $fn$
+  select jsonb_build_object(
+    'status', r.status_code,
+    'body', left(r.content, 800),
+    'cuando', r.created
+  )
+  from net._http_response r
+  order by r.id desc
+  limit 1;
+$fn$;
+
+revoke all on function public.meta_last_response() from public;
+revoke all on function public.meta_last_response() from anon;
+grant execute on function public.meta_last_response() to authenticated;
