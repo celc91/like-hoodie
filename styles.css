@@ -2938,6 +2938,130 @@ details[open] .plus::after {
   font-size: 12.5px;
 }
 
+/* Simulación de pago con tarjetas de prueba de Clip */
+.sandbox-pay {
+  margin: 4px 0 18px;
+  padding: 12px 14px 14px;
+  border: 1px solid rgba(22, 22, 24, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.sandbox-pay__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.sandbox-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+}
+
+.sandbox-help {
+  margin: 7px 0 10px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.sandbox-cards {
+  display: grid;
+  gap: 7px;
+}
+
+.sandbox-card {
+  position: relative;
+  display: flex;
+}
+
+.sandbox-card input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sandbox-card__body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid rgba(22, 22, 24, 0.14);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.sandbox-card:hover .sandbox-card__body {
+  border-color: rgba(22, 22, 24, 0.3);
+}
+
+.sandbox-card input:checked + .sandbox-card__body {
+  border-color: var(--orange);
+  box-shadow: inset 0 0 0 1px var(--orange);
+  background: rgba(255, 77, 31, 0.04);
+}
+
+.sandbox-card input:focus-visible + .sandbox-card__body {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.sandbox-card__brand {
+  min-width: 72px;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.sandbox-card__pan {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.sandbox-card__status {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sandbox-card__status.is-ok {
+  color: #2f7a3d;
+}
+
+.sandbox-card__status.is-bad {
+  color: #b03a2e;
+}
+
+.sandbox-error {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(176, 58, 46, 0.08);
+  color: #8f2a20;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .checkout-summary strong {
   font-family: var(--font-display);
   font-size: 26px;

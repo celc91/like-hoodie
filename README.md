@@ -149,6 +149,27 @@ Está **desactivada por defecto**. Mientras `store_settings.clip_enabled = 'fals
 
 6. Haz un pedido de prueba. Clip debe mostrar su página de pago y, al completar, el pedido debe aparecer como **Pagado** en el panel.
 
+### Simulador de pagos (sandbox)
+
+Clip **no tiene sandbox para Checkout redireccionado** (links de pago): su modo de prueba solo cubre Checkout Transparente y Reembolsos, con credenciales `test_` y las tarjetas publicadas en `developer.clip.mx/reference/pruebas`. Como esta tienda usa el checkout redireccionado, la web incluye un **simulador** del paso de pago con esas tarjetas oficiales:
+
+- Abre el checkout con `?sandbox=1` (en `localhost` se activa solo).
+- Elige una tarjeta de prueba y confirma: verás el estado **Aprobado** o **Rechazado** con el motivo.
+- No se realiza ningún cargo real y el pedido queda registrado como demostración.
+
+Tarjetas incluidas en el simulador:
+
+| Tarjeta | PAN | Resultado |
+| --- | --- | --- |
+| Visa | 4766944332216006 | Aprobado |
+| Mastercard | 5215956400364553 | Aprobado |
+| Amex | 377770358335399 | Aprobado |
+| Amex | 377770541774520 | Rechazado: fondos insuficientes |
+| Visa | 4208312218017433 | Rechazado: fondos insuficientes |
+| Amex | 377770520127013 | Rechazado: no autorizada |
+
+El simulador se oculta automáticamente cuando `payment_provider = 'clip'`, para no mezclarlo con cobros reales. La lógica está en `app.js` (`CLIP_TEST_CARDS` y `updateSandboxUI`) y el panel en `index.html` (`data-sandbox-pay`).
+
 ### Volver a demostración
 
 ```sql

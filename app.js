@@ -352,6 +352,9 @@
   const checkoutSuccessTitle = $("[data-checkout-success-title]");
   const checkoutSuccessMessage = $("[data-checkout-success-message]");
   const retryPaymentButton = $("[data-retry-payment]");
+  const sandboxPay = $("[data-sandbox-pay]");
+  const sandboxCards = $("[data-sandbox-cards]");
+  const sandboxError = $("[data-sandbox-error]");
   const paymentBanner = $("[data-payment-banner]");
   const paymentBannerTitle = $("[data-payment-banner-title]");
   const paymentBannerText = $("[data-payment-banner-text]");
@@ -1085,11 +1088,90 @@
   /* Checkout                                                                */
   /* ---------------------------------------------------------------------- */
 
+  /* Tarjetas de prueba oficiales de Clip (sandbox).
+     Clip solo ofrece modo de prueba para Checkout Transparente y Reembolsos;
+     los links de pago (flujo de esta tienda) no tienen sandbox. Por eso aquí
+     simulamos la respuesta con los PAN de prueba publicados por Clip. */
+  const CLIP_TEST_CARDS = [
+    { pan: "4766944332216006", brand: "Visa", status: "approved" },
+    { pan: "5215956400364553", brand: "Mastercard", status: "approved" },
+    { pan: "377770358335399", brand: "Amex", status: "approved" },
+    { pan: "377770541774520", brand: "Amex", status: "rejected", reason: "Fondos insuficientes" },
+    { pan: "4208312218017433", brand: "Visa", status: "rejected", reason: "Fondos insuficientes" },
+    { pan: "377770520127013", brand: "Amex", status: "rejected", reason: "No autorizada por el emisor" },
+  ];
+  let sandboxApproved = null;
+
+  function sandboxRequested() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("sandbox") === "1" || params.get("demo") === "1") return true;
+    return /^(localhost|127\.0\.0\.1)$/i.test(window.location.hostname);
+  }
+
+  function renderSandboxCards() {
+    if (!sandboxCards || sandboxCards.childElementCount) return;
+    CLIP_TEST_CARDS.forEach((card, index) => {
+      const label = document.createElement("label");
+      label.className = "sandbox-card";
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "sandboxCard";
+      input.value = String(index);
+      input.checked = index === 0;
+      const body = document.createElement("span");
+      body.className = "sandbox-card__body";
+      const brand = document.createElement("span");
+      brand.className = "sandbox-card__brand";
+      brand.textContent = card.brand;
+      const pan = document.createElement("span");
+      pan.className = "sandbox-card__pan";
+      pan.textContent = `•••• ${card.pan.slice(-4)}`;
+      const status = document.createElement("span");
+      status.className =
+        "sandbox-card__status " + (card.status === "approved" ? "is-ok" : "is-bad");
+      status.textContent = card.status === "approved" ? "Aprobado" : "Rechazado";
+      body.append(brand, pan, status);
+      label.append(input, body);
+      sandboxCards.appendChild(label);
+    });
+  }
+
+  function updateSandboxUI() {
+    if (!sandboxPay) return;
+    const show = sandboxRequested() && paymentProvider === "demo";
+    sandboxPay.hidden = !show;
+    if (!show) return;
+    renderSandboxCards();
+    if (checkoutNote) {
+      checkoutNote.textContent =
+        "Modo sandbox: simula el pago con las tarjetas de prueba de Clip. No se realiza ningún cargo real.";
+    }
+  }
+
+  function selectedSandboxCard() {
+    if (!checkoutForm) return CLIP_TEST_CARDS[0];
+    const checked = checkoutForm.querySelector('input[name="sandboxCard"]:checked');
+    if (!checked) return CLIP_TEST_CARDS[0];
+    return CLIP_TEST_CARDS[Number(checked.value)] || CLIP_TEST_CARDS[0];
+  }
+
+  function showSandboxError(message) {
+    if (!sandboxError) return;
+    sandboxError.textContent = message;
+    sandboxError.hidden = false;
+    sandboxError.scrollIntoView({ block: "nearest" });
+  }
+
   function openCheckout() {
     if (state.items.length === 0) return;
     closeCart(false);
     lastFocusedElement = document.activeElement;
     checkoutForm.reset();
+    sandboxApproved = null;
+    if (sandboxError) {
+      sandboxError.hidden = true;
+      sandboxError.textContent = "";
+    }
     checkoutFormView.hidden = false;
     checkoutSuccess.hidden = true;
     if (checkoutSuccessTitle) checkoutSuccessTitle.textContent = "¡Pedido confirmado!";
@@ -1098,6 +1180,7 @@
         "Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo. Te contactaremos cuando se active el pago real.";
     }
     if (retryPaymentButton) retryPaymentButton.hidden = true;
+    updateSandboxUI();
     checkoutTotal.textContent = formatPrice(totals().total);
     if (checkoutCoupon) {
       const summary = totals();
@@ -1198,6 +1281,36 @@
       let orderLabel = "CH-" + Math.floor(10000 + Math.random() * 90000);
       let savedOrder = null;
 
+      /* Simulación de pago con tarjetas de prueba de Clip */
+      const sandboxCard =
+        sandboxPay && !sandboxPay.hidden ? selectedSandboxCard() : null;
+      if (sandboxCard) {
+        if (sandboxError) sandboxError.hidden = true;
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.dataset.originalLabel = submitButton.textContent;
+          submitButton.textContent = "Procesando pago…";
+        }
+        await new Promise((resolve) => window.setTimeout(resolve, 1400));
+        if (sandboxCard.status !== "approved") {
+          restoreSubmitButton(submitButton);
+          showSandboxError(
+            `Pago rechazado: ${sandboxCard.reason}. Prueba con otra tarjeta de prueba.`
+          );
+          analytics?.track("sandbox_payment_rejected", {
+            brand: sandboxCard.brand,
+            reason: sandboxCard.reason,
+          });
+          return;
+        }
+        sandboxApproved = sandboxCard;
+        if (submitButton) submitButton.textContent = "Guardando pedido…";
+        analytics?.track("sandbox_payment_approved", {
+          brand: sandboxCard.brand,
+          last4: sandboxCard.pan.slice(-4),
+        });
+      }
+
       if (analytics?.configured) {
         if (submitButton) {
           submitButton.disabled = true;
@@ -1289,17 +1402,23 @@
         renderCart();
       }
 
+      const baseMessage = analytics?.configured
+        ? "Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo. Te contactaremos cuando se active el pago real."
+        : "Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo.";
+      const sandboxPrefix = sandboxApproved
+        ? `Pago simulado aprobado con ${sandboxApproved.brand} •••• ${sandboxApproved.pan.slice(-4)} (sandbox de Clip). `
+        : "";
       orderNumber.textContent = orderLabel;
       showCheckoutResult(
-        "¡Pedido confirmado!",
-        analytics?.configured
-          ? "Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo. Te contactaremos cuando se active el pago real."
-          : "Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo."
+        sandboxApproved ? "Pago aprobado (sandbox)" : "¡Pedido confirmado!",
+        sandboxPrefix + baseMessage
       );
       showToast(
-        analytics?.configured
-          ? "Pedido confirmado. ¡Gracias!"
-          : "Pedido de demostración confirmado. ¡Gracias!"
+        sandboxApproved
+          ? "Pago de prueba aprobado. Pedido registrado."
+          : analytics?.configured
+            ? "Pedido confirmado. ¡Gracias!"
+            : "Pedido de demostración confirmado. ¡Gracias!"
       );
     });
   }
@@ -1355,6 +1474,7 @@
             ? "Al confirmar, te llevaremos a la página segura de Clip para completar el pago."
             : "Pedido de demostración: no se realizará ningún cargo real.";
       }
+      updateSandboxUI();
     } catch (error) {
       paymentProvider = "demo";
     }
