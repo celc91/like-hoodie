@@ -285,7 +285,6 @@
   const previewTechnique = $("[data-preview-technique]");
   const printText = $("[data-print-text]");
   const printLogo = $("[data-print-logo]");
-  const viewButtons = $$(".view-tab");
   const viewThumbs = $$("[data-angle]");
   const hintText = $("[data-hint-text]");
   const studio = $(".studio");
@@ -1705,13 +1704,7 @@
 
   function setAngle(angle) {
     const normalized = ((Number(angle) % 360) + 360) % 360;
-    if (normalized === 90 || normalized === 270) {
-      state.angle = normalized;
-      updateGalleryUI();
-      updatePreview();
-      return;
-    }
-    setView(normalized === 180 ? "back" : "front");
+    setView(normalized >= 135 && normalized < 315 ? "back" : "front");
   }
 
   function setView(view) {
@@ -1719,12 +1712,6 @@
     state.view = view;
     state.angle = view === "front" ? 0 : 180;
     updateGalleryUI();
-
-    viewButtons.forEach((button) => {
-      const active = button.dataset.view === view;
-      button.classList.toggle("is-active", active);
-      button.setAttribute("aria-pressed", String(active));
-    });
 
     if (editingLabel) {
       editingLabel.textContent = view === "front" ? "frente" : "espalda";
@@ -2067,10 +2054,6 @@
     button.addEventListener("click", () =>
       setTool(button.dataset.personalizeTool)
     );
-  });
-
-  viewButtons.forEach((button) => {
-    button.addEventListener("click", () => setView(button.dataset.view));
   });
 
   viewThumbs.forEach((button) => {
