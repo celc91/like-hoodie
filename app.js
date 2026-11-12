@@ -2506,7 +2506,7 @@
           const check = document.createElement("div");
           check.className = "newsletter-success";
           check.innerHTML =
-            "<strong>Revisa tu correo.</strong> Te enviamos un enlace para confirmar tu alta y recibir el 10 %.";
+            "<strong>Revisa tu correo.</strong> Te enviamos un enlace para confirmar tu alta y recibir el 10 %. Si en un minuto no lo ves, mira en spam.";
           form.replaceWith(check);
           showToast("Te enviamos un correo para confirmar tu alta.");
           return;
