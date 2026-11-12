@@ -6,4 +6,4 @@
 window.LIKEHOODIE_GA_ID = "G-CFCM6N8QG1";
 
 // Meta Pixel · ID numérico del píxel (Events Manager → Orígenes de datos)
-window.LIKEHOODIE_META_PIXEL = "";
+window.LIKEHOODIE_META_PIXEL = "1848760170029669";
