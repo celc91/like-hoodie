@@ -429,15 +429,29 @@
     const ok = await ensure();
     if (!ok) return { ok: false, reason: "offline" };
 
-    const { error } = await client
+    // vía nueva: función con límite por IP
+    const { data, error } = await client.rpc("subscribe_newsletter", { p_email: clean });
+
+    if (!error && data) {
+      if (!data.ok) return { ok: false, reason: data.reason || "error" };
+      return { ok: true, duplicate: Boolean(data.duplicate) };
+    }
+
+    // compatibilidad mientras no se haya ejecutado antispam.sql
+    if (error && error.code !== "PGRST202" && error.code !== "42883") {
+      console.error("No se pudo guardar el correo:", error);
+      return { ok: false, reason: error.code || "error" };
+    }
+
+    const { error: insertError } = await client
       .from("newsletter_subscribers")
       .insert({ email: clean, source: "web" });
 
-    if (!error) return { ok: true };
-    if (error.code === "23505") return { ok: true, duplicate: true };
+    if (!insertError) return { ok: true };
+    if (insertError.code === "23505") return { ok: true, duplicate: true };
 
-    console.error("No se pudo guardar el correo:", error);
-    return { ok: false, reason: error.code || "error", message: error.message };
+    console.error("No se pudo guardar el correo:", insertError);
+    return { ok: false, reason: insertError.code || "error" };
   }
 
   // Devuelve el descuento de un cupón si es válido.

@@ -2479,7 +2479,15 @@
 
       const field = form.querySelector('input[type="email"]');
       const button = form.querySelector('button[type="submit"]');
+      const honeypot = form.querySelector('input[name="website"]');
       const email = field ? field.value : "";
+
+      // campo trampa: si viene relleno, es un bot (le damos éxito falso)
+      if (honeypot && honeypot.value.trim() !== "") {
+        form.reset();
+        return;
+      }
+
       if (button) button.disabled = true;
 
       let result = { ok: false, reason: "unsupported" };

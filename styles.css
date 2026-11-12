@@ -6065,3 +6065,12 @@ p {
   line-height: 1.4;
   color: var(--ink-soft);
 }
+
+/* campo trampa contra bots: invisible para personas */
+.newsletter-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
