@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261112-zoom1">
+  <link rel="stylesheet" href="styles.css?v=20261112-guias1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -262,7 +262,13 @@
           <div class="studio-preview">
             <div class="preview-top">
               <span>Vista previa</span>
-              <span class="live"><i aria-hidden="true"></i> En vivo</span>
+              <div class="preview-top-actions">
+                <button type="button" class="grid-toggle" data-grid-toggle aria-pressed="true" aria-label="Mostrar u ocultar las guías de centrado">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM4 9.3h16M4 14.7h16M9.3 4v16M14.7 4v16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span>Guías</span>
+                </button>
+                <span class="live"><i aria-hidden="true"></i> En vivo</span>
+              </div>
             </div>
 
             <div class="hoodie-stage">
@@ -271,6 +277,14 @@
                 <img class="hoodie-photo" data-hoodie-photo src="assets/hoodie-front.png" alt="Vista frontal de tu sudadera personalizada" width="1003" height="1229">
                 <div class="material-texture" data-material-texture aria-hidden="true"></div>
                 <div class="editor-layer" data-editor-layer>
+                  <div class="print-grid" data-print-grid aria-hidden="true">
+                    <div class="print-grid__area">
+                      <span class="print-grid__v"></span>
+                      <span class="print-grid__h"></span>
+                      <span class="print-grid__dot"></span>
+                      <span class="print-grid__label">centro</span>
+                    </div>
+                  </div>
                   <span class="print-text editor-item" data-print-text data-print-type="text" tabindex="0" role="button" aria-label="Texto del diseño. Arrastra para moverlo."></span>
                   <div class="print-logo editor-item" data-print-logo data-print-type="logo" tabindex="0" role="button" aria-label="Logo del diseño. Arrastra para moverlo, usa las asas para cambiar el tamaño o rotarlo." hidden>
                     <img alt="" draggable="false">
@@ -1077,7 +1091,7 @@
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
   <script src="store-supabase.js?v=20261112-capi1"></script>
-  <script src="app.js?v=20261112-zoom1"></script>
+  <script src="app.js?v=20261112-guias1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>

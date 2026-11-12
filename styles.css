@@ -1152,6 +1152,45 @@ section[id] {
   color: var(--muted);
 }
 
+.preview-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.grid-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid rgba(22, 22, 24, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
+  font: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.grid-toggle svg {
+  width: 12px;
+  height: 12px;
+}
+
+.grid-toggle[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.grid-toggle:hover {
+  border-color: rgba(22, 22, 24, 0.3);
+}
+
 .live {
   display: inline-flex;
   align-items: center;
@@ -4448,6 +4487,83 @@ details[open] .plus::after {
   inset: 0;
   z-index: 6;
   pointer-events: none;
+}
+
+/* Guías de centrado y cuadrícula del área de impresión */
+.print-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.print-grid[hidden] {
+  display: none;
+}
+
+.print-grid__area {
+  position: absolute;
+  left: var(--area-x, 31%);
+  top: var(--area-y, 19%);
+  width: var(--area-w, 38%);
+  height: var(--area-h, 34%);
+  border: 1px dashed rgba(255, 255, 255, 0.55);
+  border-radius: 14px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+  background-size: 25% 25%;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.4));
+}
+
+.print-grid__v,
+.print-grid__h {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.28);
+}
+
+.print-grid__v {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-0.5px);
+}
+
+.print-grid__h {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-0.5px);
+}
+
+.print-grid__dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 12px rgba(255, 77, 31, 0.55);
+}
+
+.print-grid__label {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 11px);
+  transform: translateX(-50%);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
+  white-space: nowrap;
 }
 
 .editor-item {

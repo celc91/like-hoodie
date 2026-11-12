@@ -1791,6 +1791,50 @@
 
   const productSelections = {};
 
+  /* Guías de centrado: área de impresión orientativa por producto */
+  const PRINT_AREAS = {
+    hoodie: { x: 31, y: 19, w: 38, h: 34 },
+    tote: { x: 12, y: 36, w: 76, h: 48 },
+  };
+  const printGrid = $("[data-print-grid]");
+  const gridToggleButton = $("[data-grid-toggle]");
+  const GRID_STORAGE_KEY = "lh-grid-visible";
+
+  function applyGridArea() {
+    if (!printGrid) return;
+    const area = PRINT_AREAS[state.product] || PRINT_AREAS.hoodie;
+    printGrid.style.setProperty("--area-x", area.x + "%");
+    printGrid.style.setProperty("--area-y", area.y + "%");
+    printGrid.style.setProperty("--area-w", area.w + "%");
+    printGrid.style.setProperty("--area-h", area.h + "%");
+  }
+
+  function setGridVisible(visible) {
+    if (!printGrid) return;
+    printGrid.hidden = !visible;
+    if (gridToggleButton) gridToggleButton.setAttribute("aria-pressed", String(visible));
+    try {
+      localStorage.setItem(GRID_STORAGE_KEY, visible ? "1" : "0");
+    } catch (error) {
+      /* almacenamiento no disponible */
+    }
+  }
+
+  if (gridToggleButton) {
+    gridToggleButton.addEventListener("click", () => {
+      setGridVisible(gridToggleButton.getAttribute("aria-pressed") !== "true");
+    });
+  }
+
+  applyGridArea();
+  let gridVisible = true;
+  try {
+    gridVisible = localStorage.getItem(GRID_STORAGE_KEY) !== "0";
+  } catch (error) {
+    /* almacenamiento no disponible */
+  }
+  setGridVisible(gridVisible);
+
   function setProduct(id) {
     const next = PRODUCTS[id] ? id : "hoodie";
     if (state.product !== next) {
@@ -1803,6 +1847,7 @@
     const product = PRODUCTS[next];
     const saved = productSelections[next];
     state.product = next;
+    applyGridArea();
     state.basePrice = product.prices[state.color] || product.fallbackPrice;
     state.size = saved ? saved.size : product.defaults.size;
     state.material = saved ? { ...saved.material } : { ...product.defaults.material };
