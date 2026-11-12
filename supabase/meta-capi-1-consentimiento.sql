@@ -73,4 +73,4 @@ $fn$;
 
 revoke all on function public.meta_last_response() from public;
 revoke all on function public.meta_last_response() from anon;
-grant execute on function public.meta_last_response() to authenticated;
+revoke all on function public.meta_last_response() from authenticated;

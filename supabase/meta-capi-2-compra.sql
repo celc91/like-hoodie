@@ -79,30 +79,35 @@ begin
   v_user := v_user || jsonb_build_object('country', 'mx');
 
   -- 4. Purchase con el mismo event_id que el navegador → Meta deduplica
-  perform net.http_post(
-    'https://graph.facebook.com/v21.0/1848760170029669/events?access_token=' || v_token,
-    jsonb_build_object(
-      'data', jsonb_build_array(
-        jsonb_build_object(
-          'event_name', 'Purchase',
-          'event_time', extract(epoch from now())::bigint,
-          'event_id', 'lh-' || new.number,
-          'action_source', 'website',
-          'event_source_url', 'https://likehoodie.com/',
-          'user_data', v_user,
-          'custom_data', jsonb_build_object(
-            'value', new.total,
-            'currency', 'MXN',
-            'order_id', new.number,
-            'num_items', new.item_count
+  --    Cualquier fallo de medición se ignora: el pedido nunca se rompe por esto.
+  begin
+    perform net.http_post(
+      'https://graph.facebook.com/v21.0/1848760170029669/events?access_token=' || v_token,
+      jsonb_build_object(
+        'data', jsonb_build_array(
+          jsonb_build_object(
+            'event_name', 'Purchase',
+            'event_time', extract(epoch from now())::bigint,
+            'event_id', 'lh-' || new.number,
+            'action_source', 'website',
+            'event_source_url', 'https://likehoodie.com/',
+            'user_data', v_user,
+            'custom_data', jsonb_build_object(
+              'value', new.total,
+              'currency', 'MXN',
+              'order_id', new.number,
+              'num_items', new.item_count
+            )
           )
         )
-      )
-    ),
-    '{}'::jsonb,
-    jsonb_build_object('Content-Type', 'application/json'),
-    10000
-  );
+      ),
+      '{}'::jsonb,
+      jsonb_build_object('Content-Type', 'application/json'),
+      10000
+    );
+  exception when others then
+    null;
+  end;
 
   return new;
 end;
