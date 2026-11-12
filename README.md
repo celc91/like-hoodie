@@ -69,6 +69,10 @@ Para configurarlo:
 
 Mientras `supabase-config.js` tenga los valores de ejemplo, la tienda funciona en modo demostración y el panel muestra un aviso de configuración.
 
+## Medición y consentimiento
+
+Google Analytics y Meta (Pixel y Conversions API) se cargan solo con permiso explícito, y analítica y publicidad son permisos independientes: se puede aceptar uno, otro, los dos o ninguno. El detalle completo —decisiones, eventos, cómo verificarlo y cómo rotar el token— está en [`MEDICION.md`](MEDICION.md).
+
 ## Calendario de conciertos
 
 La sección **Eventos** (`#eventos`) es una fuente de inspiración: muestra los próximos conciertos en México para que cada persona imagine y diseñe su sudadera con el artista, la ciudad o la fecha. Cada evento tiene un botón **Diseñar** que lleva al personalizador con un texto sugerido, y un enlace secundario para comprar boletos en **Ticketmaster México**.
