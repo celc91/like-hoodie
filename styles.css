@@ -1226,7 +1226,8 @@ section[id] {
 
 .hoodie--studio {
   transform-origin: center center;
-  will-change: transform;
+  /* sin will-change: el navegador vuelve a rasterizar a la escala real del zoom
+     en lugar de reutilizar una capa de baja resolución (se veía borroso) */
 }
 
 .stage-zoom {

@@ -2435,7 +2435,7 @@
       zoomPanY = 0;
     }
     studioHoodie.style.setProperty("--zoom", zoomLevel);
-    studioHoodie.style.transform = `translate3d(${zoomPanX}px, ${zoomPanY}px, 0) scale(${zoomLevel})`;
+    studioHoodie.style.transform = `translate(${zoomPanX}px, ${zoomPanY}px) scale(${zoomLevel})`;
     updateHandleScale(printText);
     updateHandleScale(printLogo);
     if (zoomValueEl) zoomValueEl.textContent = Math.round(zoomLevel * 100) + "%";
@@ -2447,6 +2447,21 @@
 
   function setStudioZoom(next) {
     zoomLevel = Math.max(1, Math.min(2.5, Math.round(next * 100) / 100));
+    applyStudioZoom();
+  }
+
+  // Zoom hacia el punto bajo el cursor: el contenido no "salta" al acercar
+  function zoomAt(next, clientX, clientY) {
+    if (!hoodieStage) return;
+    const target = Math.max(1, Math.min(2.5, Math.round(next * 100) / 100));
+    const rect = hoodieStage.getBoundingClientRect();
+    const cx = clientX - (rect.left + rect.width / 2);
+    const cy = clientY - (rect.top + rect.height / 2);
+    const lx = (cx - zoomPanX) / zoomLevel;
+    const ly = (cy - zoomPanY) / zoomLevel;
+    zoomLevel = target;
+    zoomPanX = cx - lx * target;
+    zoomPanY = cy - ly * target;
     applyStudioZoom();
   }
 
@@ -2466,7 +2481,7 @@
       (event) => {
         if (!event.ctrlKey) return;
         event.preventDefault();
-        setStudioZoom(zoomLevel + (event.deltaY < 0 ? 0.15 : -0.15));
+        zoomAt(zoomLevel + (event.deltaY < 0 ? 0.15 : -0.15), event.clientX, event.clientY);
       },
       { passive: false }
     );
