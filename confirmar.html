@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirmar correo · like hoodie ♡</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f7f2e9">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .confirm-wrap {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: radial-gradient(circle at 80% 10%, rgba(220, 240, 126, 0.35), transparent 42%), var(--cream);
+    }
+
+    .confirm-card {
+      width: min(520px, 100%);
+      padding: 40px 32px;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .confirm-mark {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 18px;
+      border-radius: 16px;
+      background: var(--orange);
+    }
+
+    .confirm-mark svg {
+      width: 30px;
+      height: 30px;
+      fill: var(--paper);
+    }
+
+    .confirm-card h1 {
+      font-size: clamp(1.7rem, 5vw, 2.3rem);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .confirm-card p {
+      margin: 14px 0 0;
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+
+    .confirm-code {
+      display: inline-block;
+      margin: 22px 0 6px;
+      padding: 12px 22px;
+      border-radius: 12px;
+      background: var(--lime);
+      color: var(--ink);
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .confirm-actions {
+      margin-top: 26px;
+    }
+
+    .confirm-note {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="confirm-wrap">
+    <section class="confirm-card">
+      <div class="confirm-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64"><path d="M32 50S14 39 14 27a9 9 0 0 1 18-4 9 9 0 0 1 18 4c0 12-18 23-18 23Z"/></svg>
+      </div>
+      <h1 id="confirm-title">Un segundo…</h1>
+      <p id="confirm-text">Estamos comprobando tu enlace.</p>
+      <div id="confirm-result"></div>
+      <div class="confirm-actions">
+        <a class="btn btn-primary" href="/" id="confirm-home" hidden>Ver sudaderas</a>
+      </div>
+      <p class="confirm-note">like hoodie ♡ · likehoodie.com</p>
+    </section>
+  </main>
+
+  <script src="vendor/supabase-js.min.js"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    (async function () {
+      const title = document.getElementById("confirm-title");
+      const text = document.getElementById("confirm-text");
+      const result = document.getElementById("confirm-result");
+      const home = document.getElementById("confirm-home");
+
+      function fail(message) {
+        title.textContent = "No pudimos confirmarlo";
+        text.textContent = message;
+        home.hidden = false;
+        home.textContent = "Volver a la tienda";
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+      const baja = params.get("baja");
+
+      const cfg = window.LIKEHOODIE_SUPABASE;
+      if (!cfg || !window.supabase) {
+        fail("El enlace no es válido o falta configuración.");
+        return;
+      }
+
+      const client = window.supabase.createClient(cfg.url, cfg.publishableKey);
+
+      async function rpc(name, args) {
+        const { data, error } = await client.rpc(name, args);
+        if (error) throw error;
+        return data;
+      }
+
+      try {
+        if (baja) {
+          const data = await rpc("unsubscribe_newsletter", { p_token: baja });
+          if (!data || !data.ok) {
+            fail("Ese enlace de baja ya no es válido.");
+            return;
+          }
+          title.textContent = "Te has dado de baja";
+          text.textContent = "No volverás a recibir correos del club. Puedes apuntarte otra vez cuando quieras.";
+          home.hidden = false;
+          return;
+        }
+
+        if (!token) {
+          fail("El enlace no incluye un token válido.");
+          return;
+        }
+
+        const data = await rpc("confirm_newsletter", { p_token: token });
+
+        if (!data || !data.ok) {
+          const reasons = {
+            notfound: "Ese enlace ya se usó o no existe.",
+            unsubscribed: "Ese correo está dado de baja.",
+          };
+          fail(reasons[data && data.reason] || "No pudimos confirmar tu correo.");
+          return;
+        }
+
+        title.textContent = "¡Ya estás dentro!";
+        text.textContent = "Este es tu código de bienvenida: úsalo en la cesta.";
+        const code = document.createElement("span");
+        code.className = "confirm-code";
+        code.textContent = data.code || "BIENVENIDA10";
+        result.appendChild(code);
+        const note = document.createElement("p");
+        note.textContent = `${data.percent || 10} % de descuento en tu primer pedido.`;
+        result.appendChild(note);
+        home.hidden = false;
+        home.textContent = "Usar mi código";
+      } catch (error) {
+        fail("Hubo un problema de conexión. Inténtalo de nuevo en un momento.");
+      }
+    })();
+  </script>
+</body>
+</html>

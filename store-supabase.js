@@ -434,7 +434,7 @@
 
     if (!error && data) {
       if (!data.ok) return { ok: false, reason: data.reason || "error" };
-      return { ok: true, duplicate: Boolean(data.duplicate) };
+      return { ok: true, duplicate: Boolean(data.duplicate), sent: Boolean(data.sent) };
     }
 
     // compatibilidad mientras no se haya ejecutado antispam.sql

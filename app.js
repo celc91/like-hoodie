@@ -2500,6 +2500,18 @@
 
       if (result.ok) {
         form.reset();
+
+        if (result.sent) {
+          // doble opt-in: el código llega al confirmar el correo
+          const check = document.createElement("div");
+          check.className = "newsletter-success";
+          check.innerHTML =
+            "<strong>Revisa tu correo.</strong> Te enviamos un enlace para confirmar tu alta y recibir el 10 %.";
+          form.replaceWith(check);
+          showToast("Te enviamos un correo para confirmar tu alta.");
+          return;
+        }
+
         const success = document.createElement("div");
         success.className = "newsletter-success";
         success.innerHTML =
