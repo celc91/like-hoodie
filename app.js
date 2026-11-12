@@ -2894,7 +2894,7 @@
 })();
 
 /* --------------------------------------------------------------------------
-   Modales: cierre por arrastre desde el asa superior (hoja en mÃ³vil)
+   Modales: cierre por arrastre desde el asa superior (hoja en móvil)
    -------------------------------------------------------------------------- */
 (function sheetDrag() {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -2958,7 +2958,7 @@
       try {
         grab.setPointerCapture(event.pointerId);
       } catch (error) {
-        /* puntero sintÃ©tico */
+        /* puntero sintético */
       }
     });
 

@@ -1,5 +1,5 @@
 ﻿/* ==========================================================================
-   like hoodie â™¡ â€” Sudaderas personalizadas
+   like hoodie ♡ — Sudaderas personalizadas
    ========================================================================== */
 
 :root {
@@ -1055,7 +1055,7 @@ section[id] {
 }
 
 /* --------------------------------------------------------------------------
-   Cabeceras de secciÃ³n
+   Cabeceras de sección
    -------------------------------------------------------------------------- */
 
 .section-head {
@@ -1734,7 +1734,7 @@ section[id] {
 }
 
 /* --------------------------------------------------------------------------
-   CatÃ¡logo
+   Catálogo
    -------------------------------------------------------------------------- */
 
 .catalog {
@@ -1892,7 +1892,7 @@ section[id] {
 }
 
 /* --------------------------------------------------------------------------
-   CÃ³mo funciona
+   Cómo funciona
    -------------------------------------------------------------------------- */
 
 .steps {
@@ -3814,7 +3814,7 @@ details[open] .plus::after {
 }
 
 /* --------------------------------------------------------------------------
-   PÃ¡ginas legales
+   Páginas legales
    -------------------------------------------------------------------------- */
 
 .legal-header {
@@ -4319,7 +4319,7 @@ details[open] .plus::after {
 }
 
 /* --------------------------------------------------------------------------
-   Editor de diseÃ±o: vista frontal/trasera y arrastre
+   Editor de diseño: vista frontal/trasera y arrastre
    -------------------------------------------------------------------------- */
 
 .preview-top {
@@ -4462,7 +4462,7 @@ details[open] .plus::after {
 }
 
 .studio.is-side-view .personalize::after {
-  content: "Vista de perfil\A Elige Frente o Espalda para editar tu diseÃ±o.";
+  content: "Vista de perfil\A Elige Frente o Espalda para editar tu diseño.";
   position: absolute;
   inset: 0;
   z-index: 4;
@@ -4809,7 +4809,7 @@ details[open] .plus::after {
 }
 
 /* --------------------------------------------------------------------------
-   Controles de personalizaciÃ³n estilo FOS
+   Controles de personalización estilo FOS
    -------------------------------------------------------------------------- */
 
 .personalize {
@@ -4985,7 +4985,7 @@ details[open] .plus::after {
 }
 
 /* --------------------------------------------------------------------------
-   Calendario de conciertos (Ticketmaster MÃ©xico)
+   Calendario de conciertos (Ticketmaster México)
    -------------------------------------------------------------------------- */
 
 .events {
@@ -5605,10 +5605,10 @@ details[open] .plus::after {
 }
 
 /* --------------------------------------------------------------------------
-   Pulido de interacciÃƒÂ³n Ã¢â‚¬â€ principios Apple Design
+   Pulido de interacción — principios Apple Design
    -------------------------------------------------------------------------- */
 
-/* 1 Ã‚Â· El feedback nace en pointer-down, no en el click */
+/* 1 · El feedback nace en pointer-down, no en el click */
 .btn:active,
 .btn-primary:active,
 .btn-dark:active,
@@ -5624,7 +5624,7 @@ details[open] .plus::after {
   transition-duration: 90ms;
 }
 
-/* 2 Ã‚Â· Zonas tÃƒÂ¡ctiles de 44 px */
+/* 2 · Zonas táctiles de 44 px */
 .icon-btn,
 .cart-button,
 .menu-toggle {
@@ -5632,7 +5632,7 @@ details[open] .plus::after {
   height: 44px;
 }
 
-/* 3 Ã‚Â· Borde de scroll suave en vez de una lÃƒÂ­nea dura */
+/* 3 · Borde de scroll suave en vez de una línea dura */
 .site-header::after {
   content: "";
   position: absolute;
@@ -5648,7 +5648,7 @@ details[open] .plus::after {
   opacity: 1;
 }
 
-/* 4 Ã‚Â· Panel de la cesta arrastrable (seguimiento 1:1 en JS) */
+/* 4 · Panel de la cesta arrastrable (seguimiento 1:1 en JS) */
 .cart-drawer {
   touch-action: pan-y;
   will-change: transform;
@@ -5662,7 +5662,7 @@ details[open] .plus::after {
   user-select: none;
 }
 
-/* 5 Ã‚Â· Transparencia y contraste */
+/* 5 · Transparencia y contraste */
 @media (prefers-reduced-transparency: reduce) {
   .site-header,
   .legal-header {
@@ -5695,7 +5695,7 @@ details[open] .plus::after {
   }
 }
 
-/* 6 Ã‚Â· Movimiento reducido (al final, para ganar en cascada) */
+/* 6 · Movimiento reducido (al final, para ganar en cascada) */
 @media (prefers-reduced-motion: reduce) {
   .btn:active,
   .btn-primary:active,
@@ -5718,12 +5718,12 @@ details[open] .plus::after {
 }
 
 /* --------------------------------------------------------------------------
-   Sistema visual Ã¢â‚¬â€ color, tipografÃƒÂ­a y composiciÃƒÂ³n
+   Sistema visual — color, tipografía y composición
    (capa final: redefine tokens y ritmo sin tocar la estructura)
    -------------------------------------------------------------------------- */
 
 :root {
-  /* neutros cÃƒÂ¡lidos, mÃƒÂ¡s coherentes entre sÃƒÂ­ */
+  /* neutros cálidos, más coherentes entre sí */
   --cream: #f7f2e9;
   --cream-2: #efe7d8;
   --paper: #fffdf9;
@@ -5744,7 +5744,7 @@ details[open] .plus::after {
   --max: 1160px;
 }
 
-/* --- TipografÃƒÂ­a ---------------------------------------------------------- */
+/* --- Tipografía ---------------------------------------------------------- */
 
 body {
   font-size: 16.5px;
@@ -5793,7 +5793,7 @@ p {
   letter-spacing: 0.16em;
 }
 
-/* --- ComposiciÃƒÂ³n --------------------------------------------------------- */
+/* --- Composición --------------------------------------------------------- */
 
 .container {
   width: min(var(--max), calc(100% - 56px));
@@ -5837,10 +5837,10 @@ p {
 }
 
 /* --------------------------------------------------------------------------
-   MenÃƒÂº mÃƒÂ³vil y modales Ã¢â‚¬â€ misma lÃƒÂ³gica de movimiento que el panel de cesta
+   Menú móvil y modales — misma lógica de movimiento que el panel de cesta
    -------------------------------------------------------------------------- */
 
-/* Apertura continua con origen en el botÃƒÂ³n que la provoca */
+/* Apertura continua con origen en el botón que la provoca */
 @media (max-width: 960px) {
   .mobile-menu {
     display: grid;
@@ -5902,7 +5902,7 @@ p {
   .site-header.menu-open .mobile-menu nav > *:nth-child(6) { transition-delay: 0.19s; }
 }
 
-/* Modal: material mÃƒÂ¡s presente y entrada con mÃƒÂ¡s recorrido */
+/* Modal: material más presente y entrada con más recorrido */
 .modal {
   background: rgba(12, 12, 14, 0.55);
   backdrop-filter: blur(10px) saturate(140%);
@@ -5923,7 +5923,7 @@ p {
   transition: none !important;
 }
 
-/* Asa de arrastre: solo en mÃƒÂ³vil, donde el modal pasa a ser una hoja */
+/* Asa de arrastre: solo en móvil, donde el modal pasa a ser una hoja */
 .sheet-grab {
   display: none;
 }
@@ -5965,7 +5965,7 @@ p {
   }
 }
 
-/* Ajuste de mÃƒÂ¡rgenes laterales por breakpoint (composiciÃƒÂ³n) */
+/* Ajuste de márgenes laterales por breakpoint (composición) */
 @media (max-width: 760px) {
   .container {
     width: calc(100% - 36px);
@@ -5992,7 +5992,7 @@ p {
 }
 
 /* --------------------------------------------------------------------------
-   Asas de tamaÃ±o y rotaciÃ³n sobre la prenda
+   Asas de tamaño y rotación sobre la prenda
    -------------------------------------------------------------------------- */
 
 .editor-item {
@@ -6017,7 +6017,7 @@ p {
   transition: opacity 0.15s ease, background 0.15s ease;
 }
 
-/* zona de toque ampliada, sin agrandar el cÃ­rculo */
+/* zona de toque ampliada, sin agrandar el círculo */
 .edit-handle::after {
   content: "";
   position: absolute;
@@ -6095,7 +6095,7 @@ p {
   transform-origin: center;
 }
 
-/* miniatura rasterizada del diseÃ±o */
+/* miniatura rasterizada del diseño */
 .cart-thumb-img {
   display: block;
   width: 100%;
@@ -6103,7 +6103,7 @@ p {
   border-radius: 12px;
 }
 
-/* Alta en el club: mensaje de Ã©xito con el cÃ³digo */
+/* Alta en el club: mensaje de éxito con el código */
 .newsletter-success {
   margin-top: 4px;
   font-size: 12px;
@@ -6127,7 +6127,7 @@ p {
 }
 
 /* --------------------------------------------------------------------------
-   CupÃ³n de descuento en la cesta
+   Cupón de descuento en la cesta
    -------------------------------------------------------------------------- */
 
 .coupon-box {
