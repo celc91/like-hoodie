@@ -1,52 +1,64 @@
 /* ==========================================================================
-   like hoodie ♡ — Aviso de cookies y almacenamiento local
+   like hoodie ♡ — Aviso de cookies y preferencias
+   --------------------------------------------------------------------------
+   Dos opciones: aceptar analítica o quedarse solo con lo esencial.
+   La elección se guarda y se puede cambiar desde cookies.html.
    ========================================================================== */
 
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "likehoodie_cookie_notice_v1";
+  const consent = window.LikeHoodieConsent;
+  let notice = null;
 
-  function wasAccepted() {
-    try {
-      return window.localStorage.getItem(STORAGE_KEY) === "accepted";
-    } catch (error) {
-      return false;
-    }
-  }
-
-  function rememberAcceptance() {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, "accepted");
-    } catch (error) {
-      /* Si el navegador bloquea el almacenamiento, el aviso se ocultará
-         solo durante esta visita. */
-    }
+  function removeNotice() {
+    if (!notice) return;
+    notice.classList.remove("is-visible");
+    const el = notice;
+    notice = null;
+    window.setTimeout(function () {
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+    }, 300);
   }
 
   function buildNotice() {
-    const notice = document.createElement("aside");
+    if (notice) return;
+
+    notice = document.createElement("aside");
     notice.className = "cookie-notice";
     notice.setAttribute("role", "region");
-    notice.setAttribute("aria-label", "Aviso de cookies y almacenamiento local");
+    notice.setAttribute("aria-label", "Preferencias de cookies");
     notice.innerHTML =
-      '<p><strong>Cookies y almacenamiento local.</strong> Usamos almacenamiento esencial para guardar tu carrito. No usamos cookies de publicidad. <a href="cookies.html">Más información</a>.</p>' +
-      '<button type="button" class="btn btn-lime btn-sm">Entendido</button>';
+      '<p><strong>Cookies y analítica.</strong> Usamos almacenamiento esencial para tu carrito. ' +
+      "Si lo aceptas, cargamos Google Analytics para saber qué funciona en la tienda. " +
+      'Puedes decirlo después en <a href="cookies.html">Cookies</a>.</p>' +
+      '<div class="cookie-actions">' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-consent="denied">Solo esenciales</button>' +
+      '<button type="button" class="btn btn-lime btn-sm" data-consent="granted">Aceptar analítica</button>' +
+      "</div>";
 
     document.body.appendChild(notice);
-    window.requestAnimationFrame(() => notice.classList.add("is-visible"));
+    window.requestAnimationFrame(function () {
+      notice.classList.add("is-visible");
+    });
 
-    const button = notice.querySelector("button");
-    if (button) {
-      button.addEventListener("click", () => {
-        rememberAcceptance();
-        notice.classList.remove("is-visible");
-        window.setTimeout(() => notice.remove(), 300);
-      });
-    }
+    notice.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-consent]");
+      if (!button) return;
+      if (consent) consent.set(button.getAttribute("data-consent"));
+      removeNotice();
+    });
   }
 
-  if (!wasAccepted()) {
-    buildNotice();
+  // abre el aviso desde cualquier página (botón "cambiar preferencias")
+  document.addEventListener("likehoodie:consent-open", buildNotice);
+
+  // si aún no hay decisión, se muestra
+  if (!consent || !consent.get()) {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", buildNotice);
+    } else {
+      buildNotice();
+    }
   }
 })();

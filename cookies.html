@@ -63,7 +63,7 @@
       <article class="legal-content">
         <div class="legal-callout">
           <strong>En pocas palabras</strong>
-          No usamos cookies de publicidad. Guardamos información esencial en tu navegador para que el carrito funcione y usamos una sesión anónima de Supabase para asociar tu carrito y tus pedidos. No te identificamos por tu nombre hasta que completas un pedido.
+          Guardamos información esencial en tu navegador para que el carrito funcione y usamos una sesión anónima de Supabase para asociar tu carrito y tus pedidos. Si lo aceptas, cargamos Google Analytics para entender cómo se usa la tienda; si no, no se descarga nada. No usamos publicidad ni píxeles de redes sociales, y no te identificamos por tu nombre hasta que completas un pedido.
         </div>
 
         <section id="que-son">
@@ -115,6 +115,12 @@
                   <td>Mantener la sesión del administrador en la página de administración.</td>
                   <td>Hasta que cierres sesión o borres los datos del navegador.</td>
                 </tr>
+                <tr>
+                  <td><code>_ga</code> · <code>_ga_*</code></td>
+                  <td>Analítica (opcional)</td>
+                  <td>Distinguir visitas y sesiones para medir qué páginas y qué pasos del configurador se usan. Solo se instalan si aceptas la analítica.</td>
+                  <td>Hasta 2 años (Google Analytics 4).</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -130,9 +136,10 @@
             <li><strong>Ticketmaster México</strong> proporciona la cartelera de conciertos. Al abrir un evento o el enlace “Ver todos en Ticketmaster” sales de nuestro sitio y se aplican las políticas de cookies y privacidad de Ticketmaster.</li>
             <li><strong>Supabase</strong> guarda la sesión anónima, los carritos, los pedidos, los eventos de uso y los logos en un bucket privado. Puede registrar datos técnicos para prestar el servicio y proteger la base de datos.</li>
             <li><strong>Cloudflare Email Routing y Resend</strong> gestionan el correo de contacto y las confirmaciones de pedido. No instalan cookies en el sitio.</li>
+            <li><strong>Google Analytics 4</strong> mide el uso del sitio para las métricas del negocio. Solo se carga si aceptas la analítica; enviamos la IP anonimizada y no lo usamos para publicidad.</li>
             <li><strong>Clip:</strong> cuando se active el cobro en línea, el pago se realizará en la página segura de Clip y se regirá por sus propias políticas de cookies y privacidad.</li>
           </ul>
-          <p>No usamos cookies de redes sociales, publicidad comportamental, píxeles de seguimiento ni Google Analytics. Los eventos de uso son propios y se guardan en Supabase para las métricas del negocio.</p>
+          <p>No usamos cookies de redes sociales, publicidad comportamental ni píxeles de seguimiento. Los eventos de uso propios se guardan en Supabase para las métricas del negocio.</p>
         </section>
 
         <section id="gestionar">
@@ -145,6 +152,16 @@
             <li><strong>Edge:</strong> Configuración → Privacidad, búsqueda y servicios → Borrar datos de exploración.</li>
           </ul>
           <p>Si borras el almacenamiento local, el carrito se vaciará y el aviso de cookies volverá a aparecer. También puedes navegar en una ventana privada para evitar que se conserve la información al cerrar.</p>
+          <p><button type="button" class="btn btn-outline btn-sm" id="reopen-consent">Cambiar mis preferencias de cookies</button></p>
+          <script>
+            (function () {
+              var button = document.getElementById("reopen-consent");
+              if (!button) return;
+              button.addEventListener("click", function () {
+                if (window.LikeHoodieConsent) window.LikeHoodieConsent.open();
+              });
+            })();
+          </script>
         </section>
 
         <section id="consentimiento">
@@ -183,6 +200,8 @@
     </div>
   </footer>
 
-  <script src="legal.js?v=20261110-gallery3"></script>
+  <script src="analytics-config.js?v=20261112-ga1"></script>
+  <script src="analytics.js?v=20261112-ga1"></script>
+  <script src="legal.js?v=20261112-ga1"></script>
 </body>
 </html>
