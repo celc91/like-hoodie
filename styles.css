@@ -6607,7 +6607,7 @@ p {
     position: sticky;
     top: 84px;
     align-self: start;
-    height: clamp(520px, calc(100vh - 170px), 700px);
+    height: clamp(540px, calc(100vh - 170px), 800px);
   }
 
   /* la prenda se adapta a la altura disponible, no al revés */
