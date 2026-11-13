@@ -4562,6 +4562,79 @@ details[open] .plus::after {
   color: var(--muted);
 }
 
+.placement-coords {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.placement-coord {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border: 1px solid rgba(22, 22, 24, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.6);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.placement-coord__label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.placement-coord strong {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.placement-coord.is-active {
+  border-color: var(--orange);
+  background: rgba(255, 77, 31, 0.06);
+}
+
+.placement-coord.is-active .placement-coord__label {
+  color: var(--orange);
+}
+
+.placement-guide .placement-guide__note--coords {
+  font-size: 9.5px;
+}
+
+/* Coordenadas flotantes mientras se arrastra */
+.coord-bubble {
+  position: absolute;
+  left: 50%;
+  top: -34px;
+  z-index: 9;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.editor-item.is-dragging .coord-bubble {
+  opacity: 1;
+}
+
 .view-gallery {
   position: relative;
   z-index: 4;

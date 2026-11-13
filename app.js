@@ -383,6 +383,8 @@
   const hintText = $("[data-hint-text]");
   const placementView = $("[data-placement-view]");
   const placementText = $("[data-placement-text]");
+  const logoCoord = $("[data-logo-coord]");
+  const textCoord = $("[data-text-coord]");
   const studio = $(".studio");
   const personalizePanel = $(".personalize");
   const toolButtons = $$("[data-personalize-tool]");
@@ -1274,6 +1276,41 @@
     if (hintText) hintText.textContent = guide.hint;
   }
 
+  let activeCoord = "logo";
+
+  function formatCoord(x, y) {
+    const fx = Number.isFinite(Number(x)) ? Number(x) : 50;
+    const fy = Number.isFinite(Number(y)) ? Number(y) : 50;
+    const fmt = (value) => String(Math.round(value * 10) / 10).replace(".", ",");
+    return `X ${fmt(fx)} % · Y ${fmt(fy)} %`;
+  }
+
+  function setActiveCoord(type) {
+    activeCoord = type === "text" ? "text" : "logo";
+    $$("[data-coord-row]").forEach((row) => {
+      row.classList.toggle("is-active", row.dataset.coordRow === activeCoord);
+    });
+  }
+
+  function updateCoords() {
+    const design = state.designs[state.view];
+    if (!design) return;
+    if (logoCoord) logoCoord.textContent = formatCoord(design.logoX, design.logoY);
+    if (textCoord) textCoord.textContent = formatCoord(design.textX, design.textY);
+  }
+
+  function updateCoordBubble(element, x, y) {
+    if (!element) return;
+    let bubble = element.querySelector(".coord-bubble");
+    if (!bubble) {
+      bubble = document.createElement("span");
+      bubble.className = "coord-bubble";
+      bubble.setAttribute("aria-hidden", "true");
+      element.appendChild(bubble);
+    }
+    bubble.textContent = formatCoord(x, y);
+  }
+
   function openCheckout() {
     if (state.items.length === 0) return;
     closeCart(false);
@@ -2036,6 +2073,7 @@
         personalizePanel.removeAttribute("aria-hidden");
       }
       updatePlacementGuide();
+      updateCoords();
     }
 
     previewNames.forEach((element) => {
@@ -2416,14 +2454,12 @@
     let dragSide = "front";
 
     const applyPosition = (design) => {
-      element.style.setProperty(
-        "--x",
-        `${type === "text" ? design.textX : design.logoX}%`
-      );
-      element.style.setProperty(
-        "--y",
-        `${type === "text" ? design.textY : design.logoY}%`
-      );
+      const posX = type === "text" ? design.textX : design.logoX;
+      const posY = type === "text" ? design.textY : design.logoY;
+      element.style.setProperty("--x", `${posX}%`);
+      element.style.setProperty("--y", `${posY}%`);
+      updateCoordBubble(element, posX, posY);
+      updateCoords();
     };
 
     const moveTo = (clientX, clientY) => {
@@ -2451,6 +2487,7 @@
       event.preventDefault();
       dragSide = state.view;
       dragging = true;
+      setActiveCoord(type);
       element.classList.add("is-dragging");
       element.focus({ preventScroll: true });
       try {
@@ -2499,6 +2536,7 @@
         if (event.key === "ArrowDown") design.logoY = clampPosition(design.logoY + step, "logo", "y");
       }
 
+      setActiveCoord(type);
       applyPosition(design);
     });
   }
