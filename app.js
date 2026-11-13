@@ -2061,6 +2061,8 @@
     toolPanels.forEach((panel) => {
       panel.hidden = panel.dataset.personalizePanel !== tool;
     });
+    const shell = document.querySelector(".studio-controls");
+    if (shell) shell.dataset.tool = tool;
   }
 
   let tooltipTarget = null;
@@ -3835,7 +3837,7 @@
 
   selectColor(state.color, state.colorName);
   setView(state.view);
-  setTool("texto");
+  setTool("producto");
   renderCart();
   window.StoreSupabase?.init();
   if (state.items.length) {

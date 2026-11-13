@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261113-print2">
+  <link rel="stylesheet" href="styles.css?v=20261113-editor1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -258,20 +258,47 @@
           <p>Define el frente y la espalda con precisión: elige material, técnica, color y talla, y coloca tu texto o logo dentro del área de impresión marcada. La cuadrícula y el eje central te ayudan a dejar el diseño alineado y a la medida.</p>
         </div>
 
-        <div class="studio">
-          <div class="studio-preview">
-            <div class="preview-top">
-              <span>Vista previa</span>
-              <div class="preview-top-actions">
-                <button type="button" class="grid-toggle" data-grid-toggle aria-pressed="true" aria-label="Mostrar u ocultar las guías de centrado">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM4 9.3h16M4 14.7h16M9.3 4v16M14.7 4v16" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  <span>Guías</span>
+        <div class="studio editor">
+          <div class="editor-topbar">
+            <div class="product-switch" role="group" aria-label="Qué quieres personalizar">
+              <button type="button" class="product-tab is-active" data-product-tab="hoodie" aria-pressed="true">Sudadera</button>
+              <button type="button" class="product-tab" data-product-tab="tote" aria-pressed="false">Tote bag</button>
+            </div>
+
+            <div class="editor-views" role="group" aria-label="Cara del diseño">
+              <button type="button" class="editor-view is-active" data-angle="0" aria-pressed="true">Frente</button>
+              <button type="button" class="editor-view" data-angle="180" aria-pressed="false">Espalda</button>
+            </div>
+
+            <div class="preview-top-actions">
+              <button type="button" class="grid-toggle" data-grid-toggle aria-pressed="true" aria-label="Mostrar u ocultar las guías de centrado">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM4 9.3h16M4 14.7h16M9.3 4v16M14.7 4v16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Guías</span>
+              </button>
+              <span class="live"><i aria-hidden="true"></i> En vivo</span>
+            </div>
+          </div>
+
+          <div class="editor-shell">
+            <div class="editor-rail" role="group" aria-label="Herramientas de diseño">
+              <div class="personalize-tools">
+                <button type="button" class="personalize-tool is-active" data-personalize-tool="producto" aria-pressed="true">
+                  <span class="personalize-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 4 5 6l-2 5 4 2v7h10v-7l4-2-2-5-4-2a3 3 0 0 1-6 0Z" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <span>Producto</span>
                 </button>
-                <span class="live"><i aria-hidden="true"></i> En vivo</span>
+                <button type="button" class="personalize-tool" data-personalize-tool="texto" aria-pressed="false">
+                  <span class="personalize-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 6h14M12 6v13M8 19h8" stroke-linecap="round"/></svg></span>
+                  <span>Texto</span>
+                </button>
+                <button type="button" class="personalize-tool" data-personalize-tool="logo" aria-pressed="false">
+                  <span class="personalize-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V4M8 8l4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <span>Logo</span>
+                </button>
               </div>
             </div>
 
-            <div class="hoodie-stage">
+            <div class="studio-preview editor-canvas">
+              <div class="hoodie-stage">
               <div class="hoodie hoodie--studio is-dark" data-preview-hoodie style="--fabric-color:#1c1c1f;--tint-mask:url('assets/hoodie-front.png')">
                 <div class="fabric-tint" data-fabric-tint aria-hidden="true"></div>
                 <img class="hoodie-photo" data-hoodie-photo src="assets/hoodie-front.png" alt="Vista frontal de tu sudadera personalizada" width="1003" height="1229">
@@ -314,32 +341,10 @@
               </button>
             </div>
 
-            <div class="studio-summary">
-              <p class="summary-line">
-                <span class="summary-color"><i class="mini-swatch" data-preview-swatch aria-hidden="true"></i><span data-preview-color-name>Negro</span></span>
-                <span data-preview-material>Algodón 400 g</span>
-                <span data-preview-technique>DTG</span>
-                <span><span data-size-label>Talla</span> <strong data-preview-size>M</strong></span>
-              </p>
-              <div class="price-row">
-                <div class="price-block">
-                  <span class="price-label">Total</span>
-                  <strong class="price" data-price data-price-display>$899 MXN</strong>
-                  <span class="price-note" data-price-note>Base $899 MXN · IVA incluido</span>
-                </div>
-                <button type="button" class="btn btn-primary btn-add" data-add-to-cart> Añadir a la cesta
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-              </div>
-            </div>
           </div>
 
-          <div class="studio-controls">
-            <div class="product-switch" role="group" aria-label="Qué quieres personalizar">
-              <button type="button" class="product-tab is-active" data-product-tab="hoodie" aria-pressed="true">Sudadera</button>
-              <button type="button" class="product-tab" data-product-tab="tote" aria-pressed="false">Tote bag</button>
-            </div>
-
+          <div class="studio-controls" data-tool="producto">
+            <div class="personalize-panel" data-personalize-panel="producto">
             <div class="control">
               <div class="control-head">
                 <span class="control-label">Color</span>
@@ -441,25 +446,15 @@
                 <p class="option-warning" data-technique-warning hidden></p>
               </div>
             </div>
+            </div>
 
-            <div class="personalize">
+            <div class="personalize" data-personalize-shell>
               <div class="personalize-head">
                 <span class="personalize-title">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20l3.6-.8L19 7.8 16.2 5 4.8 16.4 4 20Z" stroke-linejoin="round"/><path d="M14.5 6.7l2.8 2.8" stroke-linecap="round"/></svg>
                   Personalización
                 </span>
                 <span class="personalize-note">Frente y espalda</span>
-              </div>
-
-              <div class="personalize-tools" role="group" aria-label="Herramienta de personalización">
-                <button type="button" class="personalize-tool is-active" data-personalize-tool="texto" aria-pressed="true">
-                  <span class="personalize-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 6h14M12 6v13M8 19h8" stroke-linecap="round"/></svg></span>
-                  <span>Texto</span>
-                </button>
-                <button type="button" class="personalize-tool" data-personalize-tool="logo" aria-pressed="false">
-                  <span class="personalize-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V4M8 8l4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                  <span>Logo</span>
-                </button>
               </div>
 
               <div class="editing-bar" data-editing-bar>
@@ -487,7 +482,7 @@
                 <p class="placement-guide__note placement-guide__note--coords">La cuadrícula marca el área de impresión y el eje naranja el centro. 0 % = borde izquierdo/superior · 100 % = borde derecho/inferior.</p>
               </div>
 
-              <div class="personalize-panel" data-personalize-panel="texto">
+              <div class="personalize-panel" data-personalize-panel="texto" hidden>
                 <div class="control">
                   <div class="control-head">
                     <label class="control-label" for="custom-text">Tu texto</label>
@@ -614,6 +609,26 @@
                 </div>
               </div>
             </div>
+
+            <div class="studio-summary">
+              <p class="summary-line">
+                <span class="summary-color"><i class="mini-swatch" data-preview-swatch aria-hidden="true"></i><span data-preview-color-name>Negro</span></span>
+                <span data-preview-material>Algodón 400 g</span>
+                <span data-preview-technique>DTG</span>
+                <span><span data-size-label>Talla</span> <strong data-preview-size>M</strong></span>
+              </p>
+              <div class="price-row">
+                <div class="price-block">
+                  <span class="price-label">Total</span>
+                  <strong class="price" data-price data-price-display>$899 MXN</strong>
+                  <span class="price-note" data-price-note>Base $899 MXN · IVA incluido</span>
+                </div>
+                <button type="button" class="btn btn-primary btn-add" data-add-to-cart> Añadir a la cesta
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
           </div>
         </div>
       </div>
@@ -1173,7 +1188,7 @@
   <script src="clip-config.js?v=20261112-sandbox2"></script>
 <script src="vendor/imagetracer-1.2.6.js?v=20261113-vec1"></script>
 <script src="vectorize.js?v=20261113-vec2"></script>
-<script src="app.js?v=20261113-print2"></script>
+<script src="app.js?v=20261113-editor1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>
