@@ -1237,8 +1237,8 @@ section[id] {
   z-index: 12;
   display: flex;
   align-items: center;
-  gap: 2px;
-  padding: 4px 6px;
+  gap: 4px;
+  padding: 5px 8px;
   border-radius: 999px;
   border: 1px solid rgba(22, 22, 24, 0.08);
   background: rgba(255, 253, 249, 0.94);
@@ -1249,14 +1249,14 @@ section[id] {
 .stage-zoom__btn {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
   color: var(--ink);
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
@@ -1281,23 +1281,23 @@ section[id] {
 }
 
 .stage-zoom__value {
-  min-width: 44px;
+  min-width: 48px;
   text-align: center;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
 .stage-zoom__reset {
-  height: 28px;
+  height: 34px;
   margin-left: 2px;
-  padding: 0 10px;
+  padding: 0 12px;
   border: 0;
   border-radius: 999px;
   background: rgba(22, 22, 24, 0.06);
   color: var(--ink);
-  font-size: 10px;
+  font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -6516,7 +6516,7 @@ p {
    -------------------------------------------------------------------------- */
 
 .editor-item {
-  --handle-size: 30px;
+  --handle-size: 36px;
 }
 
 .edit-handle {
@@ -6541,25 +6541,25 @@ p {
 .edit-handle::after {
   content: "";
   position: absolute;
-  inset: -9px;
+  inset: -6px;
   border-radius: 50%;
 }
 
 .edit-handle svg {
-  width: 15px;
-  height: 15px;
+  width: 18px;
+  height: 18px;
   pointer-events: none;
 }
 
 .edit-handle--resize {
-  right: -16px;
-  bottom: -16px;
+  right: -18px;
+  bottom: -18px;
   cursor: nwse-resize;
 }
 
 .edit-handle--rotate {
-  right: -16px;
-  top: -16px;
+  right: -18px;
+  top: -18px;
   cursor: grab;
   background: var(--ink);
 }
@@ -6601,12 +6601,12 @@ p {
 
 @media (max-width: 480px) {
   .editor-item {
-    --handle-size: 26px;
+    --handle-size: 32px;
   }
 
   .edit-handle svg {
-    width: 13px;
-    height: 13px;
+    width: 16px;
+    height: 16px;
   }
 }
 
