@@ -205,16 +205,33 @@
   /* Utilidades                                                              */
   /* ---------------------------------------------------------------------- */
 
-  /* Mantiene las asas al mismo tamaño en pantalla aunque el logo o el zoom crezcan */
+  /* Mantiene las asas proporcionadas al tamaño real del logo o texto:
+     ni gigantes en diseños pequeños ni diminutas al ampliar. */
+  const handleSizeObserver =
+    typeof ResizeObserver === "function"
+      ? new ResizeObserver((entries) => {
+          entries.forEach((entry) => updateHandleScale(entry.target));
+        })
+      : null;
+
   function updateHandleScale(element) {
     if (!element) return;
     const type = element.dataset.printType;
     if (!type) return;
     const design = state.designs[state.view];
     const scale = type === "text" ? design.textScale || 1 : design.logoScale || 1;
+    const factor = Math.max(0.01, scale * zoomLevel);
+    const base =
+      parseFloat(
+        getComputedStyle(element).getPropertyValue("--handle-size")
+      ) || 30;
+    const width = element.offsetWidth || 0;
+    const height = element.offsetHeight || 0;
+    const visual = Math.min(width || 120, height || 120) * factor;
+    const target = Math.min(30, Math.max(22, visual * 0.13));
     element.style.setProperty(
       "--handle-scale",
-      String(1 / Math.max(0.01, scale * zoomLevel))
+      String(target / (base * factor))
     );
   }
 
@@ -2518,6 +2535,8 @@
         }
       });
     });
+
+    if (handleSizeObserver) handleSizeObserver.observe(element);
   }
 
   function setupDraggable(element) {

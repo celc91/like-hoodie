@@ -6516,7 +6516,7 @@ p {
    -------------------------------------------------------------------------- */
 
 .editor-item {
-  --handle-size: 36px;
+  --handle-size: 30px;
 }
 
 .edit-handle {
@@ -6530,7 +6530,7 @@ p {
   border-radius: 50%;
   background: var(--orange);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.22);
   opacity: 0;
   pointer-events: none;
   touch-action: none;
@@ -6541,25 +6541,25 @@ p {
 .edit-handle::after {
   content: "";
   position: absolute;
-  inset: -6px;
+  inset: -7px;
   border-radius: 50%;
 }
 
 .edit-handle svg {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
   pointer-events: none;
 }
 
 .edit-handle--resize {
-  right: -18px;
-  bottom: -18px;
+  right: calc(var(--handle-size) / -2);
+  bottom: calc(var(--handle-size) / -2);
   cursor: nwse-resize;
 }
 
 .edit-handle--rotate {
-  right: -18px;
-  top: -18px;
+  right: calc(var(--handle-size) / -2);
+  top: calc(var(--handle-size) / -2);
   cursor: grab;
   background: var(--ink);
 }
@@ -6569,7 +6569,7 @@ p {
 }
 
 .editor-item .edit-handle {
-  opacity: 0.55;
+  opacity: 0.5;
   pointer-events: auto;
 }
 
@@ -6601,12 +6601,12 @@ p {
 
 @media (max-width: 480px) {
   .editor-item {
-    --handle-size: 32px;
+    --handle-size: 30px;
   }
 
   .edit-handle svg {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
   }
 }
 
