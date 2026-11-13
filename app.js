@@ -471,6 +471,9 @@
   const printStatus = $("[data-print-status]");
   const printStatusText = $("[data-print-status-text]");
   const printRetry = $("[data-print-retry]");
+  const undoButton = $("[data-undo]");
+  const redoButton = $("[data-redo]");
+  const guideToggle = $("[data-guide-toggle]");
   const priceEl = $("[data-price-display]");
   const priceNote = $("[data-price-note]");
   const couponInput = $("[data-coupon-input]");
@@ -2263,6 +2266,7 @@
 
     syncVectorPanel();
     setPrintStatusUI(activeDesign());
+    commitHistory();
   }
 
   function updateGalleryUI() {
@@ -2554,6 +2558,35 @@
       });
     });
 
+    const toolbar = document.createElement("span");
+    toolbar.className = "item-toolbar";
+    toolbar.setAttribute("role", "toolbar");
+    toolbar.setAttribute("aria-label", "Acciones del elemento");
+    toolbar.innerHTML = `
+      <button type="button" data-item-action="center" aria-label="Centrar en el área" title="Centrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke-linecap="round"/><circle cx="12" cy="12" r="3.2"/></svg>
+      </button>
+      ${
+        type === "text"
+          ? `<button type="button" data-item-action="copy" aria-label="Copiar al otro lado" title="Copiar al otro lado">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9" stroke-linecap="round"/></svg>
+            </button>`
+          : ""
+      }
+      <button type="button" data-item-action="delete" aria-label="Eliminar elemento" title="Eliminar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    `;
+    toolbar.addEventListener("pointerdown", (event) => event.stopPropagation());
+    toolbar.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-item-action]");
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      runItemAction(type, button.dataset.itemAction);
+    });
+    element.appendChild(toolbar);
+
     if (handleSizeObserver) handleSizeObserver.observe(element);
   }
 
@@ -2715,9 +2748,12 @@
   });
 
   toolButtons.forEach((button) => {
-    button.addEventListener("click", () =>
-      setTool(button.dataset.personalizeTool)
-    );
+    button.addEventListener("click", () => {
+      const tool = button.dataset.personalizeTool;
+      setTool(tool);
+      if (tool === "texto") setActiveCoord("text");
+      if (tool === "logo") setActiveCoord("logo");
+    });
   });
 
   viewThumbs.forEach((button) => {
@@ -2730,6 +2766,7 @@
 
   if (textInput) {
     textInput.addEventListener("input", () => {
+      setActiveCoord("text");
       const design = activeDesign();
       design.text = textInput.value.toUpperCase();
       if (charCount) charCount.textContent = String(design.text.length);
@@ -3223,6 +3260,275 @@
     });
   }
 
+  /* ---------------------------------------------------------------------- */
+  /* Historial, atajos y acciones del elemento                              */
+  /* ---------------------------------------------------------------------- */
+
+  const HISTORY_LIMIT = 50;
+  let historyStack = [];
+  let historyIndex = -1;
+  let historyTimer = null;
+  let historySuspended = false;
+  let lastHistorySignature = "";
+
+  function designSignature() {
+    return JSON.stringify(
+      ["front", "back"].map((side) => {
+        const design = state.designs[side];
+        return [
+          design.text,
+          design.textColor,
+          design.textScale,
+          design.textFont,
+          design.textX,
+          design.textY,
+          design.textRotate || 0,
+          design.logoName,
+          design.logoPath,
+          design.logoIsVector ? 1 : 0,
+          design.logoScale,
+          design.logoX,
+          design.logoY,
+          design.logoRotate || 0,
+          design.logoAssetId,
+        ];
+      })
+    );
+  }
+
+  function snapshotDesigns() {
+    const snapshot = {};
+    ["front", "back"].forEach((side) => {
+      const copy = { ...state.designs[side] };
+      delete copy.logoVectorResult;
+      snapshot[side] = copy;
+    });
+    return snapshot;
+  }
+
+  function updateHistoryButtons() {
+    if (undoButton) undoButton.disabled = historyIndex <= 0;
+    if (redoButton) {
+      redoButton.disabled = historyIndex >= historyStack.length - 1;
+    }
+  }
+
+  function commitHistory() {
+    if (historySuspended) return;
+    if (historyTimer) window.clearTimeout(historyTimer);
+    historyTimer = window.setTimeout(() => {
+      historyTimer = null;
+      const signature = designSignature();
+      if (signature === lastHistorySignature) return;
+      if (historyIndex < historyStack.length - 1) {
+        historyStack = historyStack.slice(0, historyIndex + 1);
+      }
+      historyStack.push(snapshotDesigns());
+      if (historyStack.length > HISTORY_LIMIT) historyStack.shift();
+      historyIndex = historyStack.length - 1;
+      lastHistorySignature = signature;
+      updateHistoryButtons();
+    }, 320);
+  }
+
+  function resetHistory() {
+    if (historyTimer) window.clearTimeout(historyTimer);
+    historyTimer = null;
+    historyStack = [snapshotDesigns()];
+    historyIndex = 0;
+    lastHistorySignature = designSignature();
+    updateHistoryButtons();
+  }
+
+  function applyHistory(snapshot) {
+    if (!snapshot) return;
+    historySuspended = true;
+    if (historyTimer) {
+      window.clearTimeout(historyTimer);
+      historyTimer = null;
+    }
+    ["front", "back"].forEach((side) => {
+      const live = state.designs[side];
+      const restored = { ...snapshot[side] };
+      const sameLogo =
+        Boolean(restored.logo) &&
+        Boolean(live.logo) &&
+        live.logoName === restored.logoName &&
+        live.logoPath === restored.logoPath;
+      if (sameLogo) {
+        restored.logoAssetId = live.logoAssetId;
+        restored.printStatus = live.printStatus;
+        restored.printPath = live.printPath;
+        restored.printDpi = live.printDpi;
+        restored.printWidthCm = live.printWidthCm;
+        restored.printError = live.printError;
+      }
+      state.designs[side] = restored;
+    });
+    lastHistorySignature = designSignature();
+    setView(state.view);
+    historySuspended = false;
+    updateHistoryButtons();
+  }
+
+  function undo() {
+    if (historyIndex <= 0) return;
+    historyIndex -= 1;
+    applyHistory(historyStack[historyIndex]);
+  }
+
+  function redo() {
+    if (historyIndex >= historyStack.length - 1) return;
+    historyIndex += 1;
+    applyHistory(historyStack[historyIndex]);
+  }
+
+  function copyTextToOtherSide() {
+    const design = activeDesign();
+    if (!design.text) {
+      showToast("Escribe algo primero.");
+      return;
+    }
+    const otherSide = state.view === "front" ? "back" : "front";
+    const other = state.designs[otherSide];
+    const defaults = DEFAULT_POSITIONS[otherSide] || DEFAULT_POSITIONS.front;
+    other.text = design.text;
+    other.textColor = design.textColor;
+    other.textScale = design.textScale;
+    other.textFont = design.textFont;
+    other.textRotate = design.textRotate || 0;
+    other.textX = 50;
+    other.textY = defaults.textY;
+    updatePreview();
+    showToast(
+      `Texto copiado a la ${otherSide === "front" ? "frente" : "espalda"}.`
+    );
+  }
+
+  function deleteElement(type) {
+    if (type === "logo") {
+      removeLogoButton?.click();
+      return;
+    }
+    const design = activeDesign();
+    if (!design.text) return;
+    design.text = "";
+    if (textInput) textInput.value = "";
+    if (charCount) charCount.textContent = "0";
+    updatePreview();
+    showToast("Texto eliminado.");
+  }
+
+  function deleteActiveItem() {
+    if (activeCoord === "text") {
+      deleteElement("text");
+    } else if (activeDesign().logo) {
+      deleteElement("logo");
+    }
+  }
+
+  function nudgeActive(dx, dy) {
+    const design = activeDesign();
+    if (activeCoord === "text") {
+      if (!design.text) return;
+      design.textX = clampPosition((design.textX || 50) + dx, "text", "x");
+      design.textY = clampPosition((design.textY || 49) + dy, "text", "y");
+    } else {
+      if (!design.logo) return;
+      design.logoX = clampPosition((design.logoX || 50) + dx, "logo", "x");
+      design.logoY = clampPosition((design.logoY || 32) + dy, "logo", "y");
+    }
+    updatePreview();
+  }
+
+  function runItemAction(type, action) {
+    const design = activeDesign();
+    if (action === "center") {
+      const defaults = DEFAULT_POSITIONS[state.view] || DEFAULT_POSITIONS.front;
+      if (type === "text") {
+        design.textX = 50;
+        design.textY = defaults.textY;
+      } else {
+        design.logoX = 50;
+        design.logoY = defaults.logoY;
+      }
+      updatePreview();
+      showToast("Elemento centrado.");
+      return;
+    }
+    if (action === "copy" && type === "text") {
+      copyTextToOtherSide();
+      return;
+    }
+    if (action === "delete") {
+      deleteElement(type);
+    }
+  }
+
+  if (undoButton) undoButton.addEventListener("click", undo);
+  if (redoButton) redoButton.addEventListener("click", redo);
+
+  if (guideToggle) {
+    guideToggle.addEventListener("click", () => {
+      const guide = guideToggle.closest(".placement-guide");
+      if (!guide) return;
+      const collapsed = guide.classList.toggle("is-collapsed");
+      guideToggle.setAttribute("aria-expanded", String(!collapsed));
+      guideToggle.textContent = collapsed ? "Ver guía" : "Ocultar";
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    const target = event.target;
+    const element = target instanceof Element ? target : null;
+    const editing = Boolean(
+      element &&
+        (element.matches("input, textarea, select") || element.isContentEditable)
+    );
+    const mod = event.ctrlKey || event.metaKey;
+    const key = String(event.key || "").toLowerCase();
+
+    if (mod && key === "z") {
+      if (editing) return;
+      event.preventDefault();
+      if (event.shiftKey) redo();
+      else undo();
+      return;
+    }
+    if (mod && key === "y") {
+      if (editing) return;
+      event.preventDefault();
+      redo();
+      return;
+    }
+    if (mod && key === "d") {
+      if (editing) return;
+      event.preventDefault();
+      copyTextToOtherSide();
+      return;
+    }
+    if (editing) return;
+
+    if (event.key === "Delete" || event.key === "Backspace") {
+      if (!activeDesign().text && !activeDesign().logo) return;
+      event.preventDefault();
+      deleteActiveItem();
+      return;
+    }
+
+    const arrows = {
+      ArrowLeft: [-1, 0],
+      ArrowRight: [1, 0],
+      ArrowUp: [0, -1],
+      ArrowDown: [0, 1],
+    };
+    if (arrows[event.key] && !element?.closest(".editor-item")) {
+      event.preventDefault();
+      const step = event.shiftKey ? 2 : 0.5;
+      nudgeActive(arrows[event.key][0] * step, arrows[event.key][1] * step);
+    }
+  });
+
   if (logoInput) {
     logoInput.addEventListener("change", () => {
       const file = logoInput.files && logoInput.files[0];
@@ -3245,6 +3551,7 @@
       reader.onload = async () => {
         const design = state.designs[side];
         const source = String(reader.result);
+        setActiveCoord("logo");
         design.logo = source;
         design.logoName = file.name;
         design.logoPath = "";
@@ -3838,6 +4145,7 @@
   selectColor(state.color, state.colorName);
   setView(state.view);
   setTool("producto");
+  resetHistory();
   renderCart();
   window.StoreSupabase?.init();
   if (state.items.length) {

@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261113-editor1">
+  <link rel="stylesheet" href="styles.css?v=20261113-editor2">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -270,6 +270,15 @@
               <button type="button" class="editor-view" data-angle="180" aria-pressed="false">Espalda</button>
             </div>
 
+            <div class="editor-history" role="group" aria-label="Historial de cambios">
+              <button type="button" class="editor-history__btn" data-undo aria-label="Deshacer" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 14 4 9l5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h9a6 6 0 0 1 0 12h-2" stroke-linecap="round"/></svg>
+              </button>
+              <button type="button" class="editor-history__btn" data-redo aria-label="Rehacer" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 14 5-5-5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 9h-9a6 6 0 0 0 0 12h2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+
             <div class="preview-top-actions">
               <button type="button" class="grid-toggle" data-grid-toggle aria-pressed="true" aria-label="Mostrar u ocultar las guías de centrado">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM4 9.3h16M4 14.7h16M9.3 4v16M14.7 4v16" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -345,6 +354,10 @@
 
           <div class="studio-controls" data-tool="producto">
             <div class="personalize-panel" data-personalize-panel="producto">
+            <div class="personalize-head">
+              <span class="personalize-title">Producto</span>
+              <span class="personalize-note">Base y acabado</span>
+            </div>
             <div class="control">
               <div class="control-head">
                 <span class="control-label">Color</span>
@@ -465,7 +478,10 @@
               <div class="placement-guide" data-placement-guide>
                 <div class="placement-guide__top">
                   <span class="placement-guide__eyebrow">Guía de colocación</span>
-                  <span class="placement-guide__view" data-placement-view>Frente</span>
+                  <span class="placement-guide__actions">
+                    <span class="placement-guide__view" data-placement-view>Frente</span>
+                    <button type="button" class="placement-guide__toggle" data-guide-toggle aria-expanded="true">Ocultar</button>
+                  </span>
                 </div>
                 <p data-placement-text>Centra el diseño en el pecho, 8–10 cm bajo la costura del cuello. Ancho máximo recomendado: 30 cm.</p>
                 <div class="placement-coords" data-placement-coords>
@@ -1188,7 +1204,7 @@
   <script src="clip-config.js?v=20261112-sandbox2"></script>
 <script src="vendor/imagetracer-1.2.6.js?v=20261113-vec1"></script>
 <script src="vectorize.js?v=20261113-vec2"></script>
-<script src="app.js?v=20261113-editor1"></script>
+<script src="app.js?v=20261113-editor2"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>

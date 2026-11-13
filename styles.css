@@ -7512,3 +7512,118 @@ p {
     padding: 14px;
   }
 }
+
+/* Historial en la barra superior */
+.editor-history {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.editor-history__btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  color: var(--muted);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.editor-history__btn:hover:not(:disabled) {
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.editor-history__btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.editor-history__btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Barra flotante del elemento seleccionado */
+.item-toolbar {
+  position: absolute;
+  left: 50%;
+  top: -46px;
+  z-index: 9;
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 11px;
+  background: var(--ink);
+  box-shadow: 0 10px 24px rgba(22, 22, 24, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) scale(var(--handle-scale, 1))
+    rotate(calc(-1 * var(--item-rotate, 0deg)));
+  transform-origin: center bottom;
+  transition: opacity 0.15s ease;
+}
+
+.editor-item:hover .item-toolbar,
+.editor-item:focus-within .item-toolbar,
+.editor-item.is-dragging .item-toolbar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.item-toolbar button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 7px;
+  color: var(--cream);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.item-toolbar button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.item-toolbar button[data-item-action="delete"]:hover {
+  background: rgba(255, 77, 31, 0.85);
+}
+
+.item-toolbar svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Guía de colocación plegable */
+.placement-guide__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.placement-guide__toggle {
+  padding: 0;
+  border-bottom: 1px solid currentColor;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.placement-guide__toggle:hover {
+  color: var(--ink);
+}
+
+.placement-guide.is-collapsed {
+  padding-bottom: 10px;
+}
+
+.placement-guide.is-collapsed > :not(.placement-guide__top) {
+  display: none;
+}
+
