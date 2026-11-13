@@ -1134,7 +1134,7 @@
     if (!window.ClipSDK) throw new Error("SDK de Clip no disponible.");
     if (!clipCard) {
       clipSdk = new window.ClipSDK(clipPublicKey, { env: "prod" });
-      clipCard = clipSdk.element.create("card", {
+      clipCard = clipSdk.element.create("Card", {
         paymentAmount: Number(amount) || 1,
         locale: "es",
         theme: "light",
@@ -1201,7 +1201,8 @@
     if (!sandbox) return;
 
     if (real) {
-      mountClipCard(totals().total).catch(() => {
+      mountClipCard(totals().total).catch((error) => {
+        console.error("clip-sandbox: no se pudo montar el SDK.", error);
         // Si el SDK o la clave fallan, se usa el simulador local.
         if (clipCardPanel) clipCardPanel.hidden = true;
         sandboxPay.hidden = false;
