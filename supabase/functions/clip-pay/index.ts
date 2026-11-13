@@ -200,13 +200,10 @@ Deno.serve(async (request) => {
         origin
       );
     }
-  } else if (status === "rejected" || status === "cancelled") {
-    await admin
-      .from("orders")
-      .update({ payment_status: "failed" })
-      .eq("id", order.id)
-      .eq("payment_status", "pending");
   }
+
+  // Un pago rechazado deja el pedido pendiente para poder reintentar con otra tarjeta.
+  // Solo se marca como pagado cuando Clip responde "approved".
 
   return json(
     {
