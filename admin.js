@@ -442,6 +442,12 @@
             <td><span class="items-summary">${itemsSummary(order.items)} · ${itemsCount(
             order.items
           )} u.</span></td>
+            <td class="design-cell">${designShot(
+              Array.isArray(order.items) ? order.items[0] : null,
+              "front",
+              "",
+              "design-shot--mini"
+            )}</td>
             <td>
               <strong>${formatMoney(order.total)}</strong>
               <span class="order-payment">${paymentBadge(order.payment_status)}</span>
@@ -468,8 +474,9 @@
         .join("");
     }
 
-    const pageLabel = $("#orders-page");
-    if (pageLabel) {
+    hydrateLogoImages(body);
+
+    const pageLabel = $("#orders-page");    if (pageLabel) {
       const pages = Math.max(1, Math.ceil(ordersTotal / ordersPageSize));
       pageLabel.textContent = `Página ${ordersPage + 1} de ${pages}`;
     }
@@ -613,8 +620,111 @@
 
   /* ------------------------------- Detail ------------------------------- */
 
-  async function logoLink(design, side) {
-    if (!design) return "";
+  const logoUrlCache = new Map();
+
+  async function signedLogoUrl(path) {
+    if (!path) return "";
+    if (logoUrlCache.has(path)) return logoUrlCache.get(path);
+    const { data, error } = await client.storage
+      .from("order-logos")
+      .createSignedUrl(path, 3600);
+    const url = !error && data?.signedUrl ? data.signedUrl : "";
+    logoUrlCache.set(path, url);
+    return url;
+  }
+
+  function designFont(id) {
+    const fonts = {
+      bricolage: "'Bricolage Grotesque', system-ui, sans-serif",
+      anton: "Anton, Impact, sans-serif",
+      archivo: "'Archivo Black', 'Arial Black', sans-serif",
+      bebas: "'Bebas Neue', 'Arial Narrow', sans-serif",
+      playfair: "'Playfair Display', Georgia, serif",
+    };
+    return fonts[id] || fonts.bricolage;
+  }
+
+  /* Prenda con el diseño guardado en el pedido (frente o espalda). */
+  function designShot(item, side, logoUrl, extraClass = "") {
+    const design = (item && item[side]) || {};
+    const isTote = item && item.product === "tote";
+    const image = `assets/${isTote ? "tote" : "hoodie"}-${side}${
+      isTote ? ".svg" : ".png"
+    }`;
+    const text = String(design.text || "").trim();
+    const color = item?.colorHex || "#1c1c1f";
+    const tx = Number(design.textX);
+    const ty = Number(design.textY);
+    const lx = Number(design.logoX);
+    const ly = Number(design.logoY);
+
+    const textStyle = [
+      `left:${Number.isFinite(tx) ? tx : 50}%`,
+      `top:${Number.isFinite(ty) ? ty : 49}%`,
+      `--tx-scale:${Number(design.textScale) || 1}`,
+      `--tx-rot:${Number(design.textRotate) || 0}deg`,
+      `color:${design.textColor || "#fffdf8"}`,
+      `font-family:${designFont(design.textFont)}`,
+    ].join(";");
+
+    const logoStyle = [
+      `left:${Number.isFinite(lx) ? lx : 50}%`,
+      `top:${Number.isFinite(ly) ? ly : 32}%`,
+      `--lg-scale:${Number(design.logoScale) || 1}`,
+      `--lg-rot:${Number(design.logoRotate) || 0}deg`,
+    ].join(";");
+
+    const hasLogo = Boolean(
+      design.logoName || design.logoData || design.logoPath
+    );
+    let logoSrc = logoUrl || "";
+    let logoAttr = "";
+    if (!logoSrc && design.logoPath) {
+      logoAttr = ` data-logo-path="${escapeHTML(design.logoPath)}"`;
+    } else if (
+      !logoSrc &&
+      typeof design.logoData === "string" &&
+      /^data:image\//.test(design.logoData)
+    ) {
+      logoSrc = design.logoData;
+    }
+
+    return `<figure class="design-shot ${extraClass}" style="--fabric:${escapeHTML(
+      color
+    )}">
+      <span class="design-tint" style="mask-image:url('${image}');-webkit-mask-image:url('${image}')"></span>
+      <img class="design-photo" src="${image}" alt="">
+      <span class="design-print">
+        ${
+          text
+            ? `<span class="design-text" style="${textStyle}">${escapeHTML(
+                text
+              )}</span>`
+            : ""
+        }
+        ${
+          hasLogo
+            ? `<img class="design-logo" alt="" style="${logoStyle}" ${
+                logoSrc ? `src="${escapeHTML(logoSrc)}"` : ""
+              }${logoAttr}>`
+            : ""
+        }
+      </span>
+      <figcaption>${side === "front" ? "Frente" : "Espalda"}</figcaption>
+    </figure>`;
+  }
+
+  async function hydrateLogoImages(root) {
+    const images = [...root.querySelectorAll("img[data-logo-path]")];
+    for (const image of images) {
+      const path = image.dataset.logoPath;
+      if (!path) continue;
+      const url = await signedLogoUrl(path);
+      if (url) image.src = url;
+    }
+  }
+
+  async function logoLink(design, side) {    if (!design) return "";
     if (design.logoPath) {
       const { data, error } = await client.storage
         .from("order-logos")
@@ -640,6 +750,8 @@
     return (
       await Promise.all(
         items.map(async (item) => {
+          const frontUrl = await signedLogoUrl(item.front?.logoPath);
+          const backUrl = await signedLogoUrl(item.back?.logoPath);
           const logos = [
             await logoLink(item.front, "frente"),
             await logoLink(item.back, "espalda"),
@@ -647,12 +759,18 @@
             .filter(Boolean)
             .join("");
           return `<li>
-            <span>${escapeHTML(item.name || "Sudadera")} · ${escapeHTML(
+            <div class="detail-item-main">
+              <span>${escapeHTML(item.name || "Sudadera")} · ${escapeHTML(
             item.colorName || ""
           )} · Talla ${escapeHTML(item.size || "—")} · ${escapeHTML(
             item.materialName || ""
           )} · ${escapeHTML(item.techniqueName || "")} · x${escapeHTML(item.qty)}</span>
-            <strong>${formatMoney((Number(item.unitPrice) || 0) * (Number(item.qty) || 0))}</strong>
+              <strong>${formatMoney((Number(item.unitPrice) || 0) * (Number(item.qty) || 0))}</strong>
+            </div>
+            <div class="design-previews">
+              ${designShot(item, "front", frontUrl)}
+              ${designShot(item, "back", backUrl)}
+            </div>
             ${logos ? `<span class="detail-logos">${logos}</span>` : ""}
           </li>`;
         })

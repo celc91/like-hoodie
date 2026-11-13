@@ -643,6 +643,118 @@ a { color: inherit; }
 .detail-items span { color: var(--muted); }
 .detail-items strong { white-space: nowrap; }
 
+.detail-item-main {
+  display: flex;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 16px;
+  font-size: 12px;
+}
+
+/* Prenda con el diseño guardado */
+.design-previews {
+  display: flex;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 14px;
+  margin: 4px 0 2px;
+}
+
+.design-shot {
+  position: relative;
+  width: 168px;
+  margin: 0;
+  padding: 6px;
+  border: 1px solid rgba(22, 22, 24, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.55);
+  container-type: inline-size;
+}
+
+.design-shot--mini {
+  width: 58px;
+  padding: 2px;
+  border-radius: 6px;
+}
+
+.design-tint {
+  position: absolute;
+  inset: 6px;
+  z-index: 1;
+  background: var(--fabric, #1c1c1f);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.design-shot--mini .design-tint { inset: 2px; }
+
+.design-photo {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: auto;
+  mix-blend-mode: multiply;
+}
+
+.design-print {
+  position: absolute;
+  inset: 6px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.design-shot--mini .design-print { inset: 2px; }
+
+.design-text {
+  position: absolute;
+  width: 42%;
+  transform: translate(-50%, -50%) rotate(var(--tx-rot, 0deg))
+    scale(var(--tx-scale, 1));
+  text-align: center;
+  font-size: clamp(6px, 8.2cqw, 20px);
+  line-height: 0.9;
+  font-weight: 800;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.design-logo {
+  position: absolute;
+  max-width: 26%;
+  max-height: 14cqw;
+  object-fit: contain;
+  transform: translate(-50%, -50%) rotate(var(--lg-rot, 0deg))
+    scale(var(--lg-scale, 1));
+}
+
+.design-shot figcaption {
+  display: block;
+  margin-top: 4px;
+  text-align: center;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.design-shot--mini figcaption { display: none; }
+
+.design-shot--mini .design-text {
+  width: 80%;
+  font-size: 7px;
+  letter-spacing: 0;
+}
+
+.design-cell { width: 66px; }
+
 .detail-logos {
   display: flex;
   flex-basis: 100%;
