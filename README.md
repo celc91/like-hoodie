@@ -413,7 +413,7 @@ Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos
 ├── terminos.html     # Términos y condiciones
 ├── assets/           # Fotos de producto, máscaras y modelos de la colección
 ├── vendor/           # Supabase JS e ImageTracer fijados localmente
-├── docs/             # Capturas y plantillas de CI
+├── docs/             # Capturas para la documentación
 ├── .github/          # Plantillas de issue/PR y workflows
 ├── preview.png       # Captura para el README
 ├── 404.html          # Página de error
@@ -464,7 +464,7 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 - Seguridad: [`SECURITY.md`](SECURITY.md). No abras issues públicos para vulnerabilidades.
 - Historial de cambios: [`CHANGELOG.md`](CHANGELOG.md).
 - Código bajo **MIT** ([`LICENSE`](LICENSE)); marca, fotos y diseños reservados ([`ASSETS-LICENSE.md`](ASSETS-LICENSE.md)).
-- Plantillas de CI en [`docs/workflows`](docs/workflows): enlaces, HTML y Lighthouse. Se activan moviéndolas a `.github/workflows` con un token que tenga el scope `workflow`.
+- CI en [`.github/workflows`](.github/workflows): enlaces, HTML y Lighthouse. Los dos primeros corren en cada push a `main`; Lighthouse se lanza a mano desde Actions.
 
 ## Antes de publicar la tienda real
 
