@@ -64,12 +64,27 @@ node "$SKILL/scripts/prepare.js" "ruta/logo.png" \
 
 Genera:
 
-- `logo-prep-out/<nombre>-print.png`: recortado, con DPI incrustado.
+- `logo-prep-out/<nombre>-print.png`: recortado, fondo eliminado, alfa y DPI
+  incrustado. **Este es el archivo que va a producción.**
 - `logo-prep-out/<nombre>-logo.png`: recortado a resolución original.
 - `logo-prep-out/<nombre>-report.json`: medidas, DPI, uniformidad del fondo,
-  avisos y factor de ampliación.
+  porcentaje de fondo eliminado, avisos y factor de ampliación.
 
-Opciones: `--no-trim` (no recortar borde), `--upscale` (hasta 2×), `--name`.
+Opciones: `--no-trim` (no recortar borde), `--no-cutout` (no quitar el fondo),
+`--upscale` (hasta 2×), `--name`.
+
+### DTG
+
+DTG imprime raster, **no SVG**. El entregable es `<nombre>-print.png`:
+
+```sh
+node "$SKILL/scripts/prepare.js" "logo-cliente.png" --width-cm 28 --upscale
+```
+
+- 300 DPI al ancho elegido, PNG con canal alfa, sRGB.
+- El fondo uniforme se elimina por relleno desde el borde y se aplica un
+  `defringe` para que no quede halo claro sobre prenda oscura.
+- No vectorizar: se pierde detalle y no aporta nada a DTG.
 
 ### 2. Vectorizar
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-/* logo-prep · Prepara un logo para impresión: recorta, mide DPI y exporta PNG.
+/* logo-prep · Prepara un logo para impresión: recorta, quita el fondo uniforme,
+   mide DPI y exporta PNG con transparencia.
    Uso:
      node prepare.js <logo.png> [--width-cm 28] [--dpi 300] [--out carpeta]
-                     [--no-trim] [--upscale] [--name slug]
+                     [--no-trim] [--no-cutout] [--upscale] [--name slug]
 */
 "use strict";
 
@@ -18,7 +19,8 @@ const HELP = `logo-prep · prepare
   --dpi <n>        DPI objetivo (por defecto 300)
   --out <dir>      carpeta de salida (por defecto logo-prep-out)
   --name <slug>    nombre base de los archivos
-  --no-trim        no recortar el borde uniforme
+  --no-trim        no recortar el borde sobrante
+  --no-cutout      no eliminar el fondo uniforme (sin transparencia)
   --upscale        ampliar hasta 2x si no llega al DPI objetivo
   --help           esta ayuda
 `;
@@ -32,7 +34,7 @@ function parseArgs(argv) {
       continue;
     }
     const key = value.slice(2);
-    if (["no-trim", "upscale", "help"].includes(key)) {
+    if (["no-trim", "no-cutout", "upscale", "help"].includes(key)) {
       args[key] = true;
     } else {
       args[key] = argv[i + 1];
@@ -43,14 +45,18 @@ function parseArgs(argv) {
 }
 
 function slugify(value) {
-  return String(value || "logo")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60) || "logo";
+  return (
+    String(value || "logo")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || "logo"
+  );
 }
+
+const clampByte = (value) => Math.max(0, Math.min(255, value));
 
 function analyzeBorder(data, width, height) {
   const step = Math.max(1, Math.floor(Math.min(width, height) / 220));
@@ -138,6 +144,173 @@ function analyzeBorder(data, width, height) {
   };
 }
 
+/* Elimina el fondo uniforme conectado al borde. */
+function removeBackground(data, width, height, color, tolerance) {
+  const visited = new Uint8Array(width * height);
+  const stack = new Int32Array(width * height);
+  let top = 0;
+  let removed = 0;
+
+  const matches = (index) => {
+    const offset = index * 4;
+    return (
+      Math.abs(data[offset] - color.r) <= tolerance &&
+      Math.abs(data[offset + 1] - color.g) <= tolerance &&
+      Math.abs(data[offset + 2] - color.b) <= tolerance
+    );
+  };
+
+  const push = (x, y) => {
+    if (x < 0 || y < 0 || x >= width || y >= height) return;
+    const index = y * width + x;
+    if (visited[index] || !matches(index)) return;
+    visited[index] = 1;
+    stack[top++] = index;
+  };
+
+  for (let x = 0; x < width; x += 1) {
+    push(x, 0);
+    push(x, height - 1);
+  }
+  for (let y = 0; y < height; y += 1) {
+    push(0, y);
+    push(width - 1, y);
+  }
+
+  while (top > 0) {
+    const index = stack[--top];
+    data[index * 4 + 3] = 0;
+    removed += 1;
+    const x = index % width;
+    const y = (index - x) / width;
+    push(x + 1, y);
+    push(x - 1, y);
+    push(x, y + 1);
+    push(x, y - 1);
+  }
+
+  return removed / (width * height);
+}
+
+/* Quita el halo del fondo en los píxeles de borde y calcula alfa suave. */
+function defringe(data, width, height, color, band, erode) {
+  const total = width * height;
+  const distance = new Uint8Array(total);
+  const queue = new Int32Array(total);
+  let head = 0;
+  let tail = 0;
+  const maxDepth = band + erode;
+
+  for (let index = 0; index < total; index += 1) {
+    if (data[index * 4 + 3] === 0) {
+      distance[index] = 255;
+      queue[tail++] = index;
+    }
+  }
+
+  let levelEnd = tail;
+  for (let depth = 1; depth <= maxDepth; depth += 1) {
+    while (head < levelEnd) {
+      const index = queue[head++];
+      const x = index % width;
+      const y = (index - x) / width;
+      const visit = (nx, ny) => {
+        if (nx < 0 || ny < 0 || nx >= width || ny >= height) return;
+        const next = ny * width + nx;
+        if (distance[next] || data[next * 4 + 3] === 0) return;
+        distance[next] = depth;
+        queue[tail++] = next;
+      };
+      visit(x + 1, y);
+      visit(x - 1, y);
+      visit(x, y + 1);
+      visit(x, y - 1);
+    }
+    levelEnd = tail;
+  }
+
+  const threshold = 150;
+  for (let index = 0; index < total; index += 1) {
+    const depth = distance[index];
+    if (!depth || depth > maxDepth) continue;
+    const offset = index * 4;
+    const alpha = data[offset + 3];
+    if (alpha === 0) continue;
+
+    if (depth <= erode) {
+      data[offset + 3] = 0;
+      continue;
+    }
+
+    const diff = Math.max(
+      Math.abs(data[offset] - color.r),
+      Math.abs(data[offset + 1] - color.g),
+      Math.abs(data[offset + 2] - color.b)
+    );
+    if (diff >= threshold) continue;
+
+    const coverage = Math.max(0, diff / threshold);
+    if (coverage < 0.08) {
+      data[offset + 3] = 0;
+      continue;
+    }
+
+    data[offset + 3] = Math.round(alpha * coverage);
+    const unmix = (value, background) =>
+      clampByte(Math.round((value - background * (1 - coverage)) / coverage));
+    data[offset] = unmix(data[offset], color.r);
+    data[offset + 1] = unmix(data[offset + 1], color.g);
+    data[offset + 2] = unmix(data[offset + 2], color.b);
+  }
+}
+
+async function renderRgba(inputPath, factor, baseWidth) {
+  let pipeline = sharp(inputPath).rotate().ensureAlpha();
+  if (factor > 1.02) {
+    pipeline = pipeline.resize({
+      width: Math.round(baseWidth * factor),
+      kernel: "lanczos3",
+    });
+  }
+  const { data, info } = await pipeline
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  return { data, width: info.width, height: info.height };
+}
+
+function cutout(rgba, border, enabled) {
+  if (!enabled || !border.uniform || border.transparent || !border.color) {
+    return { data: rgba.data, ratio: 0 };
+  }
+  const data = Buffer.from(rgba.data);
+  const ratio = removeBackground(data, rgba.width, rgba.height, border.color, 26);
+  defringe(data, rgba.width, rgba.height, border.color, 2, 3);
+  return { data, ratio };
+}
+
+async function trimRgba(rgba, enabled) {
+  const source = sharp(rgba.data, {
+    raw: { width: rgba.width, height: rgba.height, channels: 4 },
+  });
+  if (!enabled) return rgba;
+  try {
+    const trimmed = await source
+      .trim({ threshold: 12 })
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    if (trimmed.info.width >= 8 && trimmed.info.height >= 8) {
+      return {
+        data: trimmed.data,
+        width: trimmed.info.width,
+        height: trimmed.info.height,
+      };
+    }
+  } catch (error) {
+    /* imagen uniforme: se conserva completa */
+  }
+  return rgba;
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help || !args._.length) {
@@ -154,36 +327,29 @@ async function main() {
   const widthCm = Number(args["width-cm"] || 28);
   const targetDpi = Math.round(Number(args.dpi || 300));
   const outDir = path.resolve(args.out || "logo-prep-out");
-  const name = args.name ? slugify(args.name) : slugify(path.basename(inputPath, path.extname(inputPath)));
+  const name = args.name
+    ? slugify(args.name)
+    : slugify(path.basename(inputPath, path.extname(inputPath)));
   fs.mkdirSync(outDir, { recursive: true });
 
   const meta = await sharp(inputPath).metadata();
-  const rotated = await sharp(inputPath)
+  const probe = await sharp(inputPath)
     .rotate()
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
-  const border = analyzeBorder(rotated.data, rotated.info.width, rotated.info.height);
+  const border = analyzeBorder(probe.data, probe.info.width, probe.info.height);
+  const shouldCut = !args["no-cutout"];
 
-  let croppedBuffer = null;
-  if (!args["no-trim"]) {
-    try {
-      const cropped = await sharp(inputPath)
-        .rotate()
-        .trim({ threshold: 12 })
-        .toBuffer({ resolveWithObject: true });
-      if (cropped.info.width >= 8 && cropped.info.height >= 8) {
-        croppedBuffer = cropped.data;
-      }
-    } catch (error) {
-      /* imagen totalmente uniforme: se conserva el original */
-    }
-  }
+  const original = await renderRgba(inputPath, 1, meta.width);
+  const originalCut = cutout(original, border, shouldCut);
+  const logoSrc = await trimRgba(
+    { data: originalCut.data, width: original.width, height: original.height },
+    !args["no-trim"]
+  );
 
-  const base = croppedBuffer ? sharp(croppedBuffer) : sharp(inputPath).rotate();
-  const baseMeta = await base.metadata();
-  const naturalWidth = baseMeta.width || meta.width;
-  const naturalHeight = baseMeta.height || meta.height;
+  const naturalWidth = logoSrc.width;
+  const naturalHeight = logoSrc.height;
   const dpiAtWidth = Math.round(naturalWidth / (widthCm / 2.54));
 
   let factor = 1;
@@ -191,20 +357,25 @@ async function main() {
     factor = Math.min(2, targetDpi / dpiAtWidth);
   }
 
-  let printPipeline = base.clone();
+  let printSrc = logoSrc;
   if (factor > 1.02) {
-    printPipeline = printPipeline.resize({
-      width: Math.round(naturalWidth * factor),
-      kernel: "lanczos3",
-    });
+    const upscaled = await renderRgba(inputPath, factor, meta.width);
+    const upscaledCut = cutout(upscaled, border, shouldCut);
+    printSrc = await trimRgba(
+      { data: upscaledCut.data, width: upscaled.width, height: upscaled.height },
+      !args["no-trim"]
+    );
   }
 
-  const printBuffer = await printPipeline
+  const printBuffer = await sharp(printSrc.data, {
+    raw: { width: printSrc.width, height: printSrc.height, channels: 4 },
+  })
     .png({ compressionLevel: 9, adaptiveFiltering: true })
     .withMetadata({ density: targetDpi })
     .toBuffer();
-  const logoBuffer = await base
-    .clone()
+  const logoBuffer = await sharp(logoSrc.data, {
+    raw: { width: logoSrc.width, height: logoSrc.height, channels: 4 },
+  })
     .png({ compressionLevel: 9, adaptiveFiltering: true })
     .withMetadata({ density: targetDpi })
     .toBuffer();
@@ -216,8 +387,8 @@ async function main() {
   fs.writeFileSync(logoPath, logoBuffer);
 
   const printMeta = await sharp(printBuffer).metadata();
-  const outputWidth = printMeta.width || naturalWidth;
-  const outputHeight = printMeta.height || naturalHeight;
+  const outputWidth = printMeta.width || printSrc.width;
+  const outputHeight = printMeta.height || printSrc.height;
   const outputDpi = Math.round(outputWidth / (widthCm / 2.54));
 
   const targetWidthPx = Math.round((widthCm / 2.54) * targetDpi);
@@ -227,9 +398,9 @@ async function main() {
       "Fondo no uniforme: recorta a mano o usa una herramienta de recorte (rembg)."
     );
   }
-  if (!meta.hasAlpha && border.uniform && !border.transparent) {
+  if (!meta.hasAlpha && !originalCut.ratio) {
     warnings.push(
-      "La imagen no tiene transparencia: el fondo uniforme se recortó, pero revisa los bordes."
+      "La imagen no tiene transparencia y no se pudo quitar el fondo: revisa el borde."
     );
   }
   if (dpiAtWidth < 150) {
@@ -262,9 +433,15 @@ async function main() {
     cropped: {
       width: naturalWidth,
       height: naturalHeight,
-      removedBorder: Boolean(croppedBuffer),
+      removedBorder:
+        naturalWidth !== probe.info.width || naturalHeight !== probe.info.height,
     },
     border,
+    cutout: {
+      enabled: border.transparent || originalCut.ratio > 0,
+      removedRatio: Number(originalCut.ratio.toFixed(3)),
+      alpha: border.transparent || originalCut.ratio > 0,
+    },
     print: {
       widthCm,
       targetDpi,
@@ -281,8 +458,15 @@ async function main() {
   fs.writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
 
   console.log(`✔ ${name}`);
-  console.log(`  origen ${naturalWidth}×${naturalHeight}px · ${dpiAtWidth} DPI a ${widthCm} cm`);
-  console.log(`  salida ${outputWidth}×${outputHeight}px · ${outputDpi} DPI a ${widthCm} cm`);
+  console.log(
+    `  origen ${naturalWidth}×${naturalHeight}px · ${dpiAtWidth} DPI a ${widthCm} cm`
+  );
+  if (originalCut.ratio > 0) {
+    console.log(`  fondo eliminado: ${Math.round(originalCut.ratio * 100)} %`);
+  }
+  console.log(
+    `  salida ${outputWidth}×${outputHeight}px · ${outputDpi} DPI a ${widthCm} cm (PNG con alfa)`
+  );
   console.log(`  ${printPath}`);
   console.log(`  ${logoPath}`);
   console.log(`  ${reportPath}`);

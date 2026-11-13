@@ -4,6 +4,7 @@
 
 - [ ] Se trabajó sobre una copia; el original sigue intacto.
 - [ ] El fondo es transparente o uniforme y se recortó sin comerse partes del logo.
+- [ ] Sobre prenda oscura no queda halo blanco en los bordes (defringe).
 - [ ] El ancho de salida cubre el tamaño de impresión:
       `ancho_px ≥ ancho_cm / 2.54 × 300`.
 - [ ] DPI de origen ≥ 150. Si es menor, se avisó al cliente.
