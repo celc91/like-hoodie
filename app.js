@@ -381,6 +381,8 @@
   const productTabs = $$("[data-product-tab]");
   const productPanels = $$("[data-product-panel]");
   const hintText = $("[data-hint-text]");
+  const placementView = $("[data-placement-view]");
+  const placementText = $("[data-placement-text]");
   const studio = $(".studio");
   const personalizePanel = $(".personalize");
   const toolButtons = $$("[data-personalize-tool]");
@@ -1236,6 +1238,42 @@
     sandboxError.scrollIntoView({ block: "nearest" });
   }
 
+  /* Guía profesional de colocación por producto y cara */
+  const PLACEMENT_GUIDES = {
+    hoodie: {
+      front: {
+        view: "Frente",
+        text: "Centra el diseño en el pecho: 8–10 cm bajo la costura del cuello. Ancho máximo recomendado 30 cm.",
+        hint: "Frente: pecho, 8–10 cm bajo el cuello. Arrastra el texto o el logo y ajústalo.",
+      },
+      back: {
+        view: "Espalda",
+        text: "Centra el diseño entre las costuras de los hombros: 5 cm bajo la costura del cuello. Ancho máximo recomendado 32 cm.",
+        hint: "Espalda: centro entre hombros, 5 cm bajo el cuello. Arrastra y ajusta.",
+      },
+    },
+    tote: {
+      front: {
+        view: "Frente",
+        text: "Centra el diseño en el cuerpo de la bolsa: 5 cm bajo la costura superior. Ancho máximo recomendado 28 cm.",
+        hint: "Tote: centro del cuerpo, 5 cm bajo la costura superior.",
+      },
+      back: {
+        view: "Reverso",
+        text: "Centra el diseño en el cuerpo de la bolsa: 5 cm bajo la costura superior. Ancho máximo recomendado 28 cm.",
+        hint: "Reverso: centro del cuerpo, 5 cm bajo la costura superior.",
+      },
+    },
+  };
+
+  function updatePlacementGuide() {
+    const guides = PLACEMENT_GUIDES[state.product] || PLACEMENT_GUIDES.hoodie;
+    const guide = guides[state.view] || guides.front;
+    if (placementView) placementView.textContent = guide.view;
+    if (placementText) placementText.textContent = guide.text;
+    if (hintText) hintText.textContent = guide.hint;
+  }
+
   function openCheckout() {
     if (state.items.length === 0) return;
     closeCart(false);
@@ -1997,9 +2035,7 @@
         personalizePanel.removeAttribute("inert");
         personalizePanel.removeAttribute("aria-hidden");
       }
-      if (hintText) {
-        hintText.textContent = "Arrastra el texto o el logo y ajusta su tamaño.";
-      }
+      updatePlacementGuide();
     }
 
     previewNames.forEach((element) => {

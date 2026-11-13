@@ -4517,6 +4517,51 @@ details[open] .plus::after {
   flex: none;
 }
 
+/* Guía de colocación del diseño */
+.placement-guide {
+  margin: 2px 0 12px;
+  padding: 12px 14px;
+  border: 1px dashed rgba(22, 22, 24, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.placement-guide__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.placement-guide__eyebrow {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.placement-guide__view {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+.placement-guide p {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.placement-guide .placement-guide__note {
+  margin-top: 4px;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
 .view-gallery {
   position: relative;
   z-index: 4;
