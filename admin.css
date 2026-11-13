@@ -753,6 +753,72 @@ a { color: inherit; }
   letter-spacing: 0;
 }
 
+.design-figure {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.design-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 10px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.design-meta__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.design-meta__row b {
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.design-meta__status {
+  font-size: 9.5px;
+  font-weight: 600;
+}
+
+.design-meta__status.is-ok {
+  color: #2f7a3d;
+}
+
+.design-meta__status.is-bad {
+  color: #b03a2e;
+}
+
+.detail-logo-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.detail-logo-thumb {
+  width: 42px;
+  height: 42px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  object-fit: contain;
+}
+
+.detail-logo-name {
+  font-size: 10px;
+  color: var(--muted);
+}
+
 .design-cell { width: 66px; }
 
 .detail-logos {

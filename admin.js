@@ -633,8 +633,87 @@
     return url;
   }
 
-  function designFont(id) {
-    const fonts = {
+  const AREAS = {
+    hoodie: { x: 24, y: 15, w: 52, h: 44 },
+    tote: { x: 12, y: 36, w: 76, h: 48 },
+  };
+
+  function coordText(x, y) {
+    const fx = Number.isFinite(Number(x)) ? Number(x) : 50;
+    const fy = Number.isFinite(Number(y)) ? Number(y) : 50;
+    const fmt = (value) => String(Math.round(value * 10) / 10).replace(".", ",");
+    return `X ${fmt(fx)} % · Y ${fmt(fy)} %`;
+  }
+
+  function placementStatus(x, y, product) {
+    const area = AREAS[product] || AREAS.hoodie;
+    const px = Number.isFinite(Number(x)) ? Number(x) : 50;
+    const py = Number.isFinite(Number(y)) ? Number(y) : 50;
+    const inside =
+      px >= area.x &&
+      px <= area.x + area.w &&
+      py >= area.y &&
+      py <= area.y + area.h;
+    const fmt = (value) => String(Math.round(value * 10) / 10).replace(".", ",");
+
+    if (!inside) {
+      return { text: "Fuera del área de impresión", outside: true };
+    }
+
+    const dx = px - (area.x + area.w / 2);
+    const dy = py - (area.y + area.h / 2);
+    const horizontal =
+      Math.abs(dx) < 0.6
+        ? "centrado"
+        : `${fmt(Math.abs(dx))} % a la ${dx > 0 ? "derecha" : "izquierda"}`;
+    const vertical =
+      Math.abs(dy) < 0.6
+        ? "centrado"
+        : `${fmt(Math.abs(dy))} % ${dy > 0 ? "abajo" : "arriba"}`;
+    return { text: `Dentro del área · ${horizontal} · ${vertical}`, outside: false };
+  }
+
+  function designMeta(item, side) {
+    const design = (item && item[side]) || {};
+    const text = String(design.text || "").trim();
+    const hasLogo = Boolean(
+      design.logoName || design.logoData || design.logoPath
+    );
+    if (!text && !hasLogo) return "";
+
+    const rows = [];
+    if (hasLogo) {
+      const status = placementStatus(design.logoX, design.logoY, item?.product);
+      rows.push(
+        `<span class="design-meta__row"><b>Logo</b> ${coordText(
+          design.logoX,
+          design.logoY
+        )} · ${Math.round((Number(design.logoScale) || 1) * 100)} %${
+          Number(design.logoRotate)
+            ? ` · ${Math.round(Number(design.logoRotate))}°`
+            : ""
+        }</span>`,
+        `<span class="design-meta__status ${
+          status.outside ? "is-bad" : "is-ok"
+        }">${status.text}</span>`
+      );
+    }
+    if (text) {
+      rows.push(
+        `<span class="design-meta__row"><b>Texto</b> ${coordText(
+          design.textX,
+          design.textY
+        )} · ${Math.round((Number(design.textScale) || 1) * 100)} %${
+          Number(design.textRotate)
+            ? ` · ${Math.round(Number(design.textRotate))}°`
+            : ""
+        }</span>`
+      );
+    }
+    return `<div class="design-meta">${rows.join("")}</div>`;
+  }
+
+  function designFont(id) {    const fonts = {
       bricolage: "'Bricolage Grotesque', system-ui, sans-serif",
       anton: "Anton, Impact, sans-serif",
       archivo: "'Archivo Black', 'Arial Black', sans-serif",
@@ -752,12 +831,54 @@
         items.map(async (item) => {
           const frontUrl = await signedLogoUrl(item.front?.logoPath);
           const backUrl = await signedLogoUrl(item.back?.logoPath);
-          const logos = [
-            await logoLink(item.front, "frente"),
-            await logoLink(item.back, "espalda"),
-          ]
-            .filter(Boolean)
-            .join("");
+          const frontLink = await logoLink(item.front, "frente");
+          const backLink = await logoLink(item.back, "espalda");
+          const frontData =
+            typeof item.front?.logoData === "string" &&
+            /^data:image\//.test(item.front.logoData)
+              ? item.front.logoData
+              : "";
+          const backData =
+            typeof item.back?.logoData === "string" &&
+            /^data:image\//.test(item.back.logoData)
+              ? item.back.logoData
+              : "";
+          const frontSrc = frontUrl || frontData;
+          const backSrc = backUrl || backData;
+
+          const logoItems = [];
+          if (frontSrc || item.front?.logoName) {
+            logoItems.push(
+              `<span class="detail-logo-item">${
+                frontSrc
+                  ? `<img class="detail-logo-thumb" src="${escapeHTML(
+                      frontSrc
+                    )}" alt="Logo frente">`
+                  : ""
+              }<span class="detail-logo-name">Logo frente${
+                item.front?.logoName
+                  ? ` · ${escapeHTML(item.front.logoName)}`
+                  : ""
+              }</span>${frontLink}</span>`
+            );
+          }
+          if (backSrc || item.back?.logoName) {
+            logoItems.push(
+              `<span class="detail-logo-item">${
+                backSrc
+                  ? `<img class="detail-logo-thumb" src="${escapeHTML(
+                      backSrc
+                    )}" alt="Logo espalda">`
+                  : ""
+              }<span class="detail-logo-name">Logo espalda${
+                item.back?.logoName
+                  ? ` · ${escapeHTML(item.back.logoName)}`
+                  : ""
+              }</span>${backLink}</span>`
+            );
+          }
+          const logos = logoItems.join("");
+
           return `<li>
             <div class="detail-item-main">
               <span>${escapeHTML(item.name || "Sudadera")} · ${escapeHTML(
@@ -768,8 +889,14 @@
               <strong>${formatMoney((Number(item.unitPrice) || 0) * (Number(item.qty) || 0))}</strong>
             </div>
             <div class="design-previews">
-              ${designShot(item, "front", frontUrl)}
-              ${designShot(item, "back", backUrl)}
+              <div class="design-figure">
+                ${designShot(item, "front", frontUrl)}
+                ${designMeta(item, "front")}
+              </div>
+              <div class="design-figure">
+                ${designShot(item, "back", backUrl)}
+                ${designMeta(item, "back")}
+              </div>
             </div>
             ${logos ? `<span class="detail-logos">${logos}</span>` : ""}
           </li>`;
