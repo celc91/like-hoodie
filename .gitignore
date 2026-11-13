@@ -13,6 +13,7 @@ node_modules/
 # Logs y temporales
 *.log
 npm-debug.log*
+logo-prep-out/
 
 # Secretos locales de Supabase
 .env
