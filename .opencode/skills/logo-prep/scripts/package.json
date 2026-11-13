@@ -1,0 +1,12 @@
+{
+  "name": "logo-prep-scripts",
+  "private": true,
+  "description": "Utilidades deterministas de la skill logo-prep (like hoodie)",
+  "scripts": {
+    "logo:prepare": "node prepare.js",
+    "logo:trace": "node trace.js"
+  },
+  "dependencies": {
+    "sharp": "^0.34.0"
+  }
+}
