@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Seguridad
+    url: mailto:hola@likehoodie.com
+    about: No abras un issue público para vulnerabilidades. Escribe a este correo.
+  - name: Guía de contribución
+    url: https://github.com/celc91/like-hoodie/blob/main/CONTRIBUTING.md
+    about: Cómo levantar el proyecto, ramas, commits y pruebas.
+  - name: Documentación
+    url: https://github.com/celc91/like-hoodie#readme
+    about: Instalación, Supabase, DTG, catálogo y despliegue.

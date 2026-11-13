@@ -1,10 +1,25 @@
 # like hoodie ♡ — Sudaderas personalizadas
 
+[![Sitio](https://img.shields.io/badge/sitio-likehoodie.com-ff4d1f?style=flat-square)](https://likehoodie.com/)
+[![Deploy](https://img.shields.io/badge/deploy-GitHub%20Pages-161618?style=flat-square)](https://github.com/celc91/like-hoodie/actions)
+[![Licencia](https://img.shields.io/badge/licencia-MIT%20(c%C3%B3digo)-d8f45c?style=flat-square)](LICENSE)
+
 Tienda online de demostración para vender sudaderas personalizadas. Incluye catálogo base, colección de modelos, editor tipo Canva, carrito persistente y checkout simulado. Todo con HTML, CSS y JavaScript sin dependencias ni proceso de build.
 
-**Sitio:** https://likehoodie.com/
+**Demo:** https://likehoodie.com/ · **Panel:** `/admin.html` (requiere usuario administrador)
 
 ![Vista previa de like hoodie ♡](preview.png)
+
+## Contenido
+
+- [Qué incluye](#qué-incluye)
+- [Editor tipo Canva](#editor-tipo-canva)
+- [Colección de modelos](#colección-de-modelos)
+- [Capturas](#capturas)
+- [Arquitectura](#arquitectura)
+- [Archivo de impresión DTG](#archivo-de-impresión-dtg-automático)
+- [Roadmap](#roadmap)
+- [Contribuir](#contribuir-y-licencia)
 
 ## Qué incluye
 
@@ -89,6 +104,34 @@ MODELS.miModelo = {
 ```
 
 Al pulsar la tarjeta se ejecuta `applyModel(id)`: ajusta producto/color/vista, descarga el logo, lo sube a Storage y arranca `process-logo`.
+
+## Capturas
+
+![Colección de modelos de like hoodie](docs/capturas/coleccion.jpg)
+
+*La colección, con el Cocodrilo de Miami como primer modelo.*
+
+## Arquitectura
+
+```mermaid
+flowchart LR
+  Pages["GitHub Pages<br/>HTML + CSS + JS"] --> Auth["Supabase Auth"]
+  Pages --> DB[("Postgres + RLS")]
+  Pages --> Logos["Storage order-logos"]
+  Pages --> Fn["Edge Function process-logo"]
+  Fn --> Logos
+  Fn --> Prints["Storage order-prints"]
+  Fn --> DB
+  Admin["Panel admin"] --> DB
+  Admin --> Prints
+```
+
+- **Frontend:** estático, sin build. GitHub Pages sirve `index.html`, `admin.html` y los assets.
+- **Auth:** Supabase con sesión anónima para el carrito y usuario administrador para el panel.
+- **Datos:** Postgres con RLS para carritos, pedidos, eventos, cupones y `logo_assets`.
+- **Storage:** `order-logos` (originales, privado) y `order-prints` (recorte y print, privado).
+- **Edge Function:** `process-logo` procesa en dos etapas para caber en 256 MB / 2 s de CPU.
+- **Admin:** lee pedidos y genera enlaces firmados de una hora para logos y prints.
 
 ## Vectorizado de logo (en el navegador)
 
@@ -370,7 +413,15 @@ Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos
 ├── terminos.html     # Términos y condiciones
 ├── assets/           # Fotos de producto, máscaras y modelos de la colección
 ├── vendor/           # Supabase JS e ImageTracer fijados localmente
+├── docs/             # Capturas y plantillas de CI
+├── .github/          # Plantillas de issue/PR y workflows
 ├── preview.png       # Captura para el README
+├── 404.html          # Página de error
+├── CONTRIBUTING.md   # Cómo contribuir
+├── SECURITY.md       # Reporte de vulnerabilidades
+├── CHANGELOG.md      # Historial de versiones
+├── LICENSE           # MIT para el código
+├── ASSETS-LICENSE.md # Marca y assets reservados
 └── README.md
 ```
 
@@ -388,10 +439,39 @@ Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos
 
 El editor usa una maqueta fotográfica frontal y trasera con fondo transparente, extraída de una plantilla de **Mockup Space** (licencia free personal & commercial use). Puedes sustituir `assets/hoodie-front.png` y `assets/hoodie-back.png` por fotografías reales de tus sudaderas manteniendo el fondo transparente y una composición vertical similar. Los colores se aplican con capas de tinte y máscaras, así que las fotos nuevas deben ser claras y con buena iluminación.
 
+## Roadmap
+
+- [x] Editor tipo Canva: layout, historial, atajos y barra flotante.
+- [x] Colección de modelos y color blanco.
+- [x] Archivo de impresión DTG automático en dos etapas.
+- [ ] Barra superior fija al hacer scroll.
+- [ ] Capas y bloqueo de elementos.
+- [ ] Copiar el logo a la otra cara con un asset nuevo.
+- [ ] Plantillas de diseño dentro del editor.
+- [ ] Integración con Canva Connect para importar diseños.
+
+## Limitaciones conocidas
+
+- El checkout sigue en **modo demostración**; Clip está preparado y desactivado.
+- El print DTG se limita a 2 800 px (≈254 DPI a 28 cm) y 2× de ampliación.
+- El vectorizador trabaja en el navegador; no guarda el SVG en Supabase y no es fiel en fotos o degradados.
+- Los precios de las tarjetas de la colección están fijados en el HTML; si cambia la base, hay que actualizarlos.
+- Los modelos se cargan subiendo de nuevo su logo, así que cada uso crea un asset nuevo.
+
+## Contribuir y licencia
+
+- Guía de contribución: [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- Seguridad: [`SECURITY.md`](SECURITY.md). No abras issues públicos para vulnerabilidades.
+- Historial de cambios: [`CHANGELOG.md`](CHANGELOG.md).
+- Código bajo **MIT** ([`LICENSE`](LICENSE)); marca, fotos y diseños reservados ([`ASSETS-LICENSE.md`](ASSETS-LICENSE.md)).
+- Plantillas de CI en [`docs/workflows`](docs/workflows): enlaces, HTML y Lighthouse. Se activan moviéndolas a `.github/workflows` con un token que tenga el scope `workflow`.
+
 ## Antes de publicar la tienda real
 
 - Completa los datos marcados con `[completar]` en `privacidad.html` y `terminos.html`: razón social, RFC, domicilio fiscal y ciudad de jurisdicción.
 - Revisa los documentos legales con un abogado antes de operar comercialmente.
+- Revoca los tokens de publicación que ya no uses y rota la contraseña del administrador.
+- Comprueba que el repositorio no contiene credenciales, datos de clientes ni capturas con información personal.
 - Configura Supabase (`supabase/README.md`), crea el usuario administrador y pega la URL y la publishable key en `supabase-config.js`.
 - Completa el KYC de Clip, configura sus credenciales y activa `clip_enabled` cuando quieras cobrar de verdad.
 - Actualiza el aviso de privacidad y los términos cuando conectes pagos reales, newsletter o envíos.

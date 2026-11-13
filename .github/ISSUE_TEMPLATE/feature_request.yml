@@ -1,0 +1,49 @@
+name: Proponer una mejora
+description: Una idea para la tienda, el editor, el catálogo o el panel.
+title: "[Mejora]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe el problema antes de la solución. Las ideas de producto
+        (nuevos modelos, colecciones, Canva) también entran aquí.
+  - type: textarea
+    id: problema
+    attributes:
+      label: ¿Qué problema resuelve?
+      description: Qué le falta hoy al cliente o al equipo.
+    validations:
+      required: true
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: Propuesta
+      description: Cómo lo imaginas. Si aplica, menciona la sección (estudio, catálogo, admin).
+    validations:
+      required: true
+  - type: textarea
+    id: alternativas
+    attributes:
+      label: Alternativas que consideraste
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Editor / configurador
+        - Catálogo / colección
+        - Archivo de impresión
+        - Carrito y checkout
+        - Panel de administración
+        - Documentación
+        - Otro
+    validations:
+      required: true
+  - type: checkboxes
+    id: aporto
+    attributes:
+      label: ¿Puedes ayudar?
+      options:
+        - label: Puedo probarlo cuando esté.
+        - label: Puedo aportar diseño o capturas.

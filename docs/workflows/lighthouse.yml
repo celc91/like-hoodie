@@ -1,0 +1,21 @@
+name: Lighthouse
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Auditoría de likehoodie.com
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lighthouse
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://likehoodie.com/
+          uploadArtifacts: true
+          temporaryPublicStorage: true

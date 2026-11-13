@@ -1,0 +1,73 @@
+name: Reportar un fallo
+description: Algo no funciona como debería en la tienda o en el panel.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por reportar. No incluyas datos personales de clientes ni claves.
+        Para fallos de seguridad usa el correo de SECURITY.md, no un issue público.
+  - type: input
+    id: url
+    attributes:
+      label: URL o sección
+      description: Dónde ocurre (por ejemplo, https://likehoodie.com/#personalizar).
+      placeholder: https://likehoodie.com/...
+    validations:
+      required: true
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducirlo
+      description: Qué hiciste, en orden.
+      placeholder: |
+        1. Abrí el estudio
+        2. Subí un logo
+        3. Cambié a la espalda
+        4. ...
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: real
+    attributes:
+      label: Resultado real
+      description: Si puedes, incluye una captura o el texto del error.
+    validations:
+      required: true
+  - type: dropdown
+    id: dispositivo
+    attributes:
+      label: Dispositivo
+      options:
+        - Escritorio
+        - Móvil
+        - Tablet
+    validations:
+      required: true
+  - type: input
+    id: navegador
+    attributes:
+      label: Navegador y versión
+      placeholder: Chrome 131, Safari iOS 18, Firefox 133...
+  - type: textarea
+    id: consola
+    attributes:
+      label: Errores de consola
+      description: Pega solo los errores relevantes, sin tokens ni datos personales.
+      render: shell
+  - type: checkboxes
+    id: comprobaciones
+    attributes:
+      label: Comprobaciones
+      options:
+        - label: No estoy incluyendo datos personales ni credenciales.
+          required: true
+        - label: He revisado que no sea un fallo ya reportado.
+          required: true
