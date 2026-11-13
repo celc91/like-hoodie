@@ -7,6 +7,6 @@
     "logo:trace": "node trace.js"
   },
   "dependencies": {
-    "sharp": "^0.34.0"
+    "sharp": "^0.35.5"
   }
 }
