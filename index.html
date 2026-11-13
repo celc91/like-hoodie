@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261112-guia4">
+  <link rel="stylesheet" href="styles.css?v=20261113-vec1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -561,6 +561,43 @@
                     <span class="file-dot" aria-hidden="true"></span>
                     <span class="file-name" data-file-name></span>
                     <button type="button" class="file-remove" data-remove-logo aria-label="Quitar logo">×</button>
+                  </div>
+                  <div class="vectorizer" data-vector-panel hidden>
+                    <div class="vectorizer-head">
+                      <div>
+                        <span class="control-label">Vectorizar logo</span>
+                        <p class="vectorizer-copy" data-vector-hint>Convierte el logo en SVG para imprimirlo nítido y a cualquier tamaño.</p>
+                      </div>
+                      <span class="vectorizer-badge" data-vector-badge>Opcional</span>
+                    </div>
+                    <div class="vectorizer-modes" role="group" aria-label="Modo de vectorización">
+                      <button type="button" class="vectorizer-mode is-active" data-vector-mode="color" aria-pressed="true">Color</button>
+                      <button type="button" class="vectorizer-mode" data-vector-mode="mono" aria-pressed="false">1 tinta</button>
+                    </div>
+                    <button type="button" class="vectorizer-run" data-vector-run>
+                      <span data-vector-run-label>Vectorizar logo</span>
+                      <span class="vectorizer-spinner" aria-hidden="true"></span>
+                    </button>
+                    <p class="vectorizer-status" data-vector-status role="status" hidden></p>
+                    <div class="vectorizer-result" data-vector-result hidden>
+                      <div class="vectorizer-previews">
+                        <figure>
+                          <img data-vector-original alt="Logo original">
+                          <figcaption>Original</figcaption>
+                        </figure>
+                        <figure>
+                          <img data-vector-output alt="Logo vectorizado">
+                          <figcaption>Vector</figcaption>
+                        </figure>
+                      </div>
+                      <ul class="vectorizer-stats" data-vector-stats></ul>
+                      <p class="vectorizer-verdict" data-vector-verdict></p>
+                      <div class="vectorizer-actions">
+                        <button type="button" class="vectorizer-apply" data-vector-apply>Usar vector</button>
+                        <button type="button" class="vectorizer-download" data-vector-download>Descargar SVG</button>
+                        <button type="button" class="vectorizer-revert" data-vector-revert hidden>Volver al original</button>
+                      </div>
+                    </div>
                   </div>
                   <div class="size-row">
                     <div class="control-head">
@@ -1127,9 +1164,11 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="store-supabase.js?v=20261112-capi1"></script>
+  <script src="store-supabase.js?v=20261113-vec1"></script>
   <script src="clip-config.js?v=20261112-sandbox2"></script>
-<script src="app.js?v=20261112-guia4"></script>
+<script src="vendor/imagetracer-1.2.6.js?v=20261113-vec1"></script>
+<script src="vectorize.js?v=20261113-vec1"></script>
+<script src="app.js?v=20261113-vec1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>

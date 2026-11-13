@@ -24,8 +24,21 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Guía de tallas, FAQ, opiniones y newsletter.**
 - **Páginas legales:** aviso de privacidad, política de cookies y términos y condiciones.
 - **Aviso de cookies:** banner informativo con almacenamiento local para recordar la aceptación.
+- **Vectorizador de logo:** convierte el PNG o JPG en SVG en el dispositivo, en color o a 1 tinta, con diagnóstico de colores, trazos y DPI.
 - **Responsive:** móvil, tablet y escritorio.
 - **Accesibilidad:** navegación por teclado, foco visible, etiquetas ARIA y respeto por `prefers-reduced-motion`.
+
+## Vectorizado de logo (en el navegador)
+
+El configurador incluye un prototipo de vectorización que corre en el dispositivo: el logo no se envía a ningún servidor.
+
+- **Motor:** `vendor/imagetracer-1.2.6.js` (Unlicense) y `vectorize.js` (código propio).
+- **Modos:** color (DTF/DTG) y 1 tinta (serigrafía/vinilo).
+- **Proceso:** recorte de fondo, paleta propia, trazado y limpieza del SVG.
+- **Diagnóstico:** colores, trazos, nodos, PPI de origen y avisos para fotos, degradados o ruido.
+- **Salida:** se aplica al diseño (sustituye al PNG) o se descarga como `.svg`.
+
+Es un prototipo: el SVG no se sube a Supabase. Para producción conviene mover el trazado a servidor (vtracer + potrace) y guardar el archivo en el bucket `order-logos`.
 
 ## Ver la web en local
 

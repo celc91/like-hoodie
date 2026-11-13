@@ -40,6 +40,7 @@
           ? design.logoData.slice(0, 1_800_000)
           : "",
       logoScale: Number(design.logoScale) || 1,
+      logoIsVector: Boolean(design.logoIsVector),
       textX: Number(design.textX) || 50,
       textY: Number(design.textY) || 49,
       logoX: Number(design.logoX) || 50,

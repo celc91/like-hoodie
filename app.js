@@ -170,6 +170,10 @@
         logoPath: "",
         logoData: "",
         logoScale: 1,
+        logoRaster: "",
+        logoIsVector: false,
+        logoVectorResult: null,
+        vectorMode: "",
         ...DEFAULT_POSITIONS.front,
       },
       back: {
@@ -182,6 +186,10 @@
         logoPath: "",
         logoData: "",
         logoScale: 1,
+        logoRaster: "",
+        logoIsVector: false,
+        logoVectorResult: null,
+        vectorMode: "",
         ...DEFAULT_POSITIONS.back,
       },
     },
@@ -416,6 +424,21 @@
   const uploadFile = $("[data-upload-file]");
   const fileName = $("[data-file-name]");
   const removeLogoButton = $("[data-remove-logo]");
+  const vectorPanel = $("[data-vector-panel]");
+  const vectorHint = $("[data-vector-hint]");
+  const vectorBadge = $("[data-vector-badge]");
+  const vectorModeButtons = $$("[data-vector-mode]");
+  const vectorRunButton = $("[data-vector-run]");
+  const vectorRunLabel = $("[data-vector-run-label]");
+  const vectorStatus = $("[data-vector-status]");
+  const vectorResultEl = $("[data-vector-result]");
+  const vectorOriginal = $("[data-vector-original]");
+  const vectorOutput = $("[data-vector-output]");
+  const vectorStats = $("[data-vector-stats]");
+  const vectorVerdict = $("[data-vector-verdict]");
+  const vectorApply = $("[data-vector-apply]");
+  const vectorDownload = $("[data-vector-download]");
+  const vectorRevert = $("[data-vector-revert]");
   const priceEl = $("[data-price-display]");
   const priceNote = $("[data-price-note]");
   const couponInput = $("[data-coupon-input]");
@@ -2203,6 +2226,8 @@
     setupHandles(printLogo);
     updateHandleScale(printText);
     updateHandleScale(printLogo);
+
+    syncVectorPanel();
   }
 
   function updateGalleryUI() {
@@ -2743,6 +2768,255 @@
     });
   }
 
+  /* ---------------------------------------------------------------------- */
+  /* Vectorizado de logo (prototipo en el dispositivo)                      */
+  /* ---------------------------------------------------------------------- */
+
+  const VECTOR_HINTS = {
+    serigrafia: {
+      copy: "Serigrafía necesita tintas planas: usa el modo 1 tinta para una silueta limpia.",
+      badge: "Recomendado",
+      level: "recommended",
+    },
+    vinilo: {
+      copy: "El vinilo se corta: el archivo debe ser vector y de un solo color.",
+      badge: "Recomendado",
+      level: "recommended",
+    },
+    bordado: {
+      copy: "El bordado se digitaliza aparte; el vector sirve como contorno de referencia.",
+      badge: "Apoyo",
+      level: "support",
+    },
+    sublimacion: {
+      copy: "En sublimación el color depende del tejido; el vector ayuda en logos planos.",
+      badge: "Opcional",
+      level: "optional",
+    },
+    dtf: {
+      copy: "DTF trabaja con PNG a 300 DPI: el vector ayuda a escalar sin perder nitidez.",
+      badge: "Opcional",
+      level: "optional",
+    },
+    dtg: {
+      copy: "DTG imprime el raster original. Vectoriza solo si el logo llega borroso o muy pequeño.",
+      badge: "Opcional",
+      level: "optional",
+    },
+  };
+
+  let vectorKey = "";
+  let vectorBusy = false;
+
+  function vectorPreferredMode() {
+    const hint = VECTOR_HINTS[state.technique.id];
+    return hint && hint.level === "recommended" ? "mono" : "color";
+  }
+
+  function vectorSource(design) {
+    return design.logoRaster || design.logo || "";
+  }
+
+  function renderVectorResult(design) {
+    if (!vectorResultEl) return;
+    const result = design.logoVectorResult;
+    vectorResultEl.hidden = !result;
+    if (!result) return;
+
+    if (vectorOriginal) vectorOriginal.src = vectorSource(design) || "";
+    if (vectorOutput) vectorOutput.src = result.dataUrl;
+
+    if (vectorStats) {
+      vectorStats.replaceChildren();
+      const items = [
+        `${result.metrics.colors} ${result.metrics.colors === 1 ? "color" : "colores"}`,
+        `${result.metrics.paths.toLocaleString("es-MX")} trazos`,
+        `${Math.max(1, Math.round(result.metrics.bytes / 1024))} KB`,
+        `${result.print.dpi} DPI de origen`,
+        `${result.elapsed} ms`,
+      ];
+      items.forEach((text) => {
+        const item = document.createElement("li");
+        item.textContent = text;
+        vectorStats.appendChild(item);
+      });
+    }
+
+    if (vectorVerdict) {
+      vectorVerdict.textContent = result.quality.reasons.join(" ");
+      vectorVerdict.dataset.level = result.quality.level;
+    }
+
+    if (vectorApply) vectorApply.hidden = Boolean(design.logoIsVector);
+    if (vectorRevert) vectorRevert.hidden = !design.logoIsVector;
+  }
+
+  function syncVectorPanel(force) {
+    if (!vectorPanel) return;
+
+    const design = activeDesign();
+    if (!design.logo) {
+      vectorPanel.hidden = true;
+      vectorKey = "";
+      return;
+    }
+
+    if (!design.vectorMode) design.vectorMode = vectorPreferredMode();
+
+    const key = [
+      state.view,
+      design.logoName,
+      design.logoIsVector ? "vector" : "raster",
+      design.logoVectorResult ? "result" : "none",
+      state.technique.id,
+    ].join("|");
+    if (!force && key === vectorKey) return;
+    vectorKey = key;
+
+    vectorPanel.hidden = false;
+
+    const hint = VECTOR_HINTS[state.technique.id] || VECTOR_HINTS.dtg;
+    if (vectorHint) vectorHint.textContent = hint.copy;
+    if (vectorBadge) {
+      vectorBadge.textContent = hint.badge;
+      vectorBadge.dataset.level = hint.level;
+    }
+
+    vectorModeButtons.forEach((button) => {
+      const active = button.dataset.vectorMode === design.vectorMode;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+
+    renderVectorResult(design);
+  }
+
+  async function runVectorizer() {
+    if (vectorBusy) return;
+
+    const design = activeDesign();
+    if (!design.logo) return;
+
+    if (!window.LikeVectorize) {
+      showToast("El vectorizador no está disponible en este navegador.");
+      return;
+    }
+
+    const source = vectorSource(design);
+    vectorBusy = true;
+    if (vectorRunButton) {
+      vectorRunButton.disabled = true;
+      vectorRunButton.classList.add("is-busy");
+      vectorRunButton.setAttribute("aria-busy", "true");
+    }
+    if (vectorRunLabel) vectorRunLabel.textContent = "Vectorizando…";
+    if (vectorStatus) {
+      vectorStatus.hidden = false;
+      vectorStatus.dataset.state = "busy";
+      vectorStatus.textContent = "Analizando formas y colores…";
+    }
+
+    // Deja pintar el estado de carga antes del trabajo pesado.
+    await new Promise((resolve) => window.setTimeout(resolve, 60));
+
+    try {
+      const result = await window.LikeVectorize.vectorize(source, {
+        mode: design.vectorMode || "color",
+        garment: state.color,
+      });
+
+      if (vectorSource(design) !== source) return;
+
+      design.logoVectorResult = result;
+      renderVectorResult(design);
+
+      if (vectorStatus) {
+        vectorStatus.dataset.state = result.quality.level === "bad" ? "warn" : "ok";
+        vectorStatus.textContent =
+          result.quality.level === "good"
+            ? "Vector listo."
+            : "Vector generado: revisa el resultado antes de usarlo.";
+      }
+    } catch (error) {
+      if (vectorStatus) {
+        vectorStatus.dataset.state = "error";
+        vectorStatus.textContent =
+          error && error.message ? error.message : "No se pudo vectorizar el logo.";
+      }
+    } finally {
+      vectorBusy = false;
+      if (vectorRunButton) {
+        vectorRunButton.disabled = false;
+        vectorRunButton.classList.remove("is-busy");
+        vectorRunButton.setAttribute("aria-busy", "false");
+      }
+      if (vectorRunLabel) vectorRunLabel.textContent = "Vectorizar de nuevo";
+    }
+  }
+
+  if (vectorRunButton) {
+    vectorRunButton.addEventListener("click", runVectorizer);
+  }
+
+  vectorModeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const design = activeDesign();
+      const mode = button.dataset.vectorMode === "mono" ? "mono" : "color";
+      if (design.vectorMode === mode) return;
+
+      design.vectorMode = mode;
+      if (design.logoVectorResult && design.logoVectorResult.mode !== mode) {
+        design.logoVectorResult = null;
+      }
+      if (vectorStatus) vectorStatus.hidden = true;
+      syncVectorPanel(true);
+    });
+  });
+
+  if (vectorApply) {
+    vectorApply.addEventListener("click", () => {
+      const design = activeDesign();
+      if (!design.logoVectorResult) return;
+
+      design.logoRaster = design.logoRaster || design.logo;
+      design.logo = design.logoVectorResult.dataUrl;
+      design.logoIsVector = true;
+      updatePreview();
+      showToast("Vector aplicado al diseño.");
+    });
+  }
+
+  if (vectorRevert) {
+    vectorRevert.addEventListener("click", () => {
+      const design = activeDesign();
+      if (!design.logoRaster) return;
+
+      design.logo = design.logoRaster;
+      design.logoIsVector = false;
+      updatePreview();
+      showToast("Logo original restaurado.");
+    });
+  }
+
+  if (vectorDownload) {
+    vectorDownload.addEventListener("click", () => {
+      const design = activeDesign();
+      if (!design.logoVectorResult) return;
+
+      const blob = new Blob([design.logoVectorResult.svg], {
+        type: "image/svg+xml",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${(design.logoName || "logo").replace(/\.[^.]+$/, "")}-vector.svg`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+    });
+  }
+
   if (logoInput) {
     logoInput.addEventListener("change", () => {
       const file = logoInput.files && logoInput.files[0];
@@ -2769,6 +3043,11 @@
         design.logoName = file.name;
         design.logoPath = "";
         design.logoData = await prepareLogoData(source, file.type);
+        design.logoRaster = source;
+        design.logoIsVector = false;
+        design.logoVectorResult = null;
+        design.vectorMode = "";
+        vectorKey = "";
 
         if (state.view === side) {
           if (uploadFile) uploadFile.hidden = false;
@@ -2802,6 +3081,11 @@
       design.logoName = "";
       design.logoPath = "";
       design.logoData = "";
+      design.logoRaster = "";
+      design.logoIsVector = false;
+      design.logoVectorResult = null;
+      design.vectorMode = "";
+      vectorKey = "";
       if (logoInput) logoInput.value = "";
       if (uploadFile) uploadFile.hidden = true;
       updatePreview();
@@ -3006,6 +3290,7 @@
           logoName: front.logoName,
           logoPath: front.logoPath || "",
           logoData: front.logoData || "",
+          logoIsVector: Boolean(front.logoIsVector),
           logoScale: front.logoScale,
           logoRotate: front.logoRotate || 0,
           textX: front.textX,
@@ -3022,6 +3307,7 @@
           logoName: back.logoName,
           logoPath: back.logoPath || "",
           logoData: back.logoData || "",
+          logoIsVector: Boolean(back.logoIsVector),
           logoScale: back.logoScale,
           logoRotate: back.logoRotate || 0,
           textX: back.textX,
