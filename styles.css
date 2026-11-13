@@ -1690,6 +1690,70 @@ section[id] {
   background: rgba(255, 255, 255, 0.15);
 }
 
+/* Estado del archivo de impresión */
+.print-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+  padding: 7px 9px;
+  border-radius: 9px;
+  background: var(--cream);
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+.print-status[hidden] {
+  display: none;
+}
+
+.print-status__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex: none;
+}
+
+.print-status[data-state="queued"] .print-status__dot,
+.print-status[data-state="cutout"] .print-status__dot,
+.print-status[data-state="cutout_ready"] .print-status__dot,
+.print-status[data-state="resizing"] .print-status__dot {
+  background: var(--orange);
+}
+
+.print-status[data-state="ready"] .print-status__dot {
+  background: #1f7a3d;
+}
+
+.print-status[data-state="review"] .print-status__dot {
+  background: #b7791f;
+}
+
+.print-status[data-state="failed"] .print-status__dot {
+  background: #b3261e;
+}
+
+.print-status__text {
+  flex: 1;
+}
+
+.print-status__retry {
+  flex: none;
+  padding: 0;
+  border-bottom: 1px solid currentColor;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.print-status__retry[hidden] {
+  display: none;
+}
+
 /* Vectorizador de logo */
 .vectorizer {
   margin-top: 10px;

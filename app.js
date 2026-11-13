@@ -174,6 +174,12 @@
         logoIsVector: false,
         logoVectorResult: null,
         vectorMode: "",
+        logoAssetId: "",
+        printStatus: "",
+        printDpi: null,
+        printPath: "",
+        printWidthCm: null,
+        printError: "",
         ...DEFAULT_POSITIONS.front,
       },
       back: {
@@ -190,6 +196,12 @@
         logoIsVector: false,
         logoVectorResult: null,
         vectorMode: "",
+        logoAssetId: "",
+        printStatus: "",
+        printDpi: null,
+        printPath: "",
+        printWidthCm: null,
+        printError: "",
         ...DEFAULT_POSITIONS.back,
       },
     },
@@ -456,6 +468,9 @@
   const vectorApply = $("[data-vector-apply]");
   const vectorDownload = $("[data-vector-download]");
   const vectorRevert = $("[data-vector-revert]");
+  const printStatus = $("[data-print-status]");
+  const printStatusText = $("[data-print-status-text]");
+  const printRetry = $("[data-print-retry]");
   const priceEl = $("[data-price-display]");
   const priceNote = $("[data-price-note]");
   const couponInput = $("[data-coupon-input]");
@@ -2245,6 +2260,7 @@
     updateHandleScale(printLogo);
 
     syncVectorPanel();
+    setPrintStatusUI(activeDesign());
   }
 
   function updateGalleryUI() {
@@ -3036,6 +3052,175 @@
     });
   }
 
+  /* ---------------------------------------------------------------------- */
+  /* Archivo de impresión (Edge Function en dos etapas)                     */
+  /* ---------------------------------------------------------------------- */
+
+  const PRINT_WIDTH_CM = {
+    hoodie: { front: 24, back: 28 },
+    tote: { front: 30, back: 30 },
+  };
+
+  const PRINT_STATUS_TEXT = {
+    queued: "En cola para preparar el archivo de impresión…",
+    cutout: "Quitando el fondo del logo…",
+    cutout_ready: "Ajustando la resolución de impresión…",
+    resizing: "Ajustando la resolución de impresión…",
+    ready: "Archivo de impresión listo",
+    review: "Archivo listo con revisión manual",
+    failed: "No se pudo preparar el archivo de impresión",
+  };
+
+  function printWidthFor(product, side) {
+    const spec = PRINT_WIDTH_CM[product] || PRINT_WIDTH_CM.hoodie;
+    return side === "back" ? spec.back : spec.front;
+  }
+
+  function setPrintStatusUI(design) {
+    if (!printStatus) return;
+    if (!design || !design.printStatus) {
+      printStatus.hidden = true;
+      return;
+    }
+
+    printStatus.hidden = false;
+    printStatus.dataset.state = design.printStatus;
+
+    let text = PRINT_STATUS_TEXT[design.printStatus] || "";
+    if (design.printStatus === "ready" && design.printDpi) {
+      text += ` · ${design.printDpi} DPI`;
+    }
+    if (design.printStatus === "failed" && design.printError) {
+      text += `: ${design.printError}`;
+    }
+    if (printStatusText) printStatusText.textContent = text;
+    if (printRetry) {
+      printRetry.hidden = !(
+        design.printStatus === "failed" && design.logoAssetId
+      );
+    }
+  }
+
+  function pollPrintAsset(design, attempt) {
+    const api = window.StoreSupabase;
+    if (!api || !api.getLogoAsset || !design.logoAssetId) return;
+    const assetId = design.logoAssetId;
+    let round = Number(attempt) || 0;
+
+    const tick = async () => {
+      const asset = await api.getLogoAsset(assetId);
+      if (!asset) {
+        if (round < 30) {
+          round += 1;
+          window.setTimeout(tick, 2500);
+        }
+        return;
+      }
+      if (design.logoAssetId !== assetId) return;
+
+      design.printStatus = asset.status;
+      design.printPath = asset.print_path || "";
+      design.printDpi = asset.output_dpi || null;
+      design.printError = asset.last_error || "";
+      setPrintStatusUI(design);
+
+      if (asset.status === "cutout_ready") {
+        await api.processLogoAsset(assetId, "resize");
+      }
+
+      const finished = ["ready", "review", "failed"].includes(asset.status);
+      if (!finished && round < 60) {
+        round += 1;
+        window.setTimeout(tick, 2000);
+      } else if (!finished) {
+        design.printStatus = "failed";
+        design.printError = "Tiempo de espera agotado.";
+        setPrintStatusUI(design);
+      }
+    };
+
+    window.setTimeout(tick, round === 0 ? 600 : 0);
+  }
+
+  async function startPrintAsset(design, sourcePath, side) {
+    const api = window.StoreSupabase;
+    if (!api || !api.createLogoAsset) return;
+    if (api.configured === false) {
+      design.printStatus = "";
+      setPrintStatusUI(design);
+      return;
+    }
+
+    design.logoAssetId = "";
+    design.printStatus = "queued";
+    design.printPath = "";
+    design.printDpi = null;
+    design.printError = "";
+    design.printWidthCm = printWidthFor(state.product, side);
+    setPrintStatusUI(design);
+
+    const asset = await api.createLogoAsset({
+      sourcePath,
+      side,
+      product: state.product,
+      widthCm: design.printWidthCm,
+    });
+
+    if (!asset) {
+      design.printStatus = "failed";
+      design.printError = "No se pudo registrar el archivo.";
+      setPrintStatusUI(design);
+      return;
+    }
+
+    design.logoAssetId = asset.id;
+    design.printStatus = asset.status || "queued";
+    setPrintStatusUI(design);
+
+    await api.processLogoAsset(asset.id, "cutout");
+    pollPrintAsset(design, 1);
+  }
+
+  async function webpToPngFile(file, dataUrl) {
+    if (!file || file.type !== "image/webp") return file;
+    const image = await new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = dataUrl;
+    });
+    if (!image) return file;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = image.naturalWidth || image.width;
+    canvas.height = image.naturalHeight || image.height;
+    const context = canvas.getContext("2d");
+    if (!context) return file;
+    context.drawImage(image, 0, 0);
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/png")
+    );
+    if (!blob) return file;
+    return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".png", {
+      type: "image/png",
+    });
+  }
+
+  if (printRetry) {
+    printRetry.addEventListener("click", async () => {
+      const design = activeDesign();
+      if (!design.logoAssetId) return;
+      design.printStatus = "queued";
+      design.printError = "";
+      setPrintStatusUI(design);
+      await window.StoreSupabase?.processLogoAsset(
+        design.logoAssetId,
+        "cutout"
+      );
+      pollPrintAsset(design, 1);
+    });
+  }
+
   if (logoInput) {
     logoInput.addEventListener("change", () => {
       const file = logoInput.files && logoInput.files[0];
@@ -3066,6 +3251,12 @@
         design.logoIsVector = false;
         design.logoVectorResult = null;
         design.vectorMode = "";
+        design.logoAssetId = "";
+        design.printStatus = "";
+        design.printPath = "";
+        design.printDpi = null;
+        design.printWidthCm = null;
+        design.printError = "";
         vectorKey = "";
 
         if (state.view === side) {
@@ -3078,10 +3269,12 @@
         );
 
         if (window.StoreSupabase?.uploadLogo) {
-          const path = await window.StoreSupabase.uploadLogo(file, side);
+          const printable = await webpToPngFile(file, source);
+          const path = await window.StoreSupabase.uploadLogo(printable, side);
           if (path && design.logo === source) {
             design.logoPath = path;
             design.logoData = "";
+            startPrintAsset(design, path, side).catch(() => undefined);
           }
         }
       };
@@ -3104,6 +3297,12 @@
       design.logoIsVector = false;
       design.logoVectorResult = null;
       design.vectorMode = "";
+      design.logoAssetId = "";
+      design.printStatus = "";
+      design.printPath = "";
+      design.printDpi = null;
+      design.printWidthCm = null;
+      design.printError = "";
       vectorKey = "";
       if (logoInput) logoInput.value = "";
       if (uploadFile) uploadFile.hidden = true;
@@ -3310,6 +3509,11 @@
           logoPath: front.logoPath || "",
           logoData: front.logoData || "",
           logoIsVector: Boolean(front.logoIsVector),
+          logoAssetId: front.logoAssetId || "",
+          printStatus: front.printStatus || "",
+          printDpi: front.printDpi || null,
+          printPath: front.printPath || "",
+          printWidthCm: front.printWidthCm || null,
           logoScale: front.logoScale,
           logoRotate: front.logoRotate || 0,
           textX: front.textX,
@@ -3327,6 +3531,11 @@
           logoPath: back.logoPath || "",
           logoData: back.logoData || "",
           logoIsVector: Boolean(back.logoIsVector),
+          logoAssetId: back.logoAssetId || "",
+          printStatus: back.printStatus || "",
+          printDpi: back.printDpi || null,
+          printPath: back.printPath || "",
+          printWidthCm: back.printWidthCm || null,
           logoScale: back.logoScale,
           logoRotate: back.logoRotate || 0,
           textX: back.textX,
@@ -3339,8 +3548,26 @@
       };
       const keySnapshot = {
         ...designSnapshot,
-        front: { ...designSnapshot.front, logoData: "", logoPath: "" },
-        back: { ...designSnapshot.back, logoData: "", logoPath: "" },
+        front: {
+          ...designSnapshot.front,
+          logoData: "",
+          logoPath: "",
+          logoAssetId: "",
+          printStatus: "",
+          printPath: "",
+          printDpi: null,
+          printWidthCm: null,
+        },
+        back: {
+          ...designSnapshot.back,
+          logoData: "",
+          logoPath: "",
+          logoAssetId: "",
+          printStatus: "",
+          printPath: "",
+          printDpi: null,
+          printWidthCm: null,
+        },
       };
       const key = JSON.stringify(keySnapshot);
 

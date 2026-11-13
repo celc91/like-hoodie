@@ -840,6 +840,36 @@ a { color: inherit; }
 
 .logo-link:hover { color: var(--orange); }
 
+.logo-link--print {
+  color: #1f7a3d;
+}
+
+.print-badge {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--cream);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.print-badge[data-state="ready"] {
+  background: rgba(31, 122, 61, 0.12);
+  color: #1f7a3d;
+}
+
+.print-badge[data-state="review"] {
+  background: rgba(183, 121, 31, 0.14);
+  color: #8a5200;
+}
+
+.print-badge[data-state="failed"] {
+  background: rgba(179, 38, 30, 0.12);
+  color: #b3261e;
+}
+
 .detail-total {
   display: flex;
   justify-content: space-between;

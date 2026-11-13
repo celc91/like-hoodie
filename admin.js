@@ -633,6 +633,71 @@
     return url;
   }
 
+  const printUrlCache = new Map();
+
+  async function signedPrintUrl(path) {
+    if (!path) return "";
+    if (printUrlCache.has(path)) return printUrlCache.get(path);
+    const { data, error } = await client.storage
+      .from("order-prints")
+      .createSignedUrl(path, 3600);
+    const url = !error && data?.signedUrl ? data.signedUrl : "";
+    printUrlCache.set(path, url);
+    return url;
+  }
+
+  const PRINT_LABELS = {
+    queued: "Print en cola",
+    cutout: "Preparando print",
+    cutout_ready: "Preparando print",
+    resizing: "Preparando print",
+    ready: "Print listo",
+    review: "Print a revisar",
+    failed: "Print falló",
+  };
+
+  async function printAssetFor(design) {
+    if (!design) return null;
+    if (design.printPath) {
+      return {
+        path: design.printPath,
+        dpi: Number(design.printDpi) || null,
+        status: design.printStatus || "ready",
+      };
+    }
+    const id = String(design.logoAssetId || "");
+    if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+    const { data, error } = await client
+      .from("logo_assets")
+      .select("print_path, output_dpi, status")
+      .eq("id", id)
+      .maybeSingle();
+    if (error || !data) return null;
+    return {
+      path: data.print_path || "",
+      dpi: Number(data.output_dpi) || null,
+      status: data.status || "queued",
+    };
+  }
+
+  async function printLink(design, side) {
+    const asset = await printAssetFor(design);
+    if (!asset) return "";
+    const label = PRINT_LABELS[asset.status] || "Print";
+    const url = await signedPrintUrl(asset.path);
+    if (!url) {
+      return `<span class="print-badge" data-state="${escapeHTML(
+        asset.status
+      )}">${escapeHTML(label)}</span>`;
+    }
+    const dpi = asset.dpi ? ` · ${asset.dpi} DPI` : "";
+    return `<a class="logo-link logo-link--print" href="${escapeHTML(
+      url
+    )}" target="_blank" rel="noopener" download="print-${side.toLowerCase()}.png">Descargar print ${side}${escapeHTML(
+      dpi
+    )}</a>`;
+  }
+
   const AREAS = {
     hoodie: { x: 24, y: 15, w: 52, h: 44 },
     tote: { x: 12, y: 36, w: 76, h: 48 },
@@ -833,6 +898,8 @@
           const backUrl = await signedLogoUrl(item.back?.logoPath);
           const frontLink = await logoLink(item.front, "frente");
           const backLink = await logoLink(item.back, "espalda");
+          const frontPrint = await printLink(item.front, "frente");
+          const backPrint = await printLink(item.back, "espalda");
           const frontData =
             typeof item.front?.logoData === "string" &&
             /^data:image\//.test(item.front.logoData)
@@ -859,7 +926,7 @@
                 item.front?.logoName
                   ? ` · ${escapeHTML(item.front.logoName)}`
                   : ""
-              }</span>${frontLink}</span>`
+              }</span>${frontLink}${frontPrint}</span>`
             );
           }
           if (backSrc || item.back?.logoName) {
@@ -874,7 +941,7 @@
                 item.back?.logoName
                   ? ` · ${escapeHTML(item.back.logoName)}`
                   : ""
-              }</span>${backLink}</span>`
+              }</span>${backLink}${backPrint}</span>`
             );
           }
           const logos = logoItems.join("");

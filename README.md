@@ -25,6 +25,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Páginas legales:** aviso de privacidad, política de cookies y términos y condiciones.
 - **Aviso de cookies:** banner informativo con almacenamiento local para recordar la aceptación.
 - **Vectorizador de logo:** convierte el PNG o JPG en SVG en el dispositivo, en color o a 1 tinta, con diagnóstico de colores, trazos y DPI.
+- **Archivo de impresión DTG:** al subir el logo se recorta el fondo y se genera el PNG a 300 DPI en `order-prints`, con estado visible y descarga desde el admin.
 - **Responsive:** móvil, tablet y escritorio.
 - **Accesibilidad:** navegación por teclado, foco visible, etiquetas ARIA y respeto por `prefers-reduced-motion`.
 
@@ -39,6 +40,45 @@ El configurador incluye un prototipo de vectorización que corre en el dispositi
 - **Salida:** se aplica al diseño (sustituye al PNG) o se descarga como `.svg`.
 
 Es un prototipo: el SVG no se sube a Supabase. Para producción conviene mover el trazado a servidor (vtracer + potrace) y guardar el archivo en el bucket `order-logos`.
+
+## Archivo de impresión DTG automático
+
+Al subir un logo, el configurador crea un registro en `logo_assets` y la Edge
+Function `process-logo` genera el PNG de producción en dos etapas (para no pasar
+de 256 MB ni 2 s de CPU):
+
+1. **cutout:** descarga el original, elimina el fondo uniforme, aplica
+   `defringe` y guarda `order-prints/<user>/<asset>-cutout.png`.
+2. **resize:** amplía al ancho de impresión con alfa premultiplicado y guarda
+   `<asset>-print.png`.
+
+El cliente muestra el estado (en cola, quitando fondo, ajustando resolución,
+listo, revisión manual) y el panel de administración permite descargar el print
+con su DPI. Si el archivo no está listo al pagar, el pedido guarda el
+`logoAssetId` y el admin consulta el asset en vivo.
+
+### Despliegue (una vez)
+
+```sh
+# 1. Crear tabla, bucket y políticas
+#    Supabase → SQL Editor → pegar supabase/logo-assets.sql
+
+# 2. Desplegar la función
+npx supabase login
+npx supabase functions deploy process-logo --project-ref <tu-project-ref>
+```
+
+No hacen falta secretos extra: `SUPABASE_URL`, `SUPABASE_ANON_KEY` y
+`SUPABASE_SERVICE_ROLE_KEY` los inyecta Supabase.
+
+### Límites y decisiones
+
+- Ancho de referencia: 24 cm frente, 28 cm espalda, 30 cm tote.
+- Salida máxima: 2 800 px (≈254 DPI a 28 cm) y ampliación máxima 2×.
+- Imágenes de más de 9 MP se rechazan con aviso.
+- Si el DPI final es < 200 o el fondo no era uniforme, el asset queda en
+  `review` en vez de `ready`.
+- WebP se convierte a PNG en el navegador antes de subirlo.
 
 ## Ver la web en local
 

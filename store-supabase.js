@@ -11,6 +11,15 @@
     !config.publishableKey.includes("TU_PUBLISHABLE");
 
   const CART_KEY = "likehoodie_cart_id_v1";
+  const PRINT_STATUSES = [
+    "queued",
+    "cutout",
+    "cutout_ready",
+    "resizing",
+    "ready",
+    "review",
+    "failed",
+  ];
   const sdkAvailable = Boolean(
     window.supabase && typeof window.supabase.createClient === "function"
   );
@@ -41,6 +50,16 @@
           : "",
       logoScale: Number(design.logoScale) || 1,
       logoIsVector: Boolean(design.logoIsVector),
+      logoAssetId:
+        /^[0-9a-f-]{36}$/i.test(String(design.logoAssetId || ""))
+          ? String(design.logoAssetId)
+          : null,
+      printStatus: PRINT_STATUSES.includes(design.printStatus)
+        ? design.printStatus
+        : null,
+      printDpi: Number(design.printDpi) || null,
+      printPath: String(design.printPath || "").slice(0, 300),
+      printWidthCm: Number(design.printWidthCm) || null,
       textX: Number(design.textX) || 50,
       textY: Number(design.textY) || 49,
       logoX: Number(design.logoX) || 50,
@@ -322,6 +341,76 @@
     }
   }
 
+  async function createLogoAsset(input) {
+    if (!(await ensure())) return null;
+    const sourcePath = String(input && input.sourcePath ? input.sourcePath : "").slice(0, 300);
+    if (!sourcePath) return null;
+
+    const side = input && input.side === "back" ? "back" : "front";
+    const product = input && input.product === "tote" ? "tote" : "hoodie";
+    const widthCm = Math.min(
+      60,
+      Math.max(1, Number(input && input.widthCm) || 28)
+    );
+
+    try {
+      const { data, error } = await client
+        .from("logo_assets")
+        .insert({
+          user_id: user.id,
+          source_path: sourcePath,
+          side,
+          product,
+          width_cm: widthCm,
+          target_dpi: 300,
+          status: "queued",
+        })
+        .select("id, status")
+        .single();
+      if (error) {
+        console.warn("No se pudo crear el asset de impresión.", error.message);
+        return null;
+      }
+      return data;
+    } catch (error) {
+      console.warn("No se pudo crear el asset de impresión.", error);
+      return null;
+    }
+  }
+
+  async function getLogoAsset(id) {
+    if (!(await ensure())) return null;
+    const assetId = String(id || "");
+    if (!/^[0-9a-f-]{36}$/i.test(assetId)) return null;
+    try {
+      const { data, error } = await client
+        .from("logo_assets")
+        .select(
+          "id, status, print_path, output_dpi, output_width, output_height, warnings, last_error"
+        )
+        .eq("id", assetId)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async function processLogoAsset(id, stage) {
+    if (!(await ensure())) return false;
+    const assetId = String(id || "");
+    if (!/^[0-9a-f-]{36}$/i.test(assetId)) return false;
+    try {
+      const { error } = await client.functions.invoke("process-logo", {
+        body: { assetId, stage: stage === "resize" ? "resize" : "cutout" },
+      });
+      return !error;
+    } catch (error) {
+      return false;
+    }
+  }
+
   async function placeOrder(order) {
     if (!(await ensure())) return null;
     cancelPendingSync();
@@ -581,6 +670,9 @@
     syncCart,
     track,
     uploadLogo,
+    createLogoAsset,
+    getLogoAsset,
+    processLogoAsset,
     placeOrder,
     getConfig,
     createClipCheckout,

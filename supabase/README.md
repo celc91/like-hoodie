@@ -84,6 +84,24 @@ El panel tiene `noindex` y no muestra datos sin iniciar sesión. Aun así, se re
 4. Deberías ver el carrito en **Carritos**.
 5. Completa el checkout de prueba y verifica que aparece en **Pedidos**.
 
+## 8. Archivo de impresión DTG
+
+1. En **SQL Editor**, ejecuta `supabase/logo-assets.sql`. Crea la tabla
+   `logo_assets`, el bucket privado `order-prints` y sus políticas.
+2. Despliega la función:
+
+   ```sh
+   npx supabase login
+   npx supabase functions deploy process-logo --project-ref <project-ref>
+   ```
+
+3. Sube un logo en la tienda. Debe aparecer el estado
+   “Quitando el fondo del logo…” y después “Archivo de impresión listo”.
+4. En el pedido, el admin verá **Descargar print** con el DPI final.
+
+La función no necesita secretos propios: usa `SUPABASE_URL`,
+`SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY` del entorno de Supabase.
+
 ## Seguridad
 
 - Los visitantes solo pueden leer y modificar **su propio carrito**.

@@ -9,3 +9,6 @@ verify_jwt = false
 
 [functions.clip-webhook]
 verify_jwt = false
+
+[functions.process-logo]
+verify_jwt = true
