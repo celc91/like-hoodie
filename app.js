@@ -23,6 +23,7 @@
 
   const BASE_PRICES = {
     "#1c1c1f": 899,
+    "#ffffff": 949,
     "#efe6d6": 949,
     "#cdf25a": 969,
     "#f2603c": 949,
@@ -67,6 +68,7 @@
       },
       prices: {
         "#efe6d6": 349,
+        "#ffffff": 379,
         "#1c1c1f": 379,
         "#cdf25a": 379,
         "#f2603c": 379,
@@ -3529,71 +3531,156 @@
     }
   });
 
-  if (logoInput) {
-    logoInput.addEventListener("change", () => {
-      const file = logoInput.files && logoInput.files[0];
-      if (!file) return;
-
-      if (!LOGO_TYPES.includes(file.type)) {
-        showToast("Formato no válido. Usa PNG, JPG o WebP.");
-        logoInput.value = "";
-        return;
-      }
-
-      if (file.size > LOGO_MAX_BYTES) {
-        showToast("El logo no puede superar los 5 MB.");
-        logoInput.value = "";
-        return;
-      }
-
-      const side = state.view;
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = async () => {
-        const design = state.designs[side];
-        const source = String(reader.result);
-        setActiveCoord("logo");
-        design.logo = source;
-        design.logoName = file.name;
-        design.logoPath = "";
-        design.logoData = await prepareLogoData(source, file.type);
-        design.logoRaster = source;
-        design.logoIsVector = false;
-        design.logoVectorResult = null;
-        design.vectorMode = "";
-        design.logoAssetId = "";
-        design.printStatus = "";
-        design.printPath = "";
-        design.printDpi = null;
-        design.printWidthCm = null;
-        design.printError = "";
-        vectorKey = "";
-
-        if (state.view === side) {
-          if (uploadFile) uploadFile.hidden = false;
-          if (fileName) fileName.textContent = file.name;
-        }
-        updatePreview();
-        showToast(
-          `Logo ${side === "front" ? "frontal" : "trasero"} cargado.`
-        );
-
-        if (window.StoreSupabase?.uploadLogo) {
-          const printable = await webpToPngFile(file, source);
-          const path = await window.StoreSupabase.uploadLogo(printable, side);
-          if (path && design.logo === source) {
-            design.logoPath = path;
-            design.logoData = "";
-            startPrintAsset(design, path, side).catch(() => undefined);
-          }
-        }
-      };
-      reader.onerror = () => {
-        showToast("No hemos podido leer el archivo. Inténtalo de nuevo.");
-        logoInput.value = "";
-      };
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(new Error("No se pudo leer el archivo."));
       reader.readAsDataURL(file);
     });
   }
+
+  async function applyLogoFile(file, side) {
+    if (!file) return false;
+    const targetSide = side === "back" ? "back" : "front";
+
+    if (!LOGO_TYPES.includes(file.type)) {
+      showToast("Formato no válido. Usa PNG, JPG o WebP.");
+      return false;
+    }
+
+    if (file.size > LOGO_MAX_BYTES) {
+      showToast("El logo no puede superar los 5 MB.");
+      return false;
+    }
+
+    let source;
+    try {
+      source = await readFileAsDataURL(file);
+    } catch (error) {
+      showToast("No hemos podido leer el archivo. Inténtalo de nuevo.");
+      return false;
+    }
+
+    const design = state.designs[targetSide];
+    setActiveCoord("logo");
+    design.logo = source;
+    design.logoName = file.name;
+    design.logoPath = "";
+    design.logoData = await prepareLogoData(source, file.type);
+    design.logoRaster = source;
+    design.logoIsVector = false;
+    design.logoVectorResult = null;
+    design.vectorMode = "";
+    design.logoAssetId = "";
+    design.printStatus = "";
+    design.printPath = "";
+    design.printDpi = null;
+    design.printWidthCm = null;
+    design.printError = "";
+    vectorKey = "";
+
+    if (state.view === targetSide) {
+      if (uploadFile) uploadFile.hidden = false;
+      if (fileName) fileName.textContent = file.name;
+    }
+    updatePreview();
+    showToast(
+      `Logo ${targetSide === "front" ? "frontal" : "trasero"} cargado.`
+    );
+
+    if (window.StoreSupabase?.uploadLogo) {
+      const printable = await webpToPngFile(file, source);
+      const path = await window.StoreSupabase.uploadLogo(printable, targetSide);
+      if (path && design.logo === source) {
+        design.logoPath = path;
+        design.logoData = "";
+        startPrintAsset(design, path, targetSide).catch(() => undefined);
+      }
+    }
+
+    return true;
+  }
+
+  if (logoInput) {
+    logoInput.addEventListener("change", async () => {
+      const file = logoInput.files && logoInput.files[0];
+      if (!file) return;
+      await applyLogoFile(file, state.view);
+      logoInput.value = "";
+    });
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Modelos de la colección                                                */
+  /* ---------------------------------------------------------------------- */
+
+  const MODELS = {
+    cocodrilo: {
+      product: "hoodie",
+      color: "#ffffff",
+      colorName: "Blanco",
+      side: "front",
+      logo: "assets/modelos/cocodrilo-logo.png",
+      fileName: "cocodrilo-miami.png",
+    },
+    insignia: {
+      product: "hoodie",
+      color: "#1c1c1f",
+      colorName: "Negro",
+      side: "front",
+      logo: "assets/modelos/insignia-logo.png",
+      fileName: "insignia-atardecer.png",
+    },
+    panorama: {
+      product: "hoodie",
+      color: "#1c1c1f",
+      colorName: "Negro",
+      side: "front",
+      logo: "assets/modelos/panorama-logo.png",
+      fileName: "panorama-vice.png",
+    },
+    corazon: {
+      product: "hoodie",
+      color: "#1c1c1f",
+      colorName: "Negro",
+      side: "front",
+      logo: "assets/modelos/corazon-logo.png",
+      fileName: "corazon-neon.png",
+    },
+  };
+
+  async function applyModel(id) {
+    const model = MODELS[id];
+    if (!model) return;
+
+    setProduct(model.product);
+    selectColor(model.color, model.colorName);
+    setView(model.side);
+
+    const section = document.getElementById("personalizar");
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    try {
+      const response = await fetch(model.logo, { cache: "force-cache" });
+      if (!response.ok) throw new Error("No se pudo cargar el logo.");
+      const blob = await response.blob();
+      const file = new File([blob], model.fileName, {
+        type: blob.type || "image/png",
+      });
+      await applyLogoFile(file, model.side);
+    } catch (error) {
+      showToast("No se pudo cargar el modelo. Inténtalo de nuevo.");
+    }
+  }
+
+  document.querySelectorAll("[data-model]").forEach((button) => {
+    button.addEventListener("click", () => {
+      applyModel(button.dataset.model);
+    });
+  });
 
   if (removeLogoButton) {
     removeLogoButton.addEventListener("click", () => {

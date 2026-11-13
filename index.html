@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261113-editor2">
+  <link rel="stylesheet" href="styles.css?v=20261113-modelos1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -153,6 +153,7 @@
       <nav class="main-nav" aria-label="Navegación principal">
         <a href="#personalizar">Diseñador</a>
         <a href="#catalogo">Catálogo</a>
+        <a href="#modelos">Modelos</a>
         <a href="#eventos">Eventos</a>
         <a href="#como-funciona">Cómo funciona</a>
         <a href="#opiniones">Opiniones</a>
@@ -178,6 +179,7 @@
       <nav aria-label="Navegación móvil">
         <a href="#personalizar">Diseñador</a>
         <a href="#catalogo">Catálogo</a>
+        <a href="#modelos">Modelos</a>
         <a href="#eventos">Eventos</a>
         <a href="#como-funciona">Cómo funciona</a>
         <a href="#opiniones">Opiniones</a>
@@ -365,6 +367,7 @@
               </div>
               <div class="swatches" role="group" aria-label="Color de la sudadera">
                 <button type="button" class="swatch is-active" style="--sw:#1c1c1f" data-color="#1c1c1f" data-name="Negro" aria-label="Negro" aria-pressed="true"></button>
+                <button type="button" class="swatch" style="--sw:#ffffff" data-color="#ffffff" data-name="Blanco" aria-label="Blanco" aria-pressed="false"></button>
                 <button type="button" class="swatch" style="--sw:#efe6d6" data-color="#efe6d6" data-name="Crema" aria-label="Crema" aria-pressed="false"></button>
                 <button type="button" class="swatch" style="--sw:#cdf25a" data-color="#cdf25a" data-name="Lima" aria-label="Verde lima" aria-pressed="false"></button>
                 <button type="button" class="swatch" style="--sw:#f2603c" data-color="#f2603c" data-name="Naranja" aria-label="Naranja" aria-pressed="false"></button>
@@ -723,6 +726,78 @@
       </div>
     </section>
 
+    <!-- COLECCIÓN -->
+    <section class="collection" id="modelos">
+      <div class="container">
+        <div class="section-head section-head--row">
+          <div>
+            <span class="eyebrow">La colección</span>
+            <h2>Modelos que ya existen.</h2>
+          </div>
+          <p>Diseños listos para producir. Elige uno, se carga en el estudio con su logo y puedes ajustarlo antes de comprar.</p>
+        </div>
+
+        <div class="collection-grid">
+          <article class="model-card reveal">
+            <div class="model-card__visual">
+              <img src="assets/modelos/cocodrilo.webp" alt="Sudadera blanca con un cocodrilo de Miami al atardecer" loading="lazy" width="1000" height="1000">
+              <span class="model-card__badge">Nuevo</span>
+            </div>
+            <div class="model-card__body">
+              <div class="model-card__head">
+                <h3>Cocodrilo de Miami</h3>
+                <span class="model-card__price">$1,048</span>
+              </div>
+              <p>Sudadera blanca · DTG full color · estampado al frente.</p>
+              <button type="button" class="btn btn-dark btn-block" data-model="cocodrilo">Personalizar este modelo</button>
+            </div>
+          </article>
+
+          <article class="model-card reveal">
+            <div class="model-card__visual">
+              <img src="assets/modelos/insignia.webp" alt="Sudadera negra con insignia de atardecer y palmeras" loading="lazy" width="900" height="1103">
+            </div>
+            <div class="model-card__body">
+              <div class="model-card__head">
+                <h3>Insignia atardecer</h3>
+                <span class="model-card__price">$998</span>
+              </div>
+              <p>Sudadera negra · DTG full color · insignia al pecho.</p>
+              <button type="button" class="btn btn-dark btn-block" data-model="insignia">Personalizar este modelo</button>
+            </div>
+          </article>
+
+          <article class="model-card reveal">
+            <div class="model-card__visual">
+              <img src="assets/modelos/panorama.webp" alt="Sudadera negra con panorama de palmeras al atardecer" loading="lazy" width="900" height="1103">
+            </div>
+            <div class="model-card__body">
+              <div class="model-card__head">
+                <h3>Panorama Vice</h3>
+                <span class="model-card__price">$998</span>
+              </div>
+              <p>Sudadera negra · DTG full color · panorama al pecho.</p>
+              <button type="button" class="btn btn-dark btn-block" data-model="panorama">Personalizar este modelo</button>
+            </div>
+          </article>
+
+          <article class="model-card reveal">
+            <div class="model-card__visual">
+              <img src="assets/modelos/corazon.webp" alt="Sudadera negra con corazón neón" loading="lazy" width="900" height="1103">
+            </div>
+            <div class="model-card__body">
+              <div class="model-card__head">
+                <h3>Corazón neón</h3>
+                <span class="model-card__price">$998</span>
+              </div>
+              <p>Sudadera negra · DTG full color · corazón neón al pecho.</p>
+              <button type="button" class="btn btn-dark btn-block" data-model="corazon">Personalizar este modelo</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <!-- EVENTOS -->
     <section class="events" id="eventos">
       <div class="container">
@@ -988,6 +1063,7 @@
         <h4>Tienda</h4>
         <a href="#personalizar">Diseñador</a>
         <a href="#catalogo">Catálogo</a>
+        <a href="#modelos">Modelos</a>
         <a href="#eventos">Eventos</a>
         <a href="#faq">Guía de tallas</a>
         <a href="#faq">Estado del pedido</a>
@@ -1204,7 +1280,7 @@
   <script src="clip-config.js?v=20261112-sandbox2"></script>
 <script src="vendor/imagetracer-1.2.6.js?v=20261113-vec1"></script>
 <script src="vectorize.js?v=20261113-vec2"></script>
-<script src="app.js?v=20261113-editor2"></script>
+<script src="app.js?v=20261113-modelos1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>
