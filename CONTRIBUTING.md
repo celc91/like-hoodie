@@ -65,6 +65,17 @@ Para el panel y los pedidos necesitas el proyecto de Supabase:
 
 Más detalle en el [README](README.md#colección-de-modelos).
 
+## Ajustes del repositorio (GitHub)
+
+Hay ajustes que no viven en el código y hay que hacerlos en la web de GitHub:
+
+- **Homepage:** `https://likehoodie.com/` (no la URL de `github.io`).
+- **Description:** “Tienda de sudaderas personalizadas con editor tipo Canva, DTG y Supabase.”
+- **Topics:** `ecommerce`, `supabase`, `dtg`, `streetwear`, `vanilla-javascript`, `github-pages`.
+- **Social preview:** subir `docs/capturas/social-preview.png` (1280×640).
+- **Seguridad:** 2FA, secret scanning, Dependabot alerts y protección de `main`.
+- **Issues:** las plantillas de `.github/ISSUE_TEMPLATE` se activan solas al estar en `main`.
+
 ## Reportar un fallo
 
 Usa la plantilla de issue. Incluye URL, navegador, pasos y lo que esperabas.
