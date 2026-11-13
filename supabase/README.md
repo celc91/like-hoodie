@@ -92,12 +92,14 @@ El panel tiene `noindex` y no muestra datos sin iniciar sesión. Aun así, se re
 
    ```sh
    npx supabase login
-   npx supabase functions deploy process-logo --project-ref <project-ref>
+   npx supabase functions deploy process-logo --remote=<project-ref>
    ```
 
-3. Sube un logo en la tienda. Debe aparecer el estado
-   “Quitando el fondo del logo…” y después “Archivo de impresión listo”.
-4. En el pedido, el admin verá **Descargar print** con el DPI final.
+3. Sube un logo en la tienda o pulsa **Personalizar** en un modelo de la
+   colección. Debe aparecer el estado “Quitando el fondo del logo…” y después
+   “Archivo de impresión listo”.
+4. En el pedido, el admin verá **Descargar print** con el DPI final. Si el
+   procesado falla, el botón **Reprocesar** vuelve a lanzarlo.
 
 La función no necesita secretos propios: usa `SUPABASE_URL`,
 `SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY` del entorno de Supabase.

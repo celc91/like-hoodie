@@ -1,6 +1,6 @@
 # like hoodie ♡ — Sudaderas personalizadas
 
-Tienda online de demostración para vender sudaderas personalizadas. Incluye catálogo, configurador en vivo, carrito persistente y checkout simulado. Todo con HTML, CSS y JavaScript sin dependencias ni proceso de build.
+Tienda online de demostración para vender sudaderas personalizadas. Incluye catálogo base, colección de modelos, editor tipo Canva, carrito persistente y checkout simulado. Todo con HTML, CSS y JavaScript sin dependencias ni proceso de build.
 
 **Sitio:** https://likehoodie.com/
 
@@ -9,13 +9,18 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 ## Qué incluye
 
 - **Diseñador en vivo:** sudadera o tote bag, color, talla o medida, texto, tipografía, color de texto y subida de logo (PNG, JPG o WebP).
+- **Editor tipo Canva:** barra superior (producto, frente/espalda, historial), rail de herramientas (Producto, Texto, Logo), lienzo central y panel de propiedades contextual.
+- **Historial y atajos:** deshacer/rehacer, `Ctrl/Cmd+Z`, `Ctrl/Cmd+Shift+Z`, `Ctrl/Cmd+D`, flechas para mover y `Supr` para eliminar.
+- **Barra flotante del elemento:** centrar en el área, copiar el texto a la otra cara y eliminar.
 - **Productos:** sudadera de algodón en cinco materiales y tote bag de lona en tres, cada uno con su precio base, sus colores y sus técnicas.
+- **Colores:** negro, blanco, crema, lima, naranja, marino y rosa.
 - **Materiales:** algodón 400 g, algodón 320 g, French terry, mezcla 50/50 y poliéster técnico, con ajuste de precio y textura visual en el modelo.
 - **Técnicas de personalización:** DTG, DTF, bordado, serigrafía, vinilo textil y sublimación, con costos, acabados visuales y avisos de compatibilidad.
 - **Editor frontal y trasero:** cambia de vista, arrastra el texto y el logo, elige tipografía, ajusta su tamaño y personaliza cada cara por separado.
-- **Galería de vistas:** frente, perfil derecho, espalda y perfil izquierdo con miniaturas; los perfiles permiten revisar la prenda sin editar el diseño.
+- **Galería de vistas:** frente y espalda con miniaturas; el diseño de cada cara se guarda por separado.
 - **Precio dinámico:** base por color, material, técnica, suplemento de talla XXL y extra por logo en cada cara.
-- **Catálogo:** cuatro modelos con selección directa al configurador.
+- **Catálogo base:** cuatro colores con selección directa al configurador.
+- **Colección de modelos:** cuatro diseños listos (Cocodrilo de Miami, Insignia atardecer, Panorama Vice y Corazón neón) que se cargan en el editor con su logo y su color.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
 - **Persistencia:** el carrito se guarda en `localStorage` y se sincroniza con Supabase.
 - **Checkout de demostración:** formulario validado, confirmación de pedido y registro del pedido en Supabase. No procesa pagos reales.
@@ -28,6 +33,62 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Archivo de impresión DTG:** al subir el logo se recorta el fondo y se genera el PNG a 300 DPI en `order-prints`, con estado visible y descarga desde el admin.
 - **Responsive:** móvil, tablet y escritorio.
 - **Accesibilidad:** navegación por teclado, foco visible, etiquetas ARIA y respeto por `prefers-reduced-motion`.
+
+## Editor tipo Canva
+
+El estudio (`#personalizar`) se organiza como un editor, no como un formulario:
+
+- **Barra superior:** producto, cara del diseño (Frente/Espalda), deshacer/rehacer, guías y estado en vivo.
+- **Rail izquierdo:** Producto, Texto y Logo. El botón activo cambia el panel derecho.
+- **Lienzo central:** prenda, cuadrícula de impresión, zoom y miniaturas de frente/espalda.
+- **Panel derecho:** propiedades contextuales del elemento o del producto; al final, resumen, precio y **Añadir a la cesta**.
+- **Barra flotante sobre el elemento:** centrar, copiar el texto a la otra cara y eliminar.
+- **Guía de colocación plegable** con coordenadas y estado dentro/fuera del área.
+
+Atajos:
+
+| Atajo | Acción |
+| --- | --- |
+| `Ctrl/Cmd + Z` | Deshacer |
+| `Ctrl/Cmd + Shift + Z` o `Ctrl/Cmd + Y` | Rehacer |
+| `Ctrl/Cmd + D` | Copiar el texto a la otra cara |
+| Flechas | Mover el elemento activo 0.5 % (con `Shift`, 2 %) |
+| `Supr` / `Backspace` | Eliminar el elemento activo |
+
+El historial (50 pasos) cubre el diseño: texto, logo, posición, escala, rotación, tipografía y color del texto. No revierte la configuración del producto (color de prenda, talla, material o técnica).
+
+## Colección de modelos
+
+La sección **`#modelos`** muestra diseños que ya existen. Cada tarjeta carga el modelo en el estudio con su producto, color y logo, y lanza el archivo de impresión DTG.
+
+| Modelo | Prenda | Precio | Mockup | Logo |
+| --- | --- | --- | --- | --- |
+| Cocodrilo de Miami | Sudadera blanca | $1,048 | `assets/modelos/cocodrilo.webp` | `assets/modelos/cocodrilo-logo.png` |
+| Insignia atardecer | Sudadera negra | $998 | `assets/modelos/insignia.webp` | `assets/modelos/insignia-logo.png` |
+| Panorama Vice | Sudadera negra | $998 | `assets/modelos/panorama.webp` | `assets/modelos/panorama-logo.png` |
+| Corazón neón | Sudadera negra | $998 | `assets/modelos/corazon.webp` | `assets/modelos/corazon-logo.png` |
+
+Los logos de los modelos son PNG con transparencia. El del cocodrilo se recortó del arte original para que no imprima un fondo blanco.
+
+### Añadir un modelo
+
+1. Guarda el mockup en `assets/modelos/<id>.webp` (4:5, ~900 px de ancho).
+2. Guarda el arte en `assets/modelos/<id>-logo.png` con transparencia y menos de 5 MB.
+3. Añade una tarjeta en `index.html` dentro de `.collection-grid` con `data-model="<id>"`.
+4. Añade la entrada en `MODELS` (final de `app.js`):
+
+```js
+MODELS.miModelo = {
+  product: "hoodie",
+  color: "#1c1c1f",
+  colorName: "Negro",
+  side: "front",
+  logo: "assets/modelos/mi-modelo-logo.png",
+  fileName: "mi-modelo.png",
+};
+```
+
+Al pulsar la tarjeta se ejecuta `applyModel(id)`: ajusta producto/color/vista, descarga el logo, lo sube a Storage y arranca `process-logo`.
 
 ## Vectorizado de logo (en el navegador)
 
@@ -65,7 +126,7 @@ con su DPI. Si el archivo no está listo al pagar, el pedido guarda el
 
 # 2. Desplegar la función
 npx supabase login
-npx supabase functions deploy process-logo --project-ref <tu-project-ref>
+npx supabase functions deploy process-logo --remote=<tu-project-ref>
 ```
 
 No hacen falta secretos extra: `SUPABASE_URL`, `SUPABASE_ANON_KEY` y
@@ -269,7 +330,9 @@ update public.store_settings
 
 Los archivos de logo se suben al bucket privado **`order-logos`** de Supabase Storage. Se aceptan PNG, JPG y WebP de hasta 5 MB. El panel de administración genera enlaces firmados de una hora para verlos o descargarlos desde el detalle de cada pedido.
 
-La configuración del bucket y sus políticas RLS está en `supabase/storage-logos.sql`.
+Los derivados de producción (recorte y print) se guardan en **`order-prints`**, también privado. El admin descarga el print final con su DPI desde el pedido; el recorte se conserva para poder reprocesar sin volver a subir el original.
+
+La configuración de ambos buckets y sus políticas RLS está en `supabase/storage-logos.sql` y `supabase/logo-assets.sql`.
 
 ## Seguridad
 
@@ -277,10 +340,12 @@ La configuración del bucket y sus políticas RLS está en `supabase/storage-log
 - `supabase/storage-logos.sql` define el bucket privado y sus políticas.
 - `supabase/email-notifications.sql` envía los correos de pedido con Resend.
 - `supabase/clip-payments.sql` prepara los estados de pago y la configuración de Clip.
-- `supabase/functions/` contiene las Edge Functions de Clip.
+- `supabase/logo-assets.sql` crea la tabla `logo_assets`, el bucket privado `order-prints` y sus políticas.
+- `supabase/functions/` contiene las Edge Functions de Clip y `process-logo`.
 - `vendor/supabase-js.min.js` fija Supabase JS 2.119.0 en local para evitar dependencias flotantes de CDN.
+- `vendor/imagetracer-1.2.6.js` fija el motor de vectorización en el navegador.
 
-Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos.sql`, `security-hardening.sql`, `clip-payments.sql` y `email-notifications.sql`.
+Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos.sql`, `security-hardening.sql`, `logo-assets.sql`, `clip-payments.sql` y `email-notifications.sql`. Después despliega `process-logo` (ver “Archivo de impresión DTG automático”).
 
 ## Estructura
 
@@ -288,7 +353,8 @@ Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos
 .
 ├── index.html        # Contenido y estructura
 ├── styles.css        # Diseño, responsive y animaciones
-├── app.js            # Configurador, carrito, checkout y modales
+├── app.js            # Configurador, editor, modelos, carrito, checkout y modales
+├── vectorize.js      # Vectorizador de logos en el navegador
 ├── eventos.js        # Calendario de conciertos
 ├── eventos.json      # Cartelera de Ticketmaster México
 ├── store-supabase.js # Sincronización de carritos, pedidos y eventos
@@ -296,14 +362,14 @@ Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos
 ├── admin.html        # Panel de administración
 ├── admin.js          # Lógica del panel
 ├── admin.css         # Diseño del panel
-├── supabase/         # Esquema SQL y guía de configuración
+├── supabase/         # Esquema SQL, políticas y Edge Functions (Clip y process-logo)
 ├── scripts/          # Sincronización de la cartelera de eventos
 ├── legal.js          # Aviso de cookies y almacenamiento local
 ├── privacidad.html   # Aviso de privacidad
 ├── cookies.html      # Política de cookies
 ├── terminos.html     # Términos y condiciones
-├── assets/           # Fotografías de producto y máscaras
-├── vendor/           # Supabase JS fijado localmente
+├── assets/           # Fotos de producto, máscaras y modelos de la colección
+├── vendor/           # Supabase JS e ImageTracer fijados localmente
 ├── preview.png       # Captura para el README
 └── README.md
 ```
@@ -311,10 +377,12 @@ Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos
 ## Personalización rápida
 
 - **Colores de marca:** variables en `:root` dentro de `styles.css` (`--orange`, `--lime`, `--cream`, `--ink`).
-- **Precios:** constantes y mapa `BASE_PRICES` al inicio de `app.js`.
+- **Precios:** constantes y mapa `BASE_PRICES` al inicio de `app.js`. El blanco (`#ffffff`) cuesta $949 en sudadera y $379 en tote.
 - **Envío gratis:** `FREE_SHIPPING` en `app.js` (por defecto $1,200 MXN).
 - **Coste de envío:** `SHIPPING_COST` en `app.js`.
-- **Productos del catálogo:** tarjetas en `index.html` y sus botones `data-personalize`.
+- **Productos del catálogo base:** tarjetas en `index.html` y sus botones `data-personalize`.
+- **Modelos de la colección:** tarjetas `data-model` en `index.html` y el objeto `MODELS` al final de `app.js`.
+- **Editor:** el layout tipo Canva vive al final de `styles.css` (bloque “Editor tipo Canva — Fase 1”) y la lógica de historial/atajos en `app.js`.
 
 ## Fotografías de producto
 
