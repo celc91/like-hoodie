@@ -4610,6 +4610,18 @@ details[open] .plus::after {
   font-size: 9.5px;
 }
 
+.placement-status {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.placement-status.is-outside {
+  color: #a83226;
+}
+
 /* Coordenadas flotantes mientras se arrastra */
 .coord-bubble {
   position: absolute;

@@ -385,6 +385,7 @@
   const placementText = $("[data-placement-text]");
   const logoCoord = $("[data-logo-coord]");
   const textCoord = $("[data-text-coord]");
+  const placementStatusEl = $("[data-placement-status]");
   const studio = $(".studio");
   const personalizePanel = $(".personalize");
   const toolButtons = $$("[data-personalize-tool]");
@@ -1297,6 +1298,55 @@
     if (!design) return;
     if (logoCoord) logoCoord.textContent = formatCoord(design.logoX, design.logoY);
     if (textCoord) textCoord.textContent = formatCoord(design.textX, design.textY);
+    if (placementStatusEl) {
+      const status = placementStatusFor(activeCoord);
+      placementStatusEl.textContent = status.text;
+      placementStatusEl.classList.toggle("is-outside", status.outside);
+    }
+  }
+
+  function placementStatusFor(type) {
+    const design = state.designs[state.view];
+    if (!design) return { text: "", outside: false };
+    const area = PRINT_AREAS[state.product] || PRINT_AREAS.hoodie;
+    const x = Number(type === "text" ? design.textX : design.logoX) || 50;
+    const y = Number(type === "text" ? design.textY : design.logoY) || 50;
+    const centerX = area.x + area.w / 2;
+    const centerY = area.y + area.h / 2;
+    const inside =
+      x >= area.x && x <= area.x + area.w && y >= area.y && y <= area.y + area.h;
+    const name = type === "text" ? "Texto" : "Logo";
+    const fmt = (value) =>
+      String(Math.round(value * 10) / 10).replace(".", ",");
+
+    if (!inside) {
+      const hints = [];
+      if (x < area.x) hints.push("a la derecha");
+      else if (x > area.x + area.w) hints.push("a la izquierda");
+      if (y < area.y) hints.push("hacia abajo");
+      else if (y > area.y + area.h) hints.push("hacia arriba");
+      return {
+        text: `${name} fuera del área de impresión${
+          hints.length ? ` · muévelo ${hints.join(" y ")}` : ""
+        }.`,
+        outside: true,
+      };
+    }
+
+    const dx = x - centerX;
+    const dy = y - centerY;
+    const horizontal =
+      Math.abs(dx) < 0.6
+        ? "centrado horizontal"
+        : `${fmt(Math.abs(dx))} % a la ${dx > 0 ? "derecha" : "izquierda"}`;
+    const vertical =
+      Math.abs(dy) < 0.6
+        ? "centrado vertical"
+        : `${fmt(Math.abs(dy))} % ${dy > 0 ? "abajo" : "arriba"}`;
+    return {
+      text: `${name} dentro del área · ${horizontal} · ${vertical}.`,
+      outside: false,
+    };
   }
 
   function updateCoordBubble(element, x, y) {
