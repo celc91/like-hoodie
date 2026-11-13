@@ -515,6 +515,22 @@
     });
   }
 
+  document.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-reprocess]");
+    if (!button || button.disabled) return;
+    button.disabled = true;
+    try {
+      const { error } = await client.functions.invoke("process-logo", {
+        body: { assetId: button.dataset.reprocess, stage: "cutout" },
+      });
+      toast(error ? "No se pudo reprocesar." : "Reproceso iniciado.");
+    } catch (error) {
+      toast("No se pudo reprocesar.");
+    } finally {
+      button.disabled = false;
+    }
+  });
+
   const searchInput = $("#orders-search");
   if (searchInput) {
     let searchTimer = null;
@@ -686,9 +702,15 @@
     const label = PRINT_LABELS[asset.status] || "Print";
     const url = await signedPrintUrl(asset.path);
     if (!url) {
+      const id = String(design.logoAssetId || "");
+      const retry = /^[0-9a-f-]{36}$/i.test(id)
+        ? `<button type="button" class="print-retry" data-reprocess="${escapeHTML(
+            id
+          )}">Reprocesar</button>`
+        : "";
       return `<span class="print-badge" data-state="${escapeHTML(
         asset.status
-      )}">${escapeHTML(label)}</span>`;
+      )}">${escapeHTML(label)}</span>${retry}`;
     }
     const dpi = asset.dpi ? ` · ${asset.dpi} DPI` : "";
     return `<a class="logo-link logo-link--print" href="${escapeHTML(

@@ -870,6 +870,21 @@ a { color: inherit; }
   color: #b3261e;
 }
 
+.print-retry {
+  padding: 0;
+  border-bottom: 1px solid currentColor;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.print-retry:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
 .detail-total {
   display: flex;
   justify-content: space-between;
