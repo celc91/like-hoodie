@@ -5,6 +5,7 @@
    los 256 MB y 2 s de CPU de Supabase Edge Functions. */
 
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { clientIpHash } from "../_shared/clip.ts";
 import { cutoutStage, resizeStage } from "./processor.ts";
 
 const CORS = {
@@ -99,6 +100,7 @@ Deno.serve(async (req) => {
     const message = String(
       (error as Error)?.message || error || "error desconocido"
     ).slice(0, 500);
+    console.error("process-logo:", message);
     await admin
       .from("logo_assets")
       .update({
@@ -107,8 +109,56 @@ Deno.serve(async (req) => {
         attempts: Number(asset.attempts || 0) + 1,
       })
       .eq("id", assetId);
-    return json({ error: message }, 500);
+    return json({ error: "No se pudo procesar el logo" }, 500);
   };
+
+  if (!isService) {
+    const sourcePath = String(asset.source_path || "");
+    if (!asset.user_id || !sourcePath.startsWith(`${asset.user_id}/`)) {
+      await admin
+        .from("logo_assets")
+        .update({
+          status: "failed",
+          last_error: "source_path fuera de la carpeta del usuario",
+        })
+        .eq("id", assetId);
+      return json({ error: "No se pudo procesar el logo" }, 403);
+    }
+
+    if (Number(asset.attempts || 0) >= 3) {
+      await admin
+        .from("logo_assets")
+        .update({
+          status: "failed",
+          last_error: "Máximo de intentos alcanzado",
+        })
+        .eq("id", assetId);
+      return json(
+        { error: "Este logo alcanzó el máximo de intentos. Sube uno nuevo." },
+        429
+      );
+    }
+
+    const ipHash = await clientIpHash(req);
+    const { data: allowed, error: limitError } = await admin.rpc(
+      "take_logo_process",
+      { p_user_id: asset.user_id, p_ip_hash: ipHash }
+    );
+
+    if (limitError) {
+      console.error(
+        "process-logo: no se pudo aplicar el rate limit.",
+        limitError.message
+      );
+      return json({ error: "Servicio no disponible" }, 503);
+    }
+    if (allowed !== true) {
+      return json(
+        { error: "Demasiadas solicitudes. Espera unos minutos." },
+        429
+      );
+    }
+  }
 
   try {
     if (stage === "cutout") {

@@ -1,5 +1,8 @@
 -- Antispam para la lista del club: límite por IP + validación en servidor
 -- Ejecuta esto en Supabase → SQL Editor → Run (después de security-fixes.sql)
+--
+-- AVISO: versión antigua del alta. La versión vigente es optin-3-alta.sql
+-- (doble confirmación + Resend). No reejecutar este archivo después de optin-3.
 
 -- 1) Registro de intentos por IP (no accesible desde el navegador)
 create table if not exists public.newsletter_attempts (
@@ -33,6 +36,8 @@ begin
   end if;
 
   v_ip := coalesce(
+    nullif(current_setting('request.headers', true)::json ->> 'cf-connecting-ip', ''),
+    nullif(current_setting('request.headers', true)::json ->> 'x-real-ip', ''),
     nullif(
       split_part(
         coalesce(current_setting('request.headers', true)::json ->> 'x-forwarded-for', ''),

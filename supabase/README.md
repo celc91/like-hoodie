@@ -114,6 +114,10 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
 - `get_order_status(numero, correo)` ya no es público: solo lo invoca la Edge Function `order-status`, que aplica rate limit por IP (12 consultas/10 min) y no expone nombre, dirección ni teléfono. El límite se aplica con `take_order_lookup()`, un contador atómico que falla cerrado; usa `cf-connecting-ip` (cabecera que el gateway sobrescribe) y añade un tope global de 300/min.
 - `client_errors` solo lo lee el admin. Los errores se envían por `log_client_error()` o por la Edge Function `client-error`, con límites por sesión/IP y retención de 90 días. El contador `take_client_error()` es atómico (20/h por IP y 2.000/h global) y purga los intentos de más de 2 días.
 - Los carritos y pedidos limitan `items` a 50 artículos y 8 MiB; `place_order()` rechaza además cualquier artículo de más de 4 MiB. Así un carrito anónimo no puede inflar filas de varios MB sin tope.
+- `events.metadata` está limitado a 16 KiB y a 300 eventos/hora por usuario; cada usuario puede tener como máximo 10 carritos abiertos. Los carritos abandonados se borran a los 180 días.
+- `logo_assets` exige que `source_path` empiece por la carpeta del usuario y limita a 50 altas/24 h. `process-logo` aplica 20 intentos/h por usuario, 30/h por IP y 300/h global, con un máximo de 3 intentos por logo; los errores internos no se devuelven al cliente.
+- `check_coupon()` limita a 30 intentos/hora por IP con `coupon_attempts`.
+- El newsletter usa `cf-connecting-ip` para su límite de 5 altas/hora.
 - `clip-pay` aplica un límite por IP y por usuario antes de llamar a Clip (12 y 6 intentos/10 min) con `take_clip_pay()`.
 - Los pedidos solo los puede leer el administrador; el cliente puede ver los suyos.
 - Nadie puede cambiar su rol a administrador desde la web.
@@ -144,6 +148,8 @@ En un proyecto nuevo ejecuta:
 10. `fase4-seguridad.sql` (límites, rate limit y retención)
 11. `fase5-ratelimit.sql` (contador atómico `take_order_lookup`)
 12. `fase6-limites.sql` (topes de `items`, monitorización y `clip-pay`)
+13. `fase7-abuso.sql` (eventos, carritos, logos y `process-logo`)
+14. `antispam-cupones.sql` (límite de intentos de cupón)
 
 `fase1-pedidos-seguros.sql` deja una sola versión de `place_order`: recalcula
 precios en servidor, valida cupón, correo, teléfono, dirección, estado y CP, y

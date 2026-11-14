@@ -21,12 +21,19 @@ begin
     return jsonb_build_object('ok', false, 'reason', 'invalid');
   end if;
 
-  v_ip := left(trim(split_part(
-    coalesce(current_setting('request.headers', true)::json ->> 'x-forwarded-for', ''),
-    ',', 1)), 64);
-  if v_ip = '' then
-    v_ip := 'unknown';
-  end if;
+  v_ip := coalesce(
+    nullif(current_setting('request.headers', true)::json ->> 'cf-connecting-ip', ''),
+    nullif(current_setting('request.headers', true)::json ->> 'x-real-ip', ''),
+    nullif(
+      split_part(
+        coalesce(current_setting('request.headers', true)::json ->> 'x-forwarded-for', ''),
+        ',', 1
+      ),
+      ''
+    ),
+    'unknown'
+  );
+  v_ip := left(trim(v_ip), 64);
 
   delete from public.newsletter_attempts
    where created_at < now() - interval '7 days';

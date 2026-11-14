@@ -16,6 +16,34 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.9.0] — 2026-11-14
+
+### Añadido
+
+- **Límites de abuso** en `process-logo`: 20 intentos/h por usuario, 30/h por
+  IP, 300/h global y máximo de 3 intentos por logo. Los errores internos ya no
+  se devuelven al cliente.
+- `logo_assets` exige que `source_path` empiece por la carpeta del usuario y
+  limita a 50 altas/24 h.
+- `events.metadata` limitado a 16 KiB, nombre a 80 bytes y ruta a 300 bytes;
+  máximo de 300 eventos/h por usuario.
+- Máximo de 10 carritos abiertos por usuario y limpieza de carritos
+  abandonados a los 180 días.
+- `check_coupon()` con límite de 30 intentos/h por IP mediante
+  `coupon_attempts`.
+- El newsletter usa `cf-connecting-ip` para su límite de 5 altas/h.
+
+### Verificado
+
+- `fase4`, `fase7`, `antispam-cupones` y `optin-3` aplicadas en producción.
+- 21 llamadas a `take_logo_process`: **20 permitidas**.
+- 31 intentos de cupón: **30 `notfound` y 1 `rate`**.
+- Evento con metadata de 20 KB: rechazado por `events_metadata_size_chk`.
+- `logo_assets` con ruta ajena: rechazado por el trigger; ruta propia: aceptada.
+- Inserts normales de evento y carrito: aceptados.
+- `process-logo` sin sesión: **401**.
+- `html-validate` y smoke test (**57 comprobaciones**) sin errores.
+
 ## [1.8.5] — 2026-11-14
 
 ### Cambiado

@@ -184,6 +184,10 @@ begin
 
   delete from public.client_error_attempts
    where created_at < now() - interval '2 days';
+
+  delete from public.carts
+   where status in ('open', 'empty')
+     and updated_at < now() - interval '180 days';
 end;
 $$;
 
