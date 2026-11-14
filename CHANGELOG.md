@@ -9,8 +9,18 @@ semántico.
 ### Por hacer
 
 - Alineación horizontal/vertical por separado.
-- Plantillas de diseño dentro del editor.
 - Integración con Canva Connect (importar diseño y exportar PNG).
+
+## [1.1.4] — 2026-11-14
+
+### Añadido
+
+- **Plantillas de diseño** en el editor: Clásica, Panorama, Minimal, Neón,
+  Dúo y Cintura.
+- Aplican texto, tipografía, color de contraste, escala y posición a la cara
+  activa; la plantilla Dúo también coloca el logo si existe.
+- La aplicación respeta el bloqueo del texto, actualiza el panel de Texto y se
+  puede deshacer con el historial.
 
 ## [1.1.3] — 2026-11-14
 

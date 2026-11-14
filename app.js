@@ -487,6 +487,7 @@
   const redoButton = $("[data-redo]");
   const guideToggle = $("[data-guide-toggle]");
   const layersList = $("[data-layers-list]");
+  const templateGrid = $("[data-template-grid]");
   const priceEl = $("[data-price-display]");
   const priceNote = $("[data-price-note]");
   const couponInput = $("[data-coupon-input]");
@@ -3951,6 +3952,146 @@
       applyModel(button.dataset.model);
     });
   });
+
+  /* ---------------------------------------------------------------------- */
+  /* Plantillas de diseño                                                   */
+  /* ---------------------------------------------------------------------- */
+
+  const TEMPLATES = [
+    {
+      id: "clasica",
+      name: "Clásica",
+      desc: "Texto centrado al pecho",
+      text: "SIN EXCUSAS",
+      font: "bricolage",
+      scale: 1,
+      y: 49,
+    },
+    {
+      id: "panorama",
+      name: "Panorama",
+      desc: "Ancha, tipo cartel",
+      text: "MIAMI 86",
+      font: "anton",
+      scale: 1.25,
+      y: 52,
+    },
+    {
+      id: "minimal",
+      name: "Minimal",
+      desc: "Pequeña y arriba",
+      text: "LESS IS MORE",
+      font: "archivo",
+      scale: 0.8,
+      y: 36,
+    },
+    {
+      id: "neon",
+      name: "Neón",
+      desc: "Grande y de color",
+      text: "VICE",
+      font: "bebas",
+      scale: 1.5,
+      y: 44,
+      accent: true,
+    },
+    {
+      id: "duo",
+      name: "Dúo",
+      desc: "Texto abajo, logo arriba",
+      text: "LIKE",
+      font: "bricolage",
+      scale: 1,
+      y: 60,
+      logo: true,
+      logoY: 28,
+      logoScale: 0.9,
+    },
+    {
+      id: "cintura",
+      name: "Cintura",
+      desc: "Serif baja y elegante",
+      text: "1986",
+      font: "playfair",
+      scale: 1.1,
+      y: 66,
+    },
+  ];
+
+  function templateAccent() {
+    const dark = ["#1c1c1f", "#26324f"].includes(
+      String(state.color).toLowerCase()
+    );
+    return dark ? "#cdf25a" : "#ff4d1f";
+  }
+
+  function renderTemplates() {
+    if (!templateGrid) return;
+    templateGrid.innerHTML = TEMPLATES.map((template) => {
+      const font = TEXT_FONTS[template.font] || TEXT_FONTS.bricolage;
+      const logo = template.logo
+        ? '<i class="template-logo-dot" aria-hidden="true"></i>'
+        : "";
+      return `<button type="button" class="template-card" data-template="${template.id}">
+        <span class="template-preview ${font.className}"><span>${logo}${escapeHTML(
+          template.text
+        )}</span></span>
+        <span class="template-name">${escapeHTML(template.name)}</span>
+        <span class="template-desc">${escapeHTML(template.desc)}</span>
+      </button>`;
+    }).join("");
+  }
+
+  function applyTemplate(id) {
+    const template = TEMPLATES.find((item) => item.id === id);
+    if (!template) return;
+
+    const design = activeDesign();
+    if (design.textLocked) {
+      showToast("Desbloquea el texto para aplicar una plantilla.");
+      return;
+    }
+
+    const defaults = DEFAULT_POSITIONS[state.view] || DEFAULT_POSITIONS.front;
+    design.text = template.text;
+    design.textFont = template.font;
+    design.textScale = template.scale || 1;
+    design.textRotate = 0;
+    design.textColor = template.accent
+      ? templateAccent()
+      : contrastFor(state.color);
+    design.textX = 50;
+    design.textY = template.y ?? defaults.textY;
+    design.textHidden = false;
+
+    if (design.logo && template.logo && !design.logoLocked) {
+      design.logoX = 50;
+      design.logoY = template.logoY ?? defaults.logoY;
+      design.logoScale = template.logoScale ?? 1;
+    }
+
+    setActiveCoord("text");
+    if (textInput) textInput.value = design.text;
+    if (charCount) charCount.textContent = String(design.text.length);
+    if (textSizeInput) {
+      textSizeInput.value = String(Math.round(design.textScale * 100));
+    }
+    if (textSizeValue) {
+      textSizeValue.textContent = `${Math.round(design.textScale * 100)}%`;
+    }
+    updatePreview();
+    showToast(`Plantilla “${template.name}” aplicada.`);
+  }
+
+  if (templateGrid) {
+    templateGrid.addEventListener("click", (event) => {
+      const card = event.target.closest("[data-template]");
+      if (!card) return;
+      applyTemplate(card.dataset.template);
+    });
+  }
+
+  renderTemplates();
 
   if (removeLogoButton) {
     removeLogoButton.addEventListener("click", () => {

@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261114-capas1">
+  <link rel="stylesheet" href="styles.css?v=20261114-plantillas1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -308,6 +308,10 @@
                 <button type="button" class="personalize-tool" data-personalize-tool="capas" aria-pressed="false">
                   <span class="personalize-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m12 3 9 5-9 5-9-5 9-5Z" stroke-linejoin="round"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                   <span>Capas</span>
+                </button>
+                <button type="button" class="personalize-tool" data-personalize-tool="plantillas" aria-pressed="false">
+                  <span class="personalize-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+                  <span>Plantillas</span>
                 </button>
               </div>
             </div>
@@ -640,6 +644,15 @@
               </div>
               <div class="layers-list" data-layers-list></div>
               <p class="layers-note">Arriba se dibuja encima. El ojo oculta y el candado bloquea el elemento.</p>
+            </div>
+
+            <div class="personalize-panel templates-panel" data-personalize-panel="plantillas" hidden>
+              <div class="personalize-head">
+                <span class="personalize-title">Plantillas</span>
+                <span class="personalize-note">Esta cara</span>
+              </div>
+              <div class="template-grid" data-template-grid role="group" aria-label="Plantillas de diseño"></div>
+              <p class="layers-note">Aplican texto, tipografía y colocación a la cara actual. Si ya tienes logo, algunas también lo colocan.</p>
             </div>
 
             <div class="studio-summary">
@@ -1293,7 +1306,7 @@
   <script src="clip-config.js?v=20261112-sandbox2"></script>
 <script src="vendor/imagetracer-1.2.6.js?v=20261113-vec1"></script>
 <script src="vectorize.js?v=20261113-vec2"></script>
-<script src="app.js?v=20261114-copia1"></script>
+<script src="app.js?v=20261114-plantillas1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>
