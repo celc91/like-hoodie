@@ -25,8 +25,10 @@ semántico.
   337 KB.
 - Precarga del héroe con `fetchpriority="high"` y mockups de modelos con carga
   diferida.
-- El peso inicial baja de ~2,2 MB a ~250 KB; el pipeline de impresión sigue
-  recibiendo PNG (el navegador convierte el WebP antes de subirlo).
+- El peso de las imágenes baja de ~2,2 MB a ~160 KB; el LCP en 4G lenta
+  (1,6 Mbps, CPU 4×) pasa de ~20,9 s a ~2,6 s y el CLS queda en 0,017.
+- El pipeline de impresión sigue recibiendo PNG: el navegador convierte el
+  WebP antes de subirlo.
 
 ### Accesibilidad
 

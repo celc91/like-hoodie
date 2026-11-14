@@ -30,7 +30,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Plantillas de diseño:** seis composiciones (Clásica, Panorama, Minimal, Neón, Dúo y Cintura) que aplican texto, tipografía y colocación a la cara activa.
 - **Alineación:** botones para pegar el elemento activo a la izquierda, centro o derecha y arriba, medio o abajo del área de impresión, con el estado actual en el panel.
 - **Autoguardado:** el diseño se guarda como borrador en el navegador y se puede recuperar al volver con **Recuperar diseño**.
-- **Rendimiento:** mockups y logos en WebP, precarga del héroe y carga diferida de imágenes; el peso inicial baja de ~2,2 MB a ~250 KB.
+- **Rendimiento:** mockups y logos en WebP, precarga del héroe y carga diferida de imágenes. Las imágenes bajan de ~2,2 MB a ~160 KB y el LCP en 4G lenta pasa de ~21 s a ~2,6 s.
 - **Barra flotante del elemento:** centrar en el área, copiar al otro lado (texto y logo), bloquear y eliminar.
 - **Productos:** sudadera de algodón en cinco materiales y tote bag de lona en tres, cada uno con su precio base, sus colores y sus técnicas.
 - **Colores:** negro, blanco, crema, lima, naranja, marino y rosa.
