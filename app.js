@@ -4235,7 +4235,6 @@
 
   const siteHeader = $(".site-header");
   const editorTopbar = $(".editor-topbar");
-  let topbarFrame = 0;
 
   function updateTopbarState() {
     if (siteHeader) {
@@ -4252,18 +4251,10 @@
     );
   }
 
-  function requestTopbarUpdate() {
-    if (topbarFrame) return;
-    topbarFrame = window.requestAnimationFrame(() => {
-      topbarFrame = 0;
-      updateTopbarState();
-    });
-  }
-
-  window.addEventListener("scroll", requestTopbarUpdate, { passive: true });
-  window.addEventListener("resize", requestTopbarUpdate);
+  window.addEventListener("scroll", updateTopbarState, { passive: true });
+  window.addEventListener("resize", updateTopbarState);
   if (typeof ResizeObserver === "function" && siteHeader) {
-    new ResizeObserver(requestTopbarUpdate).observe(siteHeader);
+    new ResizeObserver(updateTopbarState).observe(siteHeader);
   }
   updateTopbarState();
 
