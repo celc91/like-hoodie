@@ -112,3 +112,11 @@
     }
   }
 })();
+
+(function () {
+  const button = document.getElementById("reopen-consent");
+  if (!button) return;
+  button.addEventListener("click", function () {
+    if (window.LikeHoodieConsent) window.LikeHoodieConsent.open();
+  });
+})();

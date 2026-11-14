@@ -86,7 +86,7 @@
             <option value="XL">XL</option>
             <option value="XXL">XXL (+$49)</option>
           </select>
-          <a class="btn btn-primary btn-block" data-buy-link href="../?comprar=cocodrilo&amp;talla=M#modelos">Comprar talla M</a>
+          <a class="btn btn-primary btn-block" data-buy-link data-model="cocodrilo" data-base-price="1048" href="../?comprar=cocodrilo&amp;talla=M#modelos">Comprar talla M</a>
           <p class="product-note">Preparamos el archivo de impresión al momento. La compra se completa en la tienda.</p>
         </div>
 
@@ -150,23 +150,7 @@
     </div>
   </footer>
 
-  <script>
-    (function () {
-      var basePrice = 1048;
-      var select = document.querySelector("[data-product-size]");
-      var price = document.querySelector("[data-product-price]");
-      var link = document.querySelector("[data-buy-link]");
-      if (!select || !price || !link) return;
-      function sync() {
-        var total = basePrice + (select.value === "XXL" ? 49 : 0);
-        price.textContent = "$" + total.toLocaleString("es-MX");
-        link.href = "../?comprar=cocodrilo&talla=" + encodeURIComponent(select.value) + "#modelos";
-        link.textContent = "Comprar talla " + select.value;
-      }
-      select.addEventListener("change", sync);
-      sync();
-    })();
-  </script>
+  <script src="producto.js?v=20261114-csp1"></script>
   <script src="../whatsapp-config.js?v=20261114-fase4d"></script>
   <script src="../whatsapp.js?v=20261114-fase4d"></script>
 </body>

@@ -18,6 +18,7 @@ const SITE = "https://likehoodie.com";
 const CSS_VERSION = "20261114-fase4c";
 const WHATSAPP_VERSION = "20261114-fase4d";
 const MONITOR_VERSION = "20261114-fase5";
+const PRODUCT_VERSION = "20261114-csp1";
 
 const escapeHTML = (value) =>
   String(value)
@@ -174,7 +175,7 @@ function page(model) {
             <option value="XL">XL</option>
             <option value="XXL">XXL (+$49)</option>
           </select>
-          <a class="btn btn-primary btn-block" data-buy-link href="../?comprar=${model.id}&amp;talla=M#modelos">Comprar talla M</a>
+          <a class="btn btn-primary btn-block" data-buy-link data-model="${escapeHTML(model.id)}" data-base-price="${model.price}" href="../?comprar=${model.id}&amp;talla=M#modelos">Comprar talla M</a>
           <p class="product-note">Preparamos el archivo de impresión al momento. La compra se completa en la tienda.</p>
         </div>
 
@@ -236,23 +237,7 @@ function page(model) {
     </div>
   </footer>
 
-  <script>
-    (function () {
-      var basePrice = ${model.price};
-      var select = document.querySelector("[data-product-size]");
-      var price = document.querySelector("[data-product-price]");
-      var link = document.querySelector("[data-buy-link]");
-      if (!select || !price || !link) return;
-      function sync() {
-        var total = basePrice + (select.value === "XXL" ? 49 : 0);
-        price.textContent = "$" + total.toLocaleString("es-MX");
-        link.href = "../?comprar=${model.id}&talla=" + encodeURIComponent(select.value) + "#modelos";
-        link.textContent = "Comprar talla " + select.value;
-      }
-      select.addEventListener("change", sync);
-      sync();
-    })();
-  </script>
+  <script src="producto.js?v=${PRODUCT_VERSION}"></script>
   <script src="../whatsapp-config.js?v=${WHATSAPP_VERSION}"></script>
   <script src="../whatsapp.js?v=${WHATSAPP_VERSION}"></script>
 </body>
