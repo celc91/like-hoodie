@@ -82,7 +82,8 @@ check("whatsapp: número", read("whatsapp-config.js").includes("5215552142692"))
 check("whatsapp: botón", index.includes("whatsapp.js"));
 check("monitor: cliente", index.includes("monitor.js"));
 check("monitor: tabla", read("supabase/fase3-monitorizacion.sql").includes("log_client_error"));
-check("seguimiento: edge function", read("supabase/functions/order-status/index.ts").includes("MAX_LOOKUPS"));
+check("seguimiento: edge function", read("supabase/functions/order-status/index.ts").includes('"take_order_lookup"'));
+check("seguimiento: rate limit SQL", read("supabase/fase5-ratelimit.sql").includes("grant execute on function public.take_order_lookup"));
 check("monitor: edge function", read("supabase/functions/client-error/index.ts").includes("MAX_ERRORS_PER_HOUR"));
 check("seguridad: retención", read("supabase/fase4-seguridad.sql").includes("cleanup_monitoring"));
 check("producto: monitor", read("modelos/cocodrilo.html").includes("monitor.js"));
