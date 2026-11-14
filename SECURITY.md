@@ -43,7 +43,8 @@ políticas SQL y las Edge Functions de Supabase. También es relevante:
   scripts inline y redirección `www` al dominio principal. Los registros de
   correo no se proxean.
 - Cloudflare bloquea los archivos internos (`/supabase/`, `/scripts/`,
-  `*.sql`, `*.ts`, `*.md`) y el DNS tiene DMARC en `quarantine`, CAA y DNSSEC.
+  `*.sql`, `*.ts`, `*.md`) y el DNS tiene DMARC en `quarantine`, CAA y DNSSEC
+  activado (DS en propagación por Cloudflare Registrar).
 - `/.well-known/security.txt` documenta el canal de reporte de vulnerabilidades.
 
 ## Si se filtra una credencial
