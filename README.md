@@ -418,7 +418,7 @@ La configuración de ambos buckets y sus políticas RLS está en `supabase/stora
 - `supabase/functions/` contiene las Edge Functions de Clip y `process-logo`.
 - `vendor/supabase-js.min.js` fija Supabase JS 2.119.0 en local para evitar dependencias flotantes de CDN.
 - `vendor/imagetracer-1.2.6.js` fija el motor de vectorización en el navegador.
-- **Cloudflare** aplica CSP, HSTS y cabeceras de seguridad, bloquea los archivos internos (`/supabase/`, `/scripts/`, `*.sql`, `*.ts`, `*.md`) y redirige `www` al dominio principal. DMARC está en `quarantine`, con CAA y DNSSEC activos.
+- **Cloudflare** aplica CSP, HSTS y cabeceras de seguridad, bloquea los archivos internos (`/supabase/`, `/scripts/`, `*.sql`, `*.ts`, `*.md`) y redirige `www` al dominio principal. La CSP no permite scripts inline (`script-src` sin `unsafe-inline`); los estilos inline siguen permitidos. DMARC está en `quarantine`, con CAA y DNSSEC activos.
 - El panel de administración exige **MFA TOTP**, guarda la sesión en `sessionStorage` y la cierra a los 30 minutos de inactividad.
 - `/.well-known/security.txt` indica cómo reportar una vulnerabilidad.
 

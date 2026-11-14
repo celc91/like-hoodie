@@ -39,8 +39,9 @@ políticas SQL y las Edge Functions de Supabase. También es relevante:
   permisos con `aal2`, la sesión vive en `sessionStorage` y se cierra tras 30
   minutos de inactividad.
 - Cloudflare va delante de GitHub Pages con SSL **Full (strict)**, HSTS,
-  `nosniff`, `Referrer-Policy`, `Permissions-Policy`, una CSP por origen y
-  redirección `www` al dominio principal. Los registros de correo no se proxean.
+  `nosniff`, `Referrer-Policy`, `Permissions-Policy`, una CSP por origen sin
+  scripts inline y redirección `www` al dominio principal. Los registros de
+  correo no se proxean.
 - Cloudflare bloquea los archivos internos (`/supabase/`, `/scripts/`,
   `*.sql`, `*.ts`, `*.md`) y el DNS tiene DMARC en `quarantine`, CAA y DNSSEC.
 - `/.well-known/security.txt` documenta el canal de reporte de vulnerabilidades.

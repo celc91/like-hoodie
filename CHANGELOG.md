@@ -16,13 +16,36 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.10.2] — 2026-11-14
+
+### Seguridad
+
+- Se externalizaron los scripts inline de `index.html`, `confirmar.html`,
+  `cookies.html` y las páginas de producto (`boot.js`, `confirmar.js`,
+  `modelos/producto.js`); el botón de preferencias de cookies pasó a
+  `legal.js`.
+- La CSP ya **no permite `unsafe-inline` en `script-src`**. Se añadió
+  `script-src-attr 'none'`, así que tampoco se aceptan manejadores inline.
+- Los estilos inline se mantienen con `style-src 'unsafe-inline'` por los
+  atributos de estilo del editor; eliminarlos requiere un refactor aparte.
+
+### Verificado
+
+- Home, producto, `confirmar`, cookies, seguimiento y admin cargan sin errores
+  de consola.
+- Google Analytics, Meta, Cloudflare Insights y el botón de preferencias siguen
+  funcionando.
+- El selector de talla del producto sigue actualizando precio y enlace.
+- `node --check`, `html-validate` y smoke test con **57 comprobaciones**.
+
 ## [1.10.1] — 2026-11-14
 
 ### Seguridad
 
 - **CSP por origen** en Cloudflare: limita scripts, estilos, imágenes, fuentes,
-  conexiones y frames a los proveedores reales. Mantiene `unsafe-inline` porque
-  el sitio usa scripts y estilos inline; una CSP sin inline requiere refactor.
+  conexiones y frames a los proveedores reales. En 1.10.2 se retiró
+  `unsafe-inline` de `script-src` al externalizar los scripts; los estilos
+  inline siguen permitidos con `style-src 'unsafe-inline'`.
 - **WAF:** bloquea `/supabase/`, `/scripts/`, `/.opencode/`, `.md`, `.sql`,
   `.ts`, `.mjs`, `.gitignore`, `.htmlvalidate.json` y `.nojekyll`.
 - **Admin:** la sesión pasa a `sessionStorage` (no sobrevive al cierre de la
