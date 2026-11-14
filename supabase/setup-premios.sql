@@ -1,5 +1,9 @@
 ﻿-- like hoodie · Club + cupones (ejecutar una vez)
 
+-- AVISO: la versión de place_order definida en este archivo es antigua y
+-- confiaba en el unitPrice del navegador. No la ejecutes en producción sin
+-- aplicar después supabase/fase1-pedidos-seguros.sql (versión segura).
+
 -- Lista del Club like hoodie
 -- Ejecuta esto en Supabase â†’ SQL Editor â†’ Run
 

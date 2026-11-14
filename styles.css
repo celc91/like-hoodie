@@ -3231,7 +3231,8 @@ details[open] .plus::after {
   color: var(--ink-soft);
 }
 
-.field input {
+.field input,
+.field select {
   width: 100%;
   padding: 11px 13px;
   border: 1px solid var(--line);
@@ -3243,11 +3244,17 @@ details[open] .plus::after {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.field select {
+  padding-right: 34px;
+  cursor: pointer;
+}
+
 .field input::placeholder {
   color: #b0a99e;
 }
 
-.field input:focus {
+.field input:focus,
+.field select:focus {
   outline: none;
   border-color: var(--ink);
   box-shadow: 0 0 0 3px rgba(255, 77, 31, 0.13);
@@ -3255,7 +3262,7 @@ details[open] .plus::after {
 
 .field-row {
   display: grid;
-  grid-template-columns: 1fr 0.7fr;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 

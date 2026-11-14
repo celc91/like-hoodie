@@ -800,7 +800,8 @@
     return `<div class="design-meta">${rows.join("")}</div>`;
   }
 
-  function designFont(id) {    const fonts = {
+  function designFont(id) {
+    const fonts = {
       bricolage: "'Bricolage Grotesque', system-ui, sans-serif",
       anton: "Anton, Impact, sans-serif",
       archivo: "'Archivo Black', 'Arial Black', sans-serif",
@@ -808,6 +809,12 @@
       playfair: "'Playfair Display', Georgia, serif",
     };
     return fonts[id] || fonts.bricolage;
+  }
+
+  /* Solo colores hex: nunca se interpola texto libre en un atributo style. */
+  function safeHex(value, fallback) {
+    const clean = String(value || "").trim();
+    return /^#[0-9a-f]{6}$/i.test(clean) ? clean : fallback;
   }
 
   /* Prenda con el diseño guardado en el pedido (frente o espalda). */
@@ -818,7 +825,7 @@
       isTote ? ".svg" : ".png"
     }`;
     const text = String(design.text || "").trim();
-    const color = item?.colorHex || "#1c1c1f";
+    const color = safeHex(item?.colorHex, "#1c1c1f");
     const tx = Number(design.textX);
     const ty = Number(design.textY);
     const lx = Number(design.logoX);
@@ -837,7 +844,7 @@
       `z-index:${textOnTop ? 4 : 2}`,
       `--tx-scale:${Number(design.textScale) || 1}`,
       `--tx-rot:${Number(design.textRotate) || 0}deg`,
-      `color:${design.textColor || "#fffdf8"}`,
+      `color:${safeHex(design.textColor, "#fffdf8")}`,
       `font-family:${designFont(design.textFont)}`,
     ].join(";");
 
@@ -1029,10 +1036,17 @@
         )}</strong></div>
         <div><span>Email</span><strong>${escapeHTML(order.email)}</strong></div>
         <div><span>Teléfono</span><strong>${escapeHTML(order.phone || "—")}</strong></div>
-        <div><span>Ciudad / CP</span><strong>${escapeHTML(
-          [order.city, order.zip].filter(Boolean).join(" · ") || "—"
+        <div><span>Ciudad / Estado / CP</span><strong>${escapeHTML(
+          [order.city, order.state, order.zip].filter(Boolean).join(" · ") || "-"
         )}</strong></div>
-        <div><span>Dirección</span><strong>${escapeHTML(order.address || "—")}</strong></div>
+        <div><span>Dirección</span><strong>${escapeHTML(order.address || "-")}</strong></div>
+        ${
+          order.address_ref
+            ? `<div><span>Referencias</span><strong>${escapeHTML(
+                order.address_ref
+              )}</strong></div>`
+            : ""
+        }
         <div><span>Pago</span><strong>${escapeHTML(
           order.payment_method === "clip" ? "Clip" : "Demostración"
         )} · ${escapeHTML(
@@ -1154,7 +1168,7 @@
       return;
     }
     const rows = [
-      ["Pedido", "Fecha", "Estado", "Pago", "Cliente", "Email", "Teléfono", "Dirección", "Ciudad", "CP", "Artículos", "Subtotal", "Envío", "Total", "Notas"],
+      ["Pedido", "Fecha", "Estado del pedido", "Pago", "Cliente", "Email", "Teléfono", "Dirección", "Referencias", "Ciudad", "Estado (envío)", "CP", "Artículos", "Subtotal", "Envío", "Total", "Notas"],
       ...(data || []).map((order) => [
         `LH-${order.number}`,
         order.created_at,
@@ -1164,7 +1178,9 @@
         order.email,
         order.phone || "",
         order.address || "",
+        order.address_ref || "",
         order.city || "",
+        order.state || "",
         order.zip || "",
         itemsSummary(order.items),
         order.subtotal,

@@ -1541,6 +1541,11 @@
   }
 
   if (checkoutForm) {
+    const phoneField = checkoutForm.querySelector('[name="phone"]');
+    if (phoneField) {
+      phoneField.addEventListener("input", () => phoneField.setCustomValidity(""));
+    }
+
     checkoutForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (!checkoutForm.checkValidity()) {
@@ -1554,9 +1559,22 @@
         email: String(data.get("email") || "").trim(),
         phone: String(data.get("phone") || "").trim(),
         address: String(data.get("address") || "").trim(),
+        addressRef: String(data.get("addressRef") || "").trim(),
         city: String(data.get("city") || "").trim(),
+        state: String(data.get("state") || "").trim(),
         zip: String(data.get("zip") || "").trim(),
       };
+
+      const phoneDigits = customer.phone.replace(/\D/g, "");
+      if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+        if (phoneField) {
+          phoneField.setCustomValidity("Escribe un teléfono de 10 dígitos.");
+          phoneField.reportValidity();
+          phoneField.focus();
+        }
+        return;
+      }
+      if (phoneField) phoneField.setCustomValidity("");
       const { subtotal, shipping, total } = totals();
       const analytics = window.StoreSupabase;
       const submitButton = checkoutForm.querySelector('button[type="submit"]');

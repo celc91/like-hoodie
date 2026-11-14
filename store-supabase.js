@@ -38,7 +38,9 @@
     if (!design) return null;
     return {
       text: String(design.text || "").slice(0, 40),
-      textColor: design.textColor || null,
+      textColor: /^#[0-9a-f]{6}$/i.test(String(design.textColor || ""))
+        ? String(design.textColor).toLowerCase()
+        : null,
       textScale: Number(design.textScale) || 1,
       textFont: design.textFont || "bricolage",
       logoName: String(design.logoName || "").slice(0, 160),
@@ -432,12 +434,14 @@
       await findCart();
 
       const row = {
-        name: String(order.customer?.name || "").trim(),
-        email: String(order.customer?.email || "").trim(),
-        phone: String(order.customer?.phone || "").trim(),
-        address: String(order.customer?.address || "").trim(),
-        city: String(order.customer?.city || "").trim(),
-        zip: String(order.customer?.zip || "").trim(),
+        name: String(order.customer?.name || "").trim().slice(0, 120),
+        email: String(order.customer?.email || "").trim().slice(0, 160),
+        phone: String(order.customer?.phone || "").trim().slice(0, 40),
+        address: String(order.customer?.address || "").trim().slice(0, 240),
+        addressRef: String(order.customer?.addressRef || "").trim().slice(0, 160),
+        city: String(order.customer?.city || "").trim().slice(0, 120),
+        state: String(order.customer?.state || "").trim().slice(0, 80),
+        zip: String(order.customer?.zip || "").trim().slice(0, 20),
       };
 
       // Deja registrado el permiso de publicidad justo antes de crear el pedido,

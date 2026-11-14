@@ -16,6 +16,35 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.2.0] — 2026-11-14
+
+### Seguridad
+
+- **Una sola `place_order` segura:** se eliminan las sobrecargas antiguas que
+  confiaban en el `unitPrice` del navegador y se instala la versión de 5
+  argumentos que recalcula el precio con `item_unit_price()`.
+- Valida correo, teléfono (10–15 dígitos), dirección, estado, CP (5 dígitos) y
+  aplica límites de 5 pedidos/hora por usuario y 3 por correo.
+- El cupón se valida y se descuenta en servidor; `coupons` deja de ser legible
+  desde el navegador.
+- **XSS del panel corregido:** `textColor` y `colorHex` se validan como hex en
+  el cliente y en el servidor antes de pintarse en el admin.
+
+### Añadido
+
+- Campos de envío **estado** y **referencias** en el checkout, la tabla
+  `orders`, el detalle del admin y la exportación CSV.
+- **Teléfono obligatorio** y CP con validación de 5 dígitos.
+
+### Verificado
+
+- Pedido de prueba LH-1013 con estado, referencias y teléfono guardados y
+  visibles; total correcto de $998.
+- Pedido con `unitPrice` manipulado rechazado con error 22023.
+- Pedido con `textColor` malicioso rechazado antes de guardarse.
+- Cesta y checkout sin errores de consola; validación de teléfono de 9 dígitos
+  bloqueada antes de crear el pedido.
+
 ## [1.1.6] — 2026-11-14
 
 ### Añadido

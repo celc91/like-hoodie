@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261114-alinea1">
+  <link rel="stylesheet" href="styles.css?v=20261114-fase1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -1272,12 +1272,16 @@
             <input id="f-email" name="email" type="email" required autocomplete="email" placeholder="ana@email.com">
           </div>
           <div class="field">
-            <label for="f-phone">Teléfono / WhatsApp (opcional)</label>
-            <input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="55 1234 5678">
+            <label for="f-phone">Teléfono / WhatsApp</label>
+            <input id="f-phone" name="phone" type="tel" required autocomplete="tel" inputmode="tel" placeholder="55 1234 5678">
           </div>
           <div class="field">
             <label for="f-address">Dirección</label>
-            <input id="f-address" name="address" type="text" required autocomplete="street-address" placeholder="Calle, número, piso">
+            <input id="f-address" name="address" type="text" required autocomplete="address-line1" placeholder="Calle, número, piso">
+          </div>
+          <div class="field">
+            <label for="f-address-ref">Referencias (opcional)</label>
+            <input id="f-address-ref" name="addressRef" type="text" autocomplete="off" placeholder="Entre calles, número de casa, indicaciones">
           </div>
           <div class="field-row">
             <div class="field">
@@ -1285,9 +1289,47 @@
               <input id="f-city" name="city" type="text" required autocomplete="address-level2" placeholder="Ciudad de México">
             </div>
             <div class="field">
-              <label for="f-zip">Código postal</label>
-              <input id="f-zip" name="zip" type="text" required autocomplete="postal-code" placeholder="06700" inputmode="numeric">
+              <label for="f-state">Estado</label>
+              <select id="f-state" name="state" required autocomplete="address-level1">
+                <option value="">Selecciona…</option>
+                <option>Aguascalientes</option>
+                <option>Baja California</option>
+                <option>Baja California Sur</option>
+                <option>Campeche</option>
+                <option>Chiapas</option>
+                <option>Chihuahua</option>
+                <option>Ciudad de México</option>
+                <option>Coahuila</option>
+                <option>Colima</option>
+                <option>Durango</option>
+                <option>Estado de México</option>
+                <option>Guanajuato</option>
+                <option>Guerrero</option>
+                <option>Hidalgo</option>
+                <option>Jalisco</option>
+                <option>Michoacán</option>
+                <option>Morelos</option>
+                <option>Nayarit</option>
+                <option>Nuevo León</option>
+                <option>Oaxaca</option>
+                <option>Puebla</option>
+                <option>Querétaro</option>
+                <option>Quintana Roo</option>
+                <option>San Luis Potosí</option>
+                <option>Sinaloa</option>
+                <option>Sonora</option>
+                <option>Tabasco</option>
+                <option>Tamaulipas</option>
+                <option>Tlaxcala</option>
+                <option>Veracruz</option>
+                <option>Yucatán</option>
+                <option>Zacatecas</option>
+              </select>
             </div>
+          </div>
+          <div class="field">
+            <label for="f-zip">Código postal</label>
+            <input id="f-zip" name="zip" type="text" required autocomplete="postal-code" placeholder="06700" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" title="Escribe los 5 dígitos del código postal">
           </div>
           <div class="sandbox-pay" data-sandbox-pay hidden>
             <div class="sandbox-pay__head">
@@ -1371,7 +1413,7 @@
   <script src="clip-config.js?v=20261112-sandbox2"></script>
 <script src="vendor/imagetracer-1.2.6.js?v=20261113-vec1"></script>
 <script src="vectorize.js?v=20261113-vec2"></script>
-<script src="app.js?v=20261114-alinea1"></script>
+<script src="app.js?v=20261114-fase1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>

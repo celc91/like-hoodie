@@ -109,6 +109,8 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
 - Los visitantes solo pueden leer y modificar **su propio carrito**.
 - Los pedidos se crean únicamente con la función `public.place_order()`, que recalcula subtotal, envío y total en el servidor. No se permite insertar pedidos directamente desde el navegador.
 - `place_order()` valida cada precio contra `public.product_prices` y rechaza cualquier pedido cuyo `unitPrice` no coincida.
+- `place_order()` exige teléfono de 10–15 dígitos, dirección, ciudad, estado y CP de 5 dígitos; guarda `state` y `address_ref` para la guía de envío.
+- La tabla `coupons` no es legible desde el navegador: los códigos se validan solo con `check_coupon()`.
 - Los pedidos solo los puede leer el administrador; el cliente puede ver los suyos.
 - Nadie puede cambiar su rol a administrador desde la web.
 - No se guardan datos de tarjetas.
@@ -129,8 +131,16 @@ En un proyecto nuevo ejecuta:
 1. `schema.sql`
 2. `storage-logos.sql`
 3. `security-hardening.sql`
-4. `clip-payments.sql`
-5. `email-notifications.sql`
+4. `coupons.sql`
+5. `clip-payments.sql`
+6. `email-notifications.sql`
+7. `fase1-pedidos-seguros.sql` (**siempre al final**)
+
+`fase1-pedidos-seguros.sql` deja una sola versión de `place_order`: recalcula
+precios en servidor, valida cupón, correo, teléfono, dirección, estado y CP, y
+guarda `state` y `address_ref`. Los archivos `coupons.sql` y
+`setup-premios.sql` contienen una versión antigua de la función; si los vuelves
+a ejecutar, aplica de nuevo `fase1-pedidos-seguros.sql` después.
 
 `clip-payments.sql` crea `store_settings` con `clip_enabled = 'false'`. Mientras esté en `false`, el checkout sigue siendo demostración.
 

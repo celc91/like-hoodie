@@ -1,3 +1,7 @@
+-- AVISO: la versión de place_order definida más abajo es antigua y confiaba
+-- en el unitPrice del navegador. No la ejecutes en producción sin aplicar
+-- después supabase/fase1-pedidos-seguros.sql, que instala la versión segura.
+
 -- Cupones de descuento + aplicación segura en el servidor
 -- Ejecuta esto en Supabase → SQL Editor → Run
 
