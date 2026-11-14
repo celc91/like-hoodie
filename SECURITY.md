@@ -32,6 +32,9 @@ políticas SQL y las Edge Functions de Supabase. También es relevante:
 - Los logos y prints se sirven con enlaces firmados de una hora.
 - Los buckets son privados; el print solo lo puede leer un administrador.
 - El checkout real de Clip está desactivado por defecto.
+- Cloudflare va delante de GitHub Pages con SSL **Full (strict)**, HSTS,
+  `nosniff`, `Referrer-Policy`, `Permissions-Policy`, CSP de `frame-ancestors` y
+  redirección `www` al dominio principal. Los registros de correo no se proxean.
 
 ## Si se filtra una credencial
 

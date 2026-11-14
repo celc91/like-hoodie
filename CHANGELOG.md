@@ -16,6 +16,33 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.8.3] — 2026-11-14
+
+### Cambiado
+
+- **Cloudflare delante de GitHub Pages:** los registros `A` del dominio y el
+  `CNAME www` pasan a **proxied**. Los registros de correo (`send`, `rsend`, MX
+  y TXT) siguen solo DNS.
+- **SSL/TLS:** modo **Full (strict)**, TLS 1.2 mínimo, HTTP/3, **Always Use
+  HTTPS** y HSTS de 6 meses (sin `preload` ni `includeSubDomains`).
+- **Cabeceras de seguridad** en todas las respuestas: `X-Content-Type-Options`,
+  `Referrer-Policy`, `Permissions-Policy`, CSP con `frame-ancestors 'self'`,
+  `X-Frame-Options` y `X-Permitted-Cross-Domain-Policies`.
+- **Redirección `www` → dominio principal** en el edge, 301 y conservando ruta
+  y query.
+
+### Verificado
+
+- `https://likehoodie.com/` responde 200 con `Server: cloudflare`.
+- `http://likehoodie.com/` → 301 a HTTPS.
+- `https://www.likehoodie.com/modelos/cocodrilo.html?x=1&y=2` → 301 a
+  `https://likehoodie.com/modelos/cocodrilo.html?x=1&y=2`.
+- HSTS, `nosniff`, `Referrer-Policy`, `Permissions-Policy`,
+  `frame-ancestors 'self'`, `X-Frame-Options` y
+  `X-Permitted-Cross-Domain-Policies` presentes en apex y www.
+- Home, producto, admin, CSS, JS, sitemap y robots: 200; sin errores de consola.
+- Correo: `send` y `rsend` siguen sin proxy.
+
 ## [1.8.2] — 2026-11-14
 
 ### Corregido

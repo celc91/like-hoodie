@@ -212,10 +212,22 @@ python -m http.server 4173
 4. Elige la rama `main`, carpeta `/ (root)` y guarda.
 5. El sitio se publica en `https://likehoodie.com/`.
 
-El archivo `CNAME` ya contiene el dominio personalizado. En el proveedor de DNS (Cloudflare) deben existir estos registros, sin proxy:
+El archivo `CNAME` ya contiene el dominio personalizado. En Cloudflare deben existir estos registros:
 
-- `A @` → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
-- `CNAME www` → `celc91.github.io`.
+- `A @` → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`, **proxied**.
+- `CNAME www` → `celc91.github.io`, **proxied**.
+- `send` y `rsend` (Resend), MX y TXT se quedan **solo DNS**: no deben proxearse.
+
+En **SSL/TLS** usa **Full (strict)**, TLS 1.2 como mínimo, **Always Use HTTPS** y HSTS
+(`max-age=15552000`, sin `preload` ni `includeSubDomains`). En **Rules** hay dos reglas:
+
+- **Cabeceras de respuesta:** `X-Content-Type-Options: nosniff`,
+  `Referrer-Policy: strict-origin-when-cross-origin`,
+  `Permissions-Policy: camera=(), microphone=(), geolocation=()`,
+  `Content-Security-Policy: frame-ancestors 'self'`,
+  `X-Frame-Options: SAMEORIGIN` y `X-Permitted-Cross-Domain-Policies: none`.
+- **Redirección:** `www.likehoodie.com` → `https://likehoodie.com`, 301,
+  conservando ruta y query.
 
 Cuando GitHub verifique el dominio y emita el certificado, activa **Enforce HTTPS** en **Settings → Pages**.
 
