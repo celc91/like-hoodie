@@ -16,6 +16,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const models = JSON.parse(readFileSync(join(root, "modelos", "modelos.json"), "utf8"));
 const SITE = "https://likehoodie.com";
 const CSS_VERSION = "20261114-fase4c";
+const WHATSAPP_VERSION = "20261114-fase4d";
 
 const escapeHTML = (value) =>
   String(value)
@@ -227,7 +228,7 @@ function page(model) {
         <a href="../terminos.html">Términos</a>
         <a href="../privacidad.html">Privacidad</a>
         <a href="../cookies.html">Cookies</a>
-        <a href="https://wa.me/525552142692" data-whatsapp-link target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a href="https://wa.me/5215552142692" data-whatsapp-link target="_blank" rel="noopener noreferrer">WhatsApp</a>
       </nav>
     </div>
   </footer>
@@ -249,8 +250,8 @@ function page(model) {
       sync();
     })();
   </script>
-  <script src="../whatsapp-config.js?v=${CSS_VERSION}"></script>
-  <script src="../whatsapp.js?v=${CSS_VERSION}"></script>
+  <script src="../whatsapp-config.js?v=${WHATSAPP_VERSION}"></script>
+  <script src="../whatsapp.js?v=${WHATSAPP_VERSION}"></script>
 </body>
 </html>
 `;

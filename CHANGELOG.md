@@ -16,6 +16,15 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.5.2] — 2026-11-14
+
+### Corregido
+
+- El enlace de WhatsApp usa el prefijo internacional correcto para México:
+  `wa.me/5215552142692`.
+- El sincronizador de Ticketmaster no reescribe `eventos.json` si la API
+  devuelve 0 eventos, para no vaciar la cartelera por un fallo temporal.
+
 ## [1.5.1] — 2026-11-14
 
 ### Cambiado

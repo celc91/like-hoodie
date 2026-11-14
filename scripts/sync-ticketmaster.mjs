@@ -117,6 +117,12 @@ async function main() {
 
   events.sort((a, b) => a.start.localeCompare(b.start));
 
+  if (!events.length) {
+    throw new Error(
+      "Ticketmaster devolvió 0 eventos. No se reescribe eventos.json para no vaciar la cartelera."
+    );
+  }
+
   const payload = {
     updated: new Date().toISOString(),
     source: SOURCE,
