@@ -25,15 +25,23 @@ jobs:
             name="$1"
             url="$2"
             expected="$3"
-            code=$(curl -L -sS --retry 2 --retry-delay 4 -o /tmp/page.html -w "%{http_code}" --max-time 25 "$url" || echo "000")
-            if [ "$code" != "200" ]; then
+            ok=0
+            code="000"
+            for attempt in 1 2 3 4; do
+              code=$(curl -L -sS --retry 2 --retry-delay 4 -o /tmp/page.html -w "%{http_code}" --max-time 25 "$url" || echo "000")
+              if [ "$code" = "200" ] && { [ -z "$expected" ] || grep -q "$expected" /tmp/page.html; }; then
+                ok=1
+                break
+              fi
+              sleep 8
+            done
+            if [ "$ok" != "1" ]; then
               fail=1
-              report="${report}- ${name}: HTTP ${code}\n"
-              return
-            fi
-            if [ -n "$expected" ] && ! grep -q "$expected" /tmp/page.html; then
-              fail=1
-              report="${report}- ${name}: no contiene '${expected}'\n"
+              if [ "$code" != "200" ]; then
+                report="${report}- ${name}: HTTP ${code}\n"
+              else
+                report="${report}- ${name}: no contiene '${expected}'\n"
+              fi
             fi
           }
 

@@ -40,7 +40,7 @@ const colorAdjective = (color) => (color === "Blanco" ? "blanca" : "negra");
 function page(model) {
   const url = `${SITE}/modelos/${model.id}.html`;
   const image = `${SITE}/assets/modelos/${model.mockup}`;
-  const ogImage = `${SITE}/og-cover.jpg`;
+  const ogImage = `${SITE}/assets/modelos/${model.ogImage || model.mockup}`;
   const priceLabel = money(model.price);
   const faq = model.faq || [];
   const description = model.meta || metaDescription(model.description);
@@ -105,14 +105,14 @@ function page(model) {
   <meta property="og:image" content="${ogImage}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="like hoodie — sudaderas personalizadas">
+  <meta property="og:image:alt" content="Sudadera ${escapeHTML(model.name)} de like hoodie">
   <meta property="product:price:amount" content="${model.price}">
   <meta property="product:price:currency" content="MXN">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${escapeHTML(model.name)} — like hoodie">
   <meta name="twitter:description" content="${escapeHTML(model.description.slice(0, 155))}">
   <meta name="twitter:image" content="${ogImage}">
-  <meta name="twitter:image:alt" content="like hoodie — sudaderas personalizadas">
+  <meta name="twitter:image:alt" content="Sudadera ${escapeHTML(model.name)} de like hoodie">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="icon" type="image/png" sizes="48x48" href="../favicon-48.png">
   <link rel="preload" as="image" href="../assets/modelos/${model.mockup}" type="image/webp" fetchpriority="high">

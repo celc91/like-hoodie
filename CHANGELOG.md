@@ -16,6 +16,18 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.6.1] — 2026-11-14
+
+### Corregido
+
+- Cada página de producto tiene su propia imagen OG **1200 × 630 JPG**
+  (`og-<modelo>.jpg`) en lugar de la portada genérica.
+- El CI regenera las páginas de producto y falla si `modelos.json` y el HTML
+  publicado no están sincronizados.
+- El monitor de disponibilidad reintenta 4 veces con espera antes de abrir una
+  incidencia, evitando falsos positivos durante un despliegue de Pages.
+- Smoke test ampliado a **46 comprobaciones**.
+
 ## [1.6.0] — 2026-11-14
 
 ### Seguridad

@@ -23,6 +23,10 @@ jobs:
           for file in *.js vendor/*.js scripts/*.mjs; do
             node --check "$file"
           done
+      - name: Generar páginas de producto
+        run: node scripts/build-model-pages.mjs
+      - name: Comprobar plantillas sincronizadas
+        run: git diff --exit-code -- modelos
       - name: html-validate
         run: npx --yes html-validate@8 './*.html' './modelos/*.html'
       - name: Smoke test

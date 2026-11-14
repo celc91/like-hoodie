@@ -51,6 +51,7 @@ for (const id of ["cocodrilo", "insignia", "panorama", "corazon"]) {
   check(`producto ${id}: schema`, page.includes('"@type":"Product"'));
   check(`producto ${id}: canonical`, page.includes(`https://likehoodie.com/modelos/${id}.html`));
   check(`producto ${id}: compra`, page.includes(`comprar=${id}`));
+  check(`producto ${id}: og`, page.includes(`og-${id}.jpg`));
 }
 check("seguimiento: formulario", trackPage.includes("data-track-form"));
 check("seguimiento: endpoint", trackJs.includes("/functions/v1/order-status"));
