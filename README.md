@@ -49,7 +49,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
 - **Persistencia:** el carrito se guarda en `localStorage` y se sincroniza con Supabase.
 - **Checkout de demostración:** formulario validado (teléfono, estado, CP y referencias), confirmación de pedido y registro en Supabase. No procesa pagos reales.
-- **Panel de administración:** pedidos, estados, carritos abandonados, métricas, embudo y exportación CSV, protegido con Supabase Auth.
+- **Panel de administración:** pedidos, estados, carritos abandonados, métricas, embudo, monitorización de errores y exportación CSV, protegido con Supabase Auth.
 - **Analítica propia:** eventos de visita, carrito y checkout guardados en Supabase.
 - **Guía de tallas, FAQ, opiniones y newsletter.**
 - **Páginas legales:** aviso de privacidad, política de cookies y términos y condiciones.

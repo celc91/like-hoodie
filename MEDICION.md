@@ -232,3 +232,17 @@ ese momento. A partir de ahí, sus pedidos nuevos no se envían a Meta.
 - No se guarda el correo ni el teléfono en claro en Meta: siempre SHA-256.
 - No se venden ni se ceden datos a terceros ajenos a la medición.
 - No se mide a menores de forma deliberada ni se crean audiencias con sus datos.
+
+## Monitorización técnica
+
+Además de la analítica de negocio, el sitio registra fallos técnicos:
+
+- `client_errors`: errores de JavaScript del navegador, enviados por
+  `log_client_error()` con límite de 30/hora por sesión. Solo los lee el admin.
+- `events`: fallos de `checkout_failed`, `print_failed` y
+  `model_purchase_failed`, visibles en la pestaña **Salud** del panel.
+- Workflow **Disponibilidad**: cada 30 minutos comprueba home, CSS, producto,
+  seguimiento, admin y el RPC de Supabase; si algo falla, abre o actualiza una
+  incidencia en GitHub.
+
+No se guardan direcciones, teléfonos ni contenido de tarjetas en estos registros.
