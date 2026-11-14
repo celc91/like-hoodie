@@ -9,7 +9,12 @@ semántico.
 ### Por hacer
 
 - Alineación horizontal/vertical por separado.
-- Integración con Canva Connect (importar diseño y exportar PNG).
+
+### Descartado por ahora
+
+- **Canva Connect:** requiere Canva Pro para PNG transparente, export máximo
+  8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
+  por un enlace a plantillas y subida manual.
 
 ## [1.1.4] — 2026-11-14
 

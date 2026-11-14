@@ -453,7 +453,19 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 - [x] Capas y bloqueo de elementos.
 - [x] Copiar el logo a la otra cara con un asset nuevo.
 - [x] Plantillas de diseño dentro del editor.
-- [ ] Integración con Canva Connect para importar diseños.
+- [ ] Alineación horizontal/vertical por separado.
+- [x] Canva evaluado y descartado por ahora (ver abajo).
+
+### Decisión: Canva
+
+Se evaluó Canva Connect y **no se integra por ahora**:
+
+- Canva Free no exporta PNG transparente por API; exigiría Canva Pro.
+- El export máximo es 8000 × 3125 px: no cubre una espalda de 28 × 28 cm a 300 DPI.
+- Solo entrega raster, sin SVG para vinilo o serigrafía.
+- Requiere OAuth, revisión de la app y soporte de cuentas.
+
+Si más adelante hay demanda, se probará primero con un enlace a plantillas Canva y subida manual, midiendo el uso antes de invertir en la integración.
 
 ## Limitaciones conocidas
 
