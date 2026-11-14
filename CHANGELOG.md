@@ -16,6 +16,28 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.8.1] — 2026-11-14
+
+### Corregido
+
+- **Rate limit del seguimiento:** el contador anterior hacía `count` e `insert`
+  por separado, ignoraba el error del `insert` y agrupaba mal las IP, así que el
+  límite de 12 consultas/10 min no se aplicaba en producción. Ahora
+  `take_order_lookup()` cuenta e inserta de forma atómica (con bloqueo por IP) y
+  la Edge Function falla cerrado si el contador no responde.
+- La IP se toma de `cf-connecting-ip`, cabecera que el gateway sobrescribe;
+  `x-real-ip` y `x-forwarded-for` ya no permiten crear cubos nuevos.
+- Tope global de 300 intentos/min y purga de intentos de más de 2 días dentro
+  del propio contador.
+
+### Verificado
+
+- 13 consultas seguidas desde la misma IP: **12 × 200 y la 13.ª 429**.
+- Los 12 intentos quedaron en un único `ip_hash`.
+- `x-real-ip` y `x-forwarded-for` falsificados: **429**; `cf-connecting-ip`
+  falsificado: **403**.
+- Intentos de prueba borrados de `order_lookup_attempts`.
+
 ## [1.8.0] — 2026-11-14
 
 ### Añadido

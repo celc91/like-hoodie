@@ -10,9 +10,6 @@ import {
   supabaseUrl,
 } from "../_shared/clip.ts";
 
-const WINDOW_MINUTES = 10;
-const MAX_LOOKUPS = 12;
-
 async function hashIp(request: Request): Promise<string> {
   const forwarded = request.headers.get("x-forwarded-for") || "";
   const chain = forwarded
@@ -20,6 +17,7 @@ async function hashIp(request: Request): Promise<string> {
     .map((value) => value.trim())
     .filter(Boolean);
   const ip =
+    (request.headers.get("cf-connecting-ip") || "").trim() ||
     (request.headers.get("x-real-ip") || "").trim() ||
     chain[chain.length - 1] ||
     "unknown";
@@ -67,31 +65,23 @@ Deno.serve(async (request) => {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const ipHash = await hashIp(request);
-  const since = new Date(Date.now() - WINDOW_MINUTES * 60 * 1000).toISOString();
 
-  const { count, error: countError } = await supabase
-    .from("order_lookup_attempts")
-    .select("*", { count: "exact", head: true })
-    .eq("ip_hash", ipHash)
-    .gte("created_at", since);
+  const { data: allowed, error: limitError } = await supabase.rpc(
+    "take_order_lookup",
+    { p_ip_hash: ipHash }
+  );
 
-  if (countError) {
-    console.error("order-status: no se pudo leer el rate limit.", countError.message);
+  if (limitError) {
+    console.error("order-status: no se pudo aplicar el rate limit.", limitError.message);
     return json({ error: "Servicio no disponible" }, 503, origin);
   }
-  if ((count || 0) >= MAX_LOOKUPS) {
+  if (allowed !== true) {
     return json(
       { error: "rate_limited", message: "Demasiadas consultas. Espera unos minutos." },
       429,
       origin
     );
   }
-
-  await supabase.from("order_lookup_attempts").insert({ ip_hash: ipHash });
-  await supabase
-    .from("order_lookup_attempts")
-    .delete()
-    .lt("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
   const { data, error } = await supabase.rpc("get_order_status", {
     p_number: number,
