@@ -7,6 +7,9 @@
 
 begin;
 
+create index if not exists order_lookup_attempts_created_idx
+  on public.order_lookup_attempts (created_at);
+
 create or replace function public.take_order_lookup(p_ip_hash text)
 returns boolean
 language plpgsql
