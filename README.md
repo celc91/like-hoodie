@@ -51,7 +51,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Checkout de demostración:** formulario validado (teléfono, estado, CP y referencias), confirmación de pedido y registro en Supabase. No procesa pagos reales.
 - **Panel de administración:** pedidos, estados, carritos abandonados, métricas, embudo, monitorización de errores y exportación CSV, protegido con Supabase Auth.
 - **Analítica propia:** eventos de visita, carrito y checkout guardados en Supabase.
-- **Guía de tallas, FAQ, opiniones y newsletter.**
+- **Guía de tallas, FAQ y newsletter.**
 - **Páginas legales:** aviso de privacidad, política de cookies y términos y condiciones.
 - **Aviso de cookies:** banner informativo con almacenamiento local para recordar la aceptación.
 - **Vectorizador de logo:** convierte el PNG o JPG en SVG en el dispositivo, en color o a 1 tinta, con diagnóstico de colores, trazos y DPI.

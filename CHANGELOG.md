@@ -16,6 +16,22 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.8.5] — 2026-11-14
+
+### Cambiado
+
+- Se retira la sección **“Opiniones reales”** y el bloque **4,9/5 · +2.400
+  sudaderas** del héroe hasta tener reseñas y casos verificables.
+- Se eliminan los enlaces **Opiniones** de la navegación de escritorio y móvil.
+- La home queda sin prueba social inventada; FAQ y el resto de secciones siguen
+  igual.
+
+### Verificado
+
+- `html-validate` sin errores en `index.html`.
+- Smoke test: **57 comprobaciones**.
+- Sin cambios de precios, carrito ni checkout.
+
 ## [1.8.4] — 2026-11-14
 
 ### Cambiado
