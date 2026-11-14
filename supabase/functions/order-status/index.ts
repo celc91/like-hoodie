@@ -15,9 +15,13 @@ const MAX_LOOKUPS = 12;
 
 async function hashIp(request: Request): Promise<string> {
   const forwarded = request.headers.get("x-forwarded-for") || "";
+  const chain = forwarded
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
   const ip =
-    forwarded.split(",")[0].trim() ||
-    request.headers.get("x-real-ip") ||
+    (request.headers.get("x-real-ip") || "").trim() ||
+    chain[chain.length - 1] ||
     "unknown";
   const salt = Deno.env.get("LOOKUP_IP_SALT") || "likehoodie";
   const bytes = new TextEncoder().encode(`${salt}|${ip}`);
