@@ -37,7 +37,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Galería de vistas:** frente y espalda con miniaturas; el diseño de cada cara se guarda por separado.
 - **Precio dinámico:** base por color, material, técnica, suplemento de talla XXL y extra por logo en cada cara.
 - **Catálogo base:** cuatro colores con selección directa al configurador.
-- **Colección de modelos:** cuatro diseños listos (Cocodrilo de Miami, Insignia atardecer, Panorama Vice y Corazón neón) que se cargan en el editor con su logo y su color.
+- **Colección de modelos:** cuatro diseños listos (Cocodrilo de Miami, Insignia atardecer, Panorama Vice y Corazón neón) que se compran tal cual con la talla elegida; el print se prepara al momento.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
 - **Persistencia:** el carrito se guarda en `localStorage` y se sincroniza con Supabase.
 - **Checkout de demostración:** formulario validado, confirmación de pedido y registro del pedido en Supabase. No procesa pagos reales.
@@ -78,7 +78,7 @@ El historial (50 pasos) cubre el diseño: texto, logo, posición, escala, rotaci
 
 ## Colección de modelos
 
-La sección **`#modelos`** muestra diseños que ya existen. Cada tarjeta carga el modelo en el estudio con su producto, color y logo, y lanza el archivo de impresión DTG.
+La sección **`#modelos`** muestra diseños que ya existen para **comprar tal cual**, sin pasar por el editor. Cada tarjeta tiene selector de talla y un botón **Comprar** que descarga el logo, lo sube a Storage, lanza el archivo de impresión DTG con el ancho de esa cara y añade el artículo a la cesta. El primer modelo tarda unos segundos en preparar la impresión; los siguientes usan la caché de la sesión.
 
 | Modelo | Prenda | Precio | Mockup | Logo |
 | --- | --- | --- | --- | --- |
@@ -93,11 +93,12 @@ Los logos de los modelos son PNG con transparencia. El del cocodrilo se recortó
 
 1. Guarda el mockup en `assets/modelos/<id>.webp` (4:5, ~900 px de ancho).
 2. Guarda el arte en `assets/modelos/<id>-logo.png` con transparencia y menos de 5 MB.
-3. Añade una tarjeta en `index.html` dentro de `.collection-grid` con `data-model="<id>"`.
+3. Añade una tarjeta en `index.html` dentro de `.collection-grid` con el selector `data-model-size="<id>"` y el botón `data-buy-model="<id>"`.
 4. Añade la entrada en `MODELS` (final de `app.js`):
 
 ```js
 MODELS.miModelo = {
+  name: "Mi modelo",
   product: "hoodie",
   color: "#1c1c1f",
   colorName: "Negro",
@@ -107,7 +108,7 @@ MODELS.miModelo = {
 };
 ```
 
-Al pulsar la tarjeta se ejecuta `applyModel(id)`: ajusta producto/color/vista, descarga el logo, lo sube a Storage y arranca `process-logo`.
+El botón ejecuta `purchaseModel(id, button)`: valida la talla, prepara el print y crea un artículo con `key` propia (`modelo:<id>:<talla>:<color>`), de modo que dos compras iguales se agrupan en cantidad. La talla XXL suma `XXL_PRICE`.
 
 ## Capturas
 
@@ -436,7 +437,7 @@ Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos
 - **Envío gratis:** `FREE_SHIPPING` en `app.js` (por defecto $1,200 MXN).
 - **Coste de envío:** `SHIPPING_COST` en `app.js`.
 - **Productos del catálogo base:** tarjetas en `index.html` y sus botones `data-personalize`.
-- **Modelos de la colección:** tarjetas `data-model` en `index.html` y el objeto `MODELS` al final de `app.js`.
+- **Modelos de la colección:** tarjetas con `data-buy-model` y `data-model-size` en `index.html` y el objeto `MODELS` al final de `app.js`.
 - **Editor:** el layout tipo Canva vive al final de `styles.css` (bloque “Editor tipo Canva — Fase 1”) y la lógica de historial/atajos en `app.js`.
 - **Barra fija:** `--site-header-h` se mide en `app.js`; si cambias la altura del header, la barra se ajusta sola.
 
@@ -473,7 +474,7 @@ Si más adelante hay demanda, se probará primero con un enlace a plantillas Can
 - El print DTG se limita a 2 800 px (≈254 DPI a 28 cm) y 2× de ampliación.
 - El vectorizador trabaja en el navegador; no guarda el SVG en Supabase y no es fiel en fotos o degradados.
 - Los precios de las tarjetas de la colección están fijados en el HTML; si cambia la base, hay que actualizarlos.
-- Los modelos se cargan subiendo de nuevo su logo, así que cada uso crea un asset nuevo.
+- La primera compra de un modelo sube su logo y crea el asset de impresión; las siguientes en la misma sesión reutilizan esa caché.
 
 ## Contribuir y licencia
 

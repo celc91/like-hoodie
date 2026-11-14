@@ -3888,6 +3888,7 @@
 
   const MODELS = {
     cocodrilo: {
+      name: "Cocodrilo de Miami",
       product: "hoodie",
       color: "#ffffff",
       colorName: "Blanco",
@@ -3896,6 +3897,7 @@
       fileName: "cocodrilo-miami.png",
     },
     insignia: {
+      name: "Insignia atardecer",
       product: "hoodie",
       color: "#1c1c1f",
       colorName: "Negro",
@@ -3904,6 +3906,7 @@
       fileName: "insignia-atardecer.png",
     },
     panorama: {
+      name: "Panorama Vice",
       product: "hoodie",
       color: "#1c1c1f",
       colorName: "Negro",
@@ -3912,6 +3915,7 @@
       fileName: "panorama-vice.png",
     },
     corazon: {
+      name: "Corazón neón",
       product: "hoodie",
       color: "#1c1c1f",
       colorName: "Negro",
@@ -3921,35 +3925,229 @@
     },
   };
 
-  async function applyModel(id) {
-    const model = MODELS[id];
-    if (!model) return;
+  function pause(ms) {
+    return new Promise((resolve) => window.setTimeout(resolve, ms));
+  }
 
-    setProduct(model.product);
-    selectColor(model.color, model.colorName);
-    setView(model.side);
+  function blankModelDesign(colorHex) {
+    return {
+      text: "",
+      textColor: contrastFor(colorHex),
+      textScale: 1,
+      textRotate: 0,
+      textFont: "bricolage",
+      logo: "",
+      logoName: "",
+      logoPath: "",
+      logoData: "",
+      logoScale: 1,
+      logoRotate: 0,
+      logoRaster: "",
+      logoIsVector: false,
+      logoVectorResult: null,
+      vectorMode: "",
+      logoAssetId: "",
+      printStatus: "",
+      printDpi: null,
+      printPath: "",
+      printWidthCm: null,
+      printError: "",
+      textLocked: false,
+      logoLocked: false,
+      textHidden: false,
+      logoHidden: false,
+      layerOrder: ["text", "logo"],
+      ...DEFAULT_POSITIONS.front,
+    };
+  }
 
-    const section = document.getElementById("personalizar");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth", block: "start" });
+  async function prepareModelPrint(sourcePath, side, product) {
+    const api = window.StoreSupabase;
+    if (!api || !api.createLogoAsset) return null;
+    if (api.configured === false) return null;
+
+    const widthCm = printWidthFor(product, side);
+    const asset = await api.createLogoAsset({
+      sourcePath,
+      side,
+      product,
+      widthCm,
+    });
+    if (!asset) return null;
+
+    await api.processLogoAsset(asset.id, "cutout");
+
+    const deadline = Date.now() + 60000;
+    let resized = false;
+    while (Date.now() < deadline) {
+      const current = await api.getLogoAsset(asset.id);
+      if (current) {
+        if (current.status === "cutout_ready" && !resized) {
+          resized = true;
+          await api.processLogoAsset(asset.id, "resize");
+        } else if (current.status === "ready" || current.status === "review") {
+          return {
+            logoAssetId: asset.id,
+            printStatus: current.status,
+            printPath: current.print_path || "",
+            printDpi: current.output_dpi || null,
+            printWidthCm: widthCm,
+          };
+        } else if (current.status === "failed") {
+          return null;
+        }
+      }
+      await pause(1500);
+    }
+    return null;
+  }
+
+  const modelAssetCache = new Map();
+
+  async function loadModelAssets(id, model, onStage) {
+    const cached = modelAssetCache.get(id);
+    if (cached) return cached;
+
+    const response = await fetch(model.logo, { cache: "force-cache" });
+    if (!response.ok) throw new Error("No se pudo cargar el logo.");
+    const blob = await response.blob();
+    const file = new File([blob], model.fileName, {
+      type: blob.type || "image/png",
+    });
+    const source = await readFileAsDataURL(file);
+    const logoData = await prepareLogoData(source, file.type);
+
+    let logoPath = "";
+    let print = null;
+    if (window.StoreSupabase?.uploadLogo) {
+      onStage("Subiendo…");
+      const printable = await webpToPngFile(file, source);
+      logoPath =
+        (await window.StoreSupabase.uploadLogo(printable, model.side)) || "";
+      if (logoPath) {
+        onStage("Preparando impresión…");
+        print = await prepareModelPrint(logoPath, model.side, model.product);
+      }
+      if (!logoPath || !print) {
+        throw new Error("No se pudo preparar la impresión.");
+      }
     }
 
+    const assets = { file, source, logoData, logoPath, print };
+    modelAssetCache.set(id, assets);
+    return assets;
+  }
+
+  async function purchaseModel(id, button) {
+    const model = MODELS[id];
+    if (!model || !button || button.dataset.busy === "1") return;
+
+    const sizeSelect = document.querySelector(`[data-model-size="${id}"]`);
+    const size = sizeSelect && sizeSelect.value ? sizeSelect.value : "M";
+    const product = PRODUCTS[model.product] || PRODUCTS.hoodie;
+    const material = product.defaults.material;
+    const technique = product.defaults.technique;
+    const basePrice = product.prices[model.color] || product.fallbackPrice;
+    const unitPrice =
+      basePrice +
+      material.delta +
+      technique.price +
+      LOGO_PRICE +
+      (size === "XXL" ? XXL_PRICE : 0);
+
+    const originalLabel = button.textContent;
+    button.dataset.busy = "1";
+    button.disabled = true;
+    button.textContent = "Preparando…";
+    if (sizeSelect) sizeSelect.disabled = true;
+
     try {
-      const response = await fetch(model.logo, { cache: "force-cache" });
-      if (!response.ok) throw new Error("No se pudo cargar el logo.");
-      const blob = await response.blob();
-      const file = new File([blob], model.fileName, {
-        type: blob.type || "image/png",
+      const assets = await loadModelAssets(id, model, (label) => {
+        button.textContent = label;
       });
-      await applyLogoFile(file, model.side);
+      const defaults = DEFAULT_POSITIONS[model.side] || DEFAULT_POSITIONS.front;
+      const design = {
+        ...blankModelDesign(model.color),
+        logo: assets.source,
+        logoName: assets.file.name,
+        logoPath: assets.logoPath,
+        logoData: assets.logoData || "",
+        logoScale: 1,
+        logoRotate: 0,
+        logoX: defaults.logoX,
+        logoY: defaults.logoY,
+        logoAssetId: assets.print ? assets.print.logoAssetId : "",
+        printStatus: assets.print ? assets.print.printStatus : "",
+        printDpi: assets.print ? assets.print.printDpi : null,
+        printPath: assets.print ? assets.print.printPath : "",
+        printWidthCm: assets.print ? assets.print.printWidthCm : null,
+      };
+      const blank = blankModelDesign(model.color);
+
+      const item = {
+        id: uid(),
+        key: `modelo:${id}:${size}:${model.color}`,
+        product: model.product,
+        name: `${product.label} · ${model.name}`,
+        colorHex: model.color,
+        colorName: model.colorName,
+        size,
+        materialId: material.id,
+        materialName: material.name,
+        materialDelta: material.delta,
+        techniqueId: technique.id,
+        techniqueName: technique.name,
+        techniquePrice: technique.price,
+        front: model.side === "front" ? design : blank,
+        back: model.side === "back" ? design : blank,
+        unitPrice,
+        qty: 1,
+      };
+
+      const existing = state.items.find((entry) => entry.key === item.key);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        state.items.push(item);
+      }
+
+      saveCart();
+      renderCart();
+      openCart();
+      window.StoreSupabase?.track("add_to_cart", {
+        total: unitPrice,
+        size,
+        material: material.name,
+        technique: technique.name,
+        model: id,
+      });
+      window.LikeHoodieConsent?.track("add_to_cart", {
+        value: unitPrice,
+        currency: "MXN",
+        content_name: item.name,
+        content_type: "product",
+      });
+      if (cartCount) {
+        cartCount.classList.remove("is-pulsing");
+        void cartCount.offsetWidth;
+        cartCount.classList.add("is-pulsing");
+      }
+      showToast(`${model.name} · Talla ${size} añadido a la cesta.`);
     } catch (error) {
-      showToast("No se pudo cargar el modelo. Inténtalo de nuevo.");
+      showToast(
+        "No se pudo preparar el modelo para comprar. Inténtalo de nuevo."
+      );
+    } finally {
+      button.dataset.busy = "";
+      button.disabled = false;
+      button.textContent = originalLabel;
+      if (sizeSelect) sizeSelect.disabled = false;
     }
   }
 
-  document.querySelectorAll("[data-model]").forEach((button) => {
+  document.querySelectorAll("[data-buy-model]").forEach((button) => {
     button.addEventListener("click", () => {
-      applyModel(button.dataset.model);
+      purchaseModel(button.dataset.buyModel, button);
     });
   });
 

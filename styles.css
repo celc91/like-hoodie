@@ -7757,6 +7757,53 @@ p {
   margin-top: auto;
 }
 
+.model-card__buy {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.model-card__size {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.model-card__size span {
+  padding-left: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.model-card__size select {
+  height: 40px;
+  padding: 0 28px 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.model-card__buy .btn {
+  flex: 1;
+  min-height: 40px;
+  margin-top: 0;
+}
+
+.model-card__buy .btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
 @media (max-width: 1000px) {
   .collection-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

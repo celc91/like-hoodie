@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261114-plantillas1">
+  <link rel="stylesheet" href="styles.css?v=20261114-modelos1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -760,7 +760,7 @@
             <span class="eyebrow">La colección</span>
             <h2>Modelos que ya existen.</h2>
           </div>
-          <p>Diseños listos para producir. Elige uno, se carga en el estudio con su logo y puedes ajustarlo antes de comprar.</p>
+          <p>Diseños listos para producir. Elige tu talla y cómpralos tal cual: preparamos el archivo de impresión al momento.</p>
         </div>
 
         <div class="collection-grid">
@@ -775,7 +775,15 @@
                 <span class="model-card__price">$1,048</span>
               </div>
               <p>Sudadera blanca · DTG full color · estampado al frente.</p>
-              <button type="button" class="btn btn-dark btn-block" data-model="cocodrilo">Personalizar este modelo</button>
+              <div class="model-card__buy">
+                <label class="model-card__size">
+                  <span>Talla</span>
+                  <select data-model-size="cocodrilo" aria-label="Talla de Cocodrilo de Miami">
+                    <option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option><option>XXL</option>
+                  </select>
+                </label>
+                <button type="button" class="btn btn-dark" data-buy-model="cocodrilo">Comprar</button>
+              </div>
             </div>
           </article>
 
@@ -789,7 +797,15 @@
                 <span class="model-card__price">$998</span>
               </div>
               <p>Sudadera negra · DTG full color · insignia al pecho.</p>
-              <button type="button" class="btn btn-dark btn-block" data-model="insignia">Personalizar este modelo</button>
+              <div class="model-card__buy">
+                <label class="model-card__size">
+                  <span>Talla</span>
+                  <select data-model-size="insignia" aria-label="Talla de Insignia atardecer">
+                    <option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option><option>XXL</option>
+                  </select>
+                </label>
+                <button type="button" class="btn btn-dark" data-buy-model="insignia">Comprar</button>
+              </div>
             </div>
           </article>
 
@@ -803,7 +819,15 @@
                 <span class="model-card__price">$998</span>
               </div>
               <p>Sudadera negra · DTG full color · panorama al pecho.</p>
-              <button type="button" class="btn btn-dark btn-block" data-model="panorama">Personalizar este modelo</button>
+              <div class="model-card__buy">
+                <label class="model-card__size">
+                  <span>Talla</span>
+                  <select data-model-size="panorama" aria-label="Talla de Panorama Vice">
+                    <option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option><option>XXL</option>
+                  </select>
+                </label>
+                <button type="button" class="btn btn-dark" data-buy-model="panorama">Comprar</button>
+              </div>
             </div>
           </article>
 
@@ -817,7 +841,15 @@
                 <span class="model-card__price">$998</span>
               </div>
               <p>Sudadera negra · DTG full color · corazón neón al pecho.</p>
-              <button type="button" class="btn btn-dark btn-block" data-model="corazon">Personalizar este modelo</button>
+              <div class="model-card__buy">
+                <label class="model-card__size">
+                  <span>Talla</span>
+                  <select data-model-size="corazon" aria-label="Talla de Corazón neón">
+                    <option>XS</option><option>S</option><option selected>M</option><option>L</option><option>XL</option><option>XXL</option>
+                  </select>
+                </label>
+                <button type="button" class="btn btn-dark" data-buy-model="corazon">Comprar</button>
+              </div>
             </div>
           </article>
         </div>
@@ -1306,7 +1338,7 @@
   <script src="clip-config.js?v=20261112-sandbox2"></script>
 <script src="vendor/imagetracer-1.2.6.js?v=20261113-vec1"></script>
 <script src="vectorize.js?v=20261113-vec2"></script>
-<script src="app.js?v=20261114-plantillas1"></script>
+<script src="app.js?v=20261114-modelos1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>

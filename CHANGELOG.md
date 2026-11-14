@@ -16,6 +16,24 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.1.5] — 2026-11-14
+
+### Cambiado
+
+- **La colección de modelos ya no es para personalizar:** cada tarjeta tiene
+  selector de talla (XS–XXL) y un botón **Comprar** que añade el diseño tal cual
+  a la cesta, sin pasar por el editor.
+- El modelo descarga su logo, lo sube a Storage, prepara el archivo de impresión
+  DTG con el ancho de su cara y guarda el asset en el artículo del pedido.
+- El precio se calcula como una sudadera normal: base por color + extra de logo
+  y suplemento XXL. La talla M del Cocodrilo queda en $1,048.
+- Comprar dos veces el mismo modelo y talla agrupa cantidades.
+
+### Añadido
+
+- Caché de assets por modelo en la sesión: el primer modelo tarda unos segundos
+  en preparar el print y los siguientes son inmediatos.
+
 ## [1.1.4] — 2026-11-14
 
 ### Añadido
