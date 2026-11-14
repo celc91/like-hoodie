@@ -265,3 +265,47 @@ for (const model of models) {
   writeFileSync(file, page(model), "utf8");
   console.log(`modelos/${model.id}.html`);
 }
+
+// Datos que consume el editor (app.js), generados desde la misma fuente.
+const catalog = Object.fromEntries(
+  models.map((model) => [
+    model.id,
+    {
+      name: model.name,
+      product: model.product,
+      color: model.colorHex,
+      colorName: model.colorName,
+      side: model.side,
+      logo: `assets/modelos/${model.logo}`,
+      fileName: model.fileName,
+      price: model.price,
+    },
+  ])
+);
+writeFileSync(
+  join(root, "modelos", "modelos-data.js"),
+  `// Generado por scripts/build-model-pages.mjs. No editar a mano.\nwindow.LIKEHOODIE_MODELS = ${JSON.stringify(
+    catalog,
+    null,
+    2
+  )};\n`,
+  "utf8"
+);
+console.log("modelos/modelos-data.js");
+
+// Precios y nombres de las tarjetas de la home.
+const indexPath = join(root, "index.html");
+let indexHtml = readFileSync(indexPath, "utf8");
+for (const model of models) {
+  const price = `$${new Intl.NumberFormat("es-MX").format(model.price)}`;
+  indexHtml = indexHtml.replace(
+    new RegExp(`(<[^>]+data-model-name="${model.id}"[^>]*>)[^<]*(</[^>]+>)`),
+    (match, open, close) => `${open}${escapeHTML(model.name)}${close}`
+  );
+  indexHtml = indexHtml.replace(
+    new RegExp(`(<[^>]+data-model-price="${model.id}"[^>]*>)[^<]*(</[^>]+>)`),
+    (match, open, close) => `${open}${price}${close}`
+  );
+}
+writeFileSync(indexPath, indexHtml, "utf8");
+console.log("index.html (tarjetas de modelos)");

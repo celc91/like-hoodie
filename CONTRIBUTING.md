@@ -60,9 +60,9 @@ Para el panel y los pedidos necesitas el proyecto de Supabase:
 
 1. Mockup en `assets/modelos/<id>.webp` (4:5, ~900 px).
 2. Arte en `assets/modelos/<id>-logo.webp` con transparencia y < 5 MB.
-3. Tarjeta en `index.html` con `data-model-size="<id>"` y `data-buy-model="<id>"`.
-4. Entrada en `MODELS` al final de `app.js` y en `modelos/modelos.json`.
-5. Ejecuta `node scripts/build-model-pages.mjs` para generar `modelos/<id>.html`.
+3. Tarjeta en `index.html` con `data-model-size`, `data-buy-model`, `data-model-name` y `data-model-price`.
+4. Objeto en `modelos/modelos.json` con precio, color, logo, `fileName`, descripción y OG.
+5. Ejecuta `node scripts/build-model-pages.mjs` para generar páginas, datos del editor y textos de la tarjeta.
 
 Más detalle en el [README](README.md#colección-de-modelos).
 

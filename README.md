@@ -101,23 +101,11 @@ Los logos de los modelos son WebP con transparencia. El del cocodrilo se recort�
 
 1. Guarda el mockup en `assets/modelos/<id>.webp` (4:5, ~900 px de ancho).
 2. Guarda el arte en `assets/modelos/<id>-logo.webp` con transparencia y menos de 5 MB. El navegador lo convierte a PNG antes de subirlo al pipeline de impresión.
-3. Añade una tarjeta en `index.html` dentro de `.collection-grid` con el selector `data-model-size="<id>"` y el botón `data-buy-model="<id>"`.
-4. Añade la entrada en `MODELS` (final de `app.js`) y en `modelos/modelos.json` con precio, descripción, FAQ y medidas.
-5. Ejecuta `node scripts/build-model-pages.mjs` para generar `modelos/<id>.html`.
+3. Añade una tarjeta en `index.html` dentro de `.collection-grid` con `data-model-size="<id>"`, `data-buy-model="<id>"`, `data-model-name="<id>"` y `data-model-price="<id>"`.
+4. Añade el objeto en `modelos/modelos.json` con `id`, `name`, `price`, `color`, `colorName`, `product`, `side`, `logo`, `fileName`, `description`, `mockup` y `ogImage`.
+5. Ejecuta `node scripts/build-model-pages.mjs`: genera `modelos/<id>.html`, `modelos/modelos-data.js` y actualiza el nombre y el precio de la tarjeta desde el JSON.
 
-Ejemplo de entrada en `MODELS`:
-
-```js
-MODELS.miModelo = {
-  name: "Mi modelo",
-  product: "hoodie",
-  color: "#1c1c1f",
-  colorName: "Negro",
-  side: "front",
-  logo: "assets/modelos/mi-modelo-logo.webp",
-  fileName: "mi-modelo.png",
-};
-```
+El CI comprueba que `modelos.json`, las páginas y las tarjetas siguen sincronizados; no edites `modelos-data.js` ni los precios a mano.
 
 El botón ejecuta `purchaseModel(id, button)`: valida la talla, prepara el print y crea un artículo con `key` propia (`modelo:<id>:<talla>:<color>`), de modo que dos compras iguales se agrupan en cantidad. La talla XXL suma `XXL_PRICE`.
 

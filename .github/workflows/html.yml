@@ -26,7 +26,7 @@ jobs:
       - name: Generar páginas de producto
         run: node scripts/build-model-pages.mjs
       - name: Comprobar plantillas sincronizadas
-        run: git diff --exit-code -- modelos
+        run: git diff --exit-code -- modelos index.html
       - name: html-validate
         run: npx --yes html-validate@8 './*.html' './modelos/*.html'
       - name: Smoke test

@@ -16,6 +16,27 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.7.0] — 2026-11-14
+
+### Cambiado
+
+- **Una sola fuente para los modelos:** `modelos/modelos.json` genera las
+  páginas de producto, `modelos/modelos-data.js`, el nombre y el precio de las
+  tarjetas de la home.
+- `app.js` deja de tener una copia de `MODELS` y consume
+  `window.LIKEHOODIE_MODELS`.
+- La compra de un modelo usa el precio del catálogo (`model.price`), no una
+  segunda fórmula.
+- El CI regenera todo y falla si `modelos.json`, las páginas, los datos o las
+  tarjetas no están sincronizados.
+
+### Verificado
+
+- Compra local de Cocodrilo: $1,048 y print `ready`.
+- `modelos-data.js` incluye los cuatro modelos.
+- Smoke test: **49 comprobaciones**.
+- CI de HTML, enlaces y Pages en verde.
+
 ## [1.6.1] — 2026-11-14
 
 ### Corregido

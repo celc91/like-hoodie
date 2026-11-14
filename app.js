@@ -4295,44 +4295,7 @@
   /* Modelos de la colección                                                */
   /* ---------------------------------------------------------------------- */
 
-  const MODELS = {
-    cocodrilo: {
-      name: "Cocodrilo de Miami",
-      product: "hoodie",
-      color: "#ffffff",
-      colorName: "Blanco",
-      side: "front",
-      logo: "assets/modelos/cocodrilo-logo.webp",
-      fileName: "cocodrilo-miami.png",
-    },
-    insignia: {
-      name: "Insignia atardecer",
-      product: "hoodie",
-      color: "#1c1c1f",
-      colorName: "Negro",
-      side: "front",
-      logo: "assets/modelos/insignia-logo.webp",
-      fileName: "insignia-atardecer.png",
-    },
-    panorama: {
-      name: "Panorama Vice",
-      product: "hoodie",
-      color: "#1c1c1f",
-      colorName: "Negro",
-      side: "front",
-      logo: "assets/modelos/panorama-logo.webp",
-      fileName: "panorama-vice.png",
-    },
-    corazon: {
-      name: "Corazón neón",
-      product: "hoodie",
-      color: "#1c1c1f",
-      colorName: "Negro",
-      side: "front",
-      logo: "assets/modelos/corazon-logo.webp",
-      fileName: "corazon-neon.png",
-    },
-  };
+  const MODELS = window.LIKEHOODIE_MODELS || {};
 
   function pause(ms) {
     return new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -4457,11 +4420,11 @@
     const material = product.defaults.material;
     const technique = product.defaults.technique;
     const basePrice = product.prices[model.color] || product.fallbackPrice;
+    const catalogPrice = Number(model.price);
     const unitPrice =
-      basePrice +
-      material.delta +
-      technique.price +
-      LOGO_PRICE +
+      (Number.isFinite(catalogPrice) && catalogPrice > 0
+        ? catalogPrice
+        : basePrice + material.delta + technique.price + LOGO_PRICE) +
       (size === "XXL" ? XXL_PRICE : 0);
 
     const originalLabel = button.textContent;

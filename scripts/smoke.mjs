@@ -57,16 +57,23 @@ check("seguimiento: formulario", trackPage.includes("data-track-form"));
 check("seguimiento: endpoint", trackJs.includes("/functions/v1/order-status"));
 check("seguimiento: columnas", trackSql.includes("tracking_number") && trackSql.includes("tracking_url"));
 const modelJson = JSON.parse(read("modelos/modelos.json"));
-const modelsBlock = app.slice(
-  app.indexOf("const MODELS ="),
-  app.indexOf("const TEMPLATES")
-);
-const appModelIds = [...modelsBlock.matchAll(/^ {4}([a-z0-9]+): \{/gm)]
+const modelData = read("modelos/modelos-data.js");
+const dataModelIds = [...modelData.matchAll(/"([a-z0-9]+)": \{/g)]
   .map((match) => match[1])
   .sort();
 check(
-  "modelos: app/json",
-  appModelIds.join(",") === modelJson.map((model) => model.id).sort().join(",")
+  "modelos: data/json",
+  dataModelIds.join(",") === modelJson.map((model) => model.id).sort().join(",")
+);
+check("modelos: app usa datos", app.includes("window.LIKEHOODIE_MODELS"));
+const priceFormat = new Intl.NumberFormat("es-MX");
+check(
+  "index: precios de modelos",
+  modelJson.every((model) =>
+    index.includes(
+      `data-model-price="${model.id}">$${priceFormat.format(model.price)}</span>`
+    )
+  )
 );
 
 check("sitemap: productos", sitemap.includes("modelos/cocodrilo.html"));
