@@ -53,12 +53,12 @@ jobs:
 
           key=$(grep -o 'sb_publishable_[A-Za-z0-9_]*' supabase-config.js | head -1)
           rpc_code=$(curl -sS --retry 2 --retry-delay 4 -o /tmp/rpc.json -w "%{http_code}" --max-time 20 \
-            -X POST "https://qrblsclpzoaxfaggsrda.supabase.co/rest/v1/rpc/get_order_status" \
+            -X POST "https://qrblsclpzoaxfaggsrda.supabase.co/functions/v1/order-status" \
             -H "apikey: ${key}" -H "Authorization: Bearer ${key}" -H "Content-Type: application/json" \
-            -d '{"p_number":1,"p_email":"nadie@example.com"}' || echo "000")
+            -d '{"number":1,"email":"nadie@example.com"}' || echo "000")
           if [ "$rpc_code" != "200" ] || ! grep -q '"found":false' /tmp/rpc.json; then
             fail=1
-            report="${report}- Supabase get_order_status: HTTP ${rpc_code}\n"
+            report="${report}- Edge Function order-status: HTTP ${rpc_code}\n"
           fi
 
           if [ "$fail" = "1" ]; then
