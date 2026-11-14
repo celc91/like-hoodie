@@ -49,7 +49,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
 - **Persistencia:** el carrito se guarda en `localStorage` y se sincroniza con Supabase.
 - **Checkout de demostración:** formulario validado (teléfono, estado, CP y referencias), confirmación de pedido y registro en Supabase. No procesa pagos reales.
-- **Panel de administración:** pedidos, estados, carritos abandonados, métricas, embudo, monitorización de errores y exportación CSV, protegido con Supabase Auth.
+- **Panel de administración:** pedidos, estados, carritos abandonados, métricas, embudo, monitorización de errores y exportación CSV, protegido con Supabase Auth, MFA TOTP obligatorio y cierre por inactividad.
 - **Analítica propia:** eventos de visita, carrito y checkout guardados en Supabase.
 - **Guía de tallas, FAQ y newsletter.**
 - **Páginas legales:** aviso de privacidad, política de cookies y términos y condiciones.
@@ -234,6 +234,8 @@ Cuando GitHub verifique el dominio y emita el certificado, activa **Enforce HTTP
 ## Pedidos y administración
 
 La tienda guarda carritos, pedidos y eventos en **Supabase**. El panel está en `admin.html` y requiere iniciar sesión con un usuario administrador.
+
+En el primer acceso, el panel obliga a configurar **MFA TOTP** con una app autenticadora. `is_admin()` solo concede permisos con una sesión `aal2`, así que un token de contraseña (`aal1`) no puede leer pedidos ni usar el panel por API. La sesión se cierra tras **30 minutos de inactividad**. Si se pierde el autenticador, hay que eliminar el factor desde Supabase Auth y volver a configurarlo.
 
 Para configurarlo:
 

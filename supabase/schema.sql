@@ -42,10 +42,11 @@ stable
 security definer
 set search_path = public
 as $$
-  select exists (
-    select 1 from public.profiles
-    where id = auth.uid() and role = 'admin'
-  );
+  select coalesce(auth.jwt() ->> 'aal', 'aal1') = 'aal2'
+     and exists (
+       select 1 from public.profiles
+       where id = auth.uid() and role = 'admin'
+     );
 $$;
 
 grant execute on function public.is_admin() to authenticated;

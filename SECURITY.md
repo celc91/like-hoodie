@@ -35,6 +35,8 @@ políticas SQL y las Edge Functions de Supabase. También es relevante:
 - Los límites de abuso cubren `process-logo`, `events`, `carts`, cupones y
   newsletter: intentos por usuario/IP, topes de tamaño, rutas de logo propias y
   limpieza de carritos abandonados.
+- El panel de administración exige **MFA TOTP**; `is_admin()` solo concede
+  permisos con `aal2` y la sesión se cierra tras 30 minutos de inactividad.
 - Cloudflare va delante de GitHub Pages con SSL **Full (strict)**, HSTS,
   `nosniff`, `Referrer-Policy`, `Permissions-Policy`, CSP de `frame-ancestors` y
   redirección `www` al dominio principal. Los registros de correo no se proxean.

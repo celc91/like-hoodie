@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="admin.css?v=20261114-fase4">
+<link rel="stylesheet" href="admin.css?v=20261114-mfa1">
 </head>
 <body>
   <div class="login" id="login-view">
@@ -18,8 +18,8 @@
         <span>like hoodie ♡</span>
       </a>
       <p class="eyebrow">Panel de administración</p>
-      <h1>Entra a tu negocio.</h1>
-      <p class="login-sub">Pedidos, carritos abandonados y métricas en un solo lugar.</p>
+      <h1 id="login-title">Entra a tu negocio.</h1>
+      <p class="login-sub" id="login-sub">Pedidos, carritos abandonados y métricas en un solo lugar.</p>
 
       <form id="login-form" autocomplete="on">
         <label for="admin-email">Correo</label>
@@ -29,6 +29,25 @@
         <button class="btn" type="submit" id="login-button">Entrar</button>
         <p class="form-error" id="login-error" role="alert" hidden></p>
       </form>
+
+      <div id="mfa-panel" hidden>
+        <p class="eyebrow">Seguridad</p>
+        <h2 id="mfa-title">Verificación en dos pasos</h2>
+        <p class="login-sub" id="mfa-desc">Escribe el código de tu app autenticadora.</p>
+        <div id="mfa-qr-wrap" class="mfa-qr" hidden>
+          <img id="mfa-qr" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Código QR para configurar la verificación en dos pasos" width="180" height="180">
+        </div>
+        <p id="mfa-secret-wrap" class="mfa-secret" hidden>Clave manual: <code id="mfa-secret"></code></p>
+        <form id="mfa-form" autocomplete="off">
+          <label for="mfa-code">Código de 6 dígitos</label>
+          <input id="mfa-code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required placeholder="123456">
+          <button class="btn" type="submit" id="mfa-button">Verificar</button>
+          <p class="form-error" id="mfa-error" role="alert" hidden></p>
+        </form>
+        <button class="back-link mfa-cancel" type="button" id="mfa-cancel">Cancelar y volver</button>
+      </div>
+
+      <p class="login-security">La sesión se cierra tras 30 minutos de inactividad.</p>
 
       <p class="setup-note" id="setup-note" hidden>
         Falta configurar Supabase. Edita <code>supabase-config.js</code> y sigue los pasos de <code>supabase/README.md</code>.
@@ -289,6 +308,6 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="admin.js?v=20261114-fase4"></script>
+  <script src="admin.js?v=20261114-mfa1"></script>
 </body>
 </html>

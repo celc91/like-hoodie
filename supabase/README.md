@@ -124,6 +124,9 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
 - No se guardan datos de tarjetas.
 - Los carritos abandonados no guardan nombre, correo ni teléfono.
 - Los pedidos guardan los datos necesarios para producir y enviar.
+- El panel exige **MFA TOTP** y `is_admin()` solo responde `true` con una sesión
+  `aal2`; un token de contraseña no puede acceder por API. La sesión se cierra
+  tras 30 minutos de inactividad.
 
 ## 8. Pagos con Clip
 
@@ -150,6 +153,7 @@ En un proyecto nuevo ejecuta:
 12. `fase6-limites.sql` (topes de `items`, monitorización y `clip-pay`)
 13. `fase7-abuso.sql` (eventos, carritos, logos y `process-logo`)
 14. `antispam-cupones.sql` (límite de intentos de cupón)
+15. `fase8-admin-mfa.sql` (MFA `aal2` obligatorio para admin)
 
 `fase1-pedidos-seguros.sql` deja una sola versión de `place_order`: recalcula
 precios en servidor, valida cupón, correo, teléfono, dirección, estado y CP, y

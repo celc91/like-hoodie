@@ -14,8 +14,22 @@
   const loginView = $("#login-view");
   const appView = $("#app-view");
   const loginForm = $("#login-form");
+  const loginTitle = $("#login-title");
+  const loginSub = $("#login-sub");
   const loginError = $("#login-error");
   const loginButton = $("#login-button");
+  const mfaPanel = $("#mfa-panel");
+  const mfaForm = $("#mfa-form");
+  const mfaCode = $("#mfa-code");
+  const mfaButton = $("#mfa-button");
+  const mfaError = $("#mfa-error");
+  const mfaTitle = $("#mfa-title");
+  const mfaDesc = $("#mfa-desc");
+  const mfaQrWrap = $("#mfa-qr-wrap");
+  const mfaQr = $("#mfa-qr");
+  const mfaSecretWrap = $("#mfa-secret-wrap");
+  const mfaSecret = $("#mfa-secret");
+  const mfaCancel = $("#mfa-cancel");
   const setupNote = $("#setup-note");
   const toastEl = $("#toast");
 
@@ -47,6 +61,11 @@
   let ordersStatus = "";
   let cartsCache = [];
   let toastTimer = null;
+  let mfaFactorId = null;
+  let idleTimer = null;
+  const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+  const MFA_QR_PLACEHOLDER =
+    "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 
   const money = new Intl.NumberFormat("es-MX", {
     style: "currency",
@@ -99,14 +118,71 @@
     loginError.hidden = !message;
   }
 
-  function showLogin() {
-    appView.hidden = true;
+  function setMfaError(message) {
+    if (!mfaError) return;
+    mfaError.textContent = message;
+    mfaError.hidden = !message;
+  }
+
+  function clearMfaSecrets() {
+    if (mfaSecret) mfaSecret.textContent = "";
+    if (mfaQr) mfaQr.src = MFA_QR_PLACEHOLDER;
+    if (mfaQrWrap) mfaQrWrap.hidden = true;
+    if (mfaSecretWrap) mfaSecretWrap.hidden = true;
+  }
+
+  function stopIdleTimer() {
+    if (idleTimer) {
+      window.clearTimeout(idleTimer);
+      idleTimer = null;
+    }
+  }
+
+  function resetIdleTimer() {
+    if (!currentUser || appView.hidden) return;
+    stopIdleTimer();
+    idleTimer = window.setTimeout(async () => {
+      idleTimer = null;
+      try {
+        await client.auth.signOut();
+      } catch (error) {
+        console.warn("No se pudo cerrar la sesión inactiva.", error);
+      }
+      currentUser = null;
+      showLogin();
+      setLoginError("Sesión cerrada por inactividad. Vuelve a entrar.");
+    }, IDLE_TIMEOUT_MS);
+  }
+
+  ["pointerdown", "keydown", "touchstart", "scroll"].forEach((eventName) => {
+    document.addEventListener(eventName, resetIdleTimer, { passive: true });
+  });
+
+  function showLoginView() {
+    stopIdleTimer();
+    mfaFactorId = null;
     loginView.hidden = false;
+    appView.hidden = true;
+    loginForm.hidden = false;
+    if (loginTitle) loginTitle.hidden = false;
+    if (loginSub) loginSub.hidden = false;
+    if (mfaPanel) mfaPanel.hidden = true;
+    if (mfaCode) mfaCode.value = "";
+    clearMfaSecrets();
+    setMfaError("");
+  }
+
+  function showLogin() {
+    showLoginView();
   }
 
   function showApp() {
+    mfaFactorId = null;
     loginView.hidden = true;
     appView.hidden = false;
+    if (mfaPanel) mfaPanel.hidden = true;
+    clearMfaSecrets();
+    resetIdleTimer();
     loadAll();
   }
 
@@ -166,7 +242,93 @@
     return data?.role === "admin";
   }
 
-  async function startSession(user) {
+  function showMfaPanel() {
+    stopIdleTimer();
+    loginView.hidden = false;
+    appView.hidden = true;
+    loginForm.hidden = true;
+    if (loginTitle) loginTitle.hidden = true;
+    if (loginSub) loginSub.hidden = true;
+    mfaPanel.hidden = false;
+    window.setTimeout(() => {
+      if (mfaCode) mfaCode.focus();
+    }, 60);
+  }
+
+  function mfaQrSource(value) {
+    const text = String(value || "");
+    if (text.startsWith("data:image/")) return text;
+    if (text.startsWith("<svg")) {
+      return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(text)}`;
+    }
+    if (text.startsWith("https://")) return text;
+    return "";
+  }
+
+  async function listVerifiedTotp() {
+    const { data, error } = await client.auth.mfa.listFactors();
+    if (error) throw error;
+    return (data?.all || []).filter(
+      (factor) => factor.factor_type === "totp" && factor.status === "verified"
+    );
+  }
+
+  async function cleanUnverifiedTotp() {
+    try {
+      const { data } = await client.auth.mfa.listFactors();
+      const factors = (data?.all || []).filter(
+        (factor) => factor.factor_type === "totp" && factor.status === "unverified"
+      );
+      for (const factor of factors) {
+        await client.auth.mfa.unenroll({ factorId: factor.id });
+      }
+    } catch (error) {
+      console.warn("No se pudieron limpiar los factores MFA pendientes.", error);
+    }
+  }
+
+  async function startMfaEnrollment() {
+    await cleanUnverifiedTotp();
+    const { data, error } = await client.auth.mfa.enroll({
+      factorType: "totp",
+      friendlyName: "like hoodie admin",
+    });
+
+    if (error) {
+      setLoginError("No se pudo activar la verificación en dos pasos.");
+      await client.auth.signOut();
+      currentUser = null;
+      showLogin();
+      return;
+    }
+
+    mfaFactorId = data.id;
+    mfaTitle.textContent = "Activa la verificación en dos pasos";
+    mfaDesc.textContent =
+      "Es obligatoria para el panel. Escanea el QR con Google Authenticator, 1Password o Authy.";
+    const qr = mfaQrSource(data.totp?.qr_code);
+    mfaQr.src = qr;
+    mfaQrWrap.hidden = !qr;
+    mfaSecret.textContent = String(data.totp?.secret || "");
+    mfaSecretWrap.hidden = !mfaSecret.textContent;
+    mfaCode.value = "";
+    setMfaError("");
+    showMfaPanel();
+  }
+
+  function startMfaChallenge(factor) {
+    mfaFactorId = factor.id;
+    mfaTitle.textContent = "Verificación en dos pasos";
+    mfaDesc.textContent =
+      "Escribe el código de 6 dígitos de tu app autenticadora.";
+    mfaQrWrap.hidden = true;
+    mfaSecretWrap.hidden = true;
+    mfaCode.value = "";
+    setMfaError("");
+    showMfaPanel();
+  }
+
+  async function beginAdmin(user) {
     currentUser = user;
     const admin = await checkAdmin(user);
     if (!admin) {
@@ -176,7 +338,31 @@
       showLogin();
       return;
     }
-    showApp();
+
+    try {
+      const { data: level, error: levelError } =
+        await client.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (levelError) throw levelError;
+
+      const factors = await listVerifiedTotp();
+      if (!factors.length) {
+        await startMfaEnrollment();
+        return;
+      }
+
+      if (level?.currentLevel === "aal2") {
+        showApp();
+        return;
+      }
+
+      startMfaChallenge(factors[0]);
+    } catch (error) {
+      console.error("No se pudo verificar MFA.", error);
+      await client.auth.signOut();
+      currentUser = null;
+      setLoginError("No se pudo verificar la seguridad de la cuenta. Vuelve a entrar.");
+      showLogin();
+    }
   }
 
   async function init() {
@@ -203,7 +389,7 @@
 
     const { data } = await client.auth.getSession();
     if (data?.session?.user) {
-      await startSession(data.session.user);
+      await beginAdmin(data.session.user);
     } else {
       showLogin();
     }
@@ -239,7 +425,65 @@
         return;
       }
 
-      await startSession(authData.user);
+      await beginAdmin(authData.user);
+    });
+  }
+
+  if (mfaForm) {
+    mfaForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      setMfaError("");
+      const code = String(mfaCode.value || "").replace(/\D/g, "");
+      if (!/^[0-9]{6}$/.test(code) || !mfaFactorId) {
+        setMfaError("Escribe un código de 6 dígitos.");
+        return;
+      }
+
+      mfaButton.disabled = true;
+      mfaButton.textContent = "Verificando…";
+
+      const { data: challenge, error: challengeError } =
+        await client.auth.mfa.challenge({ factorId: mfaFactorId });
+
+      if (challengeError) {
+        mfaButton.disabled = false;
+        mfaButton.textContent = "Verificar";
+        setMfaError("No se pudo iniciar la verificación. Inténtalo de nuevo.");
+        return;
+      }
+
+      const { error: verifyError } = await client.auth.mfa.verify({
+        factorId: mfaFactorId,
+        challengeId: challenge.id,
+        code,
+      });
+
+      mfaButton.disabled = false;
+      mfaButton.textContent = "Verificar";
+
+      if (verifyError) {
+        setMfaError("Código incorrecto o expirado. Inténtalo de nuevo.");
+        mfaCode.value = "";
+        mfaCode.focus();
+        return;
+      }
+
+      showApp();
+    });
+  }
+
+  if (mfaCancel) {
+    mfaCancel.addEventListener("click", async () => {
+      mfaFactorId = null;
+      stopIdleTimer();
+      try {
+        await client.auth.signOut();
+      } catch (error) {
+        console.warn("No se pudo cerrar la sesión MFA.", error);
+      }
+      currentUser = null;
+      showLogin();
+      setLoginError("Inicio de sesión cancelado.");
     });
   }
 
