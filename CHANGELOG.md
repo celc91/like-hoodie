@@ -24,9 +24,10 @@ semántico.
   (`og-<modelo>.jpg`) en lugar de la portada genérica.
 - El CI regenera las páginas de producto y falla si `modelos.json` y el HTML
   publicado no están sincronizados.
-- El monitor de disponibilidad reintenta 4 veces con espera antes de abrir una
-  incidencia, evitando falsos positivos durante un despliegue de Pages.
-- Smoke test ampliado a **46 comprobaciones**.
+- El monitor de disponibilidad comprueba la Edge Function `order-status` y
+  reintenta 4 veces con espera antes de abrir una incidencia.
+- Smoke test ampliado a **47 comprobaciones**, incluida la coherencia de IDs
+  entre `MODELS` y `modelos.json`.
 
 ## [1.6.0] — 2026-11-14
 

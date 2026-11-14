@@ -56,6 +56,19 @@ for (const id of ["cocodrilo", "insignia", "panorama", "corazon"]) {
 check("seguimiento: formulario", trackPage.includes("data-track-form"));
 check("seguimiento: endpoint", trackJs.includes("/functions/v1/order-status"));
 check("seguimiento: columnas", trackSql.includes("tracking_number") && trackSql.includes("tracking_url"));
+const modelJson = JSON.parse(read("modelos/modelos.json"));
+const modelsBlock = app.slice(
+  app.indexOf("const MODELS ="),
+  app.indexOf("const TEMPLATES")
+);
+const appModelIds = [...modelsBlock.matchAll(/^ {4}([a-z0-9]+): \{/gm)]
+  .map((match) => match[1])
+  .sort();
+check(
+  "modelos: app/json",
+  appModelIds.join(",") === modelJson.map((model) => model.id).sort().join(",")
+);
+
 check("sitemap: productos", sitemap.includes("modelos/cocodrilo.html"));
 
 check("whatsapp: número", read("whatsapp-config.js").includes("5215552142692"));
