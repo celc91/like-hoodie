@@ -16,6 +16,31 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.8.0] — 2026-11-14
+
+### Añadido
+
+- **Cartelera sin API key:** `eventos.csv` es ahora la fuente editable. El
+  workflow **Eventos** lo convierte en `eventos.json` al guardar el CSV o cada
+  lunes.
+- También se puede usar una **hoja de Google publicada como CSV** mediante la
+  variable de repositorio `EVENTS_CSV_URL`; no requiere cuenta de developer.
+- El workflow no vacía la cartelera si el CSV falla o no tiene eventos futuros.
+- Si pasan más de 45 días sin cambios, abre una incidencia recordatoria y la
+  cierra cuando se actualiza.
+- `eventos.csv` sembrado con la cartelera actual (eventos futuros).
+
+### Cambiado
+
+- La API de Ticketmaster queda como opción secundaria en
+  `scripts/sync-ticketmaster.mjs`; ya no es necesaria para publicar.
+
+### Verificado
+
+- `sync-events-csv.mjs` genera 128 eventos futuros desde el CSV.
+- El workflow ya no depende de `TICKETMASTER_API_KEY`.
+- Smoke test: **51 comprobaciones**.
+
 ## [1.7.0] — 2026-11-14
 
 ### Cambiado

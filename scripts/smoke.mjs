@@ -86,6 +86,11 @@ check("seguimiento: edge function", read("supabase/functions/order-status/index.
 check("monitor: edge function", read("supabase/functions/client-error/index.ts").includes("MAX_ERRORS_PER_HOUR"));
 check("seguridad: retención", read("supabase/fase4-seguridad.sql").includes("cleanup_monitoring"));
 check("producto: monitor", read("modelos/cocodrilo.html").includes("monitor.js"));
+check("eventos: CSV", read("eventos.csv").startsWith("name,start,venue,city,url"));
+check(
+  "eventos: sincronizador CSV",
+  read("scripts/sync-events-csv.mjs").includes("EVENTS_CSV_URL")
+);
 
 const failed = checks.filter((entry) => !entry.ok);
 for (const entry of checks) {

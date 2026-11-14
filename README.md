@@ -241,32 +241,25 @@ La sección **Eventos** (`#eventos`) es una fuente de inspiración: muestra los 
 
 Los datos viven en `eventos.json`. Es una fotografía de la cartelera, así que los horarios, recintos y disponibilidad pueden cambiar; confirma siempre en Ticketmaster antes de comprar. like hoodie ♡ no vende boletos ni participa en esa transacción.
 
-Para actualizar la cartelera con la API oficial:
+### Actualización de la cartelera
 
-1. Crea una API key gratuita en [developer.ticketmaster.com](https://developer.ticketmaster.com/).
-2. Ejecuta el sincronizador:
+La web lee `eventos.json`, pero la fuente editable es **`eventos.csv`** (o una hoja de cálculo publicada como CSV). No requiere cuenta de Ticketmaster ni API key.
 
-```powershell
-$env:TICKETMASTER_API_KEY = "TU_API_KEY"
-node scripts/sync-ticketmaster.mjs
+Columnas:
+
+```csv
+name,start,venue,city,url
+Nombre del concierto,2026-11-20T20:00:00,Auditorio,CDMX,https://...
 ```
 
-El script consulta la **Discovery API** para México, filtra eventos musicales y reescribe `eventos.json`. La API key solo se usa en la computadora o en CI; nunca se incluye en el sitio publicado.
+Opciones:
 
-### Actualización automática
+1. **Editar `eventos.csv`** en el repo (GitHub permite editarlo desde el navegador). Al guardar, el workflow **Eventos** regenera `eventos.json` y lo publica.
+2. **Google Sheet:** crea una hoja con esas columnas, publícala como CSV (`Archivo → Compartir → Publicar en la web → CSV`) y guarda la URL en la variable de repositorio `EVENTS_CSV_URL`. El workflow la consulta cada lunes.
 
-El workflow **Eventos** se ejecuta cada lunes y también a mano. Para activarlo:
+El workflow no vacía la cartelera si el CSV falla o no tiene eventos futuros. Si pasan más de 45 días sin cambios, abre una incidencia recordatoria.
 
-1. Crea la API key en [developer.ticketmaster.com](https://developer.ticketmaster.com/).
-2. Guárdala como secreto del repositorio:
-
-```powershell
-gh secret set TICKETMASTER_API_KEY --repo celc91/like-hoodie
-```
-
-3. Ejecuta **Actions → Eventos → Run workflow** para la primera sincronización.
-
-Si el secreto no existe, el workflow abre una incidencia con estas instrucciones en vez de dejar la cartelera desactualizada en silencio. La clave nunca se publica en el navegador.
+La API oficial de Ticketmaster sigue disponible en `scripts/sync-ticketmaster.mjs` para quien tenga una API key, pero ya no es necesaria para mantener la sección.
 
 ## Correo
 
@@ -471,6 +464,7 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 - [x] Alineación horizontal/vertical por separado.
 - [x] Fase 2: WebP, accesibilidad 100, autoguardado y CI bloqueante.
 - [x] Fase 3: páginas de producto, seguimiento de pedido y SEO.
+- [x] Cartelera editable por CSV sin API key.
 - [x] WhatsApp y monitorización (errores, print, checkout y disponibilidad).
 - [ ] Fotos y reseñas reales.
 - [x] Canva evaluado y descartado por ahora (ver abajo).
