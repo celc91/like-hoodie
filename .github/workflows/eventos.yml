@@ -2,6 +2,7 @@ name: Eventos
 
 on:
   push:
+    branches: [main]
     paths:
       - eventos.csv
   schedule:
