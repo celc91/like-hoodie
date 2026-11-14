@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const models = JSON.parse(readFileSync(join(root, "modelos", "modelos.json"), "utf8"));
 const SITE = "https://likehoodie.com";
-const CSS_VERSION = "20261114-fase3";
+const CSS_VERSION = "20261114-fase4";
 
 const escapeHTML = (value) =>
   String(value)
@@ -123,7 +123,7 @@ function page(model) {
   <script type="application/ld+json">${JSON.stringify(breadcrumbSchema)}</script>
   ${faqSchema ? `<script type="application/ld+json">${JSON.stringify(faqSchema)}</script>` : ""}
 </head>
-<body class="product-page">
+<body class="product-page" data-wa-context="${escapeHTML(model.name)}">
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
   <header class="product-header">
@@ -223,10 +223,11 @@ function page(model) {
   <footer class="product-footer">
     <div class="container">
       <p>© 2026 like hoodie ♡. Hecho con algodón y buenas ideas.</p>
-      <nav aria-label="Documentos legales">
+      <nav aria-label="Enlaces del pie">
         <a href="../terminos.html">Términos</a>
         <a href="../privacidad.html">Privacidad</a>
         <a href="../cookies.html">Cookies</a>
+        <a href="https://wa.me/525552142692" data-whatsapp-link target="_blank" rel="noopener noreferrer">WhatsApp</a>
       </nav>
     </div>
   </footer>
@@ -248,6 +249,8 @@ function page(model) {
       sync();
     })();
   </script>
+  <script src="../whatsapp-config.js?v=${CSS_VERSION}"></script>
+  <script src="../whatsapp.js?v=${CSS_VERSION}"></script>
 </body>
 </html>
 `;

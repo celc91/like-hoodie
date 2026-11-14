@@ -267,6 +267,7 @@
       if (section === "resumen") loadStats();
       if (section === "pedidos") loadOrders();
       if (section === "carritos") loadCarts();
+      if (section === "salud") loadHealth();
     });
   });
 
@@ -278,10 +279,19 @@
     });
   }
 
+  const healthRefresh = $("#health-refresh");
+  if (healthRefresh) {
+    healthRefresh.addEventListener("click", () => {
+      loadHealth();
+      toast("Monitorización actualizada.");
+    });
+  }
+
   function loadAll() {
     loadStats();
     loadOrders();
     loadCarts();
+    loadHealth();
   }
 
   /* ------------------------------- Stats -------------------------------- */
@@ -600,6 +610,97 @@
       ? cartsCache.filter((cart) => cart.display_status === filter)
       : cartsCache;
     renderCarts(filtered);
+  }
+
+  const FAILURE_EVENTS = ["checkout_failed", "print_failed", "model_purchase_failed"];
+
+  async function loadHealth() {
+    if (!currentUser) return;
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const [errorsResult, eventsResult, ...counts] = await Promise.all([
+      client
+        .from("client_errors")
+        .select("created_at, path, message, source")
+        .gte("created_at", since)
+        .order("created_at", { ascending: false })
+        .limit(50),
+      client
+        .from("events")
+        .select("created_at, name, path, metadata")
+        .in("name", FAILURE_EVENTS)
+        .gte("created_at", since)
+        .order("created_at", { ascending: false })
+        .limit(50),
+      client
+        .from("client_errors")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", since),
+      ...FAILURE_EVENTS.map((name) =>
+        client
+          .from("events")
+          .select("*", { count: "exact", head: true })
+          .eq("name", name)
+          .gte("created_at", since)
+      ),
+    ]);
+
+    if (errorsResult.error || eventsResult.error) {
+      console.warn(errorsResult.error || eventsResult.error);
+      toast("No se pudo cargar la monitorización.");
+      return;
+    }
+
+    const setCount = (selector, value) => {
+      const el = $(selector);
+      if (el) el.textContent = String(value);
+    };
+    setCount("#health-errors-count", counts[0]?.count || 0);
+    setCount("#health-checkout-count", counts[1]?.count || 0);
+    setCount("#health-print-count", counts[2]?.count || 0);
+    setCount("#health-model-count", counts[3]?.count || 0);
+
+    const errors = errorsResult.data || [];
+    const errorsBody = $("#health-errors-body");
+    const errorsEmpty = $("#health-errors-empty");
+    if (errorsBody) {
+      errorsBody.innerHTML = errors
+        .map(
+          (row) => `<tr>
+            <td>${escapeHTML(formatDate(row.created_at))}</td>
+            <td>${escapeHTML(row.path || "—")}</td>
+            <td class="health-message" title="${escapeHTML(row.message || "")}">${escapeHTML(
+              row.message || "—"
+            )}</td>
+          </tr>`
+        )
+        .join("");
+    }
+    if (errorsEmpty) errorsEmpty.hidden = errors.length > 0;
+
+    const events = eventsResult.data || [];
+    const eventsBody = $("#health-events-body");
+    const eventsEmpty = $("#health-events-empty");
+    if (eventsBody) {
+      eventsBody.innerHTML = events
+        .map((row) => {
+          let detail = "";
+          try {
+            detail = JSON.stringify(row.metadata || {});
+          } catch (error) {
+            detail = "";
+          }
+          return `<tr>
+            <td>${escapeHTML(formatDate(row.created_at))}</td>
+            <td>${escapeHTML(row.name || "—")}</td>
+            <td>${escapeHTML(row.path || "—")}</td>
+            <td class="health-message" title="${escapeHTML(detail)}">${escapeHTML(
+              detail.slice(0, 160) || "—"
+            )}</td>
+          </tr>`;
+        })
+        .join("");
+    }
+    if (eventsEmpty) eventsEmpty.hidden = events.length > 0;
   }
 
   function renderCarts(carts) {

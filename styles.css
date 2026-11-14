@@ -8141,3 +8141,61 @@ p {
   line-height: 1.4;
   color: var(--muted);
 }
+
+/* --------------------------------------------------------------------------
+   WhatsApp
+   -------------------------------------------------------------------------- */
+
+.wa-float {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 16px 0 13px;
+  border-radius: 999px;
+  background: #128c7e;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 10px 26px rgba(18, 140, 126, 0.32);
+  transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+}
+
+.wa-float:hover {
+  background: #0f7a6d;
+  transform: translateY(-2px);
+}
+
+.wa-float svg {
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+
+.wa-float__label {
+  white-space: nowrap;
+}
+
+body.is-locked .wa-float {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 560px) {
+  .wa-float {
+    right: 14px;
+    bottom: 14px;
+    width: 48px;
+    min-height: 48px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .wa-float__label {
+    display: none;
+  }
+}

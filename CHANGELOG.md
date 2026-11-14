@@ -16,6 +16,28 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.5.0] — 2026-11-14
+
+### Añadido
+
+- **WhatsApp** `+52 55 5214 2692`: botón flotante con mensaje contextual en
+  tienda, producto y seguimiento, además de enlaces en el pie.
+- **Monitorización de errores JS** con la tabla `client_errors` y el RPC
+  `log_client_error()` (30/hora por sesión, solo lectura admin).
+- Sección **Salud** en el admin con errores, checkouts fallidos, prints
+  fallidos y compras de modelo fallidas de las últimas 24 h.
+- Eventos `checkout_failed`, `print_failed` y `model_purchase_failed`.
+- Workflow **Disponibilidad**: cada 30 min comprueba home, CSS, producto,
+  seguimiento, admin y el RPC de Supabase; si falla, abre o actualiza una
+  incidencia.
+
+### Verificado
+
+- `log_client_error` guarda el error desde una sesión anónima real y el admin
+  puede leerlo por RLS.
+- WhatsApp genera el enlace `wa.me` con el número y el mensaje correctos.
+- Smoke test ampliado a 38 comprobaciones; HTML y enlaces en verde.
+
 ## [1.4.0] — 2026-11-14
 
 ### Añadido

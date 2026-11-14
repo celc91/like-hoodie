@@ -913,7 +913,6 @@ a { color: inherit; }
 .modal select, .modal textarea { width: 100%; }
 .modal input[type="text"], .modal input[type="url"] { width: 100%; }
 .modal textarea { min-height: 90px; resize: vertical; }
-
 /* ------------------------------- Toast -------------------------------- */
 
 .toast {
@@ -962,4 +961,23 @@ a { color: inherit; }
   .tab { padding: 7px 10px; font-size: 9.5px; }
   .detail-grid { grid-template-columns: 1fr; }
   .top-lists { grid-template-columns: 1fr; }
+}
+
+.health-grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.health-title {
+  margin: 0 0 10px;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.health-message {
+  max-width: 520px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

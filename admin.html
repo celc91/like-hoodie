@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="admin.css?v=20261114-fase3">
+<link rel="stylesheet" href="admin.css?v=20261114-fase4">
 </head>
 <body>
   <div class="login" id="login-view">
@@ -49,6 +49,7 @@
           <button class="tab is-active" data-section="resumen" type="button">Resumen</button>
           <button class="tab" data-section="pedidos" type="button">Pedidos</button>
           <button class="tab" data-section="carritos" type="button">Carritos</button>
+          <button class="tab" data-section="salud" type="button">Salud</button>
         </nav>
         <div class="topbar-actions">
           <button class="btn btn-ghost" type="button" id="refresh-button">Actualizar</button>
@@ -208,6 +209,72 @@
           <p class="empty" id="carts-empty" hidden>No hay carritos con estos filtros.</p>
         </div>
       </section>
+
+      <section class="section" data-panel="salud" hidden>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Salud</p>
+            <h1>Monitorización.</h1>
+          </div>
+          <button class="btn btn-ghost" type="button" id="health-refresh">Actualizar</button>
+        </div>
+
+        <div class="kpis">
+          <article class="kpi">
+            <span>Errores JS · 24 h</span>
+            <strong id="health-errors-count">—</strong>
+            <small>Máx. 30/hora por sesión</small>
+          </article>
+          <article class="kpi">
+            <span>Checkout fallido · 24 h</span>
+            <strong id="health-checkout-count">—</strong>
+            <small>Errores al guardar pedido</small>
+          </article>
+          <article class="kpi">
+            <span>Print fallido · 24 h</span>
+            <strong id="health-print-count">—</strong>
+            <small>Pipeline DTG</small>
+          </article>
+          <article class="kpi">
+            <span>Modelo fallido · 24 h</span>
+            <strong id="health-model-count">—</strong>
+            <small>Compra de la colección</small>
+          </article>
+        </div>
+
+        <div class="health-grid">
+          <div class="table-wrap">
+            <h2 class="health-title">Errores de JavaScript</h2>
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th scope="col">Fecha</th>
+                  <th scope="col">Ruta</th>
+                  <th scope="col">Mensaje</th>
+                </tr>
+              </thead>
+              <tbody id="health-errors-body"></tbody>
+            </table>
+            <p class="empty" id="health-errors-empty" hidden>Sin errores registrados en 24 h.</p>
+          </div>
+
+          <div class="table-wrap">
+            <h2 class="health-title">Fallos de compra y print</h2>
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th scope="col">Fecha</th>
+                  <th scope="col">Evento</th>
+                  <th scope="col">Ruta</th>
+                  <th scope="col">Detalle</th>
+                </tr>
+              </thead>
+              <tbody id="health-events-body"></tbody>
+            </table>
+            <p class="empty" id="health-events-empty" hidden>Sin fallos registrados en 24 h.</p>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -222,6 +289,6 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="admin.js?v=20261114-fase3"></script>
+  <script src="admin.js?v=20261114-fase4"></script>
 </body>
 </html>

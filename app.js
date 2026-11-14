@@ -1699,6 +1699,11 @@
           });
           if (!saved) {
             restoreSubmitButton(submitButton);
+            window.StoreSupabase?.track("checkout_failed", {
+              items: state.items.length,
+              total: totals().total,
+              reason: "place_order_sandbox",
+            });
             showToast(
               "No pudimos registrar el pedido. Revisa tu conexión e inténtalo de nuevo."
             );
@@ -1792,6 +1797,11 @@
 
         if (!saved) {
           restoreSubmitButton(submitButton);
+          window.StoreSupabase?.track("checkout_failed", {
+            items: state.items.length,
+            total: totals().total,
+            reason: "place_order",
+          });
           showToast(
             "No pudimos registrar el pedido. Revisa tu conexión e inténtalo de nuevo."
           );
@@ -3319,6 +3329,13 @@
       design.printError = asset.last_error || "";
       setPrintStatusUI(design);
 
+      if (asset.status === "failed") {
+        window.StoreSupabase?.track("print_failed", {
+          asset: assetId,
+          error: String(asset.last_error || "").slice(0, 120),
+        });
+      }
+
       if (asset.status === "cutout_ready") {
         await api.processLogoAsset(assetId, "resize");
       }
@@ -3331,6 +3348,10 @@
         design.printStatus = "failed";
         design.printError = "Tiempo de espera agotado.";
         setPrintStatusUI(design);
+        window.StoreSupabase?.track("print_failed", {
+          asset: assetId,
+          error: "timeout",
+        });
       }
     };
 
@@ -4522,6 +4543,11 @@
       }
       showToast(`${model.name} · Talla ${size} añadido a la cesta.`);
     } catch (error) {
+      window.StoreSupabase?.track("model_purchase_failed", {
+        model: id,
+        size,
+        message: String((error && error.message) || error || "").slice(0, 120),
+      });
       showToast(
         "No se pudo preparar el modelo para comprar. Inténtalo de nuevo."
       );

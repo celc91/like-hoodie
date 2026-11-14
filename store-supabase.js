@@ -279,6 +279,22 @@
     }
   }
 
+  async function logClientError(input = {}) {
+    if (!(await ensure())) return false;
+    try {
+      const { data, error } = await client.rpc("log_client_error", {
+        p_message: String(input.message || "").slice(0, 500),
+        p_source: String(input.source || "").slice(0, 200),
+        p_stack: String(input.stack || "").slice(0, 2000),
+        p_path: String(input.path || window.location.pathname).slice(0, 180),
+        p_user_agent: String(input.userAgent || navigator.userAgent).slice(0, 200),
+      });
+      return !error && Boolean(data);
+    } catch (error) {
+      return false;
+    }
+  }
+
   // Meta CAPI: el servidor solo envía la compra de quien aceptó publicidad.
   // La decisión se guarda en la base de datos, no en el navegador.
   function adsAllowed() {
@@ -683,6 +699,7 @@
     init,
     syncCart,
     track,
+    logClientError,
     uploadLogo,
     createLogoAsset,
     getLogoAsset,

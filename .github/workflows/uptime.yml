@@ -1,0 +1,75 @@
+name: Disponibilidad
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    name: Comprobar likehoodie.com
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Comprobar páginas y backend
+        id: check
+        run: |
+          fail=0
+          report=""
+          check() {
+            name="$1"
+            url="$2"
+            expected="$3"
+            code=$(curl -L -sS --retry 2 --retry-delay 4 -o /tmp/page.html -w "%{http_code}" --max-time 25 "$url" || echo "000")
+            if [ "$code" != "200" ]; then
+              fail=1
+              report="${report}- ${name}: HTTP ${code}\n"
+              return
+            fi
+            if [ -n "$expected" ] && ! grep -q "$expected" /tmp/page.html; then
+              fail=1
+              report="${report}- ${name}: no contiene '${expected}'\n"
+            fi
+          }
+
+          check "Home" "https://likehoodie.com/" "like hoodie"
+          check "CSS" "https://likehoodie.com/styles.css" "--cream"
+          check "Producto" "https://likehoodie.com/modelos/cocodrilo.html" "Cocodrilo de Miami"
+          check "Seguimiento" "https://likehoodie.com/pedido.html" "data-track-form"
+          check "Admin" "https://likehoodie.com/admin.html" "Administración"
+
+          key=$(grep -o 'sb_publishable_[A-Za-z0-9_]*' supabase-config.js | head -1)
+          rpc_code=$(curl -sS --retry 2 --retry-delay 4 -o /tmp/rpc.json -w "%{http_code}" --max-time 20 \
+            -X POST "https://qrblsclpzoaxfaggsrda.supabase.co/rest/v1/rpc/get_order_status" \
+            -H "apikey: ${key}" -H "Authorization: Bearer ${key}" -H "Content-Type: application/json" \
+            -d '{"p_number":1,"p_email":"nadie@example.com"}' || echo "000")
+          if [ "$rpc_code" != "200" ] || ! grep -q '"found":false' /tmp/rpc.json; then
+            fail=1
+            report="${report}- Supabase get_order_status: HTTP ${rpc_code}\n"
+          fi
+
+          if [ "$fail" = "1" ]; then
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+            printf "%b" "$report" > /tmp/report.txt
+            cat /tmp/report.txt
+          else
+            echo "failed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Abrir o actualizar incidencia
+        if: steps.check.outputs.failed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          body="La comprobación automática falló a las $(date -u '+%Y-%m-%d %H:%M UTC').\n\n$(cat /tmp/report.txt)"
+          existing=$(gh issue list --state open --search 'likehoodie.com no responde in:title' --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "$existing" ] && [ "$existing" != "null" ]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --title "🚨 likehoodie.com no responde" --body "$body"
+          fi

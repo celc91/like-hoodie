@@ -43,6 +43,8 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Colección de modelos:** cuatro diseños listos (Cocodrilo de Miami, Insignia atardecer, Panorama Vice y Corazón neón) que se compran tal cual con la talla elegida; el print se prepara al momento.
 - **Páginas de producto:** cada modelo tiene su URL (`/modelos/<id>.html`), con `Product` + `Offer`, breadcrumbs, FAQ y compra por talla.
 - **Seguimiento:** `/pedido.html` consulta estado y guía con número de pedido + correo.
+- **WhatsApp:** botón flotante y enlaces con mensaje contextual en tienda, producto y seguimiento.
+- **Monitorización:** errores JS y fallos de compra/print visibles en **Salud** del admin; comprobación de disponibilidad cada 30 min con aviso por issue.
 - **Cálculo de precio:** el precio del modelo se actualiza al elegir talla; la compra se completa en la tienda.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
 - **Persistencia:** el carrito se guarda en `localStorage` y se sincroniza con Supabase.
@@ -466,7 +468,7 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 - [x] Alineación horizontal/vertical por separado.
 - [x] Fase 2: WebP, accesibilidad 100, autoguardado y CI bloqueante.
 - [x] Fase 3: páginas de producto, seguimiento de pedido y SEO.
-- [ ] WhatsApp (falta número de contacto).
+- [x] WhatsApp y monitorización (errores, print, checkout y disponibilidad).
 - [ ] Fotos y reseñas reales.
 - [x] Canva evaluado y descartado por ahora (ver abajo).
 
