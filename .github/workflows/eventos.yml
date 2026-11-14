@@ -1,0 +1,53 @@
+name: Eventos
+
+on:
+  schedule:
+    # Lunes a las 14:00 UTC (08:00 CDMX)
+    - cron: "0 14 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Actualizar cartelera
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Comprobar clave de Ticketmaster
+        id: check
+        run: |
+          if [ -z "${{ secrets.TICKETMASTER_API_KEY }}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Sincronizar eventos
+        if: steps.check.outputs.configured == 'true'
+        env:
+          TICKETMASTER_API_KEY: ${{ secrets.TICKETMASTER_API_KEY }}
+        run: node scripts/sync-ticketmaster.mjs
+
+      - name: Guardar cambios
+        if: steps.check.outputs.configured == 'true'
+        run: |
+          if git diff --quiet eventos.json; then
+            echo "Sin cambios en la cartelera."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add eventos.json
+          git commit -m "Datos: actualizar cartelera de eventos"
+          git push
+
+      - name: Aviso si falta la clave
+        if: steps.check.outputs.configured != 'true'
+        run: |
+          echo "::warning::Falta el secreto TICKETMASTER_API_KEY. La cartelera no se actualizó."

@@ -111,6 +111,7 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
 - `place_order()` valida cada precio contra `public.product_prices` y rechaza cualquier pedido cuyo `unitPrice` no coincida.
 - `place_order()` exige teléfono de 10–15 dígitos, dirección, ciudad, estado y CP de 5 dígitos; guarda `state` y `address_ref` para la guía de envío.
 - La tabla `coupons` no es legible desde el navegador: los códigos se validan solo con `check_coupon()`.
+- `get_order_status(numero, correo)` devuelve estado, artículos y guía solo si ambos coinciden; no expone nombre, dirección ni teléfono.
 - Los pedidos solo los puede leer el administrador; el cliente puede ver los suyos.
 - Nadie puede cambiar su rol a administrador desde la web.
 - No se guardan datos de tarjetas.
@@ -135,6 +136,7 @@ En un proyecto nuevo ejecuta:
 5. `clip-payments.sql`
 6. `email-notifications.sql`
 7. `fase1-pedidos-seguros.sql` (**siempre al final**)
+8. `fase3-seguimiento.sql`
 
 `fase1-pedidos-seguros.sql` deja una sola versión de `place_order`: recalcula
 precios en servidor, valida cupón, correo, teléfono, dirección, estado y CP, y

@@ -1,0 +1,142 @@
+[
+  {
+    "id": "cocodrilo",
+    "name": "Cocodrilo de Miami",
+    "short": "Cocodrilo",
+    "price": 1048,
+    "color": "Blanco",
+    "colorHex": "#ffffff",
+    "badge": "Nuevo",
+    "mockup": "cocodrilo.webp",
+    "logo": "cocodrilo-logo.webp",
+    "sku": "LH-MOD-COCODRILO",
+    "meta": "Cocodrilo de Miami impreso en DTG sobre sudadera blanca de algodón 400 g. Compra por talla, envío 48–72 h y sin pedido mínimo.",
+    "description": "Un cocodrilo ilustrado sobre un atardecer de Miami, impreso a todo color en DTG. La sudadera blanca de algodón 400 g que convierte una idea de viaje en tu prenda favorita.",
+    "details": [
+      "DTG full color sobre algodón 400 g",
+      "Diseño al frente, listo para producir",
+      "Envío en 48–72 h y sin pedido mínimo"
+    ],
+    "faq": [
+      {
+        "q": "¿Puedo cambiar la talla?",
+        "a": "Sí. Elige XS–XXL antes de comprar. La XXL suma $49 MXN y el precio se actualiza al instante."
+      },
+      {
+        "q": "¿El diseño es exactamente el de la foto?",
+        "a": "Sí. Se imprime el arte del cocodrilo tal como lo ves, centrado en el pecho. No incluye texto adicional."
+      },
+      {
+        "q": "¿Cómo cuido la impresión?",
+        "a": "Lava del revés a 30 °C, sin suavizante y sin secadora. Plancha por el revés, nunca sobre el estampado."
+      }
+    ],
+    "width": 1000,
+    "height": 1000
+  },
+  {
+    "id": "insignia",
+    "name": "Insignia atardecer",
+    "short": "Insignia",
+    "price": 998,
+    "color": "Negro",
+    "colorHex": "#1c1c1f",
+    "badge": "",
+    "mockup": "insignia.webp",
+    "logo": "insignia-logo.webp",
+    "sku": "LH-MOD-INSIGNIA",
+    "meta": "Insignia de atardecer con palmeras impresa al pecho sobre sudadera negra de algodón 400 g. Compra por talla y recibe en 48–72 h.",
+    "description": "Una insignia circular con palmeras y sol poniente, impresa al pecho sobre sudadera negra. Un clásico de atardecer para llevar la costa a cualquier calle.",
+    "details": [
+      "DTG full color sobre algodón 400 g",
+      "Insignia centrada al pecho",
+      "Envío en 48–72 h y sin pedido mínimo"
+    ],
+    "faq": [
+      {
+        "q": "¿Puedo cambiar la talla?",
+        "a": "Sí. Elige XS–XXL antes de comprar. La XXL suma $49 MXN y el precio se actualiza al instante."
+      },
+      {
+        "q": "¿El diseño es exactamente el de la foto?",
+        "a": "Sí. Se imprime la insignia del atardecer tal como la ves, centrada en el pecho."
+      },
+      {
+        "q": "¿Cómo cuido la impresión?",
+        "a": "Lava del revés a 30 °C, sin suavizante y sin secadora. Plancha por el revés, nunca sobre el estampado."
+      }
+    ],
+    "width": 900,
+    "height": 1103
+  },
+  {
+    "id": "panorama",
+    "name": "Panorama Vice",
+    "short": "Panorama",
+    "price": 998,
+    "color": "Negro",
+    "colorHex": "#1c1c1f",
+    "badge": "",
+    "mockup": "panorama.webp",
+    "logo": "panorama-logo.webp",
+    "sku": "LH-MOD-PANORAMA",
+    "meta": "Panorámica de palmeras al atardecer en DTG sobre sudadera negra de algodón 400 g. Compra por talla, sin mínimo y envío en 48–72 h.",
+    "description": "Una panorámica de palmeras al atardecer cruza el pecho de una sudadera negra. DTG full color para un estampado ancho, limpio y con contraste.",
+    "details": [
+      "DTG full color sobre algodón 400 g",
+      "Panorámica ancha al pecho",
+      "Envío en 48–72 h y sin pedido mínimo"
+    ],
+    "faq": [
+      {
+        "q": "¿Puedo cambiar la talla?",
+        "a": "Sí. Elige XS–XXL antes de comprar. La XXL suma $49 MXN y el precio se actualiza al instante."
+      },
+      {
+        "q": "¿El diseño es exactamente el de la foto?",
+        "a": "Sí. Se imprime la panorámica tal como la ves, centrada y a todo color."
+      },
+      {
+        "q": "¿Cómo cuido la impresión?",
+        "a": "Lava del revés a 30 °C, sin suavizante y sin secadora. Plancha por el revés, nunca sobre el estampado."
+      }
+    ],
+    "width": 900,
+    "height": 1103
+  },
+  {
+    "id": "corazon",
+    "name": "Corazón neón",
+    "short": "Corazón",
+    "price": 998,
+    "color": "Negro",
+    "colorHex": "#1c1c1f",
+    "badge": "",
+    "mockup": "corazon.webp",
+    "logo": "corazon-logo.webp",
+    "sku": "LH-MOD-CORAZON",
+    "meta": "Corazón neón con palmeras en DTG sobre sudadera negra de algodón 400 g. Compra por talla, sin mínimo y envío en 48–72 h.",
+    "description": "Un corazón neón con palmeras y sol, impreso sobre sudadera negra. El contraste del neón con el algodón 400 g hace que el diseño salte a la vista.",
+    "details": [
+      "DTG full color sobre algodón 400 g",
+      "Corazón centrado al pecho",
+      "Envío en 48–72 h y sin pedido mínimo"
+    ],
+    "faq": [
+      {
+        "q": "¿Puedo cambiar la talla?",
+        "a": "Sí. Elige XS–XXL antes de comprar. La XXL suma $49 MXN y el precio se actualiza al instante."
+      },
+      {
+        "q": "¿El diseño es exactamente el de la foto?",
+        "a": "Sí. Se imprime el corazón neón tal como lo ves, centrado en el pecho."
+      },
+      {
+        "q": "¿Cómo cuido la impresión?",
+        "a": "Lava del revés a 30 °C, sin suavizante y sin secadora. Plancha por el revés, nunca sobre el estampado."
+      }
+    ],
+    "width": 900,
+    "height": 1103
+  }
+]

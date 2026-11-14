@@ -16,6 +16,39 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.4.0] — 2026-11-14
+
+### Añadido
+
+- **Páginas de producto** para los cuatro modelos (`/modelos/<id>.html`) con
+  precio por talla, compra directa, detalles y FAQ.
+- Schema `Product` + `Offer`, `BreadcrumbList` y `FAQPage`; canonical y OG
+  propios por modelo.
+- Enlace **Ver detalle** en cada tarjeta y compra automática al volver desde la
+  página de producto con `?comprar=<id>&talla=<talla>`.
+- **Seguimiento de pedido** en `/pedido.html`: número + correo, estado,
+  progreso, artículos y guía.
+- Columnas `carrier`, `tracking_number` y `tracking_url`; el admin puede
+  guardarlas y el CSV las exporta.
+- RPC `get_order_status(numero, correo)` con datos mínimos y sin PII.
+- Workflow semanal de **Ticketmaster** para mantener `eventos.json` al día
+  cuando exista `TICKETMASTER_API_KEY`.
+
+### SEO
+
+- `ItemList` y `FAQPage` en la home, `og:locale`, `og:site_name` y metadatos
+  de Twitter.
+- Canonical en aviso de privacidad, cookies y términos.
+- Sitemap con las cuatro páginas de producto.
+
+### Verificado
+
+- Página de producto: cambio de talla actualiza precio (XXL $1,097) y enlace.
+- Compra desde producto: talla XXL, print `ready` a 271 DPI y cesta abierta.
+- Seguimiento: LH-1011 con correo correcto devuelve estado y artículos; con
+  correo incorrecto devuelve “no encontrado”.
+- Smoke test ampliado a 34 comprobaciones; HTML y enlaces en verde.
+
 ## [1.3.0] — 2026-11-14
 
 ### Rendimiento

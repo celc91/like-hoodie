@@ -24,5 +24,5 @@ jobs:
             --max-retries 2
             --accept 200,204,206,301,302,403,429
             --exclude 'https://www.inai.org.mx/'
-            './*.html' './*.md'
+            './*.html' './*.md' './modelos/*.html'
           fail: true

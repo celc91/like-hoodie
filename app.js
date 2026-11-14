@@ -1800,6 +1800,8 @@
 
         savedOrder = saved;
         orderLabel = `LH-${saved.number}`;
+        const statusLink = $("[data-order-status-link]");
+        if (statusLink) statusLink.href = `pedido.html?pedido=LH-${saved.number}`;
         restoreSubmitButton(submitButton);
 
         state.items = [];
@@ -5283,6 +5285,33 @@
   }
   loadPaymentConfig();
   initPaymentBanner();
+
+  const buyIntent = new URLSearchParams(location.search).get("comprar");
+  if (buyIntent && MODELS[buyIntent]) {
+    const intentParams = new URLSearchParams(location.search);
+    const intentSize = intentParams.get("talla");
+    const sizeSelect = document.querySelector(`[data-model-size="${buyIntent}"]`);
+    if (sizeSelect && /^(XS|S|M|L|XL|XXL)$/.test(intentSize || "")) {
+      sizeSelect.value = intentSize;
+    }
+    const buyButton = document.querySelector(`[data-buy-model="${buyIntent}"]`);
+    if (buyButton) {
+      const modelsSection = document.getElementById("modelos");
+      if (modelsSection) {
+        modelsSection.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      showToast(`Preparando ${MODELS[buyIntent].name}…`);
+      window.setTimeout(() => purchaseModel(buyIntent, buyButton), 700);
+    }
+    intentParams.delete("comprar");
+    intentParams.delete("talla");
+    const cleanQuery = intentParams.toString();
+    window.history.replaceState(
+      {},
+      "",
+      `${location.pathname}${cleanQuery ? `?${cleanQuery}` : ""}#modelos`
+    );
+  }
 })();
 
 /* --------------------------------------------------------------------------

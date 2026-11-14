@@ -24,6 +24,6 @@ jobs:
             node --check "$file"
           done
       - name: html-validate
-        run: npx --yes html-validate@8 './*.html'
+        run: npx --yes html-validate@8 './*.html' './modelos/*.html'
       - name: Smoke test
         run: node scripts/smoke.mjs

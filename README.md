@@ -41,6 +41,9 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Precio dinámico:** base por color, material, técnica, suplemento de talla XXL y extra por logo en cada cara.
 - **Catálogo base:** cuatro colores con selección directa al configurador.
 - **Colección de modelos:** cuatro diseños listos (Cocodrilo de Miami, Insignia atardecer, Panorama Vice y Corazón neón) que se compran tal cual con la talla elegida; el print se prepara al momento.
+- **Páginas de producto:** cada modelo tiene su URL (`/modelos/<id>.html`), con `Product` + `Offer`, breadcrumbs, FAQ y compra por talla.
+- **Seguimiento:** `/pedido.html` consulta estado y guía con número de pedido + correo.
+- **Cálculo de precio:** el precio del modelo se actualiza al elegir talla; la compra se completa en la tienda.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
 - **Persistencia:** el carrito se guarda en `localStorage` y se sincroniza con Supabase.
 - **Checkout de demostración:** formulario validado (teléfono, estado, CP y referencias), confirmación de pedido y registro en Supabase. No procesa pagos reales.
@@ -90,14 +93,17 @@ La sección **`#modelos`** muestra diseños que ya existen para **comprar tal cu
 | Panorama Vice | Sudadera negra | $998 | `assets/modelos/panorama.webp` | `assets/modelos/panorama-logo.webp` |
 | Corazón neón | Sudadera negra | $998 | `assets/modelos/corazon.webp` | `assets/modelos/corazon-logo.webp` |
 
-Los logos de los modelos son PNG con transparencia. El del cocodrilo se recortó del arte original para que no imprima un fondo blanco.
+Los logos de los modelos son WebP con transparencia. El del cocodrilo se recortó del arte original para que no imprima un fondo blanco.
 
 ### Añadir un modelo
 
 1. Guarda el mockup en `assets/modelos/<id>.webp` (4:5, ~900 px de ancho).
 2. Guarda el arte en `assets/modelos/<id>-logo.webp` con transparencia y menos de 5 MB. El navegador lo convierte a PNG antes de subirlo al pipeline de impresión.
 3. Añade una tarjeta en `index.html` dentro de `.collection-grid` con el selector `data-model-size="<id>"` y el botón `data-buy-model="<id>"`.
-4. Añade la entrada en `MODELS` (final de `app.js`):
+4. Añade la entrada en `MODELS` (final de `app.js`) y en `modelos/modelos.json` con precio, descripción, FAQ y medidas.
+5. Ejecuta `node scripts/build-model-pages.mjs` para generar `modelos/<id>.html`.
+
+Ejemplo de entrada en `MODELS`:
 
 ```js
 MODELS.miModelo = {
@@ -134,7 +140,7 @@ flowchart LR
   Admin --> Prints
 ```
 
-- **Frontend:** estático, sin build. GitHub Pages sirve `index.html`, `admin.html` y los assets.
+- **Frontend:** estático, sin build. GitHub Pages sirve `index.html`, `admin.html`, `pedido.html` y `modelos/<id>.html`.
 - **Auth:** Supabase con sesión anónima para el carrito y usuario administrador para el panel.
 - **Datos:** Postgres con RLS para carritos, pedidos, eventos, cupones y `logo_assets`.
 - **Storage:** `order-logos` (originales, privado) y `order-prints` (recorte y print, privado).
@@ -459,6 +465,9 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 - [x] Plantillas de diseño dentro del editor.
 - [x] Alineación horizontal/vertical por separado.
 - [x] Fase 2: WebP, accesibilidad 100, autoguardado y CI bloqueante.
+- [x] Fase 3: páginas de producto, seguimiento de pedido y SEO.
+- [ ] WhatsApp (falta número de contacto).
+- [ ] Fotos y reseñas reales.
 - [x] Canva evaluado y descartado por ahora (ver abajo).
 
 ### Decisión: Canva

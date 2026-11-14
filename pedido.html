@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estado de mi pedido — like hoodie</title>
+  <meta name="description" content="Consulta el estado de tu pedido de like hoodie con tu número de pedido y tu correo.">
+  <meta name="theme-color" content="#f4efe6">
+  <meta name="robots" content="noindex, follow">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20261114-fase3">
+  <link rel="stylesheet" href="modelos/producto.css?v=20261114-fase3">
+  <link rel="stylesheet" href="pedido.css?v=20261114-fase3">
+</head>
+<body class="track-page">
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <header class="product-header">
+    <div class="container product-header__inner">
+      <a class="brand" href="/" aria-label="like hoodie ♡, volver al inicio">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64"><path d="M32 50S14 39 14 27a9 9 0 0 1 18-4 9 9 0 0 1 18 4c0 12-18 23-18 23Z" fill="currentColor"/></svg>
+        </span>
+        <span class="brand-name">like hoodie ♡</span>
+      </a>
+      <a class="product-back" href="/#modelos">← Volver a la tienda</a>
+    </div>
+  </header>
+
+  <main id="contenido" class="container track-main">
+    <div class="track-head">
+      <span class="eyebrow">Seguimiento</span>
+      <h1>¿Dónde va tu pedido?</h1>
+      <p>Escribe el número de pedido y el correo con los que compraste. Te mostramos el estado y la guía si ya salió del taller.</p>
+    </div>
+
+    <div class="track-grid">
+      <form class="track-form" data-track-form novalidate>
+        <h2>Consultar pedido</h2>
+        <div class="field">
+          <label for="order-number">Número de pedido</label>
+          <input id="order-number" name="number" type="text" inputmode="numeric" placeholder="LH-1013" autocomplete="off" required>
+        </div>
+        <div class="field">
+          <label for="order-email">Correo del pedido</label>
+          <input id="order-email" name="email" type="email" autocomplete="email" placeholder="tu@email.com" required>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit" data-track-submit>Buscar pedido</button>
+        <p class="track-error" data-track-error role="alert" hidden></p>
+        <p class="track-help">El número viene en el correo de confirmación. ¿Problemas? <a href="mailto:hola@likehoodie.com">Escríbenos</a>.</p>
+      </form>
+
+      <section class="track-result" data-track-result hidden aria-live="polite" aria-label="Resultado del pedido"></section>
+    </div>
+  </main>
+
+  <footer class="product-footer">
+    <div class="container">
+      <p>© 2026 like hoodie ♡. Hecho con algodón y buenas ideas.</p>
+      <nav aria-label="Documentos legales">
+        <a href="terminos.html">Términos</a>
+        <a href="privacidad.html">Privacidad</a>
+        <a href="cookies.html">Cookies</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="supabase-config.js?v=20261110-pub1"></script>
+  <script src="pedido.js?v=20261114-fase3"></script>
+</body>
+</html>

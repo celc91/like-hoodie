@@ -1089,6 +1089,18 @@
         <textarea id="detail-notes" placeholder="Producción, entrega o incidencias…">${escapeHTML(
           order.admin_notes || ""
         )}</textarea>
+        <label for="detail-carrier">Paquetería</label>
+        <input id="detail-carrier" type="text" maxlength="60" placeholder="Estafeta, DHL, FedEx…" value="${escapeHTML(
+          order.carrier || ""
+        )}">
+        <label for="detail-tracking">Número de guía</label>
+        <input id="detail-tracking" type="text" maxlength="80" placeholder="1234567890" value="${escapeHTML(
+          order.tracking_number || ""
+        )}">
+        <label for="detail-tracking-url">URL de seguimiento</label>
+        <input id="detail-tracking-url" type="url" maxlength="300" placeholder="https://…" value="${escapeHTML(
+          order.tracking_url || ""
+        )}">
         <button class="btn btn-dark" type="button" id="detail-save">Guardar cambios</button>
       </div>
     `;
@@ -1101,9 +1113,22 @@
     $("#detail-save").addEventListener("click", async () => {
       const status = $("#detail-status").value;
       const adminNotes = $("#detail-notes").value.slice(0, 1000);
+      const carrier = $("#detail-carrier").value.trim().slice(0, 60);
+      const trackingNumber = $("#detail-tracking").value.trim().slice(0, 80);
+      const trackingUrl = $("#detail-tracking-url").value.trim().slice(0, 300);
+      if (trackingUrl && !/^https:\/\//i.test(trackingUrl)) {
+        toast("La URL de seguimiento debe empezar por https://");
+        return;
+      }
       const { error: updateError } = await client
         .from("orders")
-        .update({ status, admin_notes: adminNotes })
+        .update({
+          status,
+          admin_notes: adminNotes,
+          carrier: carrier || null,
+          tracking_number: trackingNumber || null,
+          tracking_url: trackingUrl || null,
+        })
         .eq("id", order.id);
       if (updateError) {
         toast("No se pudieron guardar los cambios.");
@@ -1170,7 +1195,7 @@
       return;
     }
     const rows = [
-      ["Pedido", "Fecha", "Estado del pedido", "Pago", "Cliente", "Email", "Teléfono", "Dirección", "Referencias", "Ciudad", "Estado (envío)", "CP", "Artículos", "Subtotal", "Envío", "Total", "Notas"],
+      ["Pedido", "Fecha", "Estado del pedido", "Pago", "Cliente", "Email", "Teléfono", "Dirección", "Referencias", "Ciudad", "Estado (envío)", "CP", "Artículos", "Subtotal", "Envío", "Total", "Paquetería", "Guía", "Seguimiento", "Notas"],
       ...(data || []).map((order) => [
         `LH-${order.number}`,
         order.created_at,
@@ -1188,6 +1213,9 @@
         order.subtotal,
         order.shipping,
         order.total,
+        order.carrier || "",
+        order.tracking_number || "",
+        order.tracking_url || "",
         order.admin_notes || "",
       ]),
     ];

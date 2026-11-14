@@ -20,6 +20,10 @@ const app = read("app.js");
 const admin = read("admin.js");
 const store = read("store-supabase.js");
 const sql = read("supabase/fase1-pedidos-seguros.sql");
+const trackSql = read("supabase/fase3-seguimiento.sql");
+const trackPage = read("pedido.html");
+const trackJs = read("pedido.js");
+const sitemap = read("sitemap.xml");
 
 check("index: título", /<title>like hoodie/.test(index));
 check("index: checkout", index.includes("data-checkout-form"));
@@ -41,6 +45,17 @@ check("sql: precio de servidor", sql.includes("item_unit_price"));
 check("sql: columnas de envío", sql.includes("address_ref") && sql.includes("state"));
 check("sql: cupón en servidor", sql.includes("p_coupon"));
 check("sql: revoca lectura de cupones", sql.includes("revoke select on public.coupons"));
+
+for (const id of ["cocodrilo", "insignia", "panorama", "corazon"]) {
+  const page = read(`modelos/${id}.html`);
+  check(`producto ${id}: schema`, page.includes('"@type":"Product"'));
+  check(`producto ${id}: canonical`, page.includes(`https://likehoodie.com/modelos/${id}.html`));
+  check(`producto ${id}: compra`, page.includes(`comprar=${id}`));
+}
+check("seguimiento: formulario", trackPage.includes("data-track-form"));
+check("seguimiento: rpc", trackJs.includes("get_order_status"));
+check("seguimiento: columnas", trackSql.includes("tracking_number") && trackSql.includes("tracking_url"));
+check("sitemap: productos", sitemap.includes("modelos/cocodrilo.html"));
 
 const failed = checks.filter((entry) => !entry.ok);
 for (const entry of checks) {
