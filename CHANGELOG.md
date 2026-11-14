@@ -16,6 +16,29 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.8.4] — 2026-11-14
+
+### Cambiado
+
+- **Aviso de privacidad:** añade Cloudflare como CDN/protección y su medición
+  agregada sin cookies, aclara el uso de Google Fonts y actualiza la cartelera
+  (CSV/hoja propia; Ticketmaster solo como enlace externo).
+- **Newsletter:** el aviso ya no lo describe como demostrativo. Documenta la
+  doble confirmación con Resend, la conservación de 7 días de los intentos y la
+  baja desde el correo.
+- **Política de cookies:** refleja las claves reales de almacenamiento
+  (`likehoodie_consent_v2`, `likehoodie_design_v1`, `likehoodie.coupon`,
+  `lh-grid-visible`), explica Cloudflare Web Analytics y Google Fonts, y corrige
+  la contradicción sobre el píxel de Meta.
+- Retención: intentos de seguimiento/error 2 días, newsletter 7 días.
+- Fechas de actualización de ambas políticas al 14 de noviembre de 2026.
+
+### Verificado
+
+- `html-validate` sin errores en `privacidad.html` y `cookies.html`.
+- Smoke test: **57 comprobaciones**.
+- Sin cambios de código ni de configuración de terceros.
+
 ## [1.8.3] — 2026-11-14
 
 ### Cambiado

@@ -37,7 +37,7 @@
         <span class="eyebrow">Legal</span>
         <h1>Política de cookies</h1>
         <p>Qué guardamos en tu navegador, para qué sirve y cómo puedes borrarlo cuando quieras.</p>
-        <span class="legal-updated">Última actualización: 10 de noviembre de 2026</span>
+        <span class="legal-updated">Última actualización: 14 de noviembre de 2026</span>
       </div>
     </div>
 
@@ -64,13 +64,13 @@
       <article class="legal-content">
         <div class="legal-callout">
           <strong>En pocas palabras</strong>
-          Guardamos información esencial en tu navegador para que el carrito funcione y usamos una sesión anónima de Supabase para asociar tu carrito y tus pedidos. Con tu permiso cargamos Google Analytics, y solo si aceptas la publicidad, el píxel de Meta para medir campañas. Puedes elegir uno, los dos o ninguno. No te identificamos por tu nombre hasta que completas un pedido.
+          Guardamos información esencial en tu navegador para que el carrito y el editor funcionen, y usamos una sesión anónima de Supabase para asociar tu carrito y tus pedidos. Cloudflare entrega el sitio y mide rendimiento de forma agregada sin cookies; Google Fonts entrega las tipografías. Con tu permiso cargamos Google Analytics, y solo si aceptas la publicidad, el píxel de Meta. Puedes elegir uno, los dos o ninguno. No te identificamos por tu nombre hasta que completas un pedido.
         </div>
 
         <section id="que-son">
           <h2>1. Qué son las cookies y el almacenamiento local</h2>
           <p>Las <strong>cookies</strong> son pequeños archivos que un sitio web guarda en tu navegador. El <strong>almacenamiento local</strong> (localStorage) funciona de forma parecida, pero guarda datos dentro del navegador sin enviarlos automáticamente en cada petición.</p>
-          <p>like hoodie ♡ utiliza almacenamiento local y una sesión anónima de Supabase, no cookies publicitarias. Puedes borrarlo desde la configuración de tu navegador en cualquier momento.</p>
+          <p>like hoodie ♡ utiliza almacenamiento local y una sesión anónima de Supabase. No usamos cookies publicitarias por defecto; si aceptas la publicidad, Meta puede instalar cookies de medición. Puedes borrar todo desde la configuración de tu navegador en cualquier momento.</p>
         </section>
 
         <section id="usamos">
@@ -93,15 +93,33 @@
                   <td>Hasta que borres los datos del navegador.</td>
                 </tr>
                 <tr>
-                  <td><code>likehoodie_cookie_notice_v1</code></td>
+                  <td><code>likehoodie_consent_v2</code></td>
                   <td>Almacenamiento local esencial</td>
-                  <td>Recordar que ya cerraste el aviso de cookies.</td>
+                  <td>Recordar tu elección de analítica y publicidad.</td>
                   <td>Hasta que borres los datos del navegador.</td>
                 </tr>
                 <tr>
                   <td><code>likehoodie_cart_id_v1</code></td>
                   <td>Almacenamiento local esencial</td>
                   <td>Recordar el identificador del carrito sincronizado con Supabase.</td>
+                  <td>Hasta que borres los datos del navegador.</td>
+                </tr>
+                <tr>
+                  <td><code>likehoodie_design_v1</code></td>
+                  <td>Almacenamiento local esencial</td>
+                  <td>Recuperar el borrador del editor (texto, logo y capas) si recargas la página.</td>
+                  <td>Hasta que borres los datos del navegador.</td>
+                </tr>
+                <tr>
+                  <td><code>likehoodie.coupon</code></td>
+                  <td>Almacenamiento local esencial</td>
+                  <td>Recordar el cupón que aplicaste al carrito.</td>
+                  <td>Hasta que borres los datos del navegador.</td>
+                </tr>
+                <tr>
+                  <td><code>lh-grid-visible</code></td>
+                  <td>Preferencia del editor</td>
+                  <td>Recordar si prefieres ver la rejilla de alineación. No se usa para medir ni publicidad.</td>
                   <td>Hasta que borres los datos del navegador.</td>
                 </tr>
                 <tr>
@@ -139,15 +157,16 @@
           <p>El sitio se apoya en servicios externos que pueden registrar información técnica, como tu dirección IP, para entregar el contenido y proteger sus servicios:</p>
           <ul>
             <li><strong>GitHub Pages</strong> aloja el sitio web y puede generar registros de seguridad y acceso.</li>
-            <li><strong>Google Fonts</strong> entrega las tipografías del sitio. Google puede registrar la IP y datos técnicos de la solicitud; no lo usamos para publicidad.</li>
-            <li><strong>Ticketmaster México</strong> proporciona la cartelera de conciertos. Al abrir un evento o el enlace “Ver todos en Ticketmaster” sales de nuestro sitio y se aplican las políticas de cookies y privacidad de Ticketmaster.</li>
+            <li><strong>Cloudflare</strong> entrega el sitio como CDN, aplica HTTPS y protecciones, y puede ofuscar direcciones de correo para evitar spam. Cloudflare Web Analytics mide rendimiento de forma agregada y sin cookies; no se usa para publicidad ni para identificarte.</li>
+            <li><strong>Google Fonts</strong> entrega las tipografías del sitio. Google puede registrar la IP y datos técnicos de la solicitud; no lo usamos para publicidad. Si bloqueas <code>fonts.googleapis.com</code>, el sitio usa fuentes del sistema.</li>
+            <li><strong>Cartelera de eventos:</strong> se publica desde nuestro archivo CSV/hoja de cálculo. Si abres un enlace a Ticketmaster México, sales de nuestro sitio y se aplican sus políticas de cookies y privacidad.</li>
             <li><strong>Supabase</strong> guarda la sesión anónima, los carritos, los pedidos, los eventos de uso y los logos en un bucket privado. Puede registrar datos técnicos para prestar el servicio y proteger la base de datos.</li>
-            <li><strong>Cloudflare Email Routing y Resend</strong> gestionan el correo de contacto y las confirmaciones de pedido. No instalan cookies en el sitio.</li>
+            <li><strong>Cloudflare Email Routing y Resend</strong> gestionan el correo de contacto, las confirmaciones del newsletter y las notificaciones de pedido. Resend envía los correos transaccionales; no instalan cookies en el sitio.</li>
             <li><strong>Google Analytics 4</strong> mide el uso del sitio para las métricas del negocio. Solo se carga si aceptas la analítica; enviamos la IP anonimizada.</li>
             <li><strong>Meta Pixel</strong> (Facebook e Instagram) mide el rendimiento de campañas publicitarias. Solo se carga si aceptas la publicidad, con un permiso independiente del de analítica.</li>
             <li><strong>Clip:</strong> cuando se active el cobro en línea, el pago se realizará en la página segura de Clip y se regirá por sus propias políticas de cookies y privacidad.</li>
           </ul>
-          <p>No usamos cookies de redes sociales, publicidad comportamental ni píxeles de seguimiento. Los eventos de uso propios se guardan en Supabase para las métricas del negocio.</p>
+          <p>No usamos cookies de redes sociales ni publicidad comportamental. El píxel de Meta solo se carga si aceptas la publicidad; sin ese permiso no hay píxeles de seguimiento. Los eventos de uso propios se guardan en Supabase para las métricas del negocio.</p>
         </section>
 
         <section id="gestionar">
@@ -174,8 +193,9 @@
 
         <section id="consentimiento">
           <h2>5. Consentimiento</h2>
-          <p>El almacenamiento y la sesión anónima que usamos son estrictamente necesarios para que el carrito, el checkout y el aviso funcionen. El aviso que ves en el sitio es informativo; no instalamos cookies no esenciales.</p>
-          <p>Si en el futuro añadimos analítica, publicidad o cookies de terceros no esenciales, actualizaremos esta política y solicitaremos tu consentimiento antes de activarlas.</p>
+          <p>El almacenamiento del carrito, el editor, el cupón y la sesión anónima son estrictamente necesarios para que la tienda funcione; no requieren consentimiento. Google Analytics y Meta Pixel son opcionales y solo se activan con tu elección, que puedes cambiar desde esta página o con el botón de preferencias.</p>
+          <p>Cloudflare Web Analytics y Google Fonts son servicios técnicos que no dependen del banner: Cloudflare mide rendimiento agregado sin cookies y Google Fonts entrega las tipografías. Si prefieres evitar esas solicitudes, puedes bloquear <code>static.cloudflareinsights.com</code> y <code>fonts.googleapis.com</code> en tu navegador; la tienda seguirá funcionando con fuentes del sistema.</p>
+          <p>Si añadimos nuevas cookies o servicios no esenciales, actualizaremos esta política y pediremos consentimiento antes de activarlos.</p>
         </section>
 
         <section id="cambios">

@@ -37,7 +37,7 @@
         <span class="eyebrow">Legal</span>
         <h1>Aviso de privacidad</h1>
         <p>Qué datos personales tratamos, para qué los usamos, con quién los compartimos y cómo puedes ejercer tus derechos.</p>
-        <span class="legal-updated">Última actualización: 10 de noviembre de 2026</span>
+        <span class="legal-updated">Última actualización: 14 de noviembre de 2026</span>
       </div>
     </div>
 
@@ -133,20 +133,21 @@
                 </tr>
                 <tr>
                   <td>Técnicos</td>
-                  <td>Dirección IP, navegador, dispositivo, fecha, páginas visitadas y errores técnicos (mensaje, ruta y pila del error).</td>
-                  <td>Al navegar, por registros de seguridad y monitorización del sitio.</td>
+                  <td>Dirección IP, navegador, dispositivo, fecha, páginas visitadas, errores técnicos (mensaje, ruta y pila del error) y datos de entrega del CDN.</td>
+                  <td>Al navegar, por registros de seguridad, CDN y monitorización del sitio.</td>
                 </tr>
                 <tr>
                   <td>Marketing</td>
-                  <td>Correo electrónico e intereses, si aceptas recibir novedades.</td>
-                  <td>Al suscribirte al newsletter.</td>
+                  <td>Correo electrónico e intereses, solo si confirmas tu alta al newsletter.</td>
+                  <td>Al suscribirte y confirmar el correo.</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <p>El carrito, los pedidos y los eventos de uso se guardan en Supabase, nuestro proveedor de base de datos y autenticación. El logo que subes se procesa en tu navegador para la vista previa y se sube a un bucket privado de Supabase Storage para poder imprimir tu pedido. El administrador accede mediante enlaces firmados temporales.</p>
+          <p>Cloudflare, como CDN y protección, procesa la IP y datos técnicos para entregar el sitio y protegerlo; su medición agregada (Web Analytics) no usa cookies ni identifica personas. Google Fonts entrega las tipografías y puede registrar la IP de la solicitud; no lo usamos para publicidad.</p>
           <p>Los errores técnicos del navegador se guardan para detectar y corregir fallos: mensaje, ruta, pila del error y navegador. No incluyen el contenido de tus logos, direcciones, teléfonos ni datos de tarjeta. Se conservan un máximo de 90 días.</p>
-          <p>El formulario de newsletter de esta versión también es demostrativo: no envía tu correo a nuestros servidores. Cuando activemos el servicio, actualizaremos este aviso y te pediremos consentimiento.</p>
+          <p>El newsletter usa doble confirmación: guardamos tu correo en Supabase, enviamos un enlace de confirmación con Resend y no recibirás novedades hasta que confirmes. Puedes darte de baja desde el enlace de cada correo o escribiendo a <a href="mailto:hola@likehoodie.com">hola@likehoodie.com</a>. Los intentos de alta se conservan un máximo de 7 días.</p>
         </section>
 
         <section id="finalidades">
@@ -171,6 +172,7 @@
         <section id="base">
           <h2>4. Base legal y consentimiento</h2>
           <p>Tratamos tus datos con base en el consentimiento que otorgas al proporcionarlos, en la relación contractual cuando realizas un pedido y en el cumplimiento de obligaciones legales. Para finalidades de marketing, el consentimiento es opcional y revocable.</p>
+          <p>Cloudflare y Google Fonts se usan para operar, proteger y mostrar el sitio; no los usamos para publicidad ni para crear perfiles.</p>
         </section>
 
         <section id="transferencias">
@@ -178,14 +180,15 @@
           <p>Para operar la tienda podemos compartir datos con proveedores que actúan como encargados o terceros, únicamente para las finalidades descritas:</p>
           <ul>
             <li><strong>Hosting:</strong> GitHub Pages, para alojar el sitio.</li>
+            <li><strong>CDN y seguridad:</strong> Cloudflare, para entregar el sitio, aplicar HTTPS y protecciones, y medir rendimiento agregado sin cookies.</li>
             <li><strong>Base de datos y autenticación:</strong> Supabase, para guardar carritos, pedidos y eventos.</li>
             <li><strong>Almacenamiento de archivos:</strong> Supabase Storage, para guardar los logos de los pedidos en un bucket privado.</li>
             <li><strong>Tipografías:</strong> Google Fonts, para mostrar las fuentes del sitio.</li>
-            <li><strong>Cartelera de eventos:</strong> Ticketmaster México, solo si decides abrir un concierto o su cartelera. No le enviamos tus datos; al hacer clic sales de nuestro sitio y se aplican sus propias políticas.</li>
+            <li><strong>Cartelera de eventos:</strong> se publica desde nuestro archivo CSV/hoja de cálculo. Si abres un enlace a Ticketmaster México, sales de nuestro sitio y se aplican sus propias políticas.</li>
             <li><strong>WhatsApp:</strong> Meta/WhatsApp, solo si decides escribirnos mediante el botón o el enlace. Al abrir la conversación sales de nuestro sitio y se aplican las políticas de WhatsApp.</li>
             <li><strong>Pagos:</strong> Clip, cuando se active el cobro en línea. Clip procesa los datos de tarjeta en su propia página segura; actualmente no hay cobros reales.</li>
             <li><strong>Envíos:</strong> paqueterías y servicios de mensajería.</li>
-            <li><strong>Correo:</strong> Cloudflare Email Routing para recibir mensajes en hola@likehoodie.com y Resend para enviar confirmaciones de pedido.</li>
+            <li><strong>Correo:</strong> Cloudflare Email Routing para recibir mensajes en hola@likehoodie.com y Resend para enviar confirmaciones de newsletter y notificaciones de pedido.</li>
             <li><strong>Autoridades:</strong> cuando exista una obligación legal o requerimiento válido.</li>
           </ul>
           <p>Algunos proveedores pueden estar ubicados fuera de México, por lo que podría existir una transferencia internacional. Al usar el sitio y proporcionar tus datos, aceptas esas transferencias necesarias para la operación. Puedes solicitar más información en el correo de contacto.</p>
@@ -195,7 +198,7 @@
         <section id="conservacion">
           <h2>6. Conservación</h2>
           <p>Conservamos tus datos durante el tiempo necesario para cumplir las finalidades descritas y los plazos legales aplicables, incluyendo obligaciones fiscales, contables y de atención al consumidor. Después los eliminamos o anonimizamos de forma segura.</p>
-          <p>Plazos orientativos: errores técnicos 90 días, eventos de uso 365 días, intentos de consulta de pedido 2 días y pedidos los plazos fiscales y de garantía aplicables.</p>
+          <p>Plazos orientativos: errores técnicos 90 días, eventos de uso 365 días, intentos de consulta de pedido y de error 2 días, intentos de alta al newsletter 7 días, y pedidos los plazos fiscales y de garantía aplicables.</p>
         </section>
 
         <section id="arco">
@@ -229,7 +232,7 @@
 
         <section id="cookies">
           <h2>11. Cookies y almacenamiento local</h2>
-          <p>Usamos almacenamiento local esencial para recordar tu carrito y el aviso de cookies, y una sesión anónima de Supabase para asociar tu carrito y tus pedidos. Con tu permiso cargamos Google Analytics 4 (IP anonimizada) y, si aceptas la publicidad, el píxel de Meta. Consulta el detalle y cambia tus preferencias en nuestra <a href="cookies.html">Política de cookies</a>.</p>
+          <p>Usamos almacenamiento local esencial para recordar tu carrito, el editor, el cupón y tu elección de consentimiento, y una sesión anónima de Supabase para asociar tu carrito y tus pedidos. Cloudflare entrega el sitio y mide rendimiento agregado sin cookies; Google Fonts entrega las tipografías. Con tu permiso cargamos Google Analytics 4 (IP anonimizada) y, si aceptas la publicidad, el píxel de Meta. Consulta el detalle y cambia tus preferencias en nuestra <a href="cookies.html">Política de cookies</a>.</p>
         </section>
 
         <section id="cambios">
