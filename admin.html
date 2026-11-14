@@ -152,14 +152,14 @@
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Pedido</th>
-                <th>Fecha</th>
-                <th>Cliente</th>
-                <th>Artículos</th>
-                <th>Diseño</th>
-                <th>Total</th>
-                <th>Estado</th>
-                <th></th>
+                <th scope="col">Pedido</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Cliente</th>
+                <th scope="col">Artículos</th>
+                <th scope="col">Diseño</th>
+                <th scope="col">Total</th>
+                <th scope="col">Estado</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody id="orders-body"></tbody>
@@ -196,11 +196,11 @@
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Última actividad</th>
-                <th>Artículos</th>
-                <th>Valor</th>
-                <th>Paso</th>
-                <th>Estado</th>
+                <th scope="col">Última actividad</th>
+                <th scope="col">Artículos</th>
+                <th scope="col">Valor</th>
+                <th scope="col">Paso</th>
+                <th scope="col">Estado</th>
               </tr>
             </thead>
             <tbody id="carts-body"></tbody>
@@ -211,7 +211,7 @@
     </main>
   </div>
 
-  <div class="modal" id="order-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="order-modal-title">
+  <div class="modal" id="order-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="order-modal-title" inert>
     <div class="modal-card">
       <button class="modal-close" type="button" data-close-order aria-label="Cerrar">×</button>
       <div id="order-detail"></div>
@@ -222,6 +222,6 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="admin.js?v=20261114-fase1"></script>
+  <script src="admin.js?v=20261114-fase2c"></script>
 </body>
 </html>

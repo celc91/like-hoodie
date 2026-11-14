@@ -59,8 +59,8 @@ Para el panel y los pedidos necesitas el proyecto de Supabase:
 ## Añadir un modelo al catálogo
 
 1. Mockup en `assets/modelos/<id>.webp` (4:5, ~900 px).
-2. Arte en `assets/modelos/<id>-logo.png` con transparencia y < 5 MB.
-3. Tarjeta en `index.html` con `data-model="<id>"`.
+2. Arte en `assets/modelos/<id>-logo.webp` con transparencia y < 5 MB.
+3. Tarjeta en `index.html` con `data-model-size="<id>"` y `data-buy-model="<id>"`.
 4. Entrada en `MODELS` al final de `app.js`.
 
 Más detalle en el [README](README.md#colección-de-modelos).

@@ -257,13 +257,14 @@
       const label = count
         ? `${day} de ${MONTHS[month]}, ${count} ${count === 1 ? "concierto" : "conciertos"}`
         : `${day} de ${MONTHS[month]}, sin conciertos`;
+      const accessibleLabel = `${day}${count ? " " + count : ""}, ${label}`;
 
       html += `
         <button
           type="button"
           class="${classes.join(" ")}"
           data-cal-day="${key}"
-          aria-label="${label}"
+          aria-label="${accessibleLabel}"
           aria-pressed="${key === state.selected ? "true" : "false"}"
         >
           <span class="cal-day-number">${day}</span>

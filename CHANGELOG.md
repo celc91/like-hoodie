@@ -16,6 +16,39 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.3.0] — 2026-11-14
+
+### Rendimiento
+
+- Mockups y logos de modelos convertidos a **WebP**: el héroe pasa de 914 KB a
+  81 KB, la espalda de 905 KB a 74 KB y el logo del cocodrilo de 2,7 MB a
+  337 KB.
+- Precarga del héroe con `fetchpriority="high"` y mockups de modelos con carga
+  diferida.
+- El peso inicial baja de ~2,2 MB a ~250 KB; el pipeline de impresión sigue
+  recibiendo PNG (el navegador convierte el WebP antes de subirlo).
+
+### Accesibilidad
+
+- **Lighthouse Accesibilidad 100**: foco atrapado en cesta, checkout y guía de
+  tallas, cierre con Escape y `inert` en el fondo y en los diálogos cerrados.
+- Contraste corregido en botones, etiquetas naranjas, miniaturas del editor,
+  calendario y pie de página.
+- Jerarquía de encabezados del footer y nombres accesibles de cesta, estrellas,
+  calendario y redes.
+
+### Añadido
+
+- **Autoguardado del diseño** en `localStorage` con botón **Recuperar diseño**
+  al volver; se borra al vaciar el diseño.
+
+### CI
+
+- `node --check`, `html-validate` y smoke test pasan a ser **bloqueantes**.
+- Lychee comprueba enlaces con `fail: true`.
+- Nuevo `scripts/smoke.mjs` con 18 comprobaciones de checkout, editor,
+  seguridad y migración.
+
 ## [1.2.0] — 2026-11-14
 
 ### Seguridad

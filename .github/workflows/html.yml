@@ -11,13 +11,19 @@ permissions:
 
 jobs:
   validate:
-    name: Validación informativa
+    name: Validación
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Sintaxis JavaScript
+        run: |
+          for file in *.js vendor/*.js scripts/*.mjs; do
+            node --check "$file"
+          done
       - name: html-validate
-        continue-on-error: true
         run: npx --yes html-validate@8 './*.html'
+      - name: Smoke test
+        run: node scripts/smoke.mjs

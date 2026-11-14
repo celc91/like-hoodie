@@ -23,4 +23,4 @@ jobs:
             --accept 200,204,206,301,302,403,429
             --exclude-mail
             './*.html' './*.md'
-          fail: false
+          fail: true

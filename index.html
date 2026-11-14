@@ -39,9 +39,10 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="image" href="assets/hoodie-front.webp" type="image/webp" fetchpriority="high">
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261114-fase1">
+  <link rel="stylesheet" href="styles.css?v=20261114-fase2c">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -162,7 +163,7 @@
 
       <div class="header-actions">
         <a href="#personalizar" class="btn btn-dark btn-sm nav-cta">Diseñar la mía</a>
-        <button class="cart-button" type="button" data-open-cart aria-label="Abrir la cesta">
+        <button class="cart-button" type="button" data-open-cart aria-label="Abrir la cesta, 0 artículos">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
             <path d="M6 8h12l1 12H5L6 8Z" stroke-linejoin="round"/>
             <path d="M9 10V6a3 3 0 0 1 6 0v4" stroke-linecap="round"/>
@@ -208,7 +209,7 @@
               <span>MG</span><span>LR</span><span>JT</span><span>+</span>
             </div>
             <div class="proof-copy">
-              <span class="stars" aria-label="5 de 5 estrellas">★★★★★</span>
+              <span class="stars" role="img" aria-label="5 de 5 estrellas">★★★★★</span>
               <p><strong>4,9/5</strong> · +2.400 sudaderas entregadas</p>
             </div>
           </div>
@@ -218,7 +219,7 @@
           <div class="hero-blob" aria-hidden="true"></div>
           <div class="hero-hoodie">
             <div class="hoodie hoodie--hero is-dark" style="--fabric-color:#1c1c1f">
-              <img class="hoodie-photo" src="assets/hoodie-front.png" alt="Sudadera like hoodie ♡ negra personalizada con el texto Sin Excusas" width="1003" height="1229">
+              <img class="hoodie-photo" src="assets/hoodie-front.webp" alt="Sudadera like hoodie ♡ negra personalizada con el texto Sin Excusas" width="1003" height="1229" fetchpriority="high">
               <div class="print-area print-area--hero" aria-hidden="true">
                 <span class="print-kicker">HECHO A TU MANERA</span>
                 <span class="print-text" style="color:#ff4d1f">SIN<br>EXCUSAS</span>
@@ -318,9 +319,9 @@
 
             <div class="studio-preview editor-canvas">
               <div class="hoodie-stage">
-              <div class="hoodie hoodie--studio is-dark" data-preview-hoodie style="--fabric-color:#1c1c1f;--tint-mask:url('assets/hoodie-front.png')">
+              <div class="hoodie hoodie--studio is-dark" data-preview-hoodie style="--fabric-color:#1c1c1f;--tint-mask:url('assets/hoodie-front.webp')">
                 <div class="fabric-tint" data-fabric-tint aria-hidden="true"></div>
-                <img class="hoodie-photo" data-hoodie-photo src="assets/hoodie-front.png" alt="Vista frontal de tu sudadera personalizada" width="1003" height="1229">
+                <img class="hoodie-photo" data-hoodie-photo src="assets/hoodie-front.webp" alt="Vista frontal de tu sudadera personalizada" width="1003" height="1229">
                 <div class="material-texture" data-material-texture aria-hidden="true"></div>
                 <div class="editor-layer" data-editor-layer>
                   <div class="print-grid" data-print-grid aria-hidden="true">
@@ -331,7 +332,7 @@
                   </div>
                   <span class="print-text editor-item" data-print-text data-print-type="text" tabindex="0" role="button" aria-label="Texto del diseño. Arrastra para moverlo."></span>
                   <div class="print-logo editor-item" data-print-logo data-print-type="logo" tabindex="0" role="button" aria-label="Logo del diseño. Arrastra para moverlo, usa las asas para cambiar el tamaño o rotarlo." hidden>
-                    <img alt="" draggable="false">
+                    <img alt="" draggable="false" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
                   </div>
                 </div>
               </div>
@@ -351,11 +352,11 @@
 
             <div class="view-gallery" role="group" aria-label="Vistas de la sudadera">
               <button type="button" class="view-thumb is-active" data-angle="0" aria-pressed="true">
-                <img src="assets/hoodie-front.png" alt="" aria-hidden="true">
+                <img src="assets/hoodie-front.webp" alt="" aria-hidden="true">
                 <span class="view-thumb-label">Frente</span>
               </button>
               <button type="button" class="view-thumb" data-angle="180" aria-pressed="false">
-                <img src="assets/hoodie-back.png" alt="" aria-hidden="true">
+                <img src="assets/hoodie-back.webp" alt="" aria-hidden="true">
                 <span class="view-thumb-label">Espalda</span>
               </button>
             </div>
@@ -483,7 +484,10 @@
 
               <div class="editing-bar" data-editing-bar>
                 <span>Diseño de <strong data-editing-label>frente</strong></span>
-                <button type="button" class="link-btn" data-reset-print>Centrar diseño</button>
+                <span class="editing-bar__actions">
+                  <button type="button" class="link-btn" data-recover-draft hidden>Recuperar diseño</button>
+                  <button type="button" class="link-btn" data-reset-print>Centrar diseño</button>
+                </span>
               </div>
 
               <div class="placement-guide" data-placement-guide>
@@ -561,7 +565,7 @@
                       <label class="control-label" for="text-size">Tamaño del texto</label>
                       <span class="control-value" data-text-size-value>100%</span>
                     </div>
-                    <input class="size-range" id="text-size" type="range" min="50" max="220" step="5" value="100" data-text-size aria-label="Tamaño del texto">
+                    <input class="size-range" id="text-size" type="range" min="50" max="220" step="5" value="100" data-text-size>
                   </div>
                 </div>
               </div>
@@ -609,11 +613,11 @@
                     <div class="vectorizer-result" data-vector-result hidden>
                       <div class="vectorizer-previews">
                         <figure>
-                          <img data-vector-original alt="Logo original">
+                          <img data-vector-original alt="Logo original" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
                           <figcaption>Original</figcaption>
                         </figure>
                         <figure>
-                          <img data-vector-output alt="Logo vectorizado">
+                          <img data-vector-output alt="Logo vectorizado" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
                           <figcaption>Vector</figcaption>
                         </figure>
                       </div>
@@ -631,7 +635,7 @@
                       <label class="control-label" for="logo-size">Tamaño del logo</label>
                       <span class="control-value" data-logo-size-value>100%</span>
                     </div>
-                    <input class="size-range" id="logo-size" type="range" min="50" max="300" step="5" value="100" data-logo-size aria-label="Tamaño del logo">
+                    <input class="size-range" id="logo-size" type="range" min="50" max="300" step="5" value="100" data-logo-size>
                   </div>
                 </div>
               </div>
@@ -728,7 +732,7 @@
             <div class="product-visual" style="--fabric:#1c1c1f">
               <span class="tag tag--dark">Best seller</span>
               <div class="hoodie product-hoodie is-dark" style="--fabric-color:#1c1c1f">
-                <img class="hoodie-photo" src="assets/hoodie-front.png" alt="Sudadera negra like hoodie ♡" width="1003" height="1229">
+                <img class="hoodie-photo" src="assets/hoodie-front.webp" alt="Sudadera negra like hoodie ♡" width="1003" height="1229">
               </div>
             </div>
             <div class="product-info">
@@ -740,9 +744,9 @@
 
           <article class="product-card reveal">
             <div class="product-visual" style="--fabric:#efe6d6">
-              <div class="hoodie product-hoodie" style="--fabric-color:#efe6d6;--tint-mask:url('assets/hoodie-front.png')">
+              <div class="hoodie product-hoodie" style="--fabric-color:#efe6d6;--tint-mask:url('assets/hoodie-front.webp')">
                 <div class="fabric-tint" aria-hidden="true"></div>
-                <img class="hoodie-photo" src="assets/hoodie-front.png" alt="Sudadera color crema like hoodie ♡" width="1003" height="1229">
+                <img class="hoodie-photo" src="assets/hoodie-front.webp" alt="Sudadera color crema like hoodie ♡" width="1003" height="1229">
               </div>
             </div>
             <div class="product-info">
@@ -755,9 +759,9 @@
           <article class="product-card reveal">
             <div class="product-visual" style="--fabric:#cdf25a">
               <span class="tag">Nuevo</span>
-              <div class="hoodie product-hoodie" style="--fabric-color:#cdf25a;--tint-mask:url('assets/hoodie-front.png')">
+              <div class="hoodie product-hoodie" style="--fabric-color:#cdf25a;--tint-mask:url('assets/hoodie-front.webp')">
                 <div class="fabric-tint" aria-hidden="true"></div>
-                <img class="hoodie-photo" src="assets/hoodie-front.png" alt="Sudadera verde lima like hoodie ♡" width="1003" height="1229">
+                <img class="hoodie-photo" src="assets/hoodie-front.webp" alt="Sudadera verde lima like hoodie ♡" width="1003" height="1229">
               </div>
             </div>
             <div class="product-info">
@@ -770,9 +774,9 @@
           <article class="product-card reveal">
             <div class="product-visual" style="--fabric:#f2603c">
               <span class="tag tag--light">Edición limitada</span>
-              <div class="hoodie product-hoodie" style="--fabric-color:#f2603c;--tint-mask:url('assets/hoodie-front.png')">
+              <div class="hoodie product-hoodie" style="--fabric-color:#f2603c;--tint-mask:url('assets/hoodie-front.webp')">
                 <div class="fabric-tint" aria-hidden="true"></div>
-                <img class="hoodie-photo" src="assets/hoodie-front.png" alt="Sudadera naranja like hoodie ♡" width="1003" height="1229">
+                <img class="hoodie-photo" src="assets/hoodie-front.webp" alt="Sudadera naranja like hoodie ♡" width="1003" height="1229">
               </div>
             </div>
             <div class="product-info">
@@ -1029,7 +1033,7 @@
 
         <div class="reviews-grid">
           <figure class="review-card reveal">
-            <span class="stars" aria-label="5 estrellas">★★★★★</span>
+            <span class="stars" role="img" aria-label="5 estrellas">★★★★★</span>
             <blockquote>“Pedí una para el cumpleaños de mi hermana con una frase nuestra. La calidad es brutal y el acabado del texto, perfecto. Repetiré seguro.”</blockquote>
             <figcaption>
               <span class="review-avatar">MG</span>
@@ -1038,7 +1042,7 @@
           </figure>
 
           <figure class="review-card reveal">
-            <span class="stars" aria-label="5 estrellas">★★★★★</span>
+            <span class="stars" role="img" aria-label="5 estrellas">★★★★★</span>
             <blockquote>“Llegó en dos días y la talla clavada. El algodón es gordito, de los que abrigan de verdad. Mi hija no se la quita.”</blockquote>
             <figcaption>
               <span class="review-avatar">LR</span>
@@ -1047,7 +1051,7 @@
           </figure>
 
           <figure class="review-card reveal">
-            <span class="stars" aria-label="5 estrellas">★★★★★</span>
+            <span class="stars" role="img" aria-label="5 estrellas">★★★★★</span>
             <blockquote>“Subí el logo de mi marca y quedó mejor de lo que esperaba. Sin mínimos, sin líos y con un trato de diez.”</blockquote>
             <figcaption>
               <span class="review-avatar">JT</span>
@@ -1121,9 +1125,9 @@
           </div>
           <div class="cta-visual" aria-hidden="true">
             <div class="cta-blob"></div>
-            <div class="hoodie hoodie--cta" style="--fabric-color:#cdf25a;--tint-mask:url('assets/hoodie-front.png')">
+            <div class="hoodie hoodie--cta" style="--fabric-color:#cdf25a;--tint-mask:url('assets/hoodie-front.webp')">
               <div class="fabric-tint" aria-hidden="true"></div>
-              <img class="hoodie-photo" src="assets/hoodie-front.png" alt="" width="1003" height="1229">
+              <img class="hoodie-photo" src="assets/hoodie-front.webp" alt="" width="1003" height="1229">
               <div class="print-area print-area--cta">
                 <span class="print-text" style="color:#ff4d1f">HECHO<br>POR TI</span>
               </div>
@@ -1146,12 +1150,12 @@
         </a>
         <p>Sudaderas personalizadas, hechas con calma y algodón de verdad. Tu idea, puesta.</p>
         <div class="socials">
-          <a href="https://www.facebook.com/profile.php?id=61596039856453" aria-label="Facebook de like hoodie" target="_blank" rel="noopener">FB</a>
+          <a href="https://www.facebook.com/profile.php?id=61596039856453" aria-label="FB, Facebook de like hoodie" target="_blank" rel="noopener">FB</a>
         </div>
       </div>
 
       <div class="footer-col">
-        <h4>Tienda</h4>
+        <h3>Tienda</h3>
         <a href="#personalizar">Diseñador</a>
         <a href="#catalogo">Catálogo</a>
         <a href="#modelos">Modelos</a>
@@ -1161,7 +1165,7 @@
       </div>
 
       <div class="footer-col">
-        <h4>Ayuda</h4>
+        <h3>Ayuda</h3>
         <a href="terminos.html#envios">Envíos</a>
         <a href="terminos.html#devoluciones">Devoluciones</a>
         <a href="terminos.html#cuidados">Cuidados</a>
@@ -1169,7 +1173,7 @@
       </div>
 
       <div class="footer-news">
-        <h4>El club like hoodie ♡</h4>
+        <h3>El club like hoodie ♡</h3>
         <p>Diseños nuevos, ideas y un 10 % en tu primer pedido. Sin spam.</p>
         <form class="newsletter" data-newsletter>
           <label class="sr-only" for="newsletter-email">Tu email</label>
@@ -1187,7 +1191,7 @@
 
     <div class="container footer-bottom">
       <p>© 2026 like hoodie ♡. Hecho con algodón y buenas ideas.</p>
-      <div class="payments" aria-label="Métodos de pago">
+      <div class="payments" role="group" aria-label="Métodos de pago">
         <span>VISA</span><span>MASTERCARD</span><span>OXXO</span><span>CLIP</span>
       </div>
       <div class="legal">
@@ -1201,7 +1205,7 @@
   <!-- CESTA -->
   <div class="overlay" data-overlay></div>
 
-  <aside class="cart-drawer" data-cart-drawer aria-hidden="true" aria-labelledby="cart-title" role="dialog" aria-modal="true">
+  <aside class="cart-drawer" data-cart-drawer aria-hidden="true" aria-labelledby="cart-title" role="dialog" aria-modal="true" inert>
     <div class="cart-head">
       <div>
         <span class="eyebrow">Tu pedido</span>
@@ -1250,7 +1254,7 @@
   </aside>
 
   <!-- CHECKOUT -->
-  <div class="modal" data-checkout-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+  <div class="modal" data-checkout-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="checkout-title" inert>
     <div class="modal-panel">
       <div class="sheet-grab" aria-hidden="true"></div>
       <button type="button" class="icon-btn modal-close" data-close-checkout aria-label="Cerrar checkout">
@@ -1374,7 +1378,7 @@
   </div>
 
   <!-- MODAL TALLAS -->
-  <div class="modal" data-size-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="size-title">
+  <div class="modal" data-size-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="size-title" inert>
     <div class="modal-panel modal-panel--sizes">
       <div class="sheet-grab" aria-hidden="true"></div>
       <button type="button" class="icon-btn modal-close" data-close-sizes aria-label="Cerrar guía de tallas">
@@ -1385,7 +1389,7 @@
       <p class="modal-sub">Medidas de la prenda en plano (cm). Si dudas entre dos tallas, elige la mayor para un fit oversize.</p>
       <div class="size-table-wrap">
         <table class="size-table">
-          <thead><tr><th>Talla</th><th>Ancho</th><th>Largo</th><th>Manga</th></tr></thead>
+          <thead><tr><th scope="col">Talla</th><th scope="col">Ancho</th><th scope="col">Largo</th><th scope="col">Manga</th></tr></thead>
           <tbody>
             <tr><td>XS</td><td>50</td><td>64</td><td>60</td></tr>
             <tr><td>S</td><td>53</td><td>66</td><td>62</td></tr>
@@ -1413,8 +1417,8 @@
   <script src="clip-config.js?v=20261112-sandbox2"></script>
 <script src="vendor/imagetracer-1.2.6.js?v=20261113-vec1"></script>
 <script src="vectorize.js?v=20261113-vec2"></script>
-<script src="app.js?v=20261114-fase1"></script>
-  <script src="eventos.js?v=20261110-sec1"></script>
+<script src="app.js?v=20261114-fase2c"></script>
+  <script src="eventos.js?v=20261114-fase2c"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>
   <script src="legal.js?v=20261112-meta1"></script>

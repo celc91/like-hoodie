@@ -20,6 +20,7 @@
   const XXL_PRICE = 49;
   const STORAGE_KEY = "likehoodie_cart_v1";
   const LEGACY_STORAGE_KEY = "chama_cart_v1";
+  const DESIGN_DRAFT_KEY = "likehoodie_design_v1";
 
   const BASE_PRICES = {
     "#1c1c1f": 899,
@@ -38,8 +39,8 @@
       label: "Sudadera",
       itemName: "Sudadera personalizada",
       images: {
-        front: "assets/hoodie-front.png",
-        back: "assets/hoodie-back.png",
+        front: "assets/hoodie-front.webp",
+        back: "assets/hoodie-back.webp",
       },
       prices: BASE_PRICES,
       fallbackPrice: 899,
@@ -374,6 +375,8 @@
   /* ---------------------------------------------------------------------- */
 
   const header = $("[data-header]");
+  const pageMain = document.querySelector("main");
+  const pageFooter = document.querySelector("footer");
   const menuToggle = $("[data-menu-toggle]");
   const mobileMenu = $("[data-mobile-menu]");
   const overlay = $("[data-overlay]");
@@ -488,6 +491,7 @@
   const guideToggle = $("[data-guide-toggle]");
   const layersList = $("[data-layers-list]");
   const templateGrid = $("[data-template-grid]");
+  const recoverDraftButton = $("[data-recover-draft]");
   const alignControl = $("[data-align-control]");
   const alignTarget = $("[data-align-target]");
   const alignReadout = $("[data-align-readout]");
@@ -537,7 +541,7 @@
   const thumbCache = new Map();
   const THUMB_IMAGES = {};
 
-  Object.entries({ hoodie: "assets/hoodie-front.png", tote: "assets/tote-front.svg" }).forEach(
+  Object.entries({ hoodie: "assets/hoodie-front.webp", tote: "assets/tote-front.svg" }).forEach(
     ([id, src]) => {
       const image = new Image();
       image.src = src;
@@ -744,6 +748,15 @@
     if (cartCount) {
       cartCount.textContent = String(count);
       cartCount.classList.toggle("has-items", count > 0);
+      const cartButton = cartCount.closest("button");
+      if (cartButton) {
+        cartButton.setAttribute(
+          "aria-label",
+          count === 0
+            ? "Abrir la cesta, 0 artículos"
+            : `Abrir la cesta, ${count} ${count === 1 ? "artículo" : "artículos"}`
+        );
+      }
     }
 
     if (!cartItems) return;
@@ -892,6 +905,7 @@
     cartDrawer.classList.add("is-open");
     overlay.classList.add("is-open");
     cartDrawer.setAttribute("aria-hidden", "false");
+    refreshInertState();
     document.body.classList.add("is-locked");
     const closeButton = $("[data-close-cart]", cartDrawer);
     if (closeButton) {
@@ -906,10 +920,75 @@
     if (!checkoutModal.classList.contains("is-open") && !sizeModal.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
     }
+    refreshInertState();
     if (returnFocus && lastFocusedElement && document.contains(lastFocusedElement)) {
       lastFocusedElement.focus({ preventScroll: true });
     }
   }
+
+  /* ---------------------------------------------------------------------- */
+  /* Foco y accesibilidad de dialogos                                       */
+  /* ---------------------------------------------------------------------- */
+
+  const FOCUSABLE_SELECTOR =
+    'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  const pageRegions = [header, pageMain, pageFooter, mobileMenu].filter(Boolean);
+  const dialogElements = [cartDrawer, checkoutModal, sizeModal].filter(Boolean);
+
+  function visibleFocusables(container) {
+    return [...container.querySelectorAll(FOCUSABLE_SELECTOR)].filter(
+      (element) =>
+        !element.closest("[inert]") && element.getClientRects().length > 0
+    );
+  }
+
+  function refreshInertState() {
+    const openDialogs = dialogElements.filter((element) =>
+      element.classList.contains("is-open")
+    );
+    pageRegions.forEach((element) => {
+      element.toggleAttribute("inert", openDialogs.length > 0);
+    });
+    dialogElements.forEach((element) => {
+      const isOpen = element.classList.contains("is-open");
+      const isTop = openDialogs[openDialogs.length - 1] === element;
+      element.toggleAttribute("inert", !isOpen || !isTop);
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    const openDialogs = dialogElements.filter((element) =>
+      element.classList.contains("is-open")
+    );
+    const top = openDialogs[openDialogs.length - 1];
+
+    if (event.key === "Escape" && top) {
+      event.preventDefault();
+      if (top === checkoutModal) closeCheckout();
+      else if (top === sizeModal) closeSizeGuide();
+      else if (top === cartDrawer) closeCart();
+      return;
+    }
+
+    if (event.key !== "Tab" || !top) return;
+    const focusable = visibleFocusables(top);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (!top.contains(document.activeElement)) {
+      event.preventDefault();
+      first.focus({ preventScroll: true });
+      return;
+    }
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus({ preventScroll: true });
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus({ preventScroll: true });
+    }
+  });
 
   function changeQuantity(id, delta) {
     const item = state.items.find((entry) => entry.id === id);
@@ -1475,6 +1554,7 @@
     }
     checkoutModal.classList.add("is-open");
     checkoutModal.setAttribute("aria-hidden", "false");
+    refreshInertState();
     document.body.classList.add("is-locked");
     state.cartStep = "checkout";
     saveCart();
@@ -1496,6 +1576,7 @@
   function closeCheckout() {
     checkoutModal.classList.remove("is-open");
     checkoutModal.setAttribute("aria-hidden", "true");
+    refreshInertState();
     if (!cartDrawer.classList.contains("is-open") && !sizeModal.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
     }
@@ -1972,6 +2053,7 @@
     lastFocusedElement = document.activeElement;
     sizeModal.classList.add("is-open");
     sizeModal.setAttribute("aria-hidden", "false");
+    refreshInertState();
     document.body.classList.add("is-locked");
     window.setTimeout(() => {
       const close = $("[data-close-sizes]");
@@ -1982,6 +2064,7 @@
   function closeSizeGuide() {
     sizeModal.classList.remove("is-open");
     sizeModal.setAttribute("aria-hidden", "true");
+    refreshInertState();
     if (!cartDrawer.classList.contains("is-open") && !checkoutModal.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
     }
@@ -2318,6 +2401,7 @@
     renderLayers();
     syncAlignmentUI();
     commitHistory();
+    scheduleDraftSave();
   }
 
   function updateGalleryUI() {
@@ -3331,6 +3415,170 @@
   }
 
   /* ---------------------------------------------------------------------- */
+  /* Borrador del diseño                                                    */
+  /* ---------------------------------------------------------------------- */
+
+  let draftSaveTimer = null;
+  let draftHydrated = false;
+  let hasStoredDraft = false;
+
+  function markDraftHydrated() {
+    draftHydrated = true;
+  }
+
+  function designHasContent(design) {
+    return Boolean(
+      (design && design.text && design.text.trim()) ||
+        (design && (design.logoName || design.logoData))
+    );
+  }
+
+  function draftSnapshot() {
+    const sideSnapshot = (design) => ({
+      text: design.text || "",
+      textColor: design.textColor || "#fffdf8",
+      textScale: design.textScale || 1,
+      textRotate: design.textRotate || 0,
+      textFont: design.textFont || "bricolage",
+      logoName: design.logoName || "",
+      logoData: design.logoData || "",
+      logoPath: design.logoPath || "",
+      logoScale: design.logoScale || 1,
+      logoRotate: design.logoRotate || 0,
+      logoIsVector: Boolean(design.logoIsVector),
+      logoAssetId: design.logoAssetId || "",
+      printStatus: design.printStatus || "",
+      printDpi: design.printDpi || null,
+      printPath: design.printPath || "",
+      printWidthCm: design.printWidthCm || null,
+      textLocked: Boolean(design.textLocked),
+      logoLocked: Boolean(design.logoLocked),
+      textHidden: Boolean(design.textHidden),
+      logoHidden: Boolean(design.logoHidden),
+      layerOrder: Array.isArray(design.layerOrder) ? design.layerOrder : ["text", "logo"],
+      textX: design.textX,
+      textY: design.textY,
+      logoX: design.logoX,
+      logoY: design.logoY,
+    });
+
+    return {
+      v: 1,
+      savedAt: Date.now(),
+      product: state.product,
+      color: state.color,
+      colorName: state.colorName,
+      size: state.size,
+      view: state.view,
+      material: { ...state.material },
+      technique: { ...state.technique },
+      designs: {
+        front: sideSnapshot(state.designs.front),
+        back: sideSnapshot(state.designs.back),
+      },
+    };
+  }
+
+  function saveDraftNow() {
+    draftSaveTimer = null;
+    const hasContent =
+      designHasContent(state.designs.front) ||
+      designHasContent(state.designs.back);
+
+    if (!hasContent) {
+      if (draftHydrated) {
+        try {
+          localStorage.removeItem(DESIGN_DRAFT_KEY);
+        } catch (error) {
+          /* almacenamiento no disponible */
+        }
+        hasStoredDraft = false;
+        if (recoverDraftButton) recoverDraftButton.hidden = true;
+      }
+      return;
+    }
+
+    try {
+      localStorage.setItem(DESIGN_DRAFT_KEY, JSON.stringify(draftSnapshot()));
+      hasStoredDraft = true;
+      if (recoverDraftButton) recoverDraftButton.hidden = true;
+    } catch (error) {
+      /* sin espacio: el editor sigue funcionando */
+    }
+  }
+
+  function scheduleDraftSave() {
+    if (draftSaveTimer) window.clearTimeout(draftSaveTimer);
+    draftSaveTimer = window.setTimeout(saveDraftNow, 700);
+  }
+
+  function readStoredDraft() {
+    try {
+      const raw = localStorage.getItem(DESIGN_DRAFT_KEY);
+      if (!raw) return null;
+      const draft = JSON.parse(raw);
+      if (!draft || draft.v !== 1 || !draft.designs) return null;
+      if (
+        !designHasContent(draft.designs.front) &&
+        !designHasContent(draft.designs.back)
+      ) {
+        return null;
+      }
+      return draft;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function applyStoredDraft(draft) {
+    if (!draft) return false;
+    if (PRODUCTS[draft.product]) setProduct(draft.product);
+    if (draft.color) selectColor(draft.color, draft.colorName);
+    if (draft.size) state.size = draft.size;
+    if (draft.material && draft.material.id) {
+      state.material = { ...state.material, ...draft.material };
+    }
+    if (draft.technique && draft.technique.id) {
+      state.technique = { ...state.technique, ...draft.technique };
+    }
+
+    ["front", "back"].forEach((side) => {
+      const saved = draft.designs[side];
+      if (!saved) return;
+      const design = { ...state.designs[side], ...saved };
+      design.logo = saved.logoData || design.logo || "";
+      design.logoRaster = saved.logoData || design.logoRaster || "";
+      design.logoVectorResult = null;
+      state.designs[side] = design;
+    });
+
+    sizeButtons.forEach((button) => {
+      const active = button.dataset.size === state.size;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+
+    state.view = draft.view === "back" ? "back" : "front";
+    setView(state.view);
+    updatePreview();
+    resetHistory();
+    if (recoverDraftButton) recoverDraftButton.hidden = true;
+    hasStoredDraft = false;
+    showToast("Diseño recuperado.");
+    return true;
+  }
+
+  if (recoverDraftButton) {
+    recoverDraftButton.addEventListener("click", () => {
+      const draft = readStoredDraft();
+      if (!draft || !applyStoredDraft(draft)) {
+        recoverDraftButton.hidden = true;
+        showToast("No pudimos recuperar el diseño.");
+      }
+    });
+  }
+
+  /* ---------------------------------------------------------------------- */
   /* Historial, atajos y acciones del elemento                              */
   /* ---------------------------------------------------------------------- */
 
@@ -3395,6 +3643,7 @@
       historyTimer = null;
       const signature = designSignature();
       if (signature === lastHistorySignature) return;
+      markDraftHydrated();
       if (historyIndex < historyStack.length - 1) {
         historyStack = historyStack.slice(0, historyIndex + 1);
       }
@@ -4030,7 +4279,7 @@
       color: "#ffffff",
       colorName: "Blanco",
       side: "front",
-      logo: "assets/modelos/cocodrilo-logo.png",
+      logo: "assets/modelos/cocodrilo-logo.webp",
       fileName: "cocodrilo-miami.png",
     },
     insignia: {
@@ -4039,7 +4288,7 @@
       color: "#1c1c1f",
       colorName: "Negro",
       side: "front",
-      logo: "assets/modelos/insignia-logo.png",
+      logo: "assets/modelos/insignia-logo.webp",
       fileName: "insignia-atardecer.png",
     },
     panorama: {
@@ -4048,7 +4297,7 @@
       color: "#1c1c1f",
       colorName: "Negro",
       side: "front",
-      logo: "assets/modelos/panorama-logo.png",
+      logo: "assets/modelos/panorama-logo.webp",
       fileName: "panorama-vice.png",
     },
     corazon: {
@@ -4057,7 +4306,7 @@
       color: "#1c1c1f",
       colorName: "Negro",
       side: "front",
-      logo: "assets/modelos/corazon-logo.png",
+      logo: "assets/modelos/corazon-logo.webp",
       fileName: "corazon-neon.png",
     },
   };
@@ -5024,7 +5273,10 @@
   setView(state.view);
   setTool("producto");
   resetHistory();
+  refreshInertState();
   renderCart();
+  hasStoredDraft = Boolean(readStoredDraft());
+  if (recoverDraftButton) recoverDraftButton.hidden = !hasStoredDraft;
   window.StoreSupabase?.init();
   if (state.items.length) {
     window.StoreSupabase?.syncCart(state.items, "cart");

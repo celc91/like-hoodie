@@ -822,7 +822,7 @@
     const design = (item && item[side]) || {};
     const isTote = item && item.product === "tote";
     const image = `assets/${isTote ? "tote" : "hoodie"}-${side}${
-      isTote ? ".svg" : ".png"
+      isTote ? ".svg" : ".webp"
     }`;
     const text = String(design.text || "").trim();
     const color = safeHex(item?.colorHex, "#1c1c1f");
@@ -1096,6 +1096,7 @@
     const modal = $("#order-modal");
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
+    modal.removeAttribute("inert");
 
     $("#detail-save").addEventListener("click", async () => {
       const status = $("#detail-status").value;
@@ -1120,6 +1121,7 @@
     if (!modal) return;
     modal.classList.remove("is-open");
     modal.setAttribute("aria-hidden", "true");
+    modal.setAttribute("inert", "");
   }
 
   $$("[data-close-order]").forEach((button) =>

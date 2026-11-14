@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    like hoodie ♡ — Sudaderas personalizadas
    ========================================================================== */
 
@@ -11,8 +11,8 @@
   --ink-soft: #4b4841;
   --muted: #6d685f;
   --line: rgba(22, 22, 24, 0.12);
-  --orange: #ff4d1f;
-  --orange-dark: #e63d10;
+  --orange: #d63e10;
+  --orange-dark: #bf360c;
   --lime: #d8f45c;
   --pink: #f4c1cd;
   --radius: 24px;
@@ -1064,7 +1064,7 @@ section[id] {
 }
 
 .section-head .eyebrow {
-  color: var(--orange);
+  color: #b8370f;
 }
 
 .section-head h2 {
@@ -1387,7 +1387,7 @@ section[id] {
   font-style: normal;
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: var(--orange);
+  color: #b8370f;
 }
 
 .control-value {
@@ -2476,7 +2476,7 @@ section[id] {
   display: block;
   margin-top: 3px;
   font-size: 10.5px;
-  color: rgba(244, 239, 230, 0.55);
+  color: rgba(244, 239, 230, 0.72);
 }
 
 .contact-card svg {
@@ -2658,7 +2658,7 @@ details[open] .plus::after {
   max-width: 290px;
   font-size: 12.5px;
   line-height: 1.65;
-  color: rgba(244, 239, 230, 0.55);
+  color: rgba(244, 239, 230, 0.72);
 }
 
 .socials {
@@ -2686,15 +2686,15 @@ details[open] .plus::after {
   color: var(--ink);
 }
 
-.footer-col h4,
-.footer-news h4 {
+.footer-col h3,
+.footer-news h3 {
   margin-bottom: 14px;
   font-family: var(--font-body);
   font-size: 9.5px;
   font-weight: 700;
   letter-spacing: 0.17em;
   text-transform: uppercase;
-  color: rgba(244, 239, 230, 0.42);
+  color: rgba(244, 239, 230, 0.72);
 }
 
 .footer-col a {
@@ -2714,7 +2714,7 @@ details[open] .plus::after {
   margin-bottom: 14px;
   font-size: 12px;
   line-height: 1.55;
-  color: rgba(244, 239, 230, 0.55);
+  color: rgba(244, 239, 230, 0.72);
 }
 
 .newsletter {
@@ -2776,7 +2776,7 @@ details[open] .plus::after {
   padding-top: 20px;
   border-top: 1px solid rgba(244, 239, 230, 0.12);
   font-size: 10.5px;
-  color: rgba(244, 239, 230, 0.42);
+  color: rgba(244, 239, 230, 0.72);
 }
 
 .payments {
@@ -2847,7 +2847,7 @@ details[open] .plus::after {
 }
 
 .cart-head .eyebrow {
-  color: var(--orange);
+  color: #b8370f;
 }
 
 .cart-head h2 {
@@ -3201,7 +3201,7 @@ details[open] .plus::after {
 }
 
 .modal-panel .eyebrow {
-  color: var(--orange);
+  color: #b8370f;
 }
 
 .modal-panel h2 {
@@ -4824,6 +4824,12 @@ details[open] .plus::after {
   color: var(--ink);
 }
 
+.editing-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .link-btn {
   padding: 0;
   border-bottom: 1px solid currentColor;
@@ -5041,7 +5047,7 @@ details[open] .plus::after {
   letter-spacing: 0.12em;
   line-height: 1;
   text-transform: uppercase;
-  color: var(--muted);
+  color: #5f5a52;
 }
 
 .view-thumb.is-active .view-thumb-label {
@@ -5733,11 +5739,11 @@ details[open] .plus::after {
 }
 
 .cal-day.is-outside {
-  color: rgba(22, 22, 24, 0.18);
+  color: rgba(22, 22, 24, 0.62);
 }
 
 .cal-day.is-past {
-  color: rgba(22, 22, 24, 0.34);
+  color: rgba(22, 22, 24, 0.62);
 }
 
 .cal-day.has-events {
@@ -5762,7 +5768,7 @@ details[open] .plus::after {
 }
 
 .cal-day-count {
-  color: var(--orange);
+  color: #b8370f;
   font-size: 8.5px;
   font-weight: 800;
   line-height: 1;
@@ -5892,7 +5898,7 @@ details[open] .plus::after {
   padding: 34px 20px;
   border: 1px dashed rgba(244, 239, 230, 0.18);
   border-radius: 18px;
-  color: rgba(244, 239, 230, 0.55);
+  color: rgba(244, 239, 230, 0.72);
   font-size: 13px;
   text-align: center;
 }
@@ -6026,7 +6032,7 @@ details[open] .plus::after {
   padding: 34px 24px;
   border: 1px dashed rgba(244, 239, 230, 0.18);
   border-radius: 18px;
-  color: rgba(244, 239, 230, 0.55);
+  color: rgba(244, 239, 230, 0.72);
   text-align: center;
 }
 
@@ -6321,11 +6327,11 @@ details[open] .plus::after {
   --ink: #17130f;
   --ink-2: #221c17;
   --ink-soft: #55504a;
-  --muted: #7b756c;
+  --muted: #6d685f;
   --line: rgba(23, 19, 15, 0.14);
 
   /* un solo acento principal, un paso menos fluorescente */
-  --orange: #f0451a;
+  --orange: #d63e10;
   --orange-dark: #d43a12;
   --lime: #dcf07e;
   --pink: #f6c9d2;

@@ -29,6 +29,8 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Capas y bloqueo:** panel por cara con orden texto/logo, ocultar y bloquear. El candado impide mover, escalar, rotar y eliminar.
 - **Plantillas de diseño:** seis composiciones (Clásica, Panorama, Minimal, Neón, Dúo y Cintura) que aplican texto, tipografía y colocación a la cara activa.
 - **Alineación:** botones para pegar el elemento activo a la izquierda, centro o derecha y arriba, medio o abajo del área de impresión, con el estado actual en el panel.
+- **Autoguardado:** el diseño se guarda como borrador en el navegador y se puede recuperar al volver con **Recuperar diseño**.
+- **Rendimiento:** mockups y logos en WebP, precarga del héroe y carga diferida de imágenes; el peso inicial baja de ~2,2 MB a ~250 KB.
 - **Barra flotante del elemento:** centrar en el área, copiar al otro lado (texto y logo), bloquear y eliminar.
 - **Productos:** sudadera de algodón en cinco materiales y tote bag de lona en tres, cada uno con su precio base, sus colores y sus técnicas.
 - **Colores:** negro, blanco, crema, lima, naranja, marino y rosa.
@@ -83,17 +85,17 @@ La sección **`#modelos`** muestra diseños que ya existen para **comprar tal cu
 
 | Modelo | Prenda | Precio | Mockup | Logo |
 | --- | --- | --- | --- | --- |
-| Cocodrilo de Miami | Sudadera blanca | $1,048 | `assets/modelos/cocodrilo.webp` | `assets/modelos/cocodrilo-logo.png` |
-| Insignia atardecer | Sudadera negra | $998 | `assets/modelos/insignia.webp` | `assets/modelos/insignia-logo.png` |
-| Panorama Vice | Sudadera negra | $998 | `assets/modelos/panorama.webp` | `assets/modelos/panorama-logo.png` |
-| Corazón neón | Sudadera negra | $998 | `assets/modelos/corazon.webp` | `assets/modelos/corazon-logo.png` |
+| Cocodrilo de Miami | Sudadera blanca | $1,048 | `assets/modelos/cocodrilo.webp` | `assets/modelos/cocodrilo-logo.webp` |
+| Insignia atardecer | Sudadera negra | $998 | `assets/modelos/insignia.webp` | `assets/modelos/insignia-logo.webp` |
+| Panorama Vice | Sudadera negra | $998 | `assets/modelos/panorama.webp` | `assets/modelos/panorama-logo.webp` |
+| Corazón neón | Sudadera negra | $998 | `assets/modelos/corazon.webp` | `assets/modelos/corazon-logo.webp` |
 
 Los logos de los modelos son PNG con transparencia. El del cocodrilo se recortó del arte original para que no imprima un fondo blanco.
 
 ### Añadir un modelo
 
 1. Guarda el mockup en `assets/modelos/<id>.webp` (4:5, ~900 px de ancho).
-2. Guarda el arte en `assets/modelos/<id>-logo.png` con transparencia y menos de 5 MB.
+2. Guarda el arte en `assets/modelos/<id>-logo.webp` con transparencia y menos de 5 MB. El navegador lo convierte a PNG antes de subirlo al pipeline de impresión.
 3. Añade una tarjeta en `index.html` dentro de `.collection-grid` con el selector `data-model-size="<id>"` y el botón `data-buy-model="<id>"`.
 4. Añade la entrada en `MODELS` (final de `app.js`):
 
@@ -104,7 +106,7 @@ MODELS.miModelo = {
   color: "#1c1c1f",
   colorName: "Negro",
   side: "front",
-  logo: "assets/modelos/mi-modelo-logo.png",
+  logo: "assets/modelos/mi-modelo-logo.webp",
   fileName: "mi-modelo.png",
 };
 ```
@@ -444,7 +446,7 @@ Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos
 
 ## Fotografías de producto
 
-El editor usa una maqueta fotográfica frontal y trasera con fondo transparente, extraída de una plantilla de **Mockup Space** (licencia free personal & commercial use). Puedes sustituir `assets/hoodie-front.png` y `assets/hoodie-back.png` por fotografías reales de tus sudaderas manteniendo el fondo transparente y una composición vertical similar. Los colores se aplican con capas de tinte y máscaras, así que las fotos nuevas deben ser claras y con buena iluminación.
+El editor usa una maqueta fotográfica frontal y trasera con fondo transparente, extraída de una plantilla de **Mockup Space** (licencia free personal & commercial use). Puedes sustituir `assets/hoodie-front.webp` y `assets/hoodie-back.webp` por fotografías reales de tus sudaderas manteniendo el fondo transparente y una composición vertical similar. Los colores se aplican con capas de tinte y máscaras, así que las fotos nuevas deben ser claras y con buena iluminación.
 
 ## Roadmap
 
@@ -456,6 +458,7 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 - [x] Copiar el logo a la otra cara con un asset nuevo.
 - [x] Plantillas de diseño dentro del editor.
 - [x] Alineación horizontal/vertical por separado.
+- [x] Fase 2: WebP, accesibilidad 100, autoguardado y CI bloqueante.
 - [x] Canva evaluado y descartado por ahora (ver abajo).
 
 ### Decisión: Canva
