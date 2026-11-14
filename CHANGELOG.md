@@ -9,9 +9,22 @@ semántico.
 ### Por hacer
 
 - Alineación horizontal/vertical por separado.
-- Copiar el logo a la otra cara creando un asset nuevo.
 - Plantillas de diseño dentro del editor.
 - Integración con Canva Connect (importar diseño y exportar PNG).
+
+## [1.1.3] — 2026-11-14
+
+### Añadido
+
+- **Copiar el logo a la otra cara** desde la barra flotante. Crea un asset
+  nuevo para esa cara, con su ancho de impresión (28 cm en espalda), ejecuta
+  `process-logo` y conserva escala y rotación; lo centra en el área.
+- Si el logo es SVG, se rasteriza a PNG antes de copiarlo.
+
+### Cambiado
+
+- La barra flotante del logo incluye ahora la acción de copiar.
+- Copiar respeta el bloqueo del logo destino y no duplica el toast de carga.
 
 ## [1.1.2] — 2026-11-14
 

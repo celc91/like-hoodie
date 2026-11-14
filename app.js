@@ -2598,7 +2598,9 @@
           ? `<button type="button" data-item-action="copy" aria-label="Copiar al otro lado" title="Copiar al otro lado">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9" stroke-linecap="round"/></svg>
             </button>`
-          : ""
+          : `<button type="button" data-item-action="copy" aria-label="Copiar logo al otro lado" title="Copiar logo al otro lado">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9" stroke-linecap="round"/></svg>
+            </button>`
       }
       <button type="button" data-item-action="lock" aria-label="Bloquear elemento" title="Bloquear">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 7-2.5" stroke-linecap="round"/></svg>
@@ -3452,6 +3454,41 @@
     );
   }
 
+  async function copyLogoToOtherSide() {
+    const design = activeDesign();
+    if (!design.logo) return;
+    if (design.logoLocked) {
+      showToast("El logo está bloqueado. Desbloquéalo desde Capas.");
+      return;
+    }
+
+    const otherSide = state.view === "front" ? "back" : "front";
+    const source = design.logoRaster || design.logo;
+    if (!source) return;
+
+    try {
+      const file = await logoDataUrlToFile(
+        source,
+        design.logoName || `logo-${state.view}.png`
+      );
+      const copied = await applyLogoFile(file, otherSide, { silent: true });
+      if (!copied) return;
+
+      const other = state.designs[otherSide];
+      other.logoScale = design.logoScale;
+      other.logoRotate = design.logoRotate || 0;
+      other.logoX = 50;
+      other.logoY =
+        (DEFAULT_POSITIONS[otherSide] || DEFAULT_POSITIONS.front).logoY;
+      updatePreview();
+      showToast(
+        `Logo copiado a la ${otherSide === "front" ? "frente" : "espalda"}.`
+      );
+    } catch (error) {
+      showToast("No se pudo copiar el logo.");
+    }
+  }
+
   function deleteElement(type) {
     const design = activeDesign();
     if (elementLocked(design, type)) {
@@ -3527,8 +3564,9 @@
       showToast("Elemento centrado.");
       return;
     }
-    if (action === "copy" && type === "text") {
-      copyTextToOtherSide();
+    if (action === "copy") {
+      if (type === "text") copyTextToOtherSide();
+      else copyLogoToOtherSide();
       return;
     }
     if (action === "delete") {
@@ -3726,7 +3764,45 @@
     });
   }
 
-  async function applyLogoFile(file, side) {
+  async function logoDataUrlToFile(dataUrl, name) {
+    const response = await fetch(dataUrl);
+    let blob = await response.blob();
+    const isSvg =
+      blob.type === "image/svg+xml" || /^data:image\/svg\+xml/i.test(dataUrl);
+
+    if (isSvg) {
+      const image = await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error("SVG no legible."));
+        img.src = dataUrl;
+      });
+      const naturalWidth = image.naturalWidth || 1000;
+      const naturalHeight = image.naturalHeight || naturalWidth;
+      const scale = Math.min(1, 1400 / Math.max(naturalWidth, naturalHeight));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(naturalHeight * scale));
+      const context = canvas.getContext("2d");
+      if (!context) throw new Error("No se pudo preparar el lienzo.");
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      blob = await new Promise((resolve) =>
+        canvas.toBlob(resolve, "image/png")
+      );
+      if (!blob) throw new Error("No se pudo convertir el SVG.");
+    }
+
+    const type =
+      blob.type && blob.type !== "application/octet-stream"
+        ? blob.type
+        : "image/png";
+    const base = String(name || "logo").replace(/\.[^.]+$/, "") || "logo";
+    const extension =
+      type === "image/jpeg" ? "jpg" : type === "image/webp" ? "webp" : "png";
+    return new File([blob], `${base}.${extension}`, { type });
+  }
+
+  async function applyLogoFile(file, side, options = {}) {
     if (!file) return false;
     const targetSide = side === "back" ? "back" : "front";
 
@@ -3777,9 +3853,11 @@
       if (fileName) fileName.textContent = file.name;
     }
     updatePreview();
-    showToast(
-      `Logo ${targetSide === "front" ? "frontal" : "trasero"} cargado.`
-    );
+    if (!options.silent) {
+      showToast(
+        `Logo ${targetSide === "front" ? "frontal" : "trasero"} cargado.`
+      );
+    }
 
     if (window.StoreSupabase?.uploadLogo) {
       const printable = await webpToPngFile(file, source);
