@@ -8,12 +8,25 @@ semántico.
 
 ### Por hacer
 
-- Barra superior fija al hacer scroll.
 - Capas y bloqueo de elementos.
 - Alineación horizontal/vertical por separado.
 - Copiar el logo a la otra cara creando un asset nuevo.
 - Plantillas de diseño dentro del editor.
 - Integración con Canva Connect (importar diseño y exportar PNG).
+
+## [1.1.1] — 2026-11-13
+
+### Añadido
+
+- **Barra superior fija** del editor bajo la cabecera del sitio. Mide la altura
+  real del header con `--site-header-h`, añade sombra al quedar fija y respeta
+  el scroll con `scroll-margin-top` en `#personalizar`.
+
+### Cambiado
+
+- `.studio.editor` deja de recortar el contenido (`overflow: visible`) para
+  permitir `position: sticky`; las esquinas se redondean por pieza (barra,
+  rail y panel) para conservar el diseño.
 
 ## [1.1.0] — 2026-11-13
 

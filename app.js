@@ -4229,6 +4229,44 @@
   /* Inicio                                                                  */
   /* ---------------------------------------------------------------------- */
 
+  /* ---------------------------------------------------------------------- */
+  /* Barra superior fija del editor                                         */
+  /* ---------------------------------------------------------------------- */
+
+  const siteHeader = $(".site-header");
+  const editorTopbar = $(".editor-topbar");
+  let topbarFrame = 0;
+
+  function updateTopbarState() {
+    if (siteHeader) {
+      document.documentElement.style.setProperty(
+        "--site-header-h",
+        `${siteHeader.offsetHeight}px`
+      );
+    }
+    if (!editorTopbar || !siteHeader) return;
+    const limit = siteHeader.offsetHeight + 1;
+    editorTopbar.classList.toggle(
+      "is-stuck",
+      editorTopbar.getBoundingClientRect().top <= limit
+    );
+  }
+
+  function requestTopbarUpdate() {
+    if (topbarFrame) return;
+    topbarFrame = window.requestAnimationFrame(() => {
+      topbarFrame = 0;
+      updateTopbarState();
+    });
+  }
+
+  window.addEventListener("scroll", requestTopbarUpdate, { passive: true });
+  window.addEventListener("resize", requestTopbarUpdate);
+  if (typeof ResizeObserver === "function" && siteHeader) {
+    new ResizeObserver(requestTopbarUpdate).observe(siteHeader);
+  }
+  updateTopbarState();
+
   selectColor(state.color, state.colorName);
   setView(state.view);
   setTool("producto");

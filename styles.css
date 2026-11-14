@@ -7302,20 +7302,39 @@ p {
    Barra superior + rail de herramientas + lienzo + panel de propiedades.
    -------------------------------------------------------------------------- */
 
+:root {
+  --site-header-h: 76px;
+}
+
+#personalizar {
+  scroll-margin-top: calc(var(--site-header-h, 76px) + 12px);
+}
+
 .studio.editor {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
-  overflow: clip;
+  overflow: visible;
 }
 
 .editor-topbar {
+  position: sticky;
+  top: var(--site-header-h, 76px);
+  z-index: 40;
   display: flex;
   align-items: center;
   gap: 18px;
   padding: 12px 18px;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 253, 249, 0.94);
+  border-radius: 31px 31px 0 0;
+  background: rgba(255, 253, 249, 0.96);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  transition: box-shadow 0.2s ease;
+}
+
+.editor-topbar.is-stuck {
+  box-shadow: 0 12px 26px rgba(22, 22, 24, 0.08);
 }
 
 .editor-topbar .product-switch {
@@ -7367,6 +7386,7 @@ p {
   gap: 8px;
   padding: 14px 9px;
   border-right: 1px solid var(--line);
+  border-bottom-left-radius: 31px;
   background: var(--paper);
 }
 
@@ -7422,6 +7442,7 @@ p {
   min-height: 0;
   padding: 18px;
   border-left: 1px solid var(--line);
+  border-bottom-right-radius: 31px;
   background: var(--paper);
   overflow-y: auto;
 }
@@ -7473,6 +7494,12 @@ p {
     padding-bottom: 140px;
     border-top: 1px solid var(--line);
     border-left: 0;
+    border-bottom-left-radius: 31px;
+    border-bottom-right-radius: 31px;
+  }
+
+  .studio.editor .editor-rail {
+    border-bottom-left-radius: 0;
   }
 }
 

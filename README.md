@@ -24,7 +24,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 ## Qué incluye
 
 - **Diseñador en vivo:** sudadera o tote bag, color, talla o medida, texto, tipografía, color de texto y subida de logo (PNG, JPG o WebP).
-- **Editor tipo Canva:** barra superior (producto, frente/espalda, historial), rail de herramientas (Producto, Texto, Logo), lienzo central y panel de propiedades contextual.
+- **Editor tipo Canva:** barra superior fija (producto, frente/espalda, historial), rail de herramientas (Producto, Texto, Logo), lienzo central y panel de propiedades contextual.
 - **Historial y atajos:** deshacer/rehacer, `Ctrl/Cmd+Z`, `Ctrl/Cmd+Shift+Z`, `Ctrl/Cmd+D`, flechas para mover y `Supr` para eliminar.
 - **Barra flotante del elemento:** centrar en el área, copiar el texto a la otra cara y eliminar.
 - **Productos:** sudadera de algodón en cinco materiales y tote bag de lona en tres, cada uno con su precio base, sus colores y sus técnicas.
@@ -53,7 +53,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 
 El estudio (`#personalizar`) se organiza como un editor, no como un formulario:
 
-- **Barra superior:** producto, cara del diseño (Frente/Espalda), deshacer/rehacer, guías y estado en vivo.
+- **Barra superior:** fija bajo la cabecera del sitio, con producto, cara del diseño (Frente/Espalda), deshacer/rehacer, guías y estado en vivo.
 - **Rail izquierdo:** Producto, Texto y Logo. El botón activo cambia el panel derecho.
 - **Lienzo central:** prenda, cuadrícula de impresión, zoom y miniaturas de frente/espalda.
 - **Panel derecho:** propiedades contextuales del elemento o del producto; al final, resumen, precio y **Añadir a la cesta**.
@@ -434,6 +434,7 @@ Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos
 - **Productos del catálogo base:** tarjetas en `index.html` y sus botones `data-personalize`.
 - **Modelos de la colección:** tarjetas `data-model` en `index.html` y el objeto `MODELS` al final de `app.js`.
 - **Editor:** el layout tipo Canva vive al final de `styles.css` (bloque “Editor tipo Canva — Fase 1”) y la lógica de historial/atajos en `app.js`.
+- **Barra fija:** `--site-header-h` se mide en `app.js`; si cambias la altura del header, la barra se ajusta sola.
 
 ## Fotografías de producto
 
@@ -444,7 +445,7 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 - [x] Editor tipo Canva: layout, historial, atajos y barra flotante.
 - [x] Colección de modelos y color blanco.
 - [x] Archivo de impresión DTG automático en dos etapas.
-- [ ] Barra superior fija al hacer scroll.
+- [x] Barra superior fija al hacer scroll.
 - [ ] Capas y bloqueo de elementos.
 - [ ] Copiar el logo a la otra cara con un asset nuevo.
 - [ ] Plantillas de diseño dentro del editor.
