@@ -46,6 +46,7 @@ as $$
 declare
   v_uid uuid := auth.uid();
   v_count integer;
+  v_global integer;
 begin
   if v_uid is null then
     return false;
@@ -61,6 +62,14 @@ begin
      and created_at > now() - interval '1 hour';
 
   if v_count >= 30 then
+    return false;
+  end if;
+
+  select count(*) into v_global
+    from public.client_errors
+   where created_at > now() - interval '1 hour';
+
+  if v_global >= 2000 then
     return false;
   end if;
 

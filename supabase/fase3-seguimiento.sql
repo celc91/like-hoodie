@@ -78,6 +78,11 @@ end;
 $$;
 
 revoke all on function public.get_order_status(bigint, text) from public;
-grant execute on function public.get_order_status(bigint, text) to anon, authenticated;
+revoke all on function public.get_order_status(bigint, text) from anon;
+revoke all on function public.get_order_status(bigint, text) from authenticated;
+grant execute on function public.get_order_status(bigint, text) to service_role;
+
+-- La versión pública quedó cerrada en fase4-seguridad.sql.
+-- El seguimiento solo se consulta a través de la Edge Function order-status.
 
 commit;

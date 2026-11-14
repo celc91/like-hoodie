@@ -5,6 +5,7 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import {
+  clientIpHash,
   corsHeaders,
   env,
   isUuid,
@@ -67,6 +68,28 @@ Deno.serve(async (request) => {
     await userClient.auth.getUser(authToken);
   if (userError || !userData?.user) {
     return json({ error: "Sesión no válida" }, 401, origin);
+  }
+
+  const admin = createClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  const ipHash = await clientIpHash(request);
+  const { data: allowed, error: limitError } = await admin.rpc(
+    "take_clip_pay",
+    { p_ip_hash: ipHash, p_user_id: userData.user.id }
+  );
+
+  if (limitError) {
+    console.error("clip-pay: no se pudo aplicar el rate limit.", limitError.message);
+    return json({ error: "Pago no disponible en este momento" }, 503, origin);
+  }
+  if (allowed !== true) {
+    return json(
+      { error: "Demasiados intentos de pago. Espera unos minutos." },
+      429,
+      origin
+    );
   }
 
   const body = await readJson(request);
@@ -175,10 +198,6 @@ Deno.serve(async (request) => {
     data.pending_action && typeof data.pending_action === "object"
       ? data.pending_action
       : null;
-
-  const admin = createClient(url, serviceKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
 
   if (status === "approved") {
     const { error: updateError } = await admin

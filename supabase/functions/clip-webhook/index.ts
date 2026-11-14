@@ -28,7 +28,16 @@ Deno.serve(async (request) => {
   }
 
   const expectedSecret = env("CLIP_WEBHOOK_SECRET");
-  const providedSecret = new URL(request.url).searchParams.get("secret") || "";
+  const headerSecret = (
+    request.headers.get("x-clip-secret") ||
+    request.headers.get("x-webhook-secret") ||
+    (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "")
+  ).trim();
+  // Clip solo permite configurar una URL, así que se acepta ?secret= como
+  // respaldo. Si el proveedor permite cabeceras, usa x-clip-secret para que el
+  // secreto no quede en la URL ni en los registros del CDN.
+  const querySecret = new URL(request.url).searchParams.get("secret") || "";
+  const providedSecret = headerSecret || querySecret;
   if (
     !expectedSecret ||
     !timingSafeEqual(providedSecret, expectedSecret)

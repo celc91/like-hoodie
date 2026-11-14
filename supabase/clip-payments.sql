@@ -213,4 +213,9 @@ $$;
 revoke all on function public.store_config() from public;
 grant execute on function public.store_config() to anon, authenticated;
 
+-- Seguridad: elimina la version antigua de place_order (4 argumentos).
+-- La unica version valida es la de fase1-pedidos-seguros.sql (5 argumentos,
+-- precio de servidor). Asi, reejecutar este archivo no reabre el agujero.
+drop function if exists public.place_order(jsonb, jsonb, uuid, text);
+
 commit;

@@ -80,6 +80,10 @@ begin
     raise exception 'Demasiados articulos';
   end if;
 
+  if octet_length(p_items::text) > 8388608 then
+    raise exception 'El pedido es demasiado grande';
+  end if;
+
   if p_cart_id is not null and not exists (
     select 1 from public.carts where id = p_cart_id and user_id = v_uid
   ) then
@@ -137,6 +141,10 @@ begin
   end if;
 
   for v_item in select value from jsonb_array_elements(p_items) loop
+    if octet_length(v_item.value::text) > 4194304 then
+      raise exception 'Un articulo del pedido es demasiado grande';
+    end if;
+
     v_qty := greatest(1, least(99, coalesce((v_item.value->>'qty')::int, 1)));
     v_unit := public.item_unit_price(v_item.value);
 

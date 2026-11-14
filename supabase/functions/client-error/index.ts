@@ -3,33 +3,13 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import {
+  clientIpHash,
   corsHeaders,
   json,
   readJson,
   secretKey,
   supabaseUrl,
 } from "../_shared/clip.ts";
-
-const MAX_ERRORS_PER_HOUR = 20;
-const GLOBAL_MAX_PER_HOUR = 2000;
-
-async function hashIp(request: Request): Promise<string> {
-  const forwarded = request.headers.get("x-forwarded-for") || "";
-  const chain = forwarded
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean);
-  const ip =
-    (request.headers.get("x-real-ip") || "").trim() ||
-    chain[chain.length - 1] ||
-    "unknown";
-  const salt = Deno.env.get("LOOKUP_IP_SALT") || "likehoodie";
-  const bytes = new TextEncoder().encode(`${salt}|${ip}`);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)]
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
-}
 
 function clean(value: unknown, max: number): string {
   return String(value || "").replace(/\s+/g, " ").trim().slice(0, max);
@@ -63,33 +43,21 @@ Deno.serve(async (request) => {
   const supabase = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const ipHash = await hashIp(request);
-  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const ipHash = await clientIpHash(request);
 
-  const { count, error: countError } = await supabase
-    .from("client_error_attempts")
-    .select("*", { count: "exact", head: true })
-    .eq("ip_hash", ipHash)
-    .gte("created_at", since);
+  const { data: allowed, error: limitError } = await supabase.rpc(
+    "take_client_error",
+    { p_ip_hash: ipHash }
+  );
 
-  if (countError) {
-    console.error("client-error: no se pudo leer el rate limit.", countError.message);
+  if (limitError) {
+    console.error("client-error: no se pudo aplicar el rate limit.", limitError.message);
     return new Response(null, { status: 204, headers: corsHeaders(origin) });
   }
-  if ((count || 0) >= MAX_ERRORS_PER_HOUR) {
-    return new Response(null, { status: 204, headers: corsHeaders(origin) });
-  }
-
-  const { count: globalCount } = await supabase
-    .from("client_errors")
-    .select("*", { count: "exact", head: true })
-    .gte("created_at", since);
-
-  if ((globalCount || 0) >= GLOBAL_MAX_PER_HOUR) {
+  if (allowed !== true) {
     return new Response(null, { status: 204, headers: corsHeaders(origin) });
   }
 
-  await supabase.from("client_error_attempts").insert({ ip_hash: ipHash });
   await supabase.from("client_errors").insert({
     user_id: null,
     message,
@@ -98,11 +66,6 @@ Deno.serve(async (request) => {
     path: clean(body.path, 180),
     user_agent: clean(body.userAgent, 200),
   });
-
-  await supabase
-    .from("client_error_attempts")
-    .delete()
-    .lt("created_at", new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString());
 
   return new Response(null, { status: 204, headers: corsHeaders(origin) });
 });

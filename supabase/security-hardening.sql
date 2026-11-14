@@ -331,3 +331,8 @@ create policy "order_logos_delete_own"
       or public.is_admin()
     )
   );
+
+-- Seguridad: elimina la version antigua de place_order (4 argumentos).
+-- La unica version valida es la de fase1-pedidos-seguros.sql (5 argumentos,
+-- precio de servidor). Asi, reejecutar este archivo no reabre el agujero.
+drop function if exists public.place_order(jsonb, jsonb, uuid, text);

@@ -482,3 +482,8 @@ grant execute on function public.admin_stats(integer) to authenticated;
 -- select id, email, 'admin' from auth.users where email = 'tu-correo@dominio.com'
 -- on conflict (id) do update set role = 'admin';
 -- ---------------------------------------------------------------------------
+
+-- Seguridad: elimina la version antigua de place_order (4 argumentos).
+-- La unica version valida es la de fase1-pedidos-seguros.sql (5 argumentos,
+-- precio de servidor). Asi, reejecutar este archivo no reabre el agujero.
+drop function if exists public.place_order(jsonb, jsonb, uuid, text);

@@ -31,6 +31,25 @@ export function supabaseUrl(): string {
   return env("SUPABASE_URL");
 }
 
+export async function clientIpHash(request: Request): Promise<string> {
+  const forwarded = request.headers.get("x-forwarded-for") || "";
+  const chain = forwarded
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const ip =
+    (request.headers.get("cf-connecting-ip") || "").trim() ||
+    (request.headers.get("x-real-ip") || "").trim() ||
+    chain[chain.length - 1] ||
+    "unknown";
+  const salt = Deno.env.get("LOOKUP_IP_SALT") || "likehoodie";
+  const bytes = new TextEncoder().encode(`${salt}|${ip}`);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 export function publishableKey(): string {
   return parseKeys("SUPABASE_PUBLISHABLE_KEYS").default || env("SUPABASE_ANON_KEY");
 }

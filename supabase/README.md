@@ -112,7 +112,9 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
 - `place_order()` exige teléfono de 10–15 dígitos, dirección, ciudad, estado y CP de 5 dígitos; guarda `state` y `address_ref` para la guía de envío.
 - La tabla `coupons` no es legible desde el navegador: los códigos se validan solo con `check_coupon()`.
 - `get_order_status(numero, correo)` ya no es público: solo lo invoca la Edge Function `order-status`, que aplica rate limit por IP (12 consultas/10 min) y no expone nombre, dirección ni teléfono. El límite se aplica con `take_order_lookup()`, un contador atómico que falla cerrado; usa `cf-connecting-ip` (cabecera que el gateway sobrescribe) y añade un tope global de 300/min.
-- `client_errors` solo lo lee el admin. Los errores se envían por `log_client_error()` o por la Edge Function `client-error`, con límites por sesión/IP y retención de 90 días.
+- `client_errors` solo lo lee el admin. Los errores se envían por `log_client_error()` o por la Edge Function `client-error`, con límites por sesión/IP y retención de 90 días. El contador `take_client_error()` es atómico (20/h por IP y 2.000/h global) y purga los intentos de más de 2 días.
+- Los carritos y pedidos limitan `items` a 50 artículos y 8 MiB; `place_order()` rechaza además cualquier artículo de más de 4 MiB. Así un carrito anónimo no puede inflar filas de varios MB sin tope.
+- `clip-pay` aplica un límite por IP y por usuario antes de llamar a Clip (12 y 6 intentos/10 min) con `take_clip_pay()`.
 - Los pedidos solo los puede leer el administrador; el cliente puede ver los suyos.
 - Nadie puede cambiar su rol a administrador desde la web.
 - No se guardan datos de tarjetas.
@@ -141,12 +143,14 @@ En un proyecto nuevo ejecuta:
 9. `fase3-monitorizacion.sql`
 10. `fase4-seguridad.sql` (límites, rate limit y retención)
 11. `fase5-ratelimit.sql` (contador atómico `take_order_lookup`)
+12. `fase6-limites.sql` (topes de `items`, monitorización y `clip-pay`)
 
 `fase1-pedidos-seguros.sql` deja una sola versión de `place_order`: recalcula
 precios en servidor, valida cupón, correo, teléfono, dirección, estado y CP, y
-guarda `state` y `address_ref`. Los archivos `coupons.sql` y
-`setup-premios.sql` contienen una versión antigua de la función; si los vuelves
-a ejecutar, aplica de nuevo `fase1-pedidos-seguros.sql` después.
+guarda `state` y `address_ref`. Los scripts heredados (`schema.sql`,
+`security-hardening.sql` y `clip-payments.sql`) eliminan al final su versión
+antigua de 4 argumentos, y `coupons.sql` / `setup-premios.sql` ya no definen
+`place_order`; reejecutarlos no reabre la versión que confiaba en `unitPrice`.
 
 `clip-payments.sql` crea `store_settings` con `clip_enabled = 'false'`. Mientras esté en `false`, el checkout sigue siendo demostración.
 
@@ -159,6 +163,11 @@ npx supabase secrets set CLIP_API_KEY=... CLIP_API_SECRET=... CLIP_WEBHOOK_SECRE
 ```
 
 No subas estos valores al repositorio. La CLI lee `config.toml` y despliega ambas funciones sin verificación JWT automática; la función de checkout valida el token del usuario y el webhook valida su secreto.
+
+El webhook acepta el secreto en `x-clip-secret`, `x-webhook-secret` o
+`Authorization: Bearer ...`. Si Clip solo permite configurar una URL, usa
+`?secret=...` como respaldo y rota el secreto periódicamente: ese valor puede
+quedar en los registros del CDN.
 
 ### Desplegar
 

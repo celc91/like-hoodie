@@ -31,6 +31,14 @@ begin
 
   v_ip := coalesce(
     nullif(
+      current_setting('request.headers', true)::json ->> 'cf-connecting-ip',
+      ''
+    ),
+    nullif(
+      current_setting('request.headers', true)::json ->> 'x-real-ip',
+      ''
+    ),
+    nullif(
       split_part(
         coalesce(current_setting('request.headers', true)::json ->> 'x-forwarded-for', ''),
         ',', 1

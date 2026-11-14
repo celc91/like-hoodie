@@ -3,31 +3,13 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import {
+  clientIpHash,
   corsHeaders,
   json,
   readJson,
   secretKey,
   supabaseUrl,
 } from "../_shared/clip.ts";
-
-async function hashIp(request: Request): Promise<string> {
-  const forwarded = request.headers.get("x-forwarded-for") || "";
-  const chain = forwarded
-    .split(",")
-    .map((value) => value.trim())
-    .filter(Boolean);
-  const ip =
-    (request.headers.get("cf-connecting-ip") || "").trim() ||
-    (request.headers.get("x-real-ip") || "").trim() ||
-    chain[chain.length - 1] ||
-    "unknown";
-  const salt = Deno.env.get("LOOKUP_IP_SALT") || "likehoodie";
-  const bytes = new TextEncoder().encode(`${salt}|${ip}`);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)]
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
-}
 
 Deno.serve(async (request) => {
   const origin = request.headers.get("origin");
@@ -64,7 +46,7 @@ Deno.serve(async (request) => {
   const supabase = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const ipHash = await hashIp(request);
+  const ipHash = await clientIpHash(request);
 
   const { data: allowed, error: limitError } = await supabase.rpc(
     "take_order_lookup",

@@ -16,6 +16,40 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.8.2] — 2026-11-14
+
+### Corregido
+
+- **Scripts heredados:** `schema.sql`, `security-hardening.sql` y
+  `clip-payments.sql` eliminan al final su antigua versión de `place_order` de
+  4 argumentos; `coupons.sql` y `setup-premios.sql` ya no definen `place_order`.
+  Reejecutarlos no reabre la versión que confiaba en el `unitPrice` del
+  navegador. `fase3-seguimiento.sql` deja `get_order_status` solo para
+  `service_role`.
+- **Tamaño de carritos y pedidos:** tope de 50 artículos y 8 MiB por fila en
+  `carts` y `orders`; `place_order()` rechaza artículos de más de 4 MiB.
+- **Monitorización:** `take_client_error()` hace el conteo y la inserción de
+  forma atómica (20/h por IP y 2.000/h global), usa `cf-connecting-ip` y purga
+  los intentos de más de 2 días. La IP ya no se puede falsificar con
+  `x-real-ip`.
+- **Clip:** `clip-pay` aplica 12 intentos/10 min por IP y 6 por usuario antes de
+  llamar a la API. El webhook acepta el secreto en `x-clip-secret`,
+  `x-webhook-secret` o `Authorization: Bearer`; `?secret=` queda como respaldo.
+- `antispam-cupones.sql` prioriza `cf-connecting-ip` y `x-real-ip` sobre
+  `x-forwarded-for`.
+
+### Verificado
+
+- `fase1` y `fase6` aplicadas en producción.
+- Carrito/pedido con 51 artículos: rechazado por `orders_items_count_chk`.
+- `take_client_error`: 20 permitidos de 21; 20 errores guardados desde una sola
+  IP y el 21.º descartado.
+- `take_clip_pay`: 6 permitidos de 7 con el mismo usuario.
+- `order-status` tras el despliegue: **12 × 200 y la 13.ª 429**.
+- Webhook sin secreto o con secreto incorrecto: **401**.
+- Funciones desplegadas: `order-status`, `client-error`, `clip-pay` y
+  `clip-webhook`.
+
 ## [1.8.1] — 2026-11-14
 
 ### Corregido
