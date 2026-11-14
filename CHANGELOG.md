@@ -16,6 +16,31 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.10.0] — 2026-11-14
+
+### Añadido
+
+- **MFA TOTP obligatorio en el panel:** en el primer acceso se muestra un QR y
+  una clave manual para configurar Google Authenticator, 1Password, Authy u otra
+  app compatible. Sin MFA verificado no se abre el panel.
+- **Verificación en dos pasos** en cada inicio de sesión con un código de 6
+  dígitos.
+- **Aplicación en servidor:** `is_admin()` ahora exige `aal2` además del rol
+  admin. Un token de contraseña (`aal1`) no puede leer pedidos, carritos,
+  errores ni storage por API aunque conozca la contraseña.
+- **Cierre por inactividad:** la sesión del panel se cierra tras 30 minutos sin
+  actividad y vuelve al login.
+
+### Verificado
+
+- Con sesión `aal1`, `is_admin()` devuelve **false**.
+- El QR y la clave manual se generan correctamente.
+- Tras verificar el código, el panel se abre y `is_admin()` devuelve **true**.
+- El factor de prueba se eliminó al terminar; no queda MFA configurado.
+- `html-validate` sin errores, `node --check` correcto y smoke test con
+  **57 comprobaciones**.
+- CI y Pages en verde.
+
 ## [1.9.0] — 2026-11-14
 
 ### Añadido
