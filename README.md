@@ -265,6 +265,21 @@ node scripts/sync-ticketmaster.mjs
 
 El script consulta la **Discovery API** para México, filtra eventos musicales y reescribe `eventos.json`. La API key solo se usa en la computadora o en CI; nunca se incluye en el sitio publicado.
 
+### Actualización automática
+
+El workflow **Eventos** se ejecuta cada lunes y también a mano. Para activarlo:
+
+1. Crea la API key en [developer.ticketmaster.com](https://developer.ticketmaster.com/).
+2. Guárdala como secreto del repositorio:
+
+```powershell
+gh secret set TICKETMASTER_API_KEY --repo celc91/like-hoodie
+```
+
+3. Ejecuta **Actions → Eventos → Run workflow** para la primera sincronización.
+
+Si el secreto no existe, el workflow abre una incidencia con estas instrucciones en vez de dejar la cartelera desactualizada en silencio. La clave nunca se publica en el navegador.
+
 ## Correo
 
 `hola@likehoodie.com` recibe correos mediante **Cloudflare Email Routing** y los reenvía a la cuenta de Gmail del administrador. Cloudflare administra los registros MX y SPF del dominio.

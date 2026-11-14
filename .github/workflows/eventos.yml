@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   sync:
@@ -47,7 +48,29 @@ jobs:
           git commit -m "Datos: actualizar cartelera de eventos"
           git push
 
-      - name: Aviso si falta la clave
+      - name: Avisar si falta la clave
         if: steps.check.outputs.configured != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "::warning::Falta el secreto TICKETMASTER_API_KEY. La cartelera no se actualizó."
+          existing=$(gh issue list --state open --search 'Configurar TICKETMASTER_API_KEY in:title' --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "$existing" ] && [ "$existing" != "null" ]; then
+            echo "La incidencia ya existe: #$existing"
+            exit 0
+          fi
+          body=$(cat <<'EOF'
+La cartelera de eventos no puede actualizarse porque falta el secreto `TICKETMASTER_API_KEY`.
+
+Pasos:
+
+1. Crea una API key gratuita en https://developer.ticketmaster.com/
+2. Guarda la clave en el repositorio:
+
+   gh secret set TICKETMASTER_API_KEY --repo celc91/like-hoodie
+
+3. Ejecuta Actions → Eventos → Run workflow.
+
+La clave se usa solo en CI y nunca se publica en el sitio.
+EOF
+          )
+          gh issue create --title "Configurar TICKETMASTER_API_KEY" --body "$body"

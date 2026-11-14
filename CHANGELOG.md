@@ -16,6 +16,14 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.5.1] — 2026-11-14
+
+### Cambiado
+
+- El workflow **Eventos** abre una incidencia con instrucciones si falta
+  `TICKETMASTER_API_KEY`, en vez de terminar en silencio.
+- Documentado el alta de la clave y la primera sincronización manual.
+
 ## [1.5.0] — 2026-11-14
 
 ### Añadido
