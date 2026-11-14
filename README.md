@@ -28,6 +28,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Historial y atajos:** deshacer/rehacer, `Ctrl/Cmd+Z`, `Ctrl/Cmd+Shift+Z`, `Ctrl/Cmd+D`, flechas para mover y `Supr` para eliminar.
 - **Capas y bloqueo:** panel por cara con orden texto/logo, ocultar y bloquear. El candado impide mover, escalar, rotar y eliminar.
 - **Plantillas de diseño:** seis composiciones (Clásica, Panorama, Minimal, Neón, Dúo y Cintura) que aplican texto, tipografía y colocación a la cara activa.
+- **Alineación:** botones para pegar el elemento activo a la izquierda, centro o derecha y arriba, medio o abajo del área de impresión, con el estado actual en el panel.
 - **Barra flotante del elemento:** centrar en el área, copiar al otro lado (texto y logo), bloquear y eliminar.
 - **Productos:** sudadera de algodón en cinco materiales y tote bag de lona en tres, cada uno con su precio base, sus colores y sus técnicas.
 - **Colores:** negro, blanco, crema, lima, naranja, marino y rosa.
@@ -454,7 +455,7 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 - [x] Capas y bloqueo de elementos.
 - [x] Copiar el logo a la otra cara con un asset nuevo.
 - [x] Plantillas de diseño dentro del editor.
-- [ ] Alineación horizontal/vertical por separado.
+- [x] Alineación horizontal/vertical por separado.
 - [x] Canva evaluado y descartado por ahora (ver abajo).
 
 ### Decisión: Canva

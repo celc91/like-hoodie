@@ -41,7 +41,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css?v=20261114-modelos1">
+  <link rel="stylesheet" href="styles.css?v=20261114-alinea1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -653,6 +653,39 @@
               </div>
               <div class="template-grid" data-template-grid role="group" aria-label="Plantillas de diseño"></div>
               <p class="layers-note">Aplican texto, tipografía y colocación a la cara actual. Si ya tienes logo, algunas también lo colocan.</p>
+            </div>
+
+            <div class="align-control" data-align-control>
+              <div class="control-head">
+                <span class="control-label">Alineación <em data-align-target>logo</em></span>
+                <span class="control-value" data-align-readout>Centro · Medio</span>
+              </div>
+              <div class="align-row">
+                <div class="align-group" role="group" aria-label="Alineación horizontal">
+                  <button type="button" class="align-btn" data-align-axis="x" data-align="left" aria-label="Alinear a la izquierda" title="Izquierda">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4v16" stroke-linecap="round"/><rect x="8" y="7" width="10" height="10" rx="1.5"/></svg>
+                  </button>
+                  <button type="button" class="align-btn" data-align-axis="x" data-align="center" aria-label="Centrar horizontalmente" title="Centro">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v18" stroke-linecap="round"/><rect x="6" y="7" width="12" height="10" rx="1.5"/></svg>
+                  </button>
+                  <button type="button" class="align-btn" data-align-axis="x" data-align="right" aria-label="Alinear a la derecha" title="Derecha">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 4v16" stroke-linecap="round"/><rect x="6" y="7" width="10" height="10" rx="1.5"/></svg>
+                  </button>
+                </div>
+                <span class="align-divider" aria-hidden="true"></span>
+                <div class="align-group" role="group" aria-label="Alineación vertical">
+                  <button type="button" class="align-btn" data-align-axis="y" data-align="top" aria-label="Alinear arriba" title="Arriba">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4h16" stroke-linecap="round"/><rect x="7" y="8" width="10" height="10" rx="1.5"/></svg>
+                  </button>
+                  <button type="button" class="align-btn" data-align-axis="y" data-align="middle" aria-label="Centrar verticalmente" title="Medio">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 12h18" stroke-linecap="round"/><rect x="7" y="6" width="10" height="12" rx="1.5"/></svg>
+                  </button>
+                  <button type="button" class="align-btn" data-align-axis="y" data-align="bottom" aria-label="Alinear abajo" title="Abajo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20h16" stroke-linecap="round"/><rect x="7" y="6" width="10" height="10" rx="1.5"/></svg>
+                  </button>
+                </div>
+              </div>
+              <p class="align-note" data-align-note>Se aplica al elemento activo dentro del área de impresión.</p>
             </div>
 
             <div class="studio-summary">
@@ -1338,7 +1371,7 @@
   <script src="clip-config.js?v=20261112-sandbox2"></script>
 <script src="vendor/imagetracer-1.2.6.js?v=20261113-vec1"></script>
 <script src="vectorize.js?v=20261113-vec2"></script>
-<script src="app.js?v=20261114-modelos1"></script>
+<script src="app.js?v=20261114-alinea1"></script>
   <script src="eventos.js?v=20261110-sec1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>
   <script src="analytics.js?v=20261112-capi1"></script>

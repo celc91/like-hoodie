@@ -488,6 +488,11 @@
   const guideToggle = $("[data-guide-toggle]");
   const layersList = $("[data-layers-list]");
   const templateGrid = $("[data-template-grid]");
+  const alignControl = $("[data-align-control]");
+  const alignTarget = $("[data-align-target]");
+  const alignReadout = $("[data-align-readout]");
+  const alignNote = $("[data-align-note]");
+  const alignButtons = $$("[data-align-axis]");
   const priceEl = $("[data-price-display]");
   const priceNote = $("[data-price-note]");
   const couponInput = $("[data-coupon-input]");
@@ -1363,6 +1368,7 @@
     $$("[data-coord-row]").forEach((row) => {
       row.classList.toggle("is-active", row.dataset.coordRow === activeCoord);
     });
+    syncAlignmentUI();
   }
 
   function updateCoords() {
@@ -2292,6 +2298,7 @@
     syncVectorPanel();
     setPrintStatusUI(activeDesign());
     renderLayers();
+    syncAlignmentUI();
     commitHistory();
   }
 
@@ -3534,6 +3541,118 @@
 
   function elementLocked(design, type) {
     return Boolean(type === "text" ? design.textLocked : design.logoLocked);
+  }
+
+  const ALIGN_LABELS = {
+    left: "izquierda",
+    center: "centro",
+    right: "derecha",
+    top: "arriba",
+    middle: "medio",
+    bottom: "abajo",
+  };
+
+  function alignmentTargets(type) {
+    return {
+      left: clampPosition(20, type, "x"),
+      center: clampPosition(50, type, "x"),
+      right: clampPosition(80, type, "x"),
+      top: clampPosition(16, type, "y"),
+      middle: clampPosition(50, type, "y"),
+      bottom: clampPosition(84, type, "y"),
+    };
+  }
+
+  function syncAlignmentUI() {
+    if (!alignControl) return;
+    const design = activeDesign();
+    const type = activeCoord;
+    const hasElement =
+      type === "text" ? Boolean(design.text) : Boolean(design.logo);
+    const locked = elementLocked(design, type);
+    const currentX = type === "text" ? design.textX : design.logoX;
+    const currentY = type === "text" ? design.textY : design.logoY;
+    const targets = alignmentTargets(type);
+    const isNear = (value, target) =>
+      Math.abs((Number(value) || 0) - target) <= 1.5;
+
+    if (alignTarget) {
+      alignTarget.textContent = type === "text" ? "texto" : "logo";
+    }
+
+    const horizontal = isNear(currentX, targets.left)
+      ? "Izquierda"
+      : isNear(currentX, targets.center)
+        ? "Centro"
+        : isNear(currentX, targets.right)
+          ? "Derecha"
+          : "Libre";
+    const vertical = isNear(currentY, targets.top)
+      ? "Arriba"
+      : isNear(currentY, targets.middle)
+        ? "Medio"
+        : isNear(currentY, targets.bottom)
+          ? "Abajo"
+          : "Libre";
+
+    if (alignReadout) {
+      alignReadout.textContent = hasElement
+        ? `${horizontal} · ${vertical}`
+        : "Sin elemento";
+    }
+    if (alignNote) {
+      alignNote.textContent = !hasElement
+        ? `Añade ${type === "text" ? "un texto" : "un logo"} para alinearlo.`
+        : locked
+          ? "El elemento está bloqueado. Desbloquéalo desde Capas."
+          : "Se aplica al elemento activo dentro del área de impresión.";
+    }
+
+    alignButtons.forEach((button) => {
+      const isHorizontal = button.dataset.alignAxis === "x";
+      const target = targets[button.dataset.align];
+      const active = isHorizontal
+        ? isNear(currentX, target)
+        : isNear(currentY, target);
+      button.classList.toggle("is-active", hasElement && active);
+      button.setAttribute("aria-pressed", String(hasElement && active));
+      button.disabled = !hasElement || locked;
+    });
+  }
+
+  function applyAlignment(axis, value) {
+    const design = activeDesign();
+    const type = activeCoord;
+    const hasElement =
+      type === "text" ? Boolean(design.text) : Boolean(design.logo);
+    if (!hasElement) return;
+    if (elementLocked(design, type)) {
+      showToast("El elemento está bloqueado. Desbloquéalo desde Capas.");
+      return;
+    }
+
+    const coord = alignmentTargets(type)[value];
+    if (!Number.isFinite(coord)) return;
+
+    if (axis === "x") {
+      if (type === "text") design.textX = coord;
+      else design.logoX = coord;
+    } else if (type === "text") {
+      design.textY = coord;
+    } else {
+      design.logoY = coord;
+    }
+
+    updatePreview();
+    showToast(`Alineado a la ${ALIGN_LABELS[value] || "posición"}.`);
+  }
+
+  if (alignControl) {
+    alignControl.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-align-axis]");
+      if (!button) return;
+      applyAlignment(button.dataset.alignAxis, button.dataset.align);
+    });
   }
 
   function runItemAction(type, action) {

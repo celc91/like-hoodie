@@ -8,13 +8,25 @@ semántico.
 
 ### Por hacer
 
-- Alineación horizontal/vertical por separado.
+- (ninguno pendiente en el editor)
 
 ### Descartado por ahora
 
 - **Canva Connect:** requiere Canva Pro para PNG transparente, export máximo
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
+
+## [1.1.6] — 2026-11-14
+
+### Añadido
+
+- **Alineación del elemento activo:** botones para izquierda, centro y derecha,
+  y para arriba, medio y abajo dentro del área de impresión.
+- El panel muestra el elemento activo (texto o logo) y su posición actual
+  (`Izquierda · Medio`, `Libre`, etc.).
+- La alineación respeta el bloqueo: los botones se deshabilitan y se indica que
+  hay que desbloquear desde Capas.
+- Aplica los mismos límites de posición que el arrastre, también en el tote.
 
 ## [1.1.5] — 2026-11-14
 
