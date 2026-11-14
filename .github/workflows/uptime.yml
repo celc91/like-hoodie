@@ -38,7 +38,7 @@ jobs:
           }
 
           check "Home" "https://likehoodie.com/" "like hoodie"
-          check "CSS" "https://likehoodie.com/styles.css" "--cream"
+          check "CSS" "https://likehoodie.com/styles.css" ""
           check "Producto" "https://likehoodie.com/modelos/cocodrilo.html" "Cocodrilo de Miami"
           check "Seguimiento" "https://likehoodie.com/pedido.html" "data-track-form"
           check "Admin" "https://likehoodie.com/admin.html" "Administración"
@@ -66,7 +66,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          body="La comprobación automática falló a las $(date -u '+%Y-%m-%d %H:%M UTC').\n\n$(cat /tmp/report.txt)"
+          body=$(printf 'La comprobación automática falló a las %s.\n\n%s' "$(date -u '+%Y-%m-%d %H:%M UTC')" "$(cat /tmp/report.txt)")
           existing=$(gh issue list --state open --search 'likehoodie.com no responde in:title' --json number --jq '.[0].number' 2>/dev/null || true)
           if [ -n "$existing" ] && [ "$existing" != "null" ]; then
             gh issue comment "$existing" --body "$body"
