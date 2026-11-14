@@ -176,7 +176,7 @@
     setBusy(true);
     try {
       const response = await fetch(
-        `${config.url}/rest/v1/rpc/get_order_status`,
+        `${config.url}/functions/v1/order-status`,
         {
           method: "POST",
           headers: {
@@ -184,9 +184,14 @@
             Authorization: `Bearer ${config.publishableKey}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ p_number: number, p_email: email }),
+          body: JSON.stringify({ number, email }),
         }
       );
+      if (response.status === 429) {
+        result.hidden = true;
+        setError("Demasiadas consultas. Espera unos minutos e inténtalo de nuevo.");
+        return;
+      }
       if (!response.ok) throw new Error("No se pudo consultar el pedido.");
       const order = await response.json();
       if (!order || !order.found) {

@@ -53,7 +53,7 @@ for (const id of ["cocodrilo", "insignia", "panorama", "corazon"]) {
   check(`producto ${id}: compra`, page.includes(`comprar=${id}`));
 }
 check("seguimiento: formulario", trackPage.includes("data-track-form"));
-check("seguimiento: rpc", trackJs.includes("get_order_status"));
+check("seguimiento: endpoint", trackJs.includes("/functions/v1/order-status"));
 check("seguimiento: columnas", trackSql.includes("tracking_number") && trackSql.includes("tracking_url"));
 check("sitemap: productos", sitemap.includes("modelos/cocodrilo.html"));
 
@@ -61,6 +61,10 @@ check("whatsapp: número", read("whatsapp-config.js").includes("5215552142692"))
 check("whatsapp: botón", index.includes("whatsapp.js"));
 check("monitor: cliente", index.includes("monitor.js"));
 check("monitor: tabla", read("supabase/fase3-monitorizacion.sql").includes("log_client_error"));
+check("seguimiento: edge function", read("supabase/functions/order-status/index.ts").includes("MAX_LOOKUPS"));
+check("monitor: edge function", read("supabase/functions/client-error/index.ts").includes("MAX_ERRORS_PER_HOUR"));
+check("seguridad: retención", read("supabase/fase4-seguridad.sql").includes("cleanup_monitoring"));
+check("producto: monitor", read("modelos/cocodrilo.html").includes("monitor.js"));
 
 const failed = checks.filter((entry) => !entry.ok);
 for (const entry of checks) {

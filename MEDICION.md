@@ -238,7 +238,10 @@ ese momento. A partir de ahí, sus pedidos nuevos no se envían a Meta.
 Además de la analítica de negocio, el sitio registra fallos técnicos:
 
 - `client_errors`: errores de JavaScript del navegador, enviados por
-  `log_client_error()` con límite de 30/hora por sesión. Solo los lee el admin.
+  `log_client_error()` o por la Edge Function `client-error`, con límite por
+  sesión/IP y retención de 90 días. Solo los lee el admin.
+- `get_order_status`: ya no es un RPC público; la Edge Function `order-status`
+  aplica 12 consultas/10 min por IP y devuelve solo estado, artículos y guía.
 - `events`: fallos de `checkout_failed`, `print_failed` y
   `model_purchase_failed`, visibles en la pestaña **Salud** del panel.
 - Workflow **Disponibilidad**: cada 30 minutos comprueba home, CSS, producto,

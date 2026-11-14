@@ -16,6 +16,35 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.6.0] — 2026-11-14
+
+### Seguridad
+
+- **Seguimiento con rate limit:** el RPC `get_order_status` deja de ser
+  público. La Edge Function `order-status` aplica 12 consultas/10 min por IP y
+  usa `service_role`. Se elimina el `pg_sleep` que podía agotar conexiones.
+- **Errores de cliente protegidos:** nueva Edge Function `client-error` con
+  límite de 20 errores/hora por IP, tope global de 2.000/hora y sin datos
+  personales.
+- **Retención automática:** `pg_cron` limpia cada día errores técnicos (90
+  días), eventos (365 días) e intentos de consulta (2 días).
+- **Privacidad:** el aviso incluye errores técnicos, WhatsApp y plazos de
+  conservación.
+
+### Corregido
+
+- `monitor.js` ya funciona en tienda, producto y seguimiento sin cargar el SDK
+  de Supabase.
+
+### Verificado
+
+- Rate limit del seguimiento: 12 respuestas 200 y la 13.ª devuelve 429.
+- Error lanzado en una página de producto guardado en `client_errors` con
+  `user_id` nulo.
+- RLS: admin ve el error, un cliente ve 0.
+- Job `likehoodie-cleanup` activo a las 04:15 UTC.
+- Smoke test: 42 comprobaciones.
+
 ## [1.5.2] — 2026-11-14
 
 ### Corregido

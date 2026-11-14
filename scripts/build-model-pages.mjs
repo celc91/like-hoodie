@@ -17,6 +17,7 @@ const models = JSON.parse(readFileSync(join(root, "modelos", "modelos.json"), "u
 const SITE = "https://likehoodie.com";
 const CSS_VERSION = "20261114-fase4c";
 const WHATSAPP_VERSION = "20261114-fase4d";
+const MONITOR_VERSION = "20261114-fase5";
 
 const escapeHTML = (value) =>
   String(value)
@@ -120,6 +121,8 @@ function page(model) {
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css?v=${CSS_VERSION}">
   <link rel="stylesheet" href="producto.css?v=${CSS_VERSION}">
+  <script src="../supabase-config.js?v=20261110-pub1"></script>
+  <script src="../monitor.js?v=${MONITOR_VERSION}"></script>
   <script type="application/ld+json">${JSON.stringify(productSchema)}</script>
   <script type="application/ld+json">${JSON.stringify(breadcrumbSchema)}</script>
   ${faqSchema ? `<script type="application/ld+json">${JSON.stringify(faqSchema)}</script>` : ""}

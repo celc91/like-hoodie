@@ -1,10 +1,11 @@
 (function () {
   "use strict";
 
-  const api = window.StoreSupabase;
-  if (!api || typeof api.logClientError !== "function") return;
+  const config = window.LIKEHOODIE_SUPABASE;
+  if (!config || !config.url || !config.publishableKey) return;
 
   const MAX_REPORTS = 5;
+  const endpoint = `${config.url.replace(/\/+$/, "")}/functions/v1/client-error`;
   const seen = new Set();
   let sent = 0;
 
@@ -17,13 +18,26 @@
     if (seen.has(key)) return;
     seen.add(key);
     sent += 1;
-    api.logClientError({
-      message: text,
-      source,
-      stack,
-      path: window.location.pathname,
-      userAgent: navigator.userAgent,
-    });
+    try {
+      fetch(endpoint, {
+        method: "POST",
+        headers: {
+          apikey: config.publishableKey,
+          Authorization: `Bearer ${config.publishableKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: text,
+          source,
+          stack,
+          path: window.location.pathname,
+          userAgent: navigator.userAgent,
+        }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch (error) {
+      /* la monitorización nunca debe romper la página */
+    }
   }
 
   window.addEventListener("error", (event) => {

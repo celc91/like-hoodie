@@ -44,7 +44,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Páginas de producto:** cada modelo tiene su URL (`/modelos/<id>.html`), con `Product` + `Offer`, breadcrumbs, FAQ y compra por talla.
 - **Seguimiento:** `/pedido.html` consulta estado y guía con número de pedido + correo.
 - **WhatsApp:** botón flotante y enlaces con mensaje contextual en tienda, producto y seguimiento.
-- **Monitorización:** errores JS y fallos de compra/print visibles en **Salud** del admin; comprobación de disponibilidad cada 30 min con aviso por issue.
+- **Monitorización:** errores JS y fallos de compra/print visibles en **Salud** del admin; comprobación de disponibilidad cada 30 min con aviso por issue. El seguimiento y los errores pasan por Edge Functions con rate limit por IP y retención de 90 días.
 - **Cálculo de precio:** el precio del modelo se actualiza al elegir talla; la compra se completa en la tienda.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
 - **Persistencia:** el carrito se guarda en `localStorage` y se sincroniza con Supabase.
