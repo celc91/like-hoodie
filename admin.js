@@ -823,10 +823,18 @@
     const ty = Number(design.textY);
     const lx = Number(design.logoX);
     const ly = Number(design.logoY);
+    const textHidden = Boolean(design.textHidden);
+    const logoHidden = Boolean(design.logoHidden);
+    const layerOrder =
+      Array.isArray(design.layerOrder) && design.layerOrder.length
+        ? design.layerOrder
+        : ["text", "logo"];
+    const textOnTop = layerOrder.indexOf("text") > layerOrder.indexOf("logo");
 
     const textStyle = [
       `left:${Number.isFinite(tx) ? tx : 50}%`,
       `top:${Number.isFinite(ty) ? ty : 49}%`,
+      `z-index:${textOnTop ? 4 : 2}`,
       `--tx-scale:${Number(design.textScale) || 1}`,
       `--tx-rot:${Number(design.textRotate) || 0}deg`,
       `color:${design.textColor || "#fffdf8"}`,
@@ -836,6 +844,7 @@
     const logoStyle = [
       `left:${Number.isFinite(lx) ? lx : 50}%`,
       `top:${Number.isFinite(ly) ? ly : 32}%`,
+      `z-index:${textOnTop ? 2 : 4}`,
       `--lg-scale:${Number(design.logoScale) || 1}`,
       `--lg-rot:${Number(design.logoRotate) || 0}deg`,
     ].join(";");
@@ -862,14 +871,14 @@
       <img class="design-photo" src="${image}" alt="">
       <span class="design-print">
         ${
-          text
+          text && !textHidden
             ? `<span class="design-text" style="${textStyle}">${escapeHTML(
                 text
               )}</span>`
             : ""
         }
         ${
-          hasLogo
+          hasLogo && !logoHidden
             ? `<img class="design-logo" alt="" style="${logoStyle}" ${
                 logoSrc ? `src="${escapeHTML(logoSrc)}"` : ""
               }${logoAttr}>`

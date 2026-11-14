@@ -26,7 +26,8 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Diseñador en vivo:** sudadera o tote bag, color, talla o medida, texto, tipografía, color de texto y subida de logo (PNG, JPG o WebP).
 - **Editor tipo Canva:** barra superior fija (producto, frente/espalda, historial), rail de herramientas (Producto, Texto, Logo), lienzo central y panel de propiedades contextual.
 - **Historial y atajos:** deshacer/rehacer, `Ctrl/Cmd+Z`, `Ctrl/Cmd+Shift+Z`, `Ctrl/Cmd+D`, flechas para mover y `Supr` para eliminar.
-- **Barra flotante del elemento:** centrar en el área, copiar el texto a la otra cara y eliminar.
+- **Capas y bloqueo:** panel por cara con orden texto/logo, ocultar y bloquear. El candado impide mover, escalar, rotar y eliminar.
+- **Barra flotante del elemento:** centrar en el área, copiar el texto a la otra cara, bloquear y eliminar.
 - **Productos:** sudadera de algodón en cinco materiales y tote bag de lona en tres, cada uno con su precio base, sus colores y sus técnicas.
 - **Colores:** negro, blanco, crema, lima, naranja, marino y rosa.
 - **Materiales:** algodón 400 g, algodón 320 g, French terry, mezcla 50/50 y poliéster técnico, con ajuste de precio y textura visual en el modelo.
@@ -57,7 +58,8 @@ El estudio (`#personalizar`) se organiza como un editor, no como un formulario:
 - **Rail izquierdo:** Producto, Texto y Logo. El botón activo cambia el panel derecho.
 - **Lienzo central:** prenda, cuadrícula de impresión, zoom y miniaturas de frente/espalda.
 - **Panel derecho:** propiedades contextuales del elemento o del producto; al final, resumen, precio y **Añadir a la cesta**.
-- **Barra flotante sobre el elemento:** centrar, copiar el texto a la otra cara y eliminar.
+- **Capas:** orden de texto/logo, visibilidad y bloqueo. Un elemento bloqueado no se puede arrastrar, escalar, rotar ni eliminar; se desbloquea desde Capas.
+- **Barra flotante sobre el elemento:** centrar, copiar el texto a la otra cara, bloquear y eliminar.
 - **Guía de colocación plegable** con coordenadas y estado dentro/fuera del área.
 
 Atajos:
@@ -446,7 +448,7 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 - [x] Colección de modelos y color blanco.
 - [x] Archivo de impresión DTG automático en dos etapas.
 - [x] Barra superior fija al hacer scroll.
-- [ ] Capas y bloqueo de elementos.
+- [x] Capas y bloqueo de elementos.
 - [ ] Copiar el logo a la otra cara con un asset nuevo.
 - [ ] Plantillas de diseño dentro del editor.
 - [ ] Integración con Canva Connect para importar diseños.

@@ -182,6 +182,11 @@
         printPath: "",
         printWidthCm: null,
         printError: "",
+        textLocked: false,
+        logoLocked: false,
+        textHidden: false,
+        logoHidden: false,
+        layerOrder: ["text", "logo"],
         ...DEFAULT_POSITIONS.front,
       },
       back: {
@@ -204,6 +209,11 @@
         printPath: "",
         printWidthCm: null,
         printError: "",
+        textLocked: false,
+        logoLocked: false,
+        textHidden: false,
+        logoHidden: false,
+        layerOrder: ["text", "logo"],
         ...DEFAULT_POSITIONS.back,
       },
     },
@@ -476,6 +486,7 @@
   const undoButton = $("[data-undo]");
   const redoButton = $("[data-redo]");
   const guideToggle = $("[data-guide-toggle]");
+  const layersList = $("[data-layers-list]");
   const priceEl = $("[data-price-display]");
   const priceNote = $("[data-price-note]");
   const couponInput = $("[data-coupon-input]");
@@ -2199,9 +2210,17 @@
     if (previewMaterial) previewMaterial.textContent = state.material.name;
     if (previewTechnique) previewTechnique.textContent = state.technique.name;
 
+    const layerOrder =
+      Array.isArray(design.layerOrder) && design.layerOrder.length
+        ? design.layerOrder
+        : ["text", "logo"];
+    const textOnTop = layerOrder.indexOf("text") > layerOrder.indexOf("logo");
+
     if (printText) {
       printText.textContent = design.text;
-      printText.hidden = design.text.length === 0;
+      printText.hidden = design.text.length === 0 || Boolean(design.textHidden);
+      printText.classList.toggle("is-locked", Boolean(design.textLocked));
+      printText.style.zIndex = textOnTop ? "5" : "2";
       printText.style.color = design.textColor;
       printText.style.setProperty("--x", `${design.textX}%`);
       printText.style.setProperty("--y", `${design.textY}%`);
@@ -2218,6 +2237,7 @@
           ? `Texto "${design.text}". Arrastra para moverlo.`
           : "Texto del diseño. Arrastra para moverlo."
       );
+      if (textInput) textInput.disabled = Boolean(design.textLocked);
     }
 
     if (printLogo) {
@@ -2226,7 +2246,7 @@
           printLogoImg.src = design.logo;
           printLogoImg.alt = `Logo de la vista ${state.view === "front" ? "frontal" : "trasera"}`;
         }
-        printLogo.hidden = false;
+        printLogo.hidden = Boolean(design.logoHidden);
       } else {
         if (printLogoImg) {
           printLogoImg.removeAttribute("src");
@@ -2234,6 +2254,8 @@
         }
         printLogo.hidden = true;
       }
+      printLogo.classList.toggle("is-locked", Boolean(design.logoLocked));
+      printLogo.style.zIndex = textOnTop ? "2" : "5";
       printLogo.style.setProperty("--x", `${design.logoX}%`);
       printLogo.style.setProperty("--y", `${design.logoY}%`);
       printLogo.style.setProperty("--item-scale", design.logoScale || 1);
@@ -2268,6 +2290,7 @@
 
     syncVectorPanel();
     setPrintStatusUI(activeDesign());
+    renderLayers();
     commitHistory();
   }
 
@@ -2493,6 +2516,8 @@
     }
 
     function begin(event, which) {
+      const current = design();
+      if (type === "text" ? current.textLocked : current.logoLocked) return;
       event.preventDefault();
       event.stopPropagation();
       mode = which;
@@ -2575,6 +2600,9 @@
             </button>`
           : ""
       }
+      <button type="button" data-item-action="lock" aria-label="Bloquear elemento" title="Bloquear">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 7-2.5" stroke-linecap="round"/></svg>
+      </button>
       <button type="button" data-item-action="delete" aria-label="Eliminar elemento" title="Eliminar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
@@ -2631,6 +2659,8 @@
     element.addEventListener("pointerdown", (event) => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
       if (element.hidden) return;
+      const current = state.designs[state.view];
+      if (type === "text" ? current.textLocked : current.logoLocked) return;
       event.preventDefault();
       dragSide = state.view;
       dragging = true;
@@ -2667,6 +2697,8 @@
     element.addEventListener("keydown", (event) => {
       const allowed = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"];
       if (!allowed.includes(event.key)) return;
+      const current = activeDesign();
+      if (type === "text" ? current.textLocked : current.logoLocked) return;
       event.preventDefault();
       const design = activeDesign();
       const step = event.shiftKey ? 5 : 1;
@@ -2770,7 +2802,15 @@
     textInput.addEventListener("input", () => {
       setActiveCoord("text");
       const design = activeDesign();
+      if (design.textLocked) {
+        textInput.value = design.text;
+        showToast("El texto está bloqueado. Desbloquéalo desde Capas.");
+        return;
+      }
       design.text = textInput.value.toUpperCase();
+      if (design.text) {
+        design.textHidden = false;
+      }
       if (charCount) charCount.textContent = String(design.text.length);
       updatePreview();
     });
@@ -3293,6 +3333,11 @@
           design.logoY,
           design.logoRotate || 0,
           design.logoAssetId,
+          design.textLocked ? 1 : 0,
+          design.logoLocked ? 1 : 0,
+          design.textHidden ? 1 : 0,
+          design.logoHidden ? 1 : 0,
+          (design.layerOrder || []).join(","),
         ];
       })
     );
@@ -3408,13 +3453,19 @@
   }
 
   function deleteElement(type) {
+    const design = activeDesign();
+    if (elementLocked(design, type)) {
+      showToast("Elemento bloqueado. Desbloquéalo desde Capas.");
+      return;
+    }
     if (type === "logo") {
       removeLogoButton?.click();
       return;
     }
-    const design = activeDesign();
     if (!design.text) return;
     design.text = "";
+    design.textLocked = false;
+    design.textHidden = false;
     if (textInput) textInput.value = "";
     if (charCount) charCount.textContent = "0";
     updatePreview();
@@ -3432,19 +3483,37 @@
   function nudgeActive(dx, dy) {
     const design = activeDesign();
     if (activeCoord === "text") {
-      if (!design.text) return;
+      if (!design.text || elementLocked(design, "text")) return;
       design.textX = clampPosition((design.textX || 50) + dx, "text", "x");
       design.textY = clampPosition((design.textY || 49) + dy, "text", "y");
     } else {
-      if (!design.logo) return;
+      if (!design.logo || elementLocked(design, "logo")) return;
       design.logoX = clampPosition((design.logoX || 50) + dx, "logo", "x");
       design.logoY = clampPosition((design.logoY || 32) + dy, "logo", "y");
     }
     updatePreview();
   }
 
+  function elementLocked(design, type) {
+    return Boolean(type === "text" ? design.textLocked : design.logoLocked);
+  }
+
   function runItemAction(type, action) {
     const design = activeDesign();
+
+    if (action === "lock") {
+      if (type === "text") design.textLocked = true;
+      else design.logoLocked = true;
+      updatePreview();
+      showToast("Elemento bloqueado. Desbloquéalo desde Capas.");
+      return;
+    }
+
+    if (elementLocked(design, type)) {
+      showToast("El elemento está bloqueado. Desbloquéalo desde Capas.");
+      return;
+    }
+
     if (action === "center") {
       const defaults = DEFAULT_POSITIONS[state.view] || DEFAULT_POSITIONS.front;
       if (type === "text") {
@@ -3465,6 +3534,123 @@
     if (action === "delete") {
       deleteElement(type);
     }
+  }
+
+  let layersKey = "";
+
+  function renderLayers() {
+    if (!layersList) return;
+    const design = activeDesign();
+    const order =
+      Array.isArray(design.layerOrder) && design.layerOrder.length
+        ? design.layerOrder
+        : ["text", "logo"];
+
+    const entries = [];
+    if (design.text) {
+      entries.push({
+        id: "text",
+        label: "Texto",
+        icon: "T",
+        locked: Boolean(design.textLocked),
+        hidden: Boolean(design.textHidden),
+      });
+    }
+    if (design.logo) {
+      entries.push({
+        id: "logo",
+        label: design.logoName || "Logo",
+        icon: "IMG",
+        locked: Boolean(design.logoLocked),
+        hidden: Boolean(design.logoHidden),
+      });
+    }
+
+    const key = JSON.stringify([
+      state.view,
+      entries.map((entry) => [entry.id, entry.label, entry.locked, entry.hidden]),
+      order,
+    ]);
+    if (key === layersKey) return;
+    layersKey = key;
+
+    if (!entries.length) {
+      layersList.innerHTML =
+        '<p class="layers-empty">Añade texto o un logo para ver sus capas.</p>';
+      return;
+    }
+
+    entries.sort((a, b) => order.indexOf(b.id) - order.indexOf(a.id));
+    layersList.innerHTML = entries
+      .map((entry, index) => {
+        const isTop = index === 0;
+        const isBottom = index === entries.length - 1;
+        const eye = entry.hidden
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 3l18 18M10.6 10.7a2 2 0 0 0 2.8 2.8" stroke-linecap="round"/><path d="M6.6 6.7C4.6 8 3.2 9.8 2.5 12c1.6 4 5.2 7 9.5 7 1.7 0 3.3-.5 4.7-1.3M17.4 17.3c2-1.3 3.4-3.1 4.1-5.3-1.6-4-5.2-7-9.5-7-.9 0-1.7.1-2.5.4" stroke-linecap="round"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M2.5 12C4.1 8 7.7 5 12 5s7.9 3 9.5 7c-1.6 4-5.2 7-9.5 7s-7.9-3-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+        const lock = entry.locked
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'
+          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 7-2.5"/></svg>';
+
+        return `<div class="layer-row${entry.hidden ? " is-hidden" : ""}${entry.locked ? " is-locked" : ""}" data-layer-row="${entry.id}">
+          <button type="button" class="layer-select" data-layer-select="${entry.id}" aria-label="Editar ${escapeHTML(entry.label)}">
+            <span class="layer-icon" aria-hidden="true">${entry.icon}</span>
+            <span class="layer-name">${escapeHTML(entry.label)}</span>
+          </button>
+          <span class="layer-actions">
+            <button type="button" class="layer-btn" data-layer-move="up" aria-label="Subir capa" ${isTop ? "disabled" : ""}>↑</button>
+            <button type="button" class="layer-btn" data-layer-move="down" aria-label="Bajar capa" ${isBottom ? "disabled" : ""}>↓</button>
+            <button type="button" class="layer-btn${entry.hidden ? " is-on" : ""}" data-layer-toggle="hidden" aria-label="${entry.hidden ? "Mostrar" : "Ocultar"} capa">${eye}</button>
+            <button type="button" class="layer-btn${entry.locked ? " is-on" : ""}" data-layer-toggle="locked" aria-label="${entry.locked ? "Desbloquear" : "Bloquear"} capa">${lock}</button>
+          </span>
+        </div>`;
+      })
+      .join("");
+  }
+
+  if (layersList) {
+    layersList.addEventListener("click", (event) => {
+      const row = event.target.closest("[data-layer-row]");
+      if (!row) return;
+      const design = activeDesign();
+      const type = row.dataset.layerRow;
+
+      const select = event.target.closest("[data-layer-select]");
+      if (select) {
+        setActiveCoord(type);
+        if (elementLocked(design, type)) {
+          showToast("Capa bloqueada; desbloquéala para editarla.");
+        } else {
+          setTool(type === "text" ? "texto" : "logo");
+        }
+        return;
+      }
+
+      const move = event.target.closest("[data-layer-move]");
+      if (move) {
+        const order = [
+          ...(Array.isArray(design.layerOrder) && design.layerOrder.length
+            ? design.layerOrder
+            : ["text", "logo"]),
+        ];
+        const index = order.indexOf(type);
+        const swap = move.dataset.layerMove === "up" ? index + 1 : index - 1;
+        if (swap >= 0 && swap < order.length) {
+          [order[index], order[swap]] = [order[swap], order[index]];
+          design.layerOrder = order;
+          updatePreview();
+        }
+        return;
+      }
+
+      const toggle = event.target.closest("[data-layer-toggle]");
+      if (toggle) {
+        const kind = toggle.dataset.layerToggle;
+        const key = kind === "locked" ? `${type}Locked` : `${type}Hidden`;
+        design[key] = !design[key];
+        updatePreview();
+      }
+    });
   }
 
   if (undoButton) undoButton.addEventListener("click", undo);
@@ -3563,6 +3749,10 @@
     }
 
     const design = state.designs[targetSide];
+    if (design.logo && design.logoLocked) {
+      showToast("El logo está bloqueado. Desbloquéalo desde Capas.");
+      return false;
+    }
     setActiveCoord("logo");
     design.logo = source;
     design.logoName = file.name;
@@ -3578,6 +3768,8 @@
     design.printDpi = null;
     design.printWidthCm = null;
     design.printError = "";
+    design.logoLocked = false;
+    design.logoHidden = false;
     vectorKey = "";
 
     if (state.view === targetSide) {
@@ -3699,6 +3891,8 @@
       design.printDpi = null;
       design.printWidthCm = null;
       design.printError = "";
+      design.logoLocked = false;
+      design.logoHidden = false;
       vectorKey = "";
       if (logoInput) logoInput.value = "";
       if (uploadFile) uploadFile.hidden = true;
@@ -3910,6 +4104,11 @@
           printDpi: front.printDpi || null,
           printPath: front.printPath || "",
           printWidthCm: front.printWidthCm || null,
+          textLocked: Boolean(front.textLocked),
+          logoLocked: Boolean(front.logoLocked),
+          textHidden: Boolean(front.textHidden),
+          logoHidden: Boolean(front.logoHidden),
+          layerOrder: Array.isArray(front.layerOrder) ? front.layerOrder : ["text", "logo"],
           logoScale: front.logoScale,
           logoRotate: front.logoRotate || 0,
           textX: front.textX,
@@ -3932,6 +4131,11 @@
           printDpi: back.printDpi || null,
           printPath: back.printPath || "",
           printWidthCm: back.printWidthCm || null,
+          textLocked: Boolean(back.textLocked),
+          logoLocked: Boolean(back.logoLocked),
+          textHidden: Boolean(back.textHidden),
+          logoHidden: Boolean(back.logoHidden),
+          layerOrder: Array.isArray(back.layerOrder) ? back.layerOrder : ["text", "logo"],
           logoScale: back.logoScale,
           logoRotate: back.logoRotate || 0,
           textX: back.textX,
@@ -3953,6 +4157,8 @@
           printPath: "",
           printDpi: null,
           printWidthCm: null,
+          textLocked: false,
+          logoLocked: false,
         },
         back: {
           ...designSnapshot.back,
@@ -3963,6 +4169,8 @@
           printPath: "",
           printDpi: null,
           printWidthCm: null,
+          textLocked: false,
+          logoLocked: false,
         },
       };
       const key = JSON.stringify(keySnapshot);

@@ -8,11 +8,26 @@ semántico.
 
 ### Por hacer
 
-- Capas y bloqueo de elementos.
 - Alineación horizontal/vertical por separado.
 - Copiar el logo a la otra cara creando un asset nuevo.
 - Plantillas de diseño dentro del editor.
 - Integración con Canva Connect (importar diseño y exportar PNG).
+
+## [1.1.2] — 2026-11-14
+
+### Añadido
+
+- **Capas por cara:** panel con texto y logo, orden de apilado, visibilidad y
+  bloqueo.
+- **Bloqueo:** impide arrastrar, escalar, rotar, mover con flechas y eliminar.
+  Se desbloquea desde Capas; el texto bloqueado también deshabilita su campo.
+- **Acción de bloqueo** en la barra flotante del elemento.
+- El pedido y el admin guardan y respetan el orden de capas y la visibilidad.
+
+### Cambiado
+
+- El candado no cuenta para separar artículos del carrito: dos diseños
+  idénticos se fusionan aunque uno esté bloqueado.
 
 ## [1.1.1] — 2026-11-13
 

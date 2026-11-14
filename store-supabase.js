@@ -60,6 +60,16 @@
       printDpi: Number(design.printDpi) || null,
       printPath: String(design.printPath || "").slice(0, 300),
       printWidthCm: Number(design.printWidthCm) || null,
+      textLocked: Boolean(design.textLocked),
+      logoLocked: Boolean(design.logoLocked),
+      textHidden: Boolean(design.textHidden),
+      logoHidden: Boolean(design.logoHidden),
+      layerOrder:
+        Array.isArray(design.layerOrder) &&
+        design.layerOrder.length &&
+        design.layerOrder.every((layer) => layer === "text" || layer === "logo")
+          ? design.layerOrder.slice(0, 2)
+          : ["text", "logo"],
       textX: Number(design.textX) || 50,
       textY: Number(design.textY) || 49,
       logoX: Number(design.logoX) || 50,

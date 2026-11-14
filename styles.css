@@ -7773,3 +7773,139 @@ p {
   }
 }
 
+/* --------------------------------------------------------------------------
+   Capas y bloqueo
+   -------------------------------------------------------------------------- */
+
+.studio.editor .studio-controls[data-tool="capas"] .personalize {
+  display: none;
+}
+
+.layers-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.layers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.layers-empty {
+  margin: 0;
+  padding: 16px 12px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--muted);
+  text-align: center;
+}
+
+.layer-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 6px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  transition: border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.layer-row.is-hidden {
+  opacity: 0.55;
+}
+
+.layer-row.is-locked {
+  border-color: rgba(22, 22, 24, 0.24);
+}
+
+.layer-select {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+}
+
+.layer-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--cream);
+  font-size: 9px;
+  font-weight: 800;
+  flex: none;
+}
+
+.layer-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.layer-actions {
+  display: flex;
+  gap: 1px;
+  flex: none;
+}
+
+.layer-btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.layer-btn:hover:not(:disabled) {
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.layer-btn.is-on {
+  background: rgba(216, 244, 92, 0.35);
+  color: var(--ink);
+}
+
+.layer-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.layer-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.layers-note {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.editor-item.is-locked {
+  cursor: default;
+}
+
+.editor-item.is-locked:hover {
+  outline-color: transparent;
+}
+
+.editor-item.is-locked .edit-handle,
+.editor-item.is-locked .item-toolbar {
+  display: none;
+}
+
