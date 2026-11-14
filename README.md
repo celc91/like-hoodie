@@ -418,8 +418,11 @@ La configuración de ambos buckets y sus políticas RLS está en `supabase/stora
 - `supabase/functions/` contiene las Edge Functions de Clip y `process-logo`.
 - `vendor/supabase-js.min.js` fija Supabase JS 2.119.0 en local para evitar dependencias flotantes de CDN.
 - `vendor/imagetracer-1.2.6.js` fija el motor de vectorización en el navegador.
+- **Cloudflare** aplica CSP, HSTS y cabeceras de seguridad, bloquea los archivos internos (`/supabase/`, `/scripts/`, `*.sql`, `*.ts`, `*.md`) y redirige `www` al dominio principal. DMARC está en `quarantine`, con CAA y DNSSEC activos.
+- El panel de administración exige **MFA TOTP**, guarda la sesión en `sessionStorage` y la cierra a los 30 minutos de inactividad.
+- `/.well-known/security.txt` indica cómo reportar una vulnerabilidad.
 
-Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos.sql`, `security-hardening.sql`, `logo-assets.sql`, `clip-payments.sql` y `email-notifications.sql`. Después despliega `process-logo` (ver “Archivo de impresión DTG automático”).
+Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supabase/README.md) (desde `schema.sql` hasta `fase8-admin-mfa.sql`) y despliega `process-logo`.
 
 ## Estructura
 
@@ -430,12 +433,13 @@ Después de un despliegue limpio, ejecuta en orden: `schema.sql`, `storage-logos
 ├── app.js            # Configurador, editor, modelos, carrito, checkout y modales
 ├── vectorize.js      # Vectorizador de logos en el navegador
 ├── eventos.js        # Calendario de conciertos
-├── eventos.json      # Cartelera de Ticketmaster México
+├── eventos.json      # Cartelera generada desde eventos.csv
 ├── store-supabase.js # Sincronización de carritos, pedidos y eventos
 ├── supabase-config.js# URL y publishable key de Supabase
 ├── admin.html        # Panel de administración
 ├── admin.js          # Lógica del panel
 ├── admin.css         # Diseño del panel
+├── .well-known/      # security.txt
 ├── supabase/         # Esquema SQL, políticas y Edge Functions (Clip y process-logo)
 ├── scripts/          # Sincronización de la cartelera de eventos
 ├── legal.js          # Aviso de cookies y almacenamiento local

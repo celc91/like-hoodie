@@ -16,6 +16,38 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.10.1] — 2026-11-14
+
+### Seguridad
+
+- **CSP por origen** en Cloudflare: limita scripts, estilos, imágenes, fuentes,
+  conexiones y frames a los proveedores reales. Mantiene `unsafe-inline` porque
+  el sitio usa scripts y estilos inline; una CSP sin inline requiere refactor.
+- **WAF:** bloquea `/supabase/`, `/scripts/`, `/.opencode/`, `.md`, `.sql`,
+  `.ts`, `.mjs`, `.gitignore`, `.htmlvalidate.json` y `.nojekyll`.
+- **Admin:** la sesión pasa a `sessionStorage` (no sobrevive al cierre de la
+  pestaña), `X-Robots-Tag: noindex, nofollow, noarchive` y
+  `Cache-Control: no-store`.
+- **Correo/DNS:** DMARC pasa a `p=quarantine` con reportes a
+  `hola@likehoodie.com`; se añaden CAA para Let's Encrypt y Google Trust
+  Services; DNSSEC queda activado en Cloudflare (DS en propagación por
+  Cloudflare Registrar).
+- Se desactiva **Email Address Obfuscation** de Cloudflare; ya no se inyecta
+  `email-decode.min.js`.
+- Se añade `/.well-known/security.txt` y `security.txt` con el canal de
+  reporte.
+- El checkout se etiqueta como **demostración** también en la cesta y en el
+  pie, no solo en el modal.
+
+### Verificado
+
+- CSP aplicada en apex y admin; home, producto, seguimiento y admin cargan sin
+  errores de consola; GA, Meta, Cloudflare y fuentes siguen funcionando.
+- El formulario de seguimiento sigue respondiendo a través de la Edge Function.
+- Archivos internos: **403**. Home, CSS, producto, sitemap y robots: **200**.
+- DMARC y CAA visibles por DNS.
+- `node --check`, `html-validate` y smoke test con **57 comprobaciones**.
+
 ## [1.10.0] — 2026-11-14
 
 ### Añadido

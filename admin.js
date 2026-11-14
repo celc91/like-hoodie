@@ -379,10 +379,23 @@
       return;
     }
 
+    let adminStorage = null;
+    try {
+      adminStorage = window.sessionStorage;
+    } catch (error) {
+      adminStorage = null;
+    }
+    try {
+      window.localStorage.removeItem("likehoodie-admin-auth");
+    } catch (error) {
+      /* Sin localStorage, no hay nada que limpiar. */
+    }
+
     client = window.supabase.createClient(config.url, config.publishableKey, {
       auth: {
         storageKey: "likehoodie-admin-auth",
-        persistSession: true,
+        ...(adminStorage ? { storage: adminStorage } : {}),
+        persistSession: Boolean(adminStorage),
         autoRefreshToken: true,
       },
     });

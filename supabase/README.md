@@ -125,8 +125,9 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
 - Los carritos abandonados no guardan nombre, correo ni teléfono.
 - Los pedidos guardan los datos necesarios para producir y enviar.
 - El panel exige **MFA TOTP** y `is_admin()` solo responde `true` con una sesión
-  `aal2`; un token de contraseña no puede acceder por API. La sesión se cierra
-  tras 30 minutos de inactividad.
+  `aal2`; un token de contraseña no puede acceder por API. La sesión vive en
+  `sessionStorage` y se cierra al cerrar la pestaña o tras 30 minutos de
+  inactividad.
 
 ## 8. Pagos con Clip
 
