@@ -844,10 +844,13 @@
       .format(new Date())
       .toLowerCase();
     const closingDay = weekday === "sun" || weekday === "mon";
-    if (pending > 0 && closingDay) {
-      billingReminder.textContent = `Cierre semanal pendiente: hay ${pending} pedido${
+    if (pending > 0) {
+      const ordersText = `${pending} pedido${pending === 1 ? "" : "s"} pagado${
         pending === 1 ? "" : "s"
-      } pagado${pending === 1 ? "" : "s"} sin factura global. Emite la global dentro de las 24 horas siguientes al domingo.`;
+      } sin factura global`;
+      billingReminder.textContent = closingDay
+        ? `Cierre semanal pendiente: hay ${ordersText}. Emite la global dentro de las 24 horas siguientes al domingo.`
+        : `Hay ${ordersText}. El cierre semanal es el domingo; la global se emite dentro de las 24 horas siguientes.`;
       billingReminder.hidden = false;
     } else {
       billingReminder.hidden = true;
