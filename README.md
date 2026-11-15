@@ -43,13 +43,14 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Colección de modelos:** cuatro diseños listos (Cocodrilo de Miami, Insignia atardecer, Panorama Vice y Corazón neón) que se compran tal cual con la talla elegida; el print se prepara al momento.
 - **Páginas de producto:** cada modelo tiene su URL (`/modelos/<id>.html`), con `Product` + `Offer`, breadcrumbs, FAQ y compra por talla.
 - **Seguimiento:** `/pedido.html` consulta estado y guía con número de pedido + correo.
+- **Factura individual:** `/factura.html` captura RFC, razón social, régimen fiscal, CP, uso del CFDI y correo de envío. Valida que el pedido esté pagado y deja la solicitud para emisión manual; no emite CFDI desde la web.
 - **WhatsApp:** botón flotante y enlaces con mensaje contextual en tienda, producto y seguimiento.
 - **Monitorización:** errores JS y fallos de compra/print visibles en **Salud** del admin; comprobación de disponibilidad cada 30 min con aviso por issue. El seguimiento y los errores pasan por Edge Functions con rate limit atómico por IP, tope global y retención de 90 días.
 - **Cálculo de precio:** el precio del modelo se actualiza al elegir talla; la compra se completa en la tienda.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
 - **Persistencia:** el carrito se guarda en `localStorage` y se sincroniza con Supabase.
 - **Checkout de demostración:** formulario validado (teléfono, estado, CP y referencias), confirmación de pedido y registro en Supabase. No procesa pagos reales.
-- **Panel de administración:** pedidos, estados, carritos abandonados, métricas, embudo, monitorización de errores, facturación global semanal y exportación CSV, protegido con Supabase Auth, MFA TOTP obligatorio y cierre por inactividad.
+- **Panel de administración:** pedidos, estados, carritos abandonados, métricas, embudo, monitorización de errores, facturación global semanal, solicitudes de factura individual y exportación CSV, protegido con Supabase Auth, MFA TOTP obligatorio y cierre por inactividad.
 - **Analítica propia:** eventos de visita, carrito y checkout guardados en Supabase.
 - **Guía de tallas, FAQ y newsletter.**
 - **Páginas legales:** aviso de privacidad, política de cookies y términos y condiciones.
@@ -244,6 +245,10 @@ Para configurarlo:
 3. Publica los cambios en GitHub Pages.
 
 Mientras `supabase-config.js` tenga los valores de ejemplo, la tienda funciona en modo demostración y el panel muestra un aviso de configuración.
+
+### Facturación
+
+Las ventas se facturan con una **global semanal** de público en general. El admin revisa los pedidos pagados, asigna la forma SAT `04` o `28` y registra el UUID de la global emitida manualmente. Si un cliente pide factura individual antes del cierre del domingo, puede enviarla desde `/factura.html`; el pedido se marca como individual y se excluye de la global. La emisión del CFDI y el desglose de IVA/base siguen siendo manuales y requieren confirmación fiscal.
 
 ## Medición y consentimiento
 

@@ -16,6 +16,43 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.12.0] — 2026-11-14
+
+### Añadido
+
+- **Formulario público de factura individual** (`factura.html`):
+  - número de pedido y correo de compra;
+  - RFC, razón social, régimen fiscal, CP y uso del CFDI;
+  - correo para recibir XML y PDF;
+  - validación de pedido pagado y no cancelado.
+- Edge Function `invoice-request` con `verify_jwt = false`: valida el pedido con
+  `service_role`, aplica rate limit y guarda la solicitud en una tabla privada.
+- Migración `fase10-facturacion-individual.sql`:
+  - tablas `invoice_requests` e `invoice_request_attempts`;
+  - `take_invoice_request()` (10/hora por IP, 100/hora global, atómico);
+  - `submit_invoice_request()`, `mark_invoice_request_issued()` y
+    `cancel_invoice_request()`.
+- Sección **Solicitudes individuales** en la pestaña Facturación del admin:
+  datos fiscales, estado, registro del UUID y cancelación.
+- Enlaces a `factura.html` desde seguimiento, términos y pies de página.
+
+### Seguridad
+
+- `invoice_requests` no es legible ni escribible desde el navegador; solo el
+  admin con `aal2` puede verla y actualizarla.
+- La función no revela si un pedido existe cuando el correo no coincide.
+- Los datos fiscales se normalizan en servidor y se limitan en longitud.
+- No se emite ningún CFDI desde la web: la emisión sigue siendo manual en el SAT.
+
+### Verificado
+
+- `fase10-facturacion-individual.sql` aplicada en producción.
+- `invoice-request` desplegada; CORS, datos inválidos (400), pedido inexistente
+  (404), pedido sin pagar (409) y solicitud válida (200) probados.
+- Marcado como emitida y cancelación probados con RPCs dentro de transacciones
+  con rollback; no quedaron datos de prueba.
+- `node --check`, `html-validate` y smoke test.
+
 ## [1.11.0] — 2026-11-14
 
 ### Añadido

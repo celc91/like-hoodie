@@ -131,6 +131,11 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
 - La pestaña **Facturación** prepara el cierre global semanal: pedidos pagados,
   forma SAT 04/28, exclusión de facturas individuales, exportación CSV y
   registro del UUID. No emite CFDI; la emisión sigue siendo manual.
+- La solicitud pública de factura individual (`factura.html`) pasa por la Edge
+  Function `invoice-request`, que valida el pedido y el correo con
+  `service_role`. La tabla `invoice_requests` no es legible desde el navegador:
+  solo el admin puede verla y actualizarla. El límite es de 10 solicitudes/hora
+  por IP y 100/hora global con `take_invoice_request()`.
 
 ## 8. Pagos con Clip
 
@@ -159,6 +164,7 @@ En un proyecto nuevo ejecuta:
 14. `antispam-cupones.sql` (límite de intentos de cupón)
 15. `fase8-admin-mfa.sql` (MFA `aal2` obligatorio para admin)
 16. `fase9-facturacion-global.sql` (cierre semanal y factura global)
+17. `fase10-facturacion-individual.sql` (solicitudes de factura individual)
 
 `fase1-pedidos-seguros.sql` deja una sola versión de `place_order`: recalcula
 precios en servidor, valida cupón, correo, teléfono, dirección, estado y CP, y
@@ -200,6 +206,31 @@ update public.store_settings
 ```
 
 Para volver a demostración, cambia el valor a `'false'`. La función pública `store_config()` solo expone `payment_provider` (`demo` o `clip`) para que la tienda muestre el aviso correcto.
+
+## 9. Factura individual
+
+La página `factura.html` captura la solicitud del cliente. No emite CFDI: guarda
+los datos fiscales para que el admin emita la factura manualmente en el SAT.
+
+1. Ejecuta `supabase/fase10-facturacion-individual.sql`.
+2. Despliega la función:
+
+   ```sh
+   npx supabase functions deploy invoice-request --remote=<project-ref>
+   ```
+
+3. La función valida con `service_role` que el número y el correo coincidan con
+   un pedido pagado y no cancelado. Si el pedido ya entró en una global, la
+   solicitud queda en `review`; si no, el pedido se marca `individual`.
+4. En el admin, pestaña **Facturación → Solicitudes individuales**, revisa los
+   datos, captura el UUID al emitir o cancela la solicitud. Cancelar devuelve el
+   pedido a `pending` para que pueda entrar en la global.
+
+`invoice_requests` guarda RFC, razón social, régimen, CP, uso del CFDI y correo
+de envío. Está protegida con RLS: solo el admin con `aal2` puede leerla o
+actualizarla; el navegador nunca la consulta directamente. `take_invoice_request()`
+aplica 10 intentos/hora por IP y 100/hora global, y purga los intentos de más de
+2 días.
 
 ## Privacidad
 

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="admin.css?v=20261114-bill1">
+<link rel="stylesheet" href="admin.css?v=20261115-inv1">
 </head>
 <body>
   <div class="login" id="login-view">
@@ -253,6 +253,33 @@
           </div>
           <p class="form-error" id="billing-error" role="alert" hidden></p>
         </div>
+
+        <div class="billing-issue" id="invoice-requests">
+          <div class="billing-requests-head">
+            <h2>Solicitudes individuales</h2>
+            <button class="btn btn-ghost" type="button" id="requests-refresh">Actualizar</button>
+          </div>
+          <p>Solicitudes enviadas desde el formulario público. Revisa los datos fiscales, emite el CFDI individual en el SAT y captura el UUID. Si la solicitud no procede, cancélala para liberar el pedido.</p>
+
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th scope="col">Pedido</th>
+                  <th scope="col">Solicitud</th>
+                  <th scope="col">Datos fiscales</th>
+                  <th scope="col">Estado</th>
+                  <th scope="col">UUID</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody id="requests-body"></tbody>
+            </table>
+            <p class="empty" id="requests-empty" hidden>No hay solicitudes individuales.</p>
+          </div>
+
+          <p class="form-error" id="requests-error" role="alert" hidden></p>
+        </div>
       </section>
 
       <section class="section" data-panel="carritos" hidden>
@@ -369,6 +396,6 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="admin.js?v=20261114-bill1"></script>
+  <script src="admin.js?v=20261115-inv1"></script>
 </body>
 </html>

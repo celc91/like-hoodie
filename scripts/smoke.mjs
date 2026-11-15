@@ -56,6 +56,23 @@ for (const id of ["cocodrilo", "insignia", "panorama", "corazon"]) {
 check("seguimiento: formulario", trackPage.includes("data-track-form"));
 check("seguimiento: endpoint", trackJs.includes("/functions/v1/order-status"));
 check("seguimiento: columnas", trackSql.includes("tracking_number") && trackSql.includes("tracking_url"));
+
+const invoicePage = read("factura.html");
+const invoiceJs = read("factura.js");
+const invoiceSql = read("supabase/fase10-facturacion-individual.sql");
+const supabaseConfig = read("supabase/config.toml");
+check("factura: formulario", invoicePage.includes("data-invoice-form"));
+check("factura: endpoint", invoiceJs.includes("/functions/v1/invoice-request"));
+check("factura: sin emisión CFDI", !invoiceJs.includes("timbrar"));
+check("admin: solicitudes individuales", admin.includes("loadInvoiceRequests"));
+check(
+  "sql: factura individual",
+  invoiceSql.includes("invoice_requests") && invoiceSql.includes("take_invoice_request")
+);
+check(
+  "factura: función sin JWT",
+  /\[functions\.invoice-request\][\s\S]*?verify_jwt\s*=\s*false/.test(supabaseConfig)
+);
 const modelJson = JSON.parse(read("modelos/modelos.json"));
 const modelData = read("modelos/modelos-data.js");
 const dataModelIds = [...modelData.matchAll(/"([a-z0-9]+)": \{/g)]

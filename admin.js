@@ -42,6 +42,10 @@
   const billingRefresh = $("#billing-refresh");
   const billingExport = $("#billing-export");
   const billingMark = $("#billing-mark");
+  const requestsBody = $("#requests-body");
+  const requestsEmpty = $("#requests-empty");
+  const requestsError = $("#requests-error");
+  const requestsRefresh = $("#requests-refresh");
   const setupNote = $("#setup-note");
   const toastEl = $("#toast");
 
@@ -536,7 +540,10 @@
       });
       if (section === "resumen") loadStats();
       if (section === "pedidos") loadOrders();
-      if (section === "facturacion") loadBilling();
+      if (section === "facturacion") {
+        loadBilling();
+        loadInvoiceRequests();
+      }
       if (section === "carritos") loadCarts();
       if (section === "salud") loadHealth();
     });
@@ -562,6 +569,7 @@
     loadStats();
     loadOrders();
     loadBilling();
+    loadInvoiceRequests();
     loadCarts();
     loadHealth();
   }
@@ -971,6 +979,148 @@
     loadBilling();
   }
 
+  const REQUEST_STATUS_LABELS = {
+    pending: "Pendiente",
+    review: "Revisar",
+    issued: "Emitida",
+    cancelled: "Cancelada",
+  };
+
+  function requestBadge(status) {
+    const classes = {
+      pending: "status-pending",
+      review: "status-production",
+      issued: "status-delivered",
+      cancelled: "status-cancelled",
+    };
+    return `<span class="badge ${classes[status] || "status-pending"}">${escapeHTML(
+      REQUEST_STATUS_LABELS[status] || status
+    )}</span>`;
+  }
+
+  function setRequestsError(message) {
+    if (!requestsError) return;
+    requestsError.textContent = message || "";
+    requestsError.hidden = !message;
+  }
+
+  function renderInvoiceRequests(requests) {
+    if (!requestsBody) return;
+    if (requestsEmpty) requestsEmpty.hidden = requests.length > 0;
+
+    requestsBody.innerHTML = requests
+      .map((request) => {
+        const status = request.status || "pending";
+        const fiscal = [
+          `<strong class="request-rfc">${escapeHTML(request.rfc)}</strong>`,
+          escapeHTML(request.legal_name),
+          `Régimen ${escapeHTML(request.tax_regime)} · CP ${escapeHTML(request.zip)}`,
+          `Uso ${escapeHTML(request.cfdi_use)}`,
+          escapeHTML(request.invoice_email),
+          request.notes ? `Nota: ${escapeHTML(request.notes)}` : "",
+        ]
+          .filter(Boolean)
+          .map((line) => `<span>${line}</span>`)
+          .join("");
+
+        const actions =
+          status === "pending" || status === "review"
+            ? `<div class="request-actions">
+                <input class="request-uuid" type="text" maxlength="36" autocomplete="off" spellcheck="false" placeholder="UUID del CFDI" aria-label="UUID de la factura del pedido LH-${escapeHTML(
+                  request.order_number
+                )}" data-request-uuid>
+                <button class="btn btn-ghost" type="button" data-request-issue>Marcar emitida</button>
+                <button class="btn btn-ghost" type="button" data-request-cancel>Cancelar</button>
+              </div>`
+            : "";
+
+        return `<tr data-request-id="${escapeHTML(request.id)}">
+          <td>
+            <span class="order-number">LH-${escapeHTML(request.order_number)}</span>
+            <span class="customer-email">${escapeHTML(request.purchase_email)}</span>
+          </td>
+          <td>${escapeHTML(formatDate(request.created_at))}</td>
+          <td><div class="request-fiscal">${fiscal}</div></td>
+          <td>${requestBadge(status)}</td>
+          <td>${
+            request.uuid
+              ? `<span class="order-payment">${escapeHTML(request.uuid)}</span><span class="customer-email">${escapeHTML(
+                  formatDate(request.issued_at)
+                )}</span>`
+              : "—"
+          }</td>
+          <td>${actions}</td>
+        </tr>`;
+      })
+      .join("");
+  }
+
+  async function loadInvoiceRequests() {
+    if (!requestsBody) return;
+    setRequestsError("");
+
+    const { data, error } = await client
+      .from("invoice_requests")
+      .select(
+        "id, order_number, purchase_email, rfc, legal_name, tax_regime, zip, cfdi_use, invoice_email, notes, status, uuid, issued_at, created_at"
+      )
+      .order("created_at", { ascending: false })
+      .limit(100);
+
+    if (error) {
+      console.warn(error);
+      setRequestsError(
+        "No se pudieron cargar las solicitudes individuales. Revisa que la migración fase10 esté aplicada."
+      );
+      return;
+    }
+
+    renderInvoiceRequests(Array.isArray(data) ? data : []);
+  }
+
+  async function issueInvoiceRequest(id, uuid) {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        uuid
+      )
+    ) {
+      setRequestsError("Escribe un UUID válido de 36 caracteres.");
+      return;
+    }
+    setRequestsError("");
+
+    const { error } = await client.rpc("mark_invoice_request_issued", {
+      p_request_id: id,
+      p_uuid: uuid,
+    });
+    if (error) {
+      console.warn(error);
+      setRequestsError(
+        "No se pudo marcar como emitida. Si el pedido ya está en una global, ajusta la global primero."
+      );
+      return;
+    }
+
+    toast("Solicitud marcada como emitida.");
+    loadInvoiceRequests();
+    loadBilling();
+  }
+
+  async function cancelInvoiceRequest(id) {
+    setRequestsError("");
+    const { error } = await client.rpc("cancel_invoice_request", {
+      p_request_id: id,
+    });
+    if (error) {
+      console.warn(error);
+      setRequestsError("No se pudo cancelar la solicitud.");
+      return;
+    }
+    toast("Solicitud cancelada.");
+    loadInvoiceRequests();
+    loadBilling();
+  }
+
   const ordersBody = $("#orders-body");
   if (ordersBody) {
     ordersBody.addEventListener("change", async (event) => {
@@ -1057,6 +1207,36 @@
   }
   if (billingMark) {
     billingMark.addEventListener("click", () => markGlobalInvoice());
+  }
+
+  if (requestsRefresh) {
+    requestsRefresh.addEventListener("click", () => loadInvoiceRequests());
+  }
+
+  if (requestsBody) {
+    requestsBody.addEventListener("click", (event) => {
+      const issue = event.target.closest("[data-request-issue]");
+      const cancel = event.target.closest("[data-request-cancel]");
+      const row = event.target.closest("[data-request-id]");
+      if (!row) return;
+
+      if (issue) {
+        const input = row.querySelector("[data-request-uuid]");
+        issueInvoiceRequest(row.dataset.requestId, String(input?.value || "").trim());
+        return;
+      }
+
+      if (cancel) {
+        if (
+          !window.confirm(
+            "¿Cancelar esta solicitud? El pedido volverá a quedar pendiente para la factura global."
+          )
+        ) {
+          return;
+        }
+        cancelInvoiceRequest(row.dataset.requestId);
+      }
+    });
   }
 
   document.addEventListener("click", async (event) => {

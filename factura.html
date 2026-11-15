@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solicitar factura — like hoodie ♡</title>
+  <meta name="description" content="Solicita tu factura individual de like hoodie ♡ con tus datos fiscales.">
+  <meta name="robots" content="noindex, follow">
+  <meta name="theme-color" content="#f4efe6">
+  <link rel="canonical" href="https://likehoodie.com/factura.html">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20261115-inv1">
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <header class="legal-header">
+    <div class="container legal-header-inner">
+      <a href="index.html" class="brand" aria-label="like hoodie ♡, volver al inicio">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64"><path d="M32 50S14 39 14 27a9 9 0 0 1 18-4 9 9 0 0 1 18 4c0 12-18 23-18 23Z" fill="currentColor"/></svg>
+        </span>
+        <span class="brand-name">like hoodie ♡</span>
+      </a>
+      <a class="legal-back" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Volver a la tienda
+      </a>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <div class="legal-hero">
+      <div class="container">
+        <span class="eyebrow">Facturación</span>
+        <h1>Solicita tu factura.</h1>
+        <p>Pedimos una factura individual para tu compra. La factura global es de público en general y no es deducible.</p>
+      </div>
+    </div>
+
+    <div class="container invoice-page">
+      <div class="invoice-card">
+        <p class="invoice-note">Solo podemos facturar pedidos con pago aprobado. Solicítala antes del cierre del domingo del periodo; si el pedido ya entró en la factura global, revisaremos el caso.</p>
+
+        <form id="invoice-form" data-invoice-form>
+          <div class="field-row">
+            <div class="field">
+              <label for="invoice-order">Número de pedido</label>
+              <input id="invoice-order" name="number" type="text" inputmode="numeric" placeholder="LH-1013" autocomplete="off" required>
+            </div>
+            <div class="field">
+              <label for="invoice-email-purchase">Correo de la compra</label>
+              <input id="invoice-email-purchase" name="email" type="email" autocomplete="email" placeholder="tu@email.com" required>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="invoice-rfc">RFC</label>
+              <input id="invoice-rfc" name="rfc" type="text" maxlength="13" autocapitalize="characters" spellcheck="false" placeholder="XAXX010101000" required>
+            </div>
+            <div class="field">
+              <label for="invoice-legal-name">Razón social o nombre fiscal</label>
+              <input id="invoice-legal-name" name="legalName" type="text" maxlength="160" autocomplete="organization" placeholder="Como aparece en el SAT" required>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="invoice-regime">Régimen fiscal</label>
+              <select id="invoice-regime" name="taxRegime" required>
+                <option value="">Selecciona…</option>
+                <option value="601">601 · General de Ley Personas Morales</option>
+                <option value="603">603 · Personas Morales con Fines no Lucrativos</option>
+                <option value="605">605 · Sueldos y Salarios e Ingresos Asimilados</option>
+                <option value="606">606 · Arrendamiento</option>
+                <option value="607">607 · Enajenación o Adquisición de Bienes</option>
+                <option value="608">608 · Demás ingresos</option>
+                <option value="610">610 · Residentes en el Extranjero sin Establecimiento Permanente</option>
+                <option value="611">611 · Ingresos por Dividendos</option>
+                <option value="612">612 · Personas Físicas con Actividades Empresariales y Profesionales</option>
+                <option value="614">614 · Ingresos por intereses</option>
+                <option value="615">615 · Ingresos por obtención de premios</option>
+                <option value="616">616 · Sin obligaciones fiscales</option>
+                <option value="621">621 · Incorporación Fiscal</option>
+                <option value="622">622 · Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option>
+                <option value="625">625 · Plataformas Tecnológicas</option>
+                <option value="626">626 · Régimen Simplificado de Confianza (RESICO)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="invoice-zip">Código postal fiscal</label>
+              <input id="invoice-zip" name="zip" type="text" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" placeholder="01000" required>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="invoice-use">Uso del CFDI</label>
+              <select id="invoice-use" name="cfdiUse" required>
+                <option value="">Selecciona…</option>
+                <option value="G01">G01 · Adquisición de mercancías</option>
+                <option value="G03">G03 · Gastos en general</option>
+                <option value="P01">P01 · Por definir</option>
+                <option value="S01">S01 · Sin efectos fiscales</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="invoice-email">Correo para recibir XML y PDF</label>
+              <input id="invoice-email" name="invoiceEmail" type="email" autocomplete="email" placeholder="factura@email.com" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="invoice-notes">Notas (opcional)</label>
+            <input id="invoice-notes" name="notes" type="text" maxlength="500" placeholder="Alguna aclaración para la factura">
+          </div>
+
+          <button class="btn btn-primary btn-block" type="submit" id="invoice-submit">Enviar solicitud</button>
+          <p class="form-error" id="invoice-error" role="alert" hidden></p>
+          <p class="invoice-result" id="invoice-result" role="status" aria-live="polite" hidden></p>
+        </form>
+
+        <p class="invoice-note">Si ya pasó el cierre del domingo o necesitas una corrección, escríbenos a <a href="mailto:hola@likehoodie.com">hola@likehoodie.com</a> con tu número de pedido.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="legal-footer">
+    <div class="container legal-footer-inner">
+      <a href="index.html" class="brand" aria-label="like hoodie ♡, volver al inicio">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64"><path d="M32 50S14 39 14 27a9 9 0 0 1 18-4 9 9 0 0 1 18 4c0 12-18 23-18 23Z" fill="currentColor"/></svg>
+        </span>
+        <span class="brand-name">like hoodie ♡</span>
+      </a>
+      <nav aria-label="Documentos legales">
+        <a href="privacidad.html">Privacidad</a>
+        <a href="cookies.html">Cookies</a>
+        <a href="terminos.html">Términos</a>
+      </nav>
+      <p>© 2026 like hoodie ♡. Hecho con algodón y buenas ideas.</p>
+    </div>
+  </footer>
+
+  <script src="supabase-config.js?v=20261110-pub1"></script>
+  <script src="factura.js?v=20261115-inv1"></script>
+</body>
+</html>

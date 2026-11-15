@@ -1207,3 +1207,73 @@ a { color: inherit; }
     width: 100%;
   }
 }
+
+#invoice-requests {
+  margin-top: 26px;
+}
+
+.billing-requests-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.billing-requests-head h2 {
+  margin: 0;
+}
+
+.billing-requests-head .btn {
+  min-height: 34px;
+  padding: 0 11px;
+  font-size: 9.5px;
+}
+
+.request-fiscal {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 320px;
+  color: var(--ink-soft);
+  font-size: 10.5px;
+  line-height: 1.45;
+}
+
+.request-rfc {
+  color: var(--ink);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+}
+
+.request-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 210px;
+}
+
+.request-actions .btn {
+  min-height: 32px;
+  padding: 0 9px;
+  font-size: 9.5px;
+}
+
+.request-uuid {
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 10.5px;
+}
+
+@media (max-width: 720px) {
+  .billing-requests-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

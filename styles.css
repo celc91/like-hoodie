@@ -8199,3 +8199,72 @@ body.is-locked .wa-float {
     display: none;
   }
 }
+
+/* --------------------------- Factura individual --------------------------- */
+
+.invoice-page {
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 42px 0 80px;
+}
+
+.invoice-card {
+  padding: 30px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.invoice-note {
+  margin: 0 0 22px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.invoice-note a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.invoice-card .field-row {
+  margin-bottom: 0;
+}
+
+.invoice-card .btn-block {
+  margin-top: 8px;
+}
+
+.invoice-result {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--lime);
+  border-radius: 0 9px 9px 0;
+  background: rgba(216, 244, 92, 0.22);
+  color: var(--ink);
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+.invoice-card .form-error {
+  margin: 12px 0 0;
+  color: #a92e16;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .invoice-page {
+    padding: 28px 0 60px;
+  }
+
+  .invoice-card {
+    padding: 22px;
+  }
+
+  .invoice-card .field-row {
+    grid-template-columns: 1fr;
+  }
+}
