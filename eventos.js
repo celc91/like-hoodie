@@ -542,6 +542,9 @@
       { rootMargin: "600px" }
     );
     observer.observe(root);
+    // Respaldo: si el observer no dispara (algunos navegadores/lectores),
+    // la agenda carga igualmente sin bloquear el primer render.
+    window.setTimeout(start, 4000);
   } else {
     start();
   }
