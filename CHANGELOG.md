@@ -16,6 +16,42 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.14.0] — 2026-11-15
+
+### Corregido
+
+- **Métricas del admin:** `admin_stats()` ya solo cuenta pedidos con
+  `payment_status = 'paid'`; los pedidos demo dejan de inflar ingresos y
+  conversión.
+- **Cupón de bienvenida:** cada suscriptor confirmado recibe un código único, de
+  un solo uso y 90 días. `BIENVENIDA10` queda como legado limitado a 1,000 usos y
+  un año.
+- **Contraste legal:** enlaces y avisos de las páginas legales pasan el
+  contraste AA.
+- **Admin:** botón de acceso con contraste suficiente y landmark `main` en la
+  pantalla de login.
+- **Pies de producto:** añadido el enlace a facturación.
+
+### Rendimiento
+
+- **Fuentes autoalojadas:** Bricolage Grotesque e Inter se sirven desde
+  `assets/fonts/` y dejan de bloquear el render desde Google Fonts.
+- `content-visibility` en secciones bajo el pliegue.
+- Sitemap actualizado.
+
+### Seguridad
+
+- Configurado `LOOKUP_IP_SALT` para que los hashes de IP no usen la sal pública
+  `likehoodie`.
+
+### Verificado
+
+- `admin_stats(30)` con 9 pedidos demo devuelve **0 pedidos y $0**.
+- Cupón único probado con un suscriptor temporal: código `LH-…`, `max_uses = 1`,
+  sin reutilizar el mismo código al confirmar dos veces.
+- `html-validate`, `node --check`, smoke test (**65**) y comprobación de
+  precios/facturación (**34**).
+
 ## [1.13.0] — 2026-11-15
 
 ### Corregido

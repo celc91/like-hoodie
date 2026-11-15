@@ -2,6 +2,22 @@
    like hoodie ♡ — Sudaderas personalizadas
    ========================================================================== */
 
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("assets/fonts/bricolage-grotesque-latin.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("assets/fonts/inter-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --cream: #f4efe6;
   --cream-2: #ece4d5;
@@ -4317,6 +4333,7 @@ details[open] .plus::after {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  min-height: 32px;
   font-size: 12px;
   font-weight: 600;
   color: var(--ink-soft);
@@ -4446,6 +4463,9 @@ details[open] .plus::after {
 }
 
 .legal-switcher a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
   color: var(--muted);
   transition: color 0.18s ease;
 }
@@ -4665,6 +4685,13 @@ details[open] .plus::after {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
+}
+
+.legal-footer nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 2px;
 }
 
 .legal-footer nav a:hover {
@@ -6332,7 +6359,7 @@ details[open] .plus::after {
 
   /* un solo acento principal, un paso menos fluorescente */
   --orange: #d63e10;
-  --orange-dark: #d43a12;
+  --orange-dark: #a8320e;
   --lime: #dcf07e;
   --pink: #f6c9d2;
 
@@ -8201,6 +8228,20 @@ body.is-locked .wa-float {
 }
 
 /* --------------------------- Factura individual --------------------------- */
+
+@supports (content-visibility: auto) {
+  .catalog,
+  .collection,
+  .events,
+  .features,
+  .steps,
+  .faq,
+  .cta-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+  }
+}
+
 
 .invoice-page {
   max-width: 840px;

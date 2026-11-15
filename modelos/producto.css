@@ -331,6 +331,9 @@
 }
 
 .product-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
   color: var(--muted);
   border-bottom: 1px solid transparent;
 }

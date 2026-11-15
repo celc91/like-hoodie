@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const models = JSON.parse(readFileSync(join(root, "modelos", "modelos.json"), "utf8"));
 const SITE = "https://likehoodie.com";
-const CSS_VERSION = "20261114-fase4c";
+const CSS_VERSION = "20261115-perf3";
 const WHATSAPP_VERSION = "20261114-fase4d";
 const MONITOR_VERSION = "20261114-fase5";
 const PRODUCT_VERSION = "20261114-csp1";
@@ -119,7 +119,6 @@ function page(model) {
   <link rel="preload" as="image" href="../assets/modelos/${model.mockup}" type="image/webp" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css?v=${CSS_VERSION}">
   <link rel="stylesheet" href="producto.css?v=${CSS_VERSION}">
   <script src="../supabase-config.js?v=20261110-pub1"></script>
@@ -232,6 +231,7 @@ function page(model) {
         <a href="../terminos.html">Términos</a>
         <a href="../privacidad.html">Privacidad</a>
         <a href="../cookies.html">Cookies</a>
+        <a href="../factura.html">Factura</a>
         <a href="https://wa.me/5215552142692" data-whatsapp-link target="_blank" rel="noopener noreferrer">WhatsApp</a>
       </nav>
     </div>

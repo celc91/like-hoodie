@@ -21,6 +21,10 @@ const invoice = read("supabase/migrations/20261115000200_facturacion_verificacio
 const invoicePage = read("factura.html");
 const invoiceJs = read("factura.js");
 const invoiceFn = read("supabase/functions/invoice-request/index.ts");
+const adminStats = read("supabase/migrations/20261115000300_admin_stats_pagados.sql");
+const couponSql = read("supabase/migrations/20261115000400_cupones_unicos.sql");
+const confirmJs = read("confirmar.js");
+const styles = read("styles.css");
 
 const has = (sql, product, kind, key, amount) =>
   new RegExp(
@@ -71,6 +75,22 @@ check("factura: migración verifica correo", invoice.includes("verify_token") &&
 check("factura: migración guarda forma SAT", invoice.includes("sat_payment_form"));
 check("factura: admin puede reenviar", invoice.includes("resend_invoice_verification"));
 check("factura: edge confirma token", invoiceFn.includes("confirm_invoice_request") && invoiceFn.includes("action"));
+check(
+  "admin: métricas solo pagadas",
+  (adminStats.match(/payment_status = 'paid'/g) || []).length >= 7
+);
+check(
+  "newsletter: cupón único",
+  couponSql.includes("coupon_code") &&
+    couponSql.includes("max_uses") &&
+    !app.includes("BIENVENIDA10") &&
+    !confirmJs.includes("BIENVENIDA10")
+);
+check(
+  "rendimiento: fuentes locales",
+  styles.includes("assets/fonts/bricolage-grotesque-latin.woff2") &&
+    styles.includes("assets/fonts/inter-latin.woff2")
+);
 
 const failed = checks.filter((item) => !item.ok);
 for (const item of checks) {

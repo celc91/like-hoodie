@@ -59,11 +59,16 @@
       return;
     }
 
+    if (!data.code) {
+      fail("No pudimos recuperar tu código. Escríbenos a hola@likehoodie.com.");
+      return;
+    }
+
     title.textContent = "¡Ya estás dentro!";
     text.textContent = "Este es tu código de bienvenida: úsalo en la cesta.";
     const code = document.createElement("span");
     code.className = "confirm-code";
-    code.textContent = data.code || "BIENVENIDA10";
+    code.textContent = data.code;
     result.appendChild(code);
     const note = document.createElement("p");
     note.textContent = `${data.percent || 10} % de descuento en tu primer pedido.`;

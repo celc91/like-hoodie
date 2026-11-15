@@ -323,7 +323,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = public
-as $$
+as $
 declare
   v_days integer := greatest(1, least(coalesce(p_days, 30), 365));
   v_start timestamptz := now() - make_interval(days => greatest(1, least(coalesce(p_days, 30), 365)));
@@ -355,22 +355,22 @@ begin
   select count(*), coalesce(sum(total), 0)::bigint
     into v_orders_today, v_revenue_today
     from public.orders
-    where status <> 'cancelled' and created_at >= v_today;
+    where status <> 'cancelled' and payment_status = 'paid' and created_at >= v_today;
 
   select count(*), coalesce(sum(total), 0)::bigint
     into v_orders_range, v_revenue_range
     from public.orders
-    where status <> 'cancelled' and created_at >= v_start;
+    where status <> 'cancelled' and payment_status = 'paid' and created_at >= v_start;
 
   select count(*), coalesce(sum(total), 0)::bigint
     into v_orders_7, v_revenue_7
     from public.orders
-    where status <> 'cancelled' and created_at >= now() - interval '7 days';
+    where status <> 'cancelled' and payment_status = 'paid' and created_at >= now() - interval '7 days';
 
   select count(*), coalesce(sum(total), 0)::bigint
     into v_orders_30, v_revenue_30
     from public.orders
-    where status <> 'cancelled' and created_at >= now() - interval '30 days';
+    where status <> 'cancelled' and payment_status = 'paid' and created_at >= now() - interval '30 days';
 
   v_aov := case when v_orders_30 > 0 then round(v_revenue_30::numeric / v_orders_30, 0) else 0 end;
 
@@ -415,7 +415,7 @@ begin
   from (
     select item->>'colorName' as label, count(*) as n
     from public.orders o, jsonb_array_elements(o.items) item
-    where o.status <> 'cancelled' and o.created_at >= v_start
+    where o.status <> 'cancelled' and o.payment_status = 'paid' and o.created_at >= v_start
       and coalesce(item->>'colorName', '') <> ''
     group by 1 order by n desc limit 5
   ) c;
@@ -425,7 +425,7 @@ begin
   from (
     select item->>'materialName' as label, count(*) as n
     from public.orders o, jsonb_array_elements(o.items) item
-    where o.status <> 'cancelled' and o.created_at >= v_start
+    where o.status <> 'cancelled' and o.payment_status = 'paid' and o.created_at >= v_start
       and coalesce(item->>'materialName', '') <> ''
     group by 1 order by n desc limit 5
   ) c;
@@ -435,7 +435,7 @@ begin
   from (
     select item->>'techniqueName' as label, count(*) as n
     from public.orders o, jsonb_array_elements(o.items) item
-    where o.status <> 'cancelled' and o.created_at >= v_start
+    where o.status <> 'cancelled' and o.payment_status = 'paid' and o.created_at >= v_start
       and coalesce(item->>'techniqueName', '') <> ''
     group by 1 order by n desc limit 5
   ) c;
@@ -445,7 +445,7 @@ begin
   from (
     select item->>'size' as label, count(*) as n
     from public.orders o, jsonb_array_elements(o.items) item
-    where o.status <> 'cancelled' and o.created_at >= v_start
+    where o.status <> 'cancelled' and o.payment_status = 'paid' and o.created_at >= v_start
       and coalesce(item->>'size', '') <> ''
     group by 1 order by n desc limit 5
   ) c;
@@ -473,7 +473,7 @@ begin
     'top_sizes', v_sizes
   );
 end;
-$$;
+$;
 
 grant execute on function public.admin_stats(integer) to authenticated;
 

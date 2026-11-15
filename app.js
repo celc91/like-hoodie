@@ -5194,12 +5194,15 @@
 
         const success = document.createElement("div");
         success.className = "newsletter-success";
-        success.innerHTML =
-          "<strong>¡Dentro!</strong> Tu código de bienvenida es " +
-          '<span class="newsletter-code">BIENVENIDA10</span> · 10 % en tu primer pedido.' +
-          (result.duplicate ? " Ya estabas en la lista." : "");
+        success.innerHTML = result.duplicate
+          ? "<strong>Ya estabas en el club.</strong> Usa el código único que recibiste al confirmar tu correo."
+          : "<strong>Solicitud recibida.</strong> No pudimos enviar el correo de confirmación. Escríbenos a hola@likehoodie.com.";
         form.replaceWith(success);
-        showToast("¡Bienvenido al club! Tu código es BIENVENIDA10.");
+        showToast(
+          result.duplicate
+            ? "Ya estabas en el club like hoodie."
+            : "No pudimos enviar el correo de confirmación."
+        );
       } else {
         showToast("No pudimos guardar tu correo. Inténtalo de nuevo en un momento.");
       }

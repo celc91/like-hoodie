@@ -50,6 +50,8 @@ políticas SQL y las Edge Functions de Supabase. También es relevante:
   token de 24 h y solo entonces pasa a `review` y excluye el pedido de la global.
   `invoice_requests` no es legible ni escribible desde el navegador; solo el
   admin con `aal2` puede consultarla y actualizarla.
+- Los hashes de IP usan `LOOKUP_IP_SALT`; no se guarda la IP en claro para las
+  solicitudes de factura ni el seguimiento.
 - Cloudflare va delante de GitHub Pages con SSL **Full (strict)**, HSTS,
   `nosniff`, `Referrer-Policy`, `Permissions-Policy`, una CSP por origen sin
   scripts inline y redirección `www` al dominio principal. Los registros de

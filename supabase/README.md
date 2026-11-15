@@ -176,6 +176,8 @@ En un proyecto nuevo ejecuta:
 17. `fase10-facturacion-individual.sql` (solicitudes de factura individual)
 18. `supabase/migrations/20261115000100_precios_tote.sql` (precios por producto)
 19. `supabase/migrations/20261115000200_facturacion_verificacion.sql` (correo y forma SAT)
+20. `supabase/migrations/20261115000300_admin_stats_pagados.sql` (métricas sin demo)
+21. `supabase/migrations/20261115000400_cupones_unicos.sql` (cupón único por suscriptor)
 
 Las migraciones nuevas viven en [`migrations/`](migrations/README.md) y son
 idempotentes. Después de la lista anterior, ejecuta las migraciones en orden.

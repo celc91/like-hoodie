@@ -24,6 +24,12 @@ npx supabase db query --remote --yes --file supabase/migrations/20261115000200_f
   - al confirmar pasa a `review` y marca el pedido como `individual`;
   - guarda la forma de pago SAT (`04`/`28`);
   - el admin puede reenviar la confirmación y solo emitir solicitudes verificadas.
+- `20261115000300_admin_stats_pagados.sql`
+  - las métricas del admin solo cuentan pedidos con `payment_status = 'paid'`;
+  - los pedidos demo dejan de inflar ingresos y conversión.
+- `20261115000400_cupones_unicos.sql`
+  - cada suscriptor confirmado recibe un cupón único, de un solo uso y 90 días;
+  - el código antiguo `BIENVENIDA10` queda limitado a 1,000 usos y un año.
 
 Las migraciones son idempotentes: se pueden volver a ejecutar. No ejecutes
 `security-hardening.sql` sobre una base ya migrada sin revisar antes la versión
