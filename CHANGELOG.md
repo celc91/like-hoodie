@@ -16,6 +16,26 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.14.1] — 2026-11-15
+
+### Añadido
+
+- Aviso por correo al admin cuando un cliente confirma una solicitud de factura.
+- Filtro por estado en **Solicitudes individuales**.
+- Monitorización de `factura.html` e `invoice-request` en el workflow de
+  disponibilidad.
+- Migración `20261115000500_aviso_factura.sql`.
+
+### Corregido
+
+- `has_resend_key()` deja de ser ejecutable por `anon`.
+- Privacidad aclara la retención de solicitudes de factura, logos y archivos de
+  impresión.
+
+### Verificado
+
+- Smoke test **65** y comprobación de precios/facturación **35**.
+
 ## [1.14.0] — 2026-11-15
 
 ### Corregido
@@ -31,12 +51,6 @@ semántico.
 - **Admin:** botón de acceso con contraste suficiente y landmark `main` en la
   pantalla de login.
 - **Pies de producto:** añadido el enlace a facturación.
-- **Solicitudes individuales:** filtro por estado y aviso por correo al admin
-  cuando el cliente confirma la solicitud.
-- **Privacidad:** aclarada la retención de solicitudes de factura, logos y
-  archivos de impresión.
-- **Disponibilidad:** el chequeo también vigila `factura.html` e
-  `invoice-request`.
 
 ### Rendimiento
 

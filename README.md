@@ -43,14 +43,15 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Colección de modelos:** cuatro diseños listos (Cocodrilo de Miami, Insignia atardecer, Panorama Vice y Corazón neón) que se compran tal cual con la talla elegida; el print se prepara al momento.
 - **Páginas de producto:** cada modelo tiene su URL (`/modelos/<id>.html`), con `Product` + `Offer`, breadcrumbs, FAQ y compra por talla.
 - **Seguimiento:** `/pedido.html` consulta estado y guía con número de pedido + correo.
-- **Factura individual:** `/factura.html` captura RFC, razón social, régimen fiscal, CP, uso del CFDI y correo de envío. Valida que el pedido esté pagado y deja la solicitud para emisión manual; no emite CFDI desde la web.
+- **Factura individual:** `/factura.html` captura RFC, razón social, régimen fiscal, CP, uso del CFDI, forma de pago SAT y correo de envío. El cliente confirma el correo de compra y la solicitud pasa a revisión; el admin emite manualmente y captura el UUID. No emite CFDI desde la web.
 - **WhatsApp:** botón flotante y enlaces con mensaje contextual en tienda, producto y seguimiento.
 - **Monitorización:** errores JS y fallos de compra/print visibles en **Salud** del admin; comprobación de disponibilidad cada 30 min con aviso por issue. El seguimiento y los errores pasan por Edge Functions con rate limit atómico por IP, tope global y retención de 90 días.
 - **Cálculo de precio:** el precio del modelo se actualiza al elegir talla; la compra se completa en la tienda.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
 - **Persistencia:** el carrito se guarda en `localStorage` y se sincroniza con Supabase.
 - **Checkout de demostración:** formulario validado (teléfono, estado, CP y referencias), confirmación de pedido y registro en Supabase. No procesa pagos reales.
-- **Panel de administración:** pedidos, estados, carritos abandonados, métricas, embudo, monitorización de errores, facturación global semanal, solicitudes de factura individual y exportación CSV, protegido con Supabase Auth, MFA TOTP obligatorio y cierre por inactividad.
+- **Panel de administración:** pedidos, estados, carritos abandonados, métricas de pedidos pagados (sin demo), embudo, monitorización de errores, facturación global semanal, solicitudes de factura individual con filtro y aviso por correo, y exportación CSV, protegido con Supabase Auth, MFA TOTP obligatorio y cierre por inactividad.
+- **Rendimiento:** fuentes locales, imágenes responsivas `160w/480w/800w`, calendario y vectorizador bajo demanda, y secciones diferidas con `content-visibility`.
 - **Analítica propia:** eventos de visita, carrito y checkout guardados en Supabase.
 - **Guía de tallas, FAQ y newsletter.**
 - **Páginas legales:** aviso de privacidad, política de cookies y términos y condiciones.
@@ -299,6 +300,13 @@ Los correos automáticos de pedido se envían con **Resend** desde `hola@likehoo
 
 La configuración está en `supabase/email-notifications.sql`.
 
+Los hashes de IP del seguimiento y de las solicitudes de factura usan el secreto
+`LOOKUP_IP_SALT`. No es una clave de datos, pero evita que la sal sea pública:
+
+```powershell
+npx supabase secrets set LOOKUP_IP_SALT=<cadena-aleatoria-larga>
+```
+
 ## Pagos con Clip
 
 La integración con **Clip Checkout redireccionado** está creada en `supabase/functions/`:
@@ -462,7 +470,8 @@ Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supab
 ├── privacidad.html   # Aviso de privacidad
 ├── cookies.html      # Política de cookies
 ├── terminos.html     # Términos y condiciones
-├── assets/           # Fotos de producto, máscaras y modelos de la colección
+├── assets/           # Fotos de producto, máscaras, modelos y fuentes locales
+├── assets/fonts/     # Bricolage Grotesque e Inter (WOFF2)
 ├── vendor/           # Supabase JS e ImageTracer fijados localmente
 ├── docs/             # Capturas para la documentación
 ├── .github/          # Plantillas de issue/PR y workflows

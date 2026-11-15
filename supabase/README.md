@@ -111,6 +111,8 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
 - `place_order()` valida cada precio contra `public.product_prices` y rechaza cualquier pedido cuyo `unitPrice` no coincida.
 - `place_order()` exige teléfono de 10–15 dígitos, dirección, ciudad, estado y CP de 5 dígitos; guarda `state` y `address_ref` para la guía de envío.
 - La tabla `coupons` no es legible desde el navegador: los códigos se validan solo con `check_coupon()`.
+- Cada suscriptor confirmado recibe un cupón único, de un solo uso y 90 días. `BIENVENIDA10` queda como código legado limitado a 1,000 usos y un año.
+- `admin_stats()` solo cuenta pedidos con `payment_status = 'paid'`; los pedidos demo no entran en ingresos ni conversión.
 - `get_order_status(numero, correo)` ya no es público: solo lo invoca la Edge Function `order-status`, que aplica rate limit por IP (12 consultas/10 min) y no expone nombre, dirección ni teléfono. El límite se aplica con `take_order_lookup()`, un contador atómico que falla cerrado; usa `cf-connecting-ip` (cabecera que el gateway sobrescribe) y añade un tope global de 300/min.
 - `client_errors` solo lo lee el admin. Los errores se envían por `log_client_error()` o por la Edge Function `client-error`, con límites por sesión/IP y retención de 90 días. El contador `take_client_error()` es atómico (20/h por IP y 2.000/h global) y purga los intentos de más de 2 días.
 - Los carritos y pedidos limitan `items` a 50 artículos y 8 MiB; `place_order()` rechaza además cualquier artículo de más de 4 MiB. Así un carrito anónimo no puede inflar filas de varios MB sin tope.
@@ -246,12 +248,15 @@ los datos fiscales para que el admin emita la factura manualmente en el SAT.
 5. En el admin, pestaña **Facturación → Solicitudes individuales**, revisa los
    datos, captura el UUID y emite. Solo se pueden emitir solicitudes
    verificadas. Cancelar devuelve el pedido a `pending` si estaba `individual`.
+   Puedes filtrar por estado y reenviar la confirmación. Al verificar el cliente,
+   el admin recibe un aviso por correo.
 
 `invoice_requests` guarda RFC, razón social, régimen, CP, uso del CFDI, forma de
 pago SAT (`04`/`28`) y correo de envío. Está protegida con RLS: solo el admin con
 `aal2` puede leerla o actualizarla; el navegador nunca la consulta directamente.
 `take_invoice_request()` aplica 10 intentos/hora por IP y 100/hora global, y
-purga los intentos de más de 2 días.
+purga los intentos de más de 2 días. Los hashes de IP usan `LOOKUP_IP_SALT`;
+configúralo con `npx supabase secrets set LOOKUP_IP_SALT=...`.
 
 ## Privacidad
 
