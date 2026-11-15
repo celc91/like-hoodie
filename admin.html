@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="admin.css?v=20261114-mfa1">
+<link rel="stylesheet" href="admin.css?v=20261114-bill1">
 </head>
 <body>
   <div class="login" id="login-view">
@@ -67,6 +67,7 @@
         <nav class="tabs" aria-label="Secciones del panel">
           <button class="tab is-active" data-section="resumen" type="button">Resumen</button>
           <button class="tab" data-section="pedidos" type="button">Pedidos</button>
+          <button class="tab" data-section="facturacion" type="button">Facturación</button>
           <button class="tab" data-section="carritos" type="button">Carritos</button>
           <button class="tab" data-section="salud" type="button">Salud</button>
         </nav>
@@ -194,6 +195,66 @@
         </div>
       </section>
 
+      <section class="section" data-panel="facturacion" hidden>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Facturación</p>
+            <h1>Global semanal.</h1>
+          </div>
+          <button class="btn btn-dark" type="button" id="billing-refresh">Actualizar</button>
+        </div>
+
+        <p class="billing-note">Cierre los domingos. Emite la global dentro de las 24 horas siguientes. Si un cliente necesita factura individual, márcalo antes del cierre: la global es de público en general y no es deducible. El desglose de IVA/base se confirma con tu contador antes de emitir.</p>
+
+        <div class="toolbar billing-toolbar">
+          <label for="billing-start">Desde</label>
+          <input type="date" id="billing-start" aria-label="Inicio del periodo">
+          <label for="billing-end">Hasta</label>
+          <input type="date" id="billing-end" aria-label="Fin del periodo">
+          <button class="btn btn-ghost" type="button" id="billing-export">Exportar CSV</button>
+        </div>
+
+        <div class="billing-summary" id="billing-summary"></div>
+
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th scope="col">Pedido</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Total</th>
+                <th scope="col">Forma SAT</th>
+                <th scope="col">Facturación</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody id="billing-body"></tbody>
+          </table>
+          <p class="empty" id="billing-empty" hidden>No hay pedidos pagados en este periodo.</p>
+        </div>
+
+        <div class="billing-issue">
+          <h2>Registrar global emitida</h2>
+          <p>Después de emitir el CFDI global en el SAT, captura el UUID y la forma de pago. Se marcarán los pedidos pendientes con esa forma.</p>
+          <div class="billing-issue-grid">
+            <label>Forma SAT
+              <select id="billing-form">
+                <option value="04">04 · Tarjeta de crédito</option>
+                <option value="28">28 · Tarjeta de débito</option>
+              </select>
+            </label>
+            <label>UUID
+              <input id="billing-uuid" type="text" maxlength="36" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off">
+            </label>
+            <label>Notas
+              <input id="billing-notes" type="text" maxlength="500" placeholder="Opcional">
+            </label>
+            <button class="btn btn-dark" type="button" id="billing-mark">Marcar global emitida</button>
+          </div>
+          <p class="form-error" id="billing-error" role="alert" hidden></p>
+        </div>
+      </section>
+
       <section class="section" data-panel="carritos" hidden>
         <div class="section-head">
           <div>
@@ -308,6 +369,6 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="admin.js?v=20261114-mfa2"></script>
+  <script src="admin.js?v=20261114-bill1"></script>
 </body>
 </html>

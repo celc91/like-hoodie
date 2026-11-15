@@ -30,6 +30,18 @@
   const mfaSecretWrap = $("#mfa-secret-wrap");
   const mfaSecret = $("#mfa-secret");
   const mfaCancel = $("#mfa-cancel");
+  const billingStart = $("#billing-start");
+  const billingEnd = $("#billing-end");
+  const billingBody = $("#billing-body");
+  const billingEmpty = $("#billing-empty");
+  const billingSummary = $("#billing-summary");
+  const billingError = $("#billing-error");
+  const billingForm = $("#billing-form");
+  const billingUuid = $("#billing-uuid");
+  const billingNotes = $("#billing-notes");
+  const billingRefresh = $("#billing-refresh");
+  const billingExport = $("#billing-export");
+  const billingMark = $("#billing-mark");
   const setupNote = $("#setup-note");
   const toastEl = $("#toast");
 
@@ -63,6 +75,7 @@
   let toastTimer = null;
   let mfaFactorId = null;
   let idleTimer = null;
+  let billingCache = null;
   const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
   const MFA_QR_PLACEHOLDER =
     "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
@@ -523,6 +536,7 @@
       });
       if (section === "resumen") loadStats();
       if (section === "pedidos") loadOrders();
+      if (section === "facturacion") loadBilling();
       if (section === "carritos") loadCarts();
       if (section === "salud") loadHealth();
     });
@@ -547,6 +561,7 @@
   function loadAll() {
     loadStats();
     loadOrders();
+    loadBilling();
     loadCarts();
     loadHealth();
   }
@@ -753,6 +768,209 @@
     if (next) next.disabled = (ordersPage + 1) * ordersPageSize >= ordersTotal;
   }
 
+  function billingDateValue(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  function setDefaultBillingWeek() {
+    if (!billingStart || !billingEnd) return;
+    if (billingStart.value && billingEnd.value) return;
+    const now = new Date();
+    const end = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() - now.getDay()
+    );
+    const start = new Date(end);
+    start.setDate(end.getDate() - 6);
+    billingStart.value = billingDateValue(start);
+    billingEnd.value = billingDateValue(end);
+  }
+
+  function billingBadge(status) {
+    const labels = {
+      pending: "Pendiente",
+      individual: "Individual",
+      global: "Global",
+    };
+    const classes = {
+      pending: "status-pending",
+      individual: "status-production",
+      global: "status-delivered",
+    };
+    return `<span class="badge ${classes[status] || "status-pending"}">${escapeHTML(
+      labels[status] || status
+    )}</span>`;
+  }
+
+  function billingCard(label, count, total) {
+    return `<article class="billing-card">
+      <span>${escapeHTML(label)}</span>
+      <strong>${Number(count) || 0}</strong>
+      ${total == null ? "" : `<small>${formatMoney(total)}</small>`}
+    </article>`;
+  }
+
+  function setBillingError(message) {
+    if (!billingError) return;
+    billingError.textContent = message;
+    billingError.hidden = !message;
+  }
+
+  function renderBilling(data) {
+    const orders = Array.isArray(data?.orders) ? data.orders : [];
+    const summary = data?.summary || {};
+
+    if (billingSummary) {
+      billingSummary.innerHTML = [
+        billingCard("04 · Crédito", summary.pending_04, summary.total_04),
+        billingCard("28 · Débito", summary.pending_28, summary.total_28),
+        billingCard("Sin forma SAT", summary.pending_none, null),
+        billingCard("Facturas individuales", summary.individual, null),
+        billingCard("Ya en global", summary.global, null),
+      ].join("");
+    }
+
+    if (!billingBody) return;
+    if (billingEmpty) billingEmpty.hidden = orders.length > 0;
+
+    billingBody.innerHTML = orders
+      .map((order) => {
+        const status = order.billing_status || "pending";
+        const form = order.sat_payment_form || "";
+        const isGlobal = status === "global";
+        const options = [
+          ["", "Sin forma"],
+          ["04", "04 · Crédito"],
+          ["28", "28 · Débito"],
+        ]
+          .map(
+            ([value, label]) =>
+              `<option value="${value}" ${value === form ? "selected" : ""}>${label}</option>`
+          )
+          .join("");
+        const actions = isGlobal
+          ? ""
+          : `<button class="btn btn-ghost" type="button" data-billing-save>Guardar</button>${
+              status === "individual"
+                ? '<button class="btn btn-ghost" type="button" data-billing-reactivate>Pendiente</button>'
+                : '<button class="btn btn-ghost" type="button" data-billing-individual>Individual</button>'
+            }`;
+        return `<tr data-billing-order="${escapeHTML(order.id)}" data-billing-status="${escapeHTML(
+          status
+        )}">
+          <td><span class="order-number">LH-${escapeHTML(order.number)}</span></td>
+          <td>${escapeHTML(formatDate(order.created_at))}</td>
+          <td><strong>${formatMoney(order.total)}</strong></td>
+          <td>
+            <select class="billing-form-select" data-billing-form ${
+              isGlobal ? "disabled" : ""
+            } aria-label="Forma de pago SAT del pedido LH-${escapeHTML(order.number)}">
+              ${options}
+            </select>
+          </td>
+          <td>
+            ${billingBadge(status)}
+            ${
+              order.billing_uuid
+                ? `<span class="order-payment">${escapeHTML(order.billing_uuid)}</span>`
+                : ""
+            }
+          </td>
+          <td><div class="billing-row-actions">${actions}</div></td>
+        </tr>`;
+      })
+      .join("");
+  }
+
+  async function loadBilling() {
+    if (!billingStart || !billingEnd) return;
+    setDefaultBillingWeek();
+    const start = billingStart.value;
+    const end = billingEnd.value;
+    if (!start || !end || start > end) {
+      toast("El periodo de facturación no es válido.");
+      return;
+    }
+
+    const { data, error } = await client.rpc("global_invoice_preview", {
+      p_start: start,
+      p_end: end,
+    });
+
+    if (error) {
+      console.warn(error);
+      toast("No se pudo cargar la facturación.");
+      return;
+    }
+
+    billingCache = data;
+    renderBilling(data);
+  }
+
+  async function setBillingOrder(orderId, status, form) {
+    const { error } = await client.rpc("set_order_billing", {
+      p_order_id: orderId,
+      p_status: status,
+      p_sat_form: form || null,
+    });
+    if (error) {
+      console.warn(error);
+      toast("No se pudo actualizar la facturación del pedido.");
+      return;
+    }
+    toast("Facturación del pedido actualizada.");
+    loadBilling();
+  }
+
+  async function markGlobalInvoice() {
+    if (!billingStart || !billingEnd || !billingForm) return;
+    const start = billingStart.value;
+    const end = billingEnd.value;
+    const uuid = String(billingUuid.value || "").trim();
+    const notes = String(billingNotes.value || "").trim();
+
+    if (!start || !end || start > end) {
+      setBillingError("El periodo no es válido.");
+      return;
+    }
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        uuid
+      )
+    ) {
+      setBillingError("Escribe un UUID válido de 36 caracteres.");
+      return;
+    }
+
+    setBillingError("");
+    const { data, error } = await client.rpc("create_global_invoice", {
+      p_start: start,
+      p_end: end,
+      p_payment_form: billingForm.value,
+      p_uuid: uuid,
+      p_notes: notes,
+    });
+
+    if (error) {
+      console.warn(error);
+      setBillingError(
+        "No se pudo registrar. Revisa que haya pedidos pendientes con esa forma de pago."
+      );
+      return;
+    }
+
+    billingUuid.value = "";
+    billingNotes.value = "";
+    toast(
+      `Global registrada: ${data.orders} pedidos · ${formatMoney(data.total)}.`
+    );
+    loadBilling();
+  }
+
   const ordersBody = $("#orders-body");
   if (ordersBody) {
     ordersBody.addEventListener("change", async (event) => {
@@ -780,6 +998,65 @@
       if (!button) return;
       openOrder(button.dataset.orderId);
     });
+  }
+
+  if (billingBody) {
+    billingBody.addEventListener("click", (event) => {
+      const button = event.target.closest(
+        "[data-billing-save], [data-billing-individual], [data-billing-reactivate]"
+      );
+      if (!button) return;
+      const row = button.closest("[data-billing-order]");
+      if (!row) return;
+      const formSelect = row.querySelector("[data-billing-form]");
+      const form = formSelect ? formSelect.value : "";
+      const current = row.dataset.billingStatus || "pending";
+      const status = button.hasAttribute("data-billing-individual")
+        ? "individual"
+        : button.hasAttribute("data-billing-reactivate")
+          ? "pending"
+          : current;
+      setBillingOrder(row.dataset.billingOrder, status, form);
+    });
+  }
+
+  if (billingRefresh) {
+    billingRefresh.addEventListener("click", () => loadBilling());
+  }
+  if (billingStart) {
+    billingStart.addEventListener("change", () => loadBilling());
+  }
+  if (billingEnd) {
+    billingEnd.addEventListener("change", () => loadBilling());
+  }
+  if (billingExport) {
+    billingExport.addEventListener("click", () => {
+      const orders = Array.isArray(billingCache?.orders)
+        ? billingCache.orders
+        : [];
+      if (!orders.length) {
+        toast("No hay pedidos en el periodo.");
+        return;
+      }
+      const rows = [
+        ["Pedido", "Fecha", "Total", "Forma SAT", "Facturación"],
+        ...orders.map((order) => [
+          `LH-${order.number}`,
+          formatDate(order.created_at, false),
+          order.total,
+          order.sat_payment_form || "",
+          order.billing_status || "pending",
+        ]),
+      ];
+      downloadCSV(
+        `facturacion-global-${billingStart.value}_${billingEnd.value}.csv`,
+        rows
+      );
+      toast("CSV exportado.");
+    });
+  }
+  if (billingMark) {
+    billingMark.addEventListener("click", () => markGlobalInvoice());
   }
 
   document.addEventListener("click", async (event) => {

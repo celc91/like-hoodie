@@ -1053,3 +1053,157 @@ a { color: inherit; }
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.billing-note {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--orange);
+  border-radius: 0 10px 10px 0;
+  background: rgba(255, 77, 31, 0.07);
+  color: var(--ink-soft);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.billing-toolbar {
+  align-items: center;
+}
+
+.billing-toolbar label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.billing-toolbar input[type="date"] {
+  width: auto;
+  min-width: 150px;
+}
+
+.billing-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.billing-card {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+}
+
+.billing-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.billing-card strong {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--display);
+  font-size: 20px;
+  letter-spacing: -0.03em;
+}
+
+.billing-card small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10.5px;
+}
+
+.billing-form-select {
+  min-height: 34px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 11px;
+}
+
+.billing-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.billing-row-actions .btn {
+  min-height: 32px;
+  padding: 0 9px;
+  font-size: 9.5px;
+}
+
+.billing-issue {
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+}
+
+.billing-issue h2 {
+  margin: 0 0 6px;
+  font-family: var(--display);
+  font-size: 22px;
+  letter-spacing: -0.03em;
+}
+
+.billing-issue > p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.billing-issue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  align-items: end;
+}
+
+.billing-issue-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.billing-issue-grid input,
+.billing-issue-grid select {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.billing-issue-grid .btn {
+  min-height: 40px;
+}
+
+@media (max-width: 720px) {
+  .billing-toolbar {
+    align-items: stretch;
+  }
+
+  .billing-toolbar input[type="date"] {
+    width: 100%;
+  }
+}

@@ -16,6 +16,34 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.11.0] — 2026-11-14
+
+### Añadido
+
+- **Facturación global semanal** en el admin:
+  - periodo por defecto de lunes a domingo;
+  - pedidos pagados del periodo;
+  - formas SAT `04` y `28`;
+  - exclusión de pedidos marcados como factura individual;
+  - resumen de pendientes, individuales y globales;
+  - exportación CSV;
+  - registro del UUID de la global emitida manualmente.
+- Funciones SQL `global_invoice_preview()`, `set_order_billing()` y
+  `create_global_invoice()` con RLS de admin y `aal2`.
+- Tablas `global_invoices` y `global_invoice_orders` para auditar qué pedidos
+  entraron en cada global.
+- Términos actualizados: cierre dominical, factura individual antes del cierre,
+  global no deducible y emisión dentro de 24 horas.
+
+### Verificado
+
+- `fase9-facturacion-global.sql` aplicada en producción.
+- Preview y creación de global probadas con un pedido de prueba dentro de una
+  transacción con rollback; no quedaron datos.
+- `node --check`, `html-validate` y smoke test con **57 comprobaciones**.
+- No se emite ningún CFDI desde la web: la emisión sigue siendo manual en el
+  SAT.
+
 ## [1.10.2] — 2026-11-14
 
 ### Seguridad

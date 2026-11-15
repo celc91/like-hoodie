@@ -128,6 +128,9 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
   `aal2`; un token de contraseña no puede acceder por API. La sesión vive en
   `sessionStorage` y se cierra al cerrar la pestaña o tras 30 minutos de
   inactividad.
+- La pestaña **Facturación** prepara el cierre global semanal: pedidos pagados,
+  forma SAT 04/28, exclusión de facturas individuales, exportación CSV y
+  registro del UUID. No emite CFDI; la emisión sigue siendo manual.
 
 ## 8. Pagos con Clip
 
@@ -155,6 +158,7 @@ En un proyecto nuevo ejecuta:
 13. `fase7-abuso.sql` (eventos, carritos, logos y `process-logo`)
 14. `antispam-cupones.sql` (límite de intentos de cupón)
 15. `fase8-admin-mfa.sql` (MFA `aal2` obligatorio para admin)
+16. `fase9-facturacion-global.sql` (cierre semanal y factura global)
 
 `fase1-pedidos-seguros.sql` deja una sola versión de `place_order`: recalcula
 precios en servidor, valida cupón, correo, teléfono, dirección, estado y CP, y
