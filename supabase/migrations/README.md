@@ -30,6 +30,9 @@ npx supabase db query --remote --yes --file supabase/migrations/20261115000200_f
 - `20261115000400_cupones_unicos.sql`
   - cada suscriptor confirmado recibe un cupón único, de un solo uso y 90 días;
   - el código antiguo `BIENVENIDA10` queda limitado a 1,000 usos y un año.
+- `20261115000500_aviso_factura.sql`
+  - avisa por correo al admin cuando una solicitud de factura queda verificada;
+  - retira `has_resend_key()` de `anon`.
 
 Las migraciones son idempotentes: se pueden volver a ejecutar. No ejecutes
 `security-hardening.sql` sobre una base ya migrada sin revisar antes la versión

@@ -31,6 +31,12 @@ semántico.
 - **Admin:** botón de acceso con contraste suficiente y landmark `main` en la
   pantalla de login.
 - **Pies de producto:** añadido el enlace a facturación.
+- **Solicitudes individuales:** filtro por estado y aviso por correo al admin
+  cuando el cliente confirma la solicitud.
+- **Privacidad:** aclarada la retención de solicitudes de factura, logos y
+  archivos de impresión.
+- **Disponibilidad:** el chequeo también vigila `factura.html` e
+  `invoice-request`.
 
 ### Rendimiento
 

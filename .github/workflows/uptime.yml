@@ -49,6 +49,7 @@ jobs:
           check "CSS" "https://likehoodie.com/styles.css" ""
           check "Producto" "https://likehoodie.com/modelos/cocodrilo.html" "Cocodrilo de Miami"
           check "Seguimiento" "https://likehoodie.com/pedido.html" "data-track-form"
+          check "Factura" "https://likehoodie.com/factura.html" "data-invoice-form"
           check "Admin" "https://likehoodie.com/admin.html" "Administración"
 
           key=$(grep -o 'sb_publishable_[A-Za-z0-9_]*' supabase-config.js | head -1)
@@ -59,6 +60,14 @@ jobs:
           if [ "$rpc_code" != "200" ] || ! grep -q '"found":false' /tmp/rpc.json; then
             fail=1
             report="${report}- Edge Function order-status: HTTP ${rpc_code}\n"
+          fi
+
+          invoice_code=$(curl -sS --retry 2 --retry-delay 4 -o /dev/null -w "%{http_code}" --max-time 20 \
+            -X OPTIONS "https://qrblsclpzoaxfaggsrda.supabase.co/functions/v1/invoice-request" \
+            -H "Origin: https://likehoodie.com" -H "Access-Control-Request-Method: POST" || echo "000")
+          if [ "$invoice_code" != "200" ]; then
+            fail=1
+            report="${report}- Edge Function invoice-request: HTTP ${invoice_code}\n"
           fi
 
           if [ "$fail" = "1" ]; then

@@ -289,6 +289,17 @@
           </div>
           <p>Solicitudes enviadas desde el formulario público. El cliente debe confirmar el correo de compra. Revisa los datos fiscales, emite el CFDI individual en el SAT y captura el UUID. Si la solicitud no procede, cancélala para liberar el pedido.</p>
 
+          <div class="toolbar request-toolbar">
+            <label for="requests-status">Estado</label>
+            <select id="requests-status" aria-label="Filtrar solicitudes por estado">
+              <option value="">Todas</option>
+              <option value="unverified">Sin confirmar</option>
+              <option value="review">Por revisar</option>
+              <option value="issued">Emitidas</option>
+              <option value="cancelled">Canceladas</option>
+            </select>
+          </div>
+
           <div class="table-wrap">
             <table class="admin-table">
               <thead>
@@ -425,6 +436,6 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="admin.js?v=20261115-inv3"></script>
+  <script src="admin.js?v=20261115-inv4"></script>
 </body>
 </html>

@@ -23,6 +23,7 @@ const invoiceJs = read("factura.js");
 const invoiceFn = read("supabase/functions/invoice-request/index.ts");
 const adminStats = read("supabase/migrations/20261115000300_admin_stats_pagados.sql");
 const couponSql = read("supabase/migrations/20261115000400_cupones_unicos.sql");
+const noticeSql = read("supabase/migrations/20261115000500_aviso_factura.sql");
 const confirmJs = read("confirmar.js");
 const styles = read("styles.css");
 
@@ -85,6 +86,10 @@ check(
     couponSql.includes("max_uses") &&
     !app.includes("BIENVENIDA10") &&
     !confirmJs.includes("BIENVENIDA10")
+);
+check(
+  "factura: admin avisado al confirmar",
+  noticeSql.includes("send_invoice_admin_email") && noticeSql.includes("confirm_invoice_request")
 );
 check(
   "rendimiento: fuentes locales",

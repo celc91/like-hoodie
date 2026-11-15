@@ -51,6 +51,7 @@
   const requestsEmpty = $("#requests-empty");
   const requestsError = $("#requests-error");
   const requestsRefresh = $("#requests-refresh");
+  const requestsStatus = $("#requests-status");
   const setupNote = $("#setup-note");
   const toastEl = $("#toast");
 
@@ -1167,13 +1168,19 @@
     if (!requestsBody) return;
     setRequestsError("");
 
-    const { data, error } = await client
+    const query = client
       .from("invoice_requests")
       .select(
         "id, order_number, purchase_email, rfc, legal_name, tax_regime, zip, cfdi_use, invoice_email, notes, status, sat_payment_form, uuid, issued_at, verification_sent_at, verified_at, created_at"
       )
       .order("created_at", { ascending: false })
       .limit(100);
+
+    if (requestsStatus && requestsStatus.value) {
+      query.eq("status", requestsStatus.value);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.warn(error);
@@ -1341,6 +1348,10 @@
 
   if (requestsRefresh) {
     requestsRefresh.addEventListener("click", () => loadInvoiceRequests());
+  }
+
+  if (requestsStatus) {
+    requestsStatus.addEventListener("change", () => loadInvoiceRequests());
   }
 
   if (requestsBody) {

@@ -178,6 +178,7 @@ En un proyecto nuevo ejecuta:
 19. `supabase/migrations/20261115000200_facturacion_verificacion.sql` (correo y forma SAT)
 20. `supabase/migrations/20261115000300_admin_stats_pagados.sql` (métricas sin demo)
 21. `supabase/migrations/20261115000400_cupones_unicos.sql` (cupón único por suscriptor)
+22. `supabase/migrations/20261115000500_aviso_factura.sql` (aviso al admin y helper Resend)
 
 Las migraciones nuevas viven en [`migrations/`](migrations/README.md) y son
 idempotentes. Después de la lista anterior, ejecuta las migraciones en orden.
