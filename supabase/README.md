@@ -128,6 +128,13 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
   `aal2`; un token de contraseña no puede acceder por API. La sesión vive en
   `sessionStorage` y se cierra al cerrar la pestaña o tras 30 minutos de
   inactividad.
+- **Primer acceso:** el panel muestra un QR y un secreto para enrolar la app
+  TOTP. Hay que verificar el código de 6 dígitos antes de entrar. En los
+  siguientes accesos solo se pide el código, no volver a escanear.
+- No hay códigos de recuperación: guarda el secreto manual en un lugar seguro.
+  Si se pierde el dispositivo, elimina el factor en **Supabase Dashboard →
+  Authentication → Users → usuario → MFA factors** y vuelve a enrolar. Sin acceso
+  al dashboard no se puede recuperar el panel.
 - La pestaña **Facturación** prepara el cierre global semanal: pedidos pagados,
   forma SAT 04/28, exclusión de facturas individuales, exportación CSV y
   registro del UUID. No emite CFDI; la emisión sigue siendo manual.

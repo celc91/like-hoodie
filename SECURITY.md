@@ -20,6 +20,7 @@ políticas SQL y las Edge Functions de Supabase. También es relevante:
 
 - El bucket privado `order-logos` (originales) y `order-prints` (derivados).
 - La Edge Function `process-logo`.
+- La Edge Function `invoice-request` y la tabla privada `invoice_requests`.
 - Las funciones de Clip (`clip-checkout`, `clip-pay`, `clip-webhook`).
 - La autenticación de Supabase y la tabla `profiles` con el rol de administrador.
 
@@ -37,7 +38,16 @@ políticas SQL y las Edge Functions de Supabase. También es relevante:
   limpieza de carritos abandonados.
 - El panel de administración exige **MFA TOTP**; `is_admin()` solo concede
   permisos con `aal2`, la sesión vive en `sessionStorage` y se cierra tras 30
-  minutos de inactividad.
+  minutos de inactividad. El primer acceso obliga a enrolar la app TOTP con un
+  QR; después solo se pide el código de 6 dígitos.
+- No hay códigos de recuperación de MFA. El secreto debe guardarse fuera del
+  repositorio y conservar acceso al dashboard de Supabase. Si se pierde el
+  dispositivo, se elimina el factor en **Authentication → Users → MFA factors**
+  y se vuelve a enrolar.
+- La solicitud pública de factura individual usa `invoice-request`, valida el
+  pedido con `service_role` y aplica 10 intentos/hora por IP y 100/hora global.
+  `invoice_requests` no es legible ni escribible desde el navegador; solo el
+  admin con `aal2` puede consultarla y actualizarla.
 - Cloudflare va delante de GitHub Pages con SSL **Full (strict)**, HSTS,
   `nosniff`, `Referrer-Policy`, `Permissions-Policy`, una CSP por origen sin
   scripts inline y redirección `www` al dominio principal. Los registros de

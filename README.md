@@ -236,9 +236,17 @@ Cuando GitHub verifique el dominio y emita el certificado, activa **Enforce HTTP
 
 La tienda guarda carritos, pedidos y eventos en **Supabase**. El panel está en `admin.html` y requiere iniciar sesión con un usuario administrador.
 
-En el primer acceso, el panel obliga a configurar **MFA TOTP** con una app autenticadora. `is_admin()` solo concede permisos con una sesión `aal2`, así que un token de contraseña (`aal1`) no puede leer pedidos ni usar el panel por API. La sesión se cierra tras **30 minutos de inactividad**. Si se pierde el autenticador, hay que eliminar el factor desde Supabase Auth y volver a configurarlo.
+### Acceso al panel y MFA TOTP
 
-Para configurarlo:
+El panel exige **dos factores**. La contraseña sola deja la sesión en `aal1`; `is_admin()` solo concede permisos con `aal2`, así que sin el segundo factor no se pueden leer pedidos, usar las RPC de facturación ni acceder al panel por API.
+
+- **Primer acceso:** el panel muestra un **QR** y un secreto para enrolar una app TOTP (Google Authenticator, Authy, 1Password, Microsoft Authenticator). Escanea el QR, escribe el código de 6 dígitos y el factor queda verificado. Hasta completarlo no se entra al panel.
+- **Siguientes accesos:** solo se pide el **código de 6 dígitos**, que cambia cada 30 segundos. No hay que volver a escanear el QR.
+- **Sesión:** vive en `sessionStorage`; se cierra al cerrar la pestaña o tras **30 minutos de inactividad**, y hay que volver a introducir el código.
+- **Sin códigos de recuperación:** guarda el **secreto manual** en un lugar seguro (por ejemplo, tu gestor de contraseñas) y conserva acceso al dashboard de Supabase.
+- **Si se pierde el dispositivo:** elimina el factor en **Supabase Dashboard → Authentication → Users → tu usuario → MFA factors** y vuelve a enrolar. Sin acceso al dashboard no hay forma de recuperar el panel.
+
+Para configurar el proyecto:
 
 1. Sigue los pasos de [`supabase/README.md`](supabase/README.md).
 2. Pega la URL y la publishable key del proyecto en `supabase-config.js`.
@@ -420,14 +428,14 @@ La configuración de ambos buckets y sus políticas RLS está en `supabase/stora
 - `supabase/email-notifications.sql` envía los correos de pedido con Resend.
 - `supabase/clip-payments.sql` prepara los estados de pago y la configuración de Clip.
 - `supabase/logo-assets.sql` crea la tabla `logo_assets`, el bucket privado `order-prints` y sus políticas.
-- `supabase/functions/` contiene las Edge Functions de Clip y `process-logo`.
+- `supabase/functions/` contiene las Edge Functions de Clip, `process-logo` e `invoice-request`.
 - `vendor/supabase-js.min.js` fija Supabase JS 2.119.0 en local para evitar dependencias flotantes de CDN.
 - `vendor/imagetracer-1.2.6.js` fija el motor de vectorización en el navegador.
 - **Cloudflare** aplica CSP, HSTS y cabeceras de seguridad, bloquea los archivos internos (`/supabase/`, `/scripts/`, `*.sql`, `*.ts`, `*.md`) y redirige `www` al dominio principal. La CSP no permite scripts inline (`script-src` sin `unsafe-inline`); los estilos inline siguen permitidos. DMARC está en `quarantine`, con CAA y DNSSEC activado (DS en propagación por Cloudflare Registrar).
-- El panel de administración exige **MFA TOTP**, guarda la sesión en `sessionStorage` y la cierra a los 30 minutos de inactividad.
+- El panel de administración exige **MFA TOTP**, guarda la sesión en `sessionStorage` y la cierra a los 30 minutos de inactividad. El primer acceso obliga a enrolar la app con QR; después solo se pide el código de 6 dígitos. No hay códigos de recuperación: si se pierde el dispositivo, se elimina el factor en Supabase y se vuelve a enrolar.
 - `/.well-known/security.txt` indica cómo reportar una vulnerabilidad.
 
-Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supabase/README.md) (desde `schema.sql` hasta `fase8-admin-mfa.sql`) y despliega `process-logo`.
+Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supabase/README.md) (desde `schema.sql` hasta `fase10-facturacion-individual.sql`) y despliega `process-logo` e `invoice-request`.
 
 ## Estructura
 
@@ -444,8 +452,10 @@ Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supab
 ├── admin.html        # Panel de administración
 ├── admin.js          # Lógica del panel
 ├── admin.css         # Diseño del panel
+├── factura.html      # Solicitud pública de factura individual
+├── factura.js        # Envío de la solicitud a invoice-request
 ├── .well-known/      # security.txt
-├── supabase/         # Esquema SQL, políticas y Edge Functions (Clip y process-logo)
+├── supabase/         # Esquema SQL, políticas y Edge Functions (Clip, process-logo e invoice-request)
 ├── scripts/          # Sincronización de la cartelera de eventos
 ├── legal.js          # Aviso de cookies y almacenamiento local
 ├── privacidad.html   # Aviso de privacidad
