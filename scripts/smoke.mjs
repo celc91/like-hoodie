@@ -59,7 +59,7 @@ check("seguimiento: columnas", trackSql.includes("tracking_number") && trackSql.
 
 const invoicePage = read("factura.html");
 const invoiceJs = read("factura.js");
-const invoiceSql = read("supabase/fase10-facturacion-individual.sql");
+const invoiceSql = read("supabase/fase10-facturacion-individual.sql") + read("supabase/migrations/20261115000200_facturacion_verificacion.sql");
 const supabaseConfig = read("supabase/config.toml");
 check("factura: formulario", invoicePage.includes("data-invoice-form"));
 check("factura: endpoint", invoiceJs.includes("/functions/v1/invoice-request"));
@@ -69,6 +69,11 @@ check(
   "sql: factura individual",
   invoiceSql.includes("invoice_requests") && invoiceSql.includes("take_invoice_request")
 );
+check(
+  "sql: factura verifica correo",
+  invoiceSql.includes("verify_token") && invoiceSql.includes("confirm_invoice_request")
+);
+check("sql: factura forma SAT", invoiceSql.includes("sat_payment_form"));
 check(
   "factura: función sin JWT",
   /\[functions\.invoice-request\][\s\S]*?verify_jwt\s*=\s*false/.test(supabaseConfig)

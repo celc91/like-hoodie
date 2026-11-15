@@ -256,7 +256,7 @@ Mientras `supabase-config.js` tenga los valores de ejemplo, la tienda funciona e
 
 ### Facturación
 
-Las ventas se facturan con una **global semanal** de público en general. El admin revisa los pedidos pagados, asigna la forma SAT `04` o `28` y registra el UUID de la global emitida manualmente. Si un cliente pide factura individual antes del cierre del domingo, puede enviarla desde `/factura.html`; el pedido se marca como individual y se excluye de la global. La emisión del CFDI y el desglose de IVA/base siguen siendo manuales y requieren confirmación fiscal.
+Las ventas se facturan con una **global semanal** de público en general. El admin revisa los pedidos pagados, asigna la forma SAT `04` o `28` y registra el UUID de la global emitida manualmente. Si un cliente pide factura individual antes del cierre del domingo, puede enviarla desde `/factura.html`; la solicitud se confirma por correo, pasa a revisión y el pedido se excluye de la global cuando el cliente valida el enlace. El admin captura la forma de pago SAT y el UUID al emitir. La emisión del CFDI y el desglose de IVA/base siguen siendo manuales y requieren confirmación fiscal.
 
 ## Medición y consentimiento
 
@@ -435,7 +435,7 @@ La configuración de ambos buckets y sus políticas RLS está en `supabase/stora
 - El panel de administración exige **MFA TOTP**, guarda la sesión en `sessionStorage` y la cierra a los 30 minutos de inactividad. El primer acceso obliga a enrolar la app con QR; después solo se pide el código de 6 dígitos. No hay códigos de recuperación: si se pierde el dispositivo, se elimina el factor en Supabase y se vuelve a enrolar.
 - `/.well-known/security.txt` indica cómo reportar una vulnerabilidad.
 
-Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supabase/README.md) (desde `schema.sql` hasta `fase10-facturacion-individual.sql`) y despliega `process-logo` e `invoice-request`.
+Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supabase/README.md) (desde `schema.sql` hasta `fase10-facturacion-individual.sql` y las migraciones de `supabase/migrations/`) y despliega `process-logo` e `invoice-request`.
 
 ## Estructura
 
@@ -456,6 +456,7 @@ Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supab
 ├── factura.js        # Envío de la solicitud a invoice-request
 ├── .well-known/      # security.txt
 ├── supabase/         # Esquema SQL, políticas y Edge Functions (Clip, process-logo e invoice-request)
+├── supabase/migrations/ # Migraciones nuevas versionadas
 ├── scripts/          # Sincronización de la cartelera de eventos
 ├── legal.js          # Aviso de cookies y almacenamiento local
 ├── privacidad.html   # Aviso de privacidad

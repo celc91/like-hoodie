@@ -7,8 +7,8 @@
 <title>Administración — like hoodie ♡</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400..900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="admin.css?v=20261115-inv1">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css?v=20261115-inv2">
 </head>
 <body>
   <div class="login" id="login-view">
@@ -204,7 +204,9 @@
           <button class="btn btn-dark" type="button" id="billing-refresh">Actualizar</button>
         </div>
 
-        <p class="billing-note">Cierre los domingos. Emite la global dentro de las 24 horas siguientes. Si un cliente necesita factura individual, márcalo antes del cierre: la global es de público en general y no es deducible. El desglose de IVA/base se confirma con tu contador antes de emitir.</p>
+        <p class="billing-note">Cierre los domingos. Emite la global dentro de las 24 horas siguientes. Si un cliente necesita factura individual, debe solicitarla y confirmar su correo antes del cierre: la global es de público en general y no es deducible. El desglose de IVA/base se confirma con tu contador antes de emitir.</p>
+
+        <p class="billing-reminder" id="billing-reminder" hidden></p>
 
         <div class="toolbar billing-toolbar">
           <label for="billing-start">Desde</label>
@@ -254,12 +256,39 @@
           <p class="form-error" id="billing-error" role="alert" hidden></p>
         </div>
 
+        <div class="billing-issue" id="billing-history">
+          <div class="billing-requests-head">
+            <h2>Globales emitidas</h2>
+            <button class="btn btn-ghost" type="button" id="history-refresh">Actualizar</button>
+          </div>
+          <p>Historial de facturas globales registradas, con periodo, forma de pago, total y UUID.</p>
+
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th scope="col">Periodo</th>
+                  <th scope="col">Forma SAT</th>
+                  <th scope="col">Total</th>
+                  <th scope="col">UUID</th>
+                  <th scope="col">Emitida</th>
+                  <th scope="col">Notas</th>
+                </tr>
+              </thead>
+              <tbody id="history-body"></tbody>
+            </table>
+            <p class="empty" id="history-empty" hidden>No hay facturas globales registradas.</p>
+          </div>
+
+          <p class="form-error" id="history-error" role="alert" hidden></p>
+        </div>
+
         <div class="billing-issue" id="invoice-requests">
           <div class="billing-requests-head">
             <h2>Solicitudes individuales</h2>
             <button class="btn btn-ghost" type="button" id="requests-refresh">Actualizar</button>
           </div>
-          <p>Solicitudes enviadas desde el formulario público. Revisa los datos fiscales, emite el CFDI individual en el SAT y captura el UUID. Si la solicitud no procede, cancélala para liberar el pedido.</p>
+          <p>Solicitudes enviadas desde el formulario público. El cliente debe confirmar el correo de compra. Revisa los datos fiscales, emite el CFDI individual en el SAT y captura el UUID. Si la solicitud no procede, cancélala para liberar el pedido.</p>
 
           <div class="table-wrap">
             <table class="admin-table">
@@ -268,6 +297,7 @@
                   <th scope="col">Pedido</th>
                   <th scope="col">Solicitud</th>
                   <th scope="col">Datos fiscales</th>
+                  <th scope="col">Forma SAT</th>
                   <th scope="col">Estado</th>
                   <th scope="col">UUID</th>
                   <th scope="col"></th>
@@ -396,6 +426,6 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="admin.js?v=20261115-inv1"></script>
+  <script src="admin.js?v=20261115-inv2"></script>
 </body>
 </html>

@@ -31,3 +31,5 @@ jobs:
         run: npx --yes html-validate@8 './*.html' './modelos/*.html'
       - name: Smoke test
         run: node scripts/smoke.mjs
+      - name: Precios y facturación
+        run: node scripts/check-prices.mjs

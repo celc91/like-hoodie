@@ -3131,6 +3131,29 @@
     renderVectorResult(design);
   }
 
+  let vectorizerLoad = null;
+
+  function loadVectorizer() {
+    if (window.LikeVectorize) return Promise.resolve();
+    if (vectorizerLoad) return vectorizerLoad;
+
+    vectorizerLoad = new Promise((resolve, reject) => {
+      const trace = document.createElement("script");
+      trace.src = "vendor/imagetracer-1.2.6.js?v=20261113-vec1";
+      trace.onload = () => {
+        const vector = document.createElement("script");
+        vector.src = "vectorize.js?v=20261115-perf1";
+        vector.onload = () => resolve();
+        vector.onerror = () => reject(new Error("vectorize"));
+        document.head.appendChild(vector);
+      };
+      trace.onerror = () => reject(new Error("imagetracer"));
+      document.head.appendChild(trace);
+    });
+
+    return vectorizerLoad;
+  }
+
   async function runVectorizer() {
     if (vectorBusy) return;
 
@@ -3138,8 +3161,12 @@
     if (!design.logo) return;
 
     if (!window.LikeVectorize) {
-      showToast("El vectorizador no está disponible en este navegador.");
-      return;
+      try {
+        await loadVectorizer();
+      } catch (error) {
+        showToast("El vectorizador no está disponible en este navegador.");
+        return;
+      }
     }
 
     const source = vectorSource(design);
@@ -5459,4 +5486,20 @@
       true
     );
   });
+
+  function loadDisplayFonts() {
+    if (document.getElementById("lh-display-fonts")) return;
+    const link = document.createElement("link");
+    link.id = "lh-display-fonts";
+    link.rel = "stylesheet";
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Playfair+Display:wght@600;700;800&display=swap";
+    document.head.appendChild(link);
+  }
+
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(loadDisplayFonts, { timeout: 2200 });
+  } else {
+    window.setTimeout(loadDisplayFonts, 1200);
+  }
 })();

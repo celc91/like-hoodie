@@ -42,6 +42,11 @@
   const billingRefresh = $("#billing-refresh");
   const billingExport = $("#billing-export");
   const billingMark = $("#billing-mark");
+  const billingReminder = $("#billing-reminder");
+  const historyBody = $("#history-body");
+  const historyEmpty = $("#history-empty");
+  const historyError = $("#history-error");
+  const historyRefresh = $("#history-refresh");
   const requestsBody = $("#requests-body");
   const requestsEmpty = $("#requests-empty");
   const requestsError = $("#requests-error");
@@ -542,6 +547,7 @@
       if (section === "pedidos") loadOrders();
       if (section === "facturacion") {
         loadBilling();
+        loadGlobalHistory();
         loadInvoiceRequests();
       }
       if (section === "carritos") loadCarts();
@@ -569,6 +575,7 @@
     loadStats();
     loadOrders();
     loadBilling();
+    loadGlobalHistory();
     loadInvoiceRequests();
     loadCarts();
     loadHealth();
@@ -828,9 +835,35 @@
     billingError.hidden = !message;
   }
 
+  function renderBillingReminder(pending) {
+    if (!billingReminder) return;
+    const weekday = new Intl.DateTimeFormat("en-US", {
+      weekday: "short",
+      timeZone: "America/Mexico_City",
+    })
+      .format(new Date())
+      .toLowerCase();
+    const closingDay = weekday === "sun" || weekday === "mon";
+    if (pending > 0 && closingDay) {
+      billingReminder.textContent = `Cierre semanal pendiente: hay ${pending} pedido${
+        pending === 1 ? "" : "s"
+      } pagado${pending === 1 ? "" : "s"} sin factura global. Emite la global dentro de las 24 horas siguientes al domingo.`;
+      billingReminder.hidden = false;
+    } else {
+      billingReminder.hidden = true;
+      billingReminder.textContent = "";
+    }
+  }
+
   function renderBilling(data) {
     const orders = Array.isArray(data?.orders) ? data.orders : [];
     const summary = data?.summary || {};
+
+    const pending =
+      (Number(summary.pending_04) || 0) +
+      (Number(summary.pending_28) || 0) +
+      (Number(summary.pending_none) || 0);
+    renderBillingReminder(pending);
 
     if (billingSummary) {
       billingSummary.innerHTML = [
@@ -977,9 +1010,58 @@
       `Global registrada: ${data.orders} pedidos · ${formatMoney(data.total)}.`
     );
     loadBilling();
+    loadGlobalHistory();
+  }
+
+  function setHistoryError(message) {
+    if (!historyError) return;
+    historyError.textContent = message || "";
+    historyError.hidden = !message;
+  }
+
+  function renderGlobalHistory(invoices) {
+    if (!historyBody) return;
+    if (historyEmpty) historyEmpty.hidden = invoices.length > 0;
+
+    historyBody.innerHTML = invoices
+      .map(
+        (invoice) => `<tr>
+          <td>${escapeHTML(invoice.period_start)} → ${escapeHTML(invoice.period_end)}</td>
+          <td>${escapeHTML(invoice.payment_form)} · ${
+            invoice.payment_form === "04" ? "Crédito" : "Débito"
+          }</td>
+          <td><strong>${formatMoney(invoice.total)}</strong></td>
+          <td><span class="order-payment">${escapeHTML(invoice.uuid)}</span></td>
+          <td>${escapeHTML(formatDate(invoice.issued_at))}</td>
+          <td>${invoice.notes ? escapeHTML(invoice.notes) : "—"}</td>
+        </tr>`
+      )
+      .join("");
+  }
+
+  async function loadGlobalHistory() {
+    if (!historyBody) return;
+    setHistoryError("");
+
+    const { data, error } = await client
+      .from("global_invoices")
+      .select("period_start, period_end, payment_form, total, uuid, issued_at, notes")
+      .order("issued_at", { ascending: false })
+      .limit(24);
+
+    if (error) {
+      console.warn(error);
+      setHistoryError(
+        "No se pudo cargar el historial de globales. Revisa que la migración fase9 esté aplicada."
+      );
+      return;
+    }
+
+    renderGlobalHistory(Array.isArray(data) ? data : []);
   }
 
   const REQUEST_STATUS_LABELS = {
+    unverified: "Sin confirmar",
     pending: "Pendiente",
     review: "Revisar",
     issued: "Emitida",
@@ -988,6 +1070,7 @@
 
   function requestBadge(status) {
     const classes = {
+      unverified: "status-abandoned",
       pending: "status-pending",
       review: "status-production",
       issued: "status-delivered",
@@ -1011,6 +1094,7 @@
     requestsBody.innerHTML = requests
       .map((request) => {
         const status = request.status || "pending";
+        const form = request.sat_payment_form || "";
         const fiscal = [
           `<strong class="request-rfc">${escapeHTML(request.rfc)}</strong>`,
           escapeHTML(request.legal_name),
@@ -1023,16 +1107,36 @@
           .map((line) => `<span>${line}</span>`)
           .join("");
 
-        const actions =
-          status === "pending" || status === "review"
-            ? `<div class="request-actions">
-                <input class="request-uuid" type="text" maxlength="36" autocomplete="off" spellcheck="false" placeholder="UUID del CFDI" aria-label="UUID de la factura del pedido LH-${escapeHTML(
-                  request.order_number
-                )}" data-request-uuid>
-                <button class="btn btn-ghost" type="button" data-request-issue>Marcar emitida</button>
-                <button class="btn btn-ghost" type="button" data-request-cancel>Cancelar</button>
-              </div>`
-            : "";
+        let actions = "";
+        if (status === "unverified") {
+          actions = `<div class="request-actions">
+              <button class="btn btn-ghost" type="button" data-request-resend>Reenviar correo</button>
+              <button class="btn btn-ghost" type="button" data-request-cancel>Cancelar</button>
+            </div>`;
+        } else if (status === "review") {
+          actions = `<div class="request-actions">
+              <input class="request-uuid" type="text" maxlength="36" autocomplete="off" spellcheck="false" placeholder="UUID del CFDI" aria-label="UUID de la factura del pedido LH-${escapeHTML(
+                request.order_number
+              )}" data-request-uuid>
+              <button class="btn btn-ghost" type="button" data-request-issue>Marcar emitida</button>
+              <button class="btn btn-ghost" type="button" data-request-cancel>Cancelar</button>
+            </div>`;
+        } else if (status !== "issued") {
+          actions = `<div class="request-actions">
+              <button class="btn btn-ghost" type="button" data-request-cancel>Cancelar</button>
+            </div>`;
+        }
+
+        const statusDetail =
+          status === "unverified" && request.verification_sent_at
+            ? `<span class="customer-email">Correo enviado ${escapeHTML(
+                formatDate(request.verification_sent_at)
+              )}</span>`
+            : status === "review" && request.verified_at
+              ? `<span class="customer-email">Correo confirmado ${escapeHTML(
+                  formatDate(request.verified_at)
+                )}</span>`
+              : "";
 
         return `<tr data-request-id="${escapeHTML(request.id)}">
           <td>
@@ -1041,7 +1145,8 @@
           </td>
           <td>${escapeHTML(formatDate(request.created_at))}</td>
           <td><div class="request-fiscal">${fiscal}</div></td>
-          <td>${requestBadge(status)}</td>
+          <td>${form ? `${escapeHTML(form)} · ${form === "04" ? "Crédito" : "Débito"}` : "—"}</td>
+          <td>${requestBadge(status)}${statusDetail}</td>
           <td>${
             request.uuid
               ? `<span class="order-payment">${escapeHTML(request.uuid)}</span><span class="customer-email">${escapeHTML(
@@ -1062,7 +1167,7 @@
     const { data, error } = await client
       .from("invoice_requests")
       .select(
-        "id, order_number, purchase_email, rfc, legal_name, tax_regime, zip, cfdi_use, invoice_email, notes, status, uuid, issued_at, created_at"
+        "id, order_number, purchase_email, rfc, legal_name, tax_regime, zip, cfdi_use, invoice_email, notes, status, sat_payment_form, uuid, issued_at, verification_sent_at, verified_at, created_at"
       )
       .order("created_at", { ascending: false })
       .limit(100);
@@ -1070,7 +1175,7 @@
     if (error) {
       console.warn(error);
       setRequestsError(
-        "No se pudieron cargar las solicitudes individuales. Revisa que la migración fase10 esté aplicada."
+        "No se pudieron cargar las solicitudes individuales. Revisa que la migración de facturación esté aplicada."
       );
       return;
     }
@@ -1096,7 +1201,7 @@
     if (error) {
       console.warn(error);
       setRequestsError(
-        "No se pudo marcar como emitida. Si el pedido ya está en una global, ajusta la global primero."
+        "No se pudo marcar como emitida. Confirma que el cliente validó el correo y que el pedido no está en una global."
       );
       return;
     }
@@ -1119,6 +1224,24 @@
     toast("Solicitud cancelada.");
     loadInvoiceRequests();
     loadBilling();
+  }
+
+  async function resendInvoiceVerification(id) {
+    setRequestsError("");
+    const { data, error } = await client.rpc("resend_invoice_verification", {
+      p_request_id: id,
+    });
+    if (error) {
+      console.warn(error);
+      setRequestsError("No se pudo reenviar el correo de confirmación.");
+      return;
+    }
+    toast(
+      data && data.email_sent
+        ? "Correo de confirmación reenviado."
+        : "No se pudo enviar el correo. Revisa la configuración de Resend."
+    );
+    loadInvoiceRequests();
   }
 
   const ordersBody = $("#orders-body");
@@ -1209,6 +1332,10 @@
     billingMark.addEventListener("click", () => markGlobalInvoice());
   }
 
+  if (historyRefresh) {
+    historyRefresh.addEventListener("click", () => loadGlobalHistory());
+  }
+
   if (requestsRefresh) {
     requestsRefresh.addEventListener("click", () => loadInvoiceRequests());
   }
@@ -1217,12 +1344,18 @@
     requestsBody.addEventListener("click", (event) => {
       const issue = event.target.closest("[data-request-issue]");
       const cancel = event.target.closest("[data-request-cancel]");
+      const resend = event.target.closest("[data-request-resend]");
       const row = event.target.closest("[data-request-id]");
       if (!row) return;
 
       if (issue) {
         const input = row.querySelector("[data-request-uuid]");
         issueInvoiceRequest(row.dataset.requestId, String(input?.value || "").trim());
+        return;
+      }
+
+      if (resend) {
+        resendInvoiceVerification(row.dataset.requestId);
         return;
       }
 

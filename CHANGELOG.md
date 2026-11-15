@@ -16,6 +16,45 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.13.0] — 2026-11-15
+
+### Corregido
+
+- **Checkout del tote:** los precios ahora dependen del producto. Se añadieron
+  colores, materiales (`loneta12`, `loneta10`, `reciclada`) y técnicas del tote a
+  `product_prices`; `item_unit_price()` valida `product`.
+- **Checkout del blanco:** se añadió `#ffffff` ($949) a los precios de sudadera.
+  Esto también repara el modelo **Cocodrilo de Miami** ($1,048).
+- `security-hardening.sql` queda alineado con la nueva tabla de precios por
+  producto.
+
+### Añadido
+
+- **Verificación por correo de la factura individual:** la solicitud nace
+  `unverified`, recibe un enlace de 24 h y solo pasa a `review` al confirmarlo.
+- El pedido se marca `individual` al confirmar el correo, no al enviar el
+  formulario.
+- **Forma de pago SAT** (`04`/`28`) en el formulario y en la solicitud.
+- El admin puede **reenviar la confirmación**, consultar el historial de
+  globales emitidas y recibe un recordatorio de cierre semanal en el panel.
+- Migraciones versionadas en `supabase/migrations/`.
+- Comprobación de precios y facturación en CI (`scripts/check-prices.mjs`).
+
+### Rendimiento
+
+- Vectorizador e ImageTracer se cargan solo al usarlos.
+- El calendario de eventos se renderiza cuando se acerca al viewport.
+- Las fuentes decorativas se cargan después del contenido principal.
+- Imágenes responsivas `480w`/`800w` para la sudadera y `srcset` en la home.
+
+### Verificado
+
+- `place_order()` probado en producción con blanco, tote y Cocodrilo dentro de
+  una transacción con rollback.
+- Flujo de factura probado con un pedido temporal y correo de prueba de Resend:
+  `unverified` → `review` → `issued` y cancelación; datos eliminados.
+- `node --check`, `html-validate`, smoke test y comprobación de precios.
+
 ## [1.12.0] — 2026-11-14
 
 ### Añadido

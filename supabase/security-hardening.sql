@@ -7,35 +7,81 @@
 -- ---------------------------------------------------------------------------
 
 create table if not exists public.product_prices (
+  product text not null default 'hoodie' check (product in ('hoodie', 'tote')),
   kind text not null check (kind in ('color', 'material', 'technique', 'setting')),
   key text not null,
   amount integer not null,
-  primary key (kind, key)
+  primary key (product, kind, key)
 );
 
-insert into public.product_prices (kind, key, amount) values
-  ('color', '#1c1c1f', 899),
-  ('color', '#efe6d6', 949),
-  ('color', '#cdf25a', 969),
-  ('color', '#f2603c', 949),
-  ('color', '#26324f', 899),
-  ('color', '#efb7c4', 899),
-  ('material', 'cotton400', 0),
-  ('material', 'cotton320', -50),
-  ('material', 'french300', -30),
-  ('material', 'blend350', -20),
-  ('material', 'polyester280', 20),
-  ('technique', 'dtg', 0),
-  ('technique', 'dtf', 39),
-  ('technique', 'bordado', 149),
-  ('technique', 'serigrafia', 129),
-  ('technique', 'vinilo', 49),
-  ('technique', 'sublimacion', 49),
-  ('setting', 'logo_price', 99),
-  ('setting', 'xxl_price', 49),
-  ('setting', 'free_shipping', 1200),
-  ('setting', 'shipping', 99)
-on conflict (kind, key) do update set amount = excluded.amount;
+-- Compatibilidad con instalaciones anteriores que no tenían `product`.
+alter table public.product_prices
+  add column if not exists product text not null default 'hoodie';
+
+do $$
+declare
+  v_cols text;
+begin
+  select string_agg(a.attname, ',' order by a.attname)
+    into v_cols
+    from pg_constraint c
+    join unnest(c.conkey) k(attnum) on true
+    join pg_attribute a
+      on a.attrelid = c.conrelid
+     and a.attnum = k.attnum
+   where c.conrelid = 'public.product_prices'::regclass
+     and c.contype = 'p';
+
+  if v_cols is null or position('product' in v_cols) = 0 then
+    alter table public.product_prices
+      drop constraint if exists product_prices_pkey;
+    alter table public.product_prices
+      add constraint product_prices_pkey primary key (product, kind, key);
+  end if;
+end
+$$;
+
+insert into public.product_prices (product, kind, key, amount) values
+  -- Sudadera
+  ('hoodie', 'color', '#1c1c1f', 899),
+  ('hoodie', 'color', '#ffffff', 949),
+  ('hoodie', 'color', '#efe6d6', 949),
+  ('hoodie', 'color', '#cdf25a', 969),
+  ('hoodie', 'color', '#f2603c', 949),
+  ('hoodie', 'color', '#26324f', 899),
+  ('hoodie', 'color', '#efb7c4', 899),
+  ('hoodie', 'material', 'cotton400', 0),
+  ('hoodie', 'material', 'cotton320', -50),
+  ('hoodie', 'material', 'french300', -30),
+  ('hoodie', 'material', 'blend350', -20),
+  ('hoodie', 'material', 'polyester280', 20),
+  ('hoodie', 'technique', 'dtg', 0),
+  ('hoodie', 'technique', 'dtf', 39),
+  ('hoodie', 'technique', 'bordado', 149),
+  ('hoodie', 'technique', 'serigrafia', 129),
+  ('hoodie', 'technique', 'vinilo', 49),
+  ('hoodie', 'technique', 'sublimacion', 49),
+  -- Tote
+  ('tote', 'color', '#efe6d6', 349),
+  ('tote', 'color', '#ffffff', 379),
+  ('tote', 'color', '#1c1c1f', 379),
+  ('tote', 'color', '#cdf25a', 379),
+  ('tote', 'color', '#f2603c', 379),
+  ('tote', 'color', '#26324f', 379),
+  ('tote', 'color', '#efb7c4', 379),
+  ('tote', 'material', 'loneta12', 0),
+  ('tote', 'material', 'loneta10', -40),
+  ('tote', 'material', 'reciclada', 30),
+  ('tote', 'technique', 'dtf', 0),
+  ('tote', 'technique', 'serigrafia', 129),
+  ('tote', 'technique', 'vinilo', 49),
+  ('tote', 'technique', 'bordado', 99),
+  -- Ajustes globales
+  ('hoodie', 'setting', 'logo_price', 99),
+  ('hoodie', 'setting', 'xxl_price', 49),
+  ('hoodie', 'setting', 'free_shipping', 1200),
+  ('hoodie', 'setting', 'shipping', 99)
+on conflict (product, kind, key) do update set amount = excluded.amount;
 
 alter table public.product_prices enable row level security;
 revoke all on table public.product_prices from anon, authenticated;
@@ -62,6 +108,7 @@ security definer
 set search_path = public
 as $function$
 declare
+  v_product text := lower(coalesce(nullif(p_item->>'product', ''), 'hoodie'));
   v_color text := lower(coalesce(p_item->>'colorHex', ''));
   v_material text := nullif(p_item->>'materialId', '');
   v_technique text := nullif(p_item->>'techniqueId', '');
@@ -72,6 +119,10 @@ declare
   v_xxl_price integer;
   v_logos integer := 0;
 begin
+  if v_product not in ('hoodie', 'tote') then
+    raise exception 'Producto no válido' using errcode = '22023';
+  end if;
+
   if v_material is null then
     v_material := case p_item->>'materialName'
       when 'Algodón 400 g' then 'cotton400'
@@ -80,6 +131,9 @@ begin
       when 'French terry' then 'french300'
       when 'Mezcla 50/50' then 'blend350'
       when 'Poliéster técnico' then 'polyester280'
+      when 'Loneta 12 oz' then 'loneta12'
+      when 'Loneta 10 oz' then 'loneta10'
+      when 'Lona reciclada' then 'reciclada'
       else null
     end;
   end if;
@@ -98,7 +152,9 @@ begin
 
   select amount into v_base
     from public.product_prices
-   where kind = 'color' and key = v_color;
+   where product = v_product
+     and kind = 'color'
+     and key = v_color;
 
   if v_base is null then
     raise exception 'Color no válido' using errcode = '22023';
@@ -106,7 +162,9 @@ begin
 
   select amount into v_material_delta
     from public.product_prices
-   where kind = 'material' and key = v_material;
+   where product = v_product
+     and kind = 'material'
+     and key = v_material;
 
   if v_material_delta is null then
     raise exception 'Material no válido' using errcode = '22023';
@@ -114,7 +172,9 @@ begin
 
   select amount into v_technique_fee
     from public.product_prices
-   where kind = 'technique' and key = v_technique;
+   where product = v_product
+     and kind = 'technique'
+     and key = v_technique;
 
   if v_technique_fee is null then
     raise exception 'Técnica no válida' using errcode = '22023';
@@ -122,11 +182,13 @@ begin
 
   select amount into v_logo_price
     from public.product_prices
-   where kind = 'setting' and key = 'logo_price';
+   where kind = 'setting' and key = 'logo_price'
+   limit 1;
 
   select amount into v_xxl_price
     from public.product_prices
-   where kind = 'setting' and key = 'xxl_price';
+   where kind = 'setting' and key = 'xxl_price'
+   limit 1;
 
   if coalesce(p_item->'front'->>'logoName', '') <> ''
      or coalesce(p_item->'front'->>'logoPath', '') <> ''

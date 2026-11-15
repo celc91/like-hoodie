@@ -140,9 +140,11 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
   registro del UUID. No emite CFDI; la emisión sigue siendo manual.
 - La solicitud pública de factura individual (`factura.html`) pasa por la Edge
   Function `invoice-request`, que valida el pedido y el correo con
-  `service_role`. La tabla `invoice_requests` no es legible desde el navegador:
-  solo el admin puede verla y actualizarla. El límite es de 10 solicitudes/hora
-  por IP y 100/hora global con `take_invoice_request()`.
+  `service_role`. La solicitud nace `unverified`, envía un enlace de confirmación
+  al correo de compra y solo pasa a `review` al validarlo. La tabla
+  `invoice_requests` no es legible desde el navegador: solo el admin puede verla
+  y actualizarla. El límite es de 10 solicitudes/hora por IP y 100/hora global
+  con `take_invoice_request()`.
 
 ## 8. Pagos con Clip
 
@@ -172,6 +174,11 @@ En un proyecto nuevo ejecuta:
 15. `fase8-admin-mfa.sql` (MFA `aal2` obligatorio para admin)
 16. `fase9-facturacion-global.sql` (cierre semanal y factura global)
 17. `fase10-facturacion-individual.sql` (solicitudes de factura individual)
+18. `supabase/migrations/20261115000100_precios_tote.sql` (precios por producto)
+19. `supabase/migrations/20261115000200_facturacion_verificacion.sql` (correo y forma SAT)
+
+Las migraciones nuevas viven en [`migrations/`](migrations/README.md) y son
+idempotentes. Después de la lista anterior, ejecuta las migraciones en orden.
 
 `fase1-pedidos-seguros.sql` deja una sola versión de `place_order`: recalcula
 precios en servidor, valida cupón, correo, teléfono, dirección, estado y CP, y
@@ -219,7 +226,8 @@ Para volver a demostración, cambia el valor a `'false'`. La función pública `
 La página `factura.html` captura la solicitud del cliente. No emite CFDI: guarda
 los datos fiscales para que el admin emita la factura manualmente en el SAT.
 
-1. Ejecuta `supabase/fase10-facturacion-individual.sql`.
+1. Ejecuta `supabase/migrations/20261115000200_facturacion_verificacion.sql`
+   (después de `fase10-facturacion-individual.sql`).
 2. Despliega la función:
 
    ```sh
@@ -227,17 +235,20 @@ los datos fiscales para que el admin emita la factura manualmente en el SAT.
    ```
 
 3. La función valida con `service_role` que el número y el correo coincidan con
-   un pedido pagado y no cancelado. Si el pedido ya entró en una global, la
-   solicitud queda en `review`; si no, el pedido se marca `individual`.
-4. En el admin, pestaña **Facturación → Solicitudes individuales**, revisa los
-   datos, captura el UUID al emitir o cancela la solicitud. Cancelar devuelve el
-   pedido a `pending` para que pueda entrar en la global.
+   un pedido pagado y no cancelado. La solicitud nace **`unverified`** y se envía
+   un correo al correo de compra con un enlace de 24 horas.
+4. Al confirmar el enlace, pasa a **`review`** y el pedido se marca `individual`.
+   Si el pedido ya entró en una global, queda en `review` para que el admin
+   decida.
+5. En el admin, pestaña **Facturación → Solicitudes individuales**, revisa los
+   datos, captura el UUID y emite. Solo se pueden emitir solicitudes
+   verificadas. Cancelar devuelve el pedido a `pending` si estaba `individual`.
 
-`invoice_requests` guarda RFC, razón social, régimen, CP, uso del CFDI y correo
-de envío. Está protegida con RLS: solo el admin con `aal2` puede leerla o
-actualizarla; el navegador nunca la consulta directamente. `take_invoice_request()`
-aplica 10 intentos/hora por IP y 100/hora global, y purga los intentos de más de
-2 días.
+`invoice_requests` guarda RFC, razón social, régimen, CP, uso del CFDI, forma de
+pago SAT (`04`/`28`) y correo de envío. Está protegida con RLS: solo el admin con
+`aal2` puede leerla o actualizarla; el navegador nunca la consulta directamente.
+`take_invoice_request()` aplica 10 intentos/hora por IP y 100/hora global, y
+purga los intentos de más de 2 días.
 
 ## Privacidad
 

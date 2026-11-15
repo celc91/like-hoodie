@@ -11,8 +11,8 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20261115-inv1">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20261115-inv2">
 </head>
 <body>
   <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -43,7 +43,7 @@
 
     <div class="container invoice-page">
       <div class="invoice-card">
-        <p class="invoice-note">Solo podemos facturar pedidos con pago aprobado. Solicítala antes del cierre del domingo del periodo; si el pedido ya entró en la factura global, revisaremos el caso.</p>
+        <p class="invoice-note">Solo podemos facturar pedidos con pago aprobado. Solicítala antes del cierre del domingo del periodo. Te enviaremos un correo al correo de compra para confirmar la solicitud; el enlace vence en 24 horas. Si el pedido ya entró en la factura global, revisaremos el caso.</p>
 
         <form id="invoice-form" data-invoice-form>
           <div class="field-row">
@@ -114,9 +114,19 @@
             </div>
           </div>
 
-          <div class="field">
-            <label for="invoice-notes">Notas (opcional)</label>
-            <input id="invoice-notes" name="notes" type="text" maxlength="500" placeholder="Alguna aclaración para la factura">
+          <div class="field-row">
+            <div class="field">
+              <label for="invoice-sat-form">Forma de pago SAT</label>
+              <select id="invoice-sat-form" name="satPaymentForm" required>
+                <option value="">Selecciona…</option>
+                <option value="04">04 · Tarjeta de crédito</option>
+                <option value="28">28 · Tarjeta de débito</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="invoice-notes">Notas (opcional)</label>
+              <input id="invoice-notes" name="notes" type="text" maxlength="500" placeholder="Alguna aclaración para la factura">
+            </div>
           </div>
 
           <button class="btn btn-primary btn-block" type="submit" id="invoice-submit">Enviar solicitud</button>
@@ -147,6 +157,6 @@
   </footer>
 
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="factura.js?v=20261115-inv1"></script>
+  <script src="factura.js?v=20261115-inv2"></script>
 </body>
 </html>

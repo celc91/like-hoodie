@@ -524,5 +524,25 @@
     });
   }
 
-  loadEvents();
+  let started = false;
+  const start = () => {
+    if (started) return;
+    started = true;
+    loadEvents();
+  };
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect();
+          start();
+        }
+      },
+      { rootMargin: "600px" }
+    );
+    observer.observe(root);
+  } else {
+    start();
+  }
 })();

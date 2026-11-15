@@ -46,6 +46,8 @@ políticas SQL y las Edge Functions de Supabase. También es relevante:
   y se vuelve a enrolar.
 - La solicitud pública de factura individual usa `invoice-request`, valida el
   pedido con `service_role` y aplica 10 intentos/hora por IP y 100/hora global.
+  La solicitud nace `unverified`, exige confirmar el correo de compra con un
+  token de 24 h y solo entonces pasa a `review` y excluye el pedido de la global.
   `invoice_requests` no es legible ni escribible desde el navegador; solo el
   admin con `aal2` puede consultarla y actualizarla.
 - Cloudflare va delante de GitHub Pages con SSL **Full (strict)**, HSTS,
