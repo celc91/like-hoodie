@@ -226,8 +226,15 @@ En **SSL/TLS** usa **Full (strict)**, TLS 1.2 como mínimo, **Always Use HTTPS**
 - **Cabeceras de respuesta:** `X-Content-Type-Options: nosniff`,
   `Referrer-Policy: strict-origin-when-cross-origin`,
   `Permissions-Policy: camera=(), microphone=(), geolocation=()`,
-  `Content-Security-Policy: frame-ancestors 'self'`,
-  `X-Frame-Options: SAMEORIGIN` y `X-Permitted-Cross-Domain-Policies: none`.
+  una `Content-Security-Policy` completa (Google Analytics, Meta, Clip y
+  Supabase), `X-Frame-Options: SAMEORIGIN` y
+  `X-Permitted-Cross-Domain-Policies: none`.
+
+La CSP es la del dominio, no la del repo: si añades un tercero, actualízala en
+Cloudflare → Rules → Response Header Transform Rules. El píxel de Meta necesita
+`https://www.facebook.com https://*.facebook.com` en `form-action` y en
+`frame-src`, no solo en `img-src` y `connect-src`; sin eso pide `PageView` y
+`ViewContent` y el navegador descarta los envíos.
 - **Redirección:** `www.likehoodie.com` → `https://likehoodie.com`, 301,
   conservando ruta y query.
 

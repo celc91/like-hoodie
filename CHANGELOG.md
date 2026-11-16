@@ -32,6 +32,10 @@ semántico.
 - **Fichas de producto:** no cargaban GA4 ni píxel, así que las visitas a los
   modelos no se medían.
 - **`og:description` de las fichas:** ya no se corta a media palabra.
+- **CSP y píxel de Meta:** el `form-action 'self'` bloqueaba los envíos del
+  píxel (PageView, AddToCart). La CSP del dominio permite ahora
+  `https://www.facebook.com` y `https://*.facebook.com` en `form-action` y
+  `frame-src`.
 
 - **`schema.sql`:** el cuerpo de `admin_stats()` abría con `as $` en vez de
   `as $$`, lo que impedía cualquier instalación limpia.
