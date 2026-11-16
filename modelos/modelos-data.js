@@ -2,6 +2,7 @@
 window.LIKEHOODIE_MODELS = {
   "cocodrilo": {
     "name": "Cocodrilo de Miami",
+    "sku": "LH-MOD-COCODRILO",
     "product": "hoodie",
     "color": "#ffffff",
     "colorName": "Blanco",
@@ -12,6 +13,7 @@ window.LIKEHOODIE_MODELS = {
   },
   "insignia": {
     "name": "Insignia atardecer",
+    "sku": "LH-MOD-INSIGNIA",
     "product": "hoodie",
     "color": "#1c1c1f",
     "colorName": "Negro",
@@ -22,6 +24,7 @@ window.LIKEHOODIE_MODELS = {
   },
   "panorama": {
     "name": "Panorama Vice",
+    "sku": "LH-MOD-PANORAMA",
     "product": "hoodie",
     "color": "#1c1c1f",
     "colorName": "Negro",
@@ -32,6 +35,7 @@ window.LIKEHOODIE_MODELS = {
   },
   "corazon": {
     "name": "Corazón neón",
+    "sku": "LH-MOD-CORAZON",
     "product": "hoodie",
     "color": "#1c1c1f",
     "colorName": "Negro",

@@ -16,8 +16,22 @@ semántico.
 - **Reseñas:** sección `#resenas` alimentada por `resenas.json`; permanece oculta
   mientras no haya reseñas reales con consentimiento. Ver `docs/resenas.md`.
 - **CI RLS:** workflow `RLS` con bootstrap local, runner de concurrencia y pgTAP.
+- **Medición de producto:** las fichas de modelo cargan analítica con
+  consentimiento y envían `view_item` (GA4) / `ViewContent` (Meta) con SKU,
+  talla y precio.
+- **Ecommerce en GA4 y Meta:** `add_to_cart`, `begin_checkout` y `purchase`
+  llevan `items[]` con `item_id` (SKU), nombre, variante, precio y cantidad;
+  Meta recibe también `content_ids` y `contents`.
 
 ### Corregido
+
+- **Compras demo en GA4 y Meta:** `Purchase` solo se envía cuando
+  `payment_status = 'paid'`. El trigger `orders_meta_purchase` escucha ahora
+  `INSERT` y `UPDATE` y descarta pedidos demo o pendientes. Ver
+  `supabase/meta-capi-3-solo-pagados.sql`.
+- **Fichas de producto:** no cargaban GA4 ni píxel, así que las visitas a los
+  modelos no se medían.
+- **`og:description` de las fichas:** ya no se corta a media palabra.
 
 - **`schema.sql`:** el cuerpo de `admin_stats()` abría con `as $` en vez de
   `as $$`, lo que impedía cualquier instalación limpia.

@@ -56,8 +56,14 @@ Se carga con `gtag` solo si `analytics` está aceptado. La configuración fija
 denegadas (`ad_storage`, `ad_user_data`, `ad_personalization`), para que GA no
 sirva para publicidad aunque la persona acepte analítica.
 
-Eventos enviados: `page_view`, `add_to_cart`, `begin_checkout`, `purchase`,
-`sign_up` y `select_promotion`.
+Eventos enviados: `page_view`, `view_item`, `add_to_cart`, `begin_checkout`,
+`purchase`, `sign_up` y `select_promotion`. Los eventos de ecommerce llevan
+`items[]` con el SKU (`item_id`), nombre, variante, precio y cantidad, para que
+GA4 pueda informar por producto.
+
+Las fichas de modelo también cargan esta analítica (con el mismo aviso de
+consentimiento) y envían `view_item` una sola vez por visita, cuando el tamaño
+cambia de valor.
 
 ## Meta Pixel
 
@@ -145,11 +151,16 @@ rotarlo de vez en cuando (ver *Operación*).
 | Acción | GA4 | Meta Pixel | CAPI |
 | --- | --- | --- | --- |
 | Visita | `page_view` | `PageView` | — |
+| Ver producto | `view_item` | `ViewContent` | — |
 | Añadir a la cesta | `add_to_cart` | `AddToCart` | — |
 | Abrir checkout | `begin_checkout` | `InitiateCheckout` | — |
-| Pedido creado | `purchase` | `Purchase` | `Purchase` |
+| Compra cobrada | `purchase` | `Purchase` | `Purchase` |
 | Alta en el club | `sign_up` | `Lead` | — |
 | Cupón aplicado | `select_promotion` | `AddToCart` | — |
+
+**Compra cobrada** significa `payment_status = 'paid'`. Un pedido demo (sin
+Clip) o pendiente (Clip sin confirmar) **no** se envía: no es una venta y
+falsearía los informes y la optimización de anuncios.
 
 ## Cómo comprobarlo
 
@@ -222,6 +233,7 @@ ese momento. A partir de ahí, sus pedidos nuevos no se envían a Meta.
 | `store-supabase.js` | Sincroniza el permiso publicitario y el `event_id` |
 | `supabase/meta-capi-1-consentimiento.sql` | Tabla de consentimiento y diagnóstico |
 | `supabase/meta-capi-2-compra.sql` | Trigger de compra hacia Meta |
+| `supabase/meta-capi-3-solo-pagados.sql` | Compra solo si está cobrada |
 | `cookies.html` | Tabla de cookies y cambio de preferencias |
 | `privacidad.html` | Explicación en lenguaje llano |
 

@@ -1562,10 +1562,25 @@
       total: totals().total,
       items: state.items.length,
     });
+    const checkoutItems = state.items.map((entry) => ({
+      item_id: entry.sku || "LH-CUSTOM",
+      item_name: entry.name,
+      item_variant: entry.size || "",
+      price: Number(entry.unitPrice) || 0,
+      quantity: Number(entry.qty) || 1,
+    }));
     window.LikeHoodieConsent?.track("begin_checkout", {
       value: totals().total,
       currency: "MXN",
-      items: state.items.length,
+      num_items: checkoutItems.reduce((sum, entry) => sum + entry.quantity, 0),
+      content_type: "product",
+      content_ids: checkoutItems.map((entry) => entry.item_id),
+      contents: checkoutItems.map((entry) => ({
+        id: entry.item_id,
+        quantity: entry.quantity,
+        item_price: entry.price,
+      })),
+      items: checkoutItems,
     });
     window.setTimeout(() => {
       const firstField = $("#f-name");
@@ -4485,6 +4500,7 @@
 
       const item = {
         id: uid(),
+        sku: model.sku || `LH-MOD-${String(id).toUpperCase()}`,
         key: `modelo:${id}:${size}:${model.color}`,
         product: model.product,
         name: `${product.label} · ${model.name}`,
@@ -4525,6 +4541,17 @@
         currency: "MXN",
         content_name: item.name,
         content_type: "product",
+        content_ids: [item.sku],
+        contents: [{ id: item.sku, quantity: 1, item_price: unitPrice }],
+        items: [
+          {
+            item_id: item.sku,
+            item_name: item.name,
+            item_variant: size,
+            price: unitPrice,
+            quantity: 1,
+          },
+        ],
       });
       if (cartCount) {
         cartCount.classList.remove("is-pulsing");
@@ -5002,6 +5029,7 @@
       } else {
         state.items.push({
           id: uid(),
+          sku: "LH-CUSTOM",
           key,
           product: state.product,
           name: PRODUCTS[state.product].itemName,
@@ -5035,6 +5063,17 @@
         currency: "MXN",
         content_name: PRODUCTS[state.product].itemName,
         content_type: "product",
+        content_ids: ["LH-CUSTOM"],
+        contents: [{ id: "LH-CUSTOM", quantity: 1, item_price: unitPrice }],
+        items: [
+          {
+            item_id: "LH-CUSTOM",
+            item_name: PRODUCTS[state.product].itemName,
+            item_variant: state.size,
+            price: unitPrice,
+            quantity: 1,
+          },
+        ],
       });
 
       if (cartCount) {
@@ -5299,6 +5338,46 @@
   hasStoredDraft = Boolean(readStoredDraft());
   if (recoverDraftButton) recoverDraftButton.hidden = !hasStoredDraft;
   window.StoreSupabase?.init();
+
+  // Vuelta desde Clip: si el pedido ya está cobrado, se mide la compra aquí.
+  // El servidor manda el mismo event_id a Meta, así que no se cuenta dos veces.
+  async function resumePaidOrder() {
+    const params = new URLSearchParams(location.search);
+    if (params.get("pago") !== "exito") return;
+
+    const number = String(params.get("pedido") || "").replace(/\D/g, "");
+    if (!number) return;
+
+    const store = window.StoreSupabase;
+    if (!store || typeof store.getOrderPayment !== "function") return;
+
+    const key = "likehoodie_purchase_" + number;
+    try {
+      if (window.sessionStorage.getItem(key) === "1") return;
+    } catch (error) {
+      /* Sin almacenamiento: se mide igual. */
+    }
+
+    const order = await store.getOrderPayment(number);
+    if (!order || order.payment_status !== "paid") return;
+
+    try {
+      window.sessionStorage.setItem(key, "1");
+    } catch (error) {
+      /* Ignorar. */
+    }
+
+    if (typeof store.trackPurchase === "function") {
+      store.trackPurchase({
+        number: order.number,
+        total: order.total,
+        itemCount: order.item_count,
+        items: Array.isArray(order.items) ? order.items : [],
+      });
+    }
+  }
+  resumePaidOrder();
+
   if (state.items.length) {
     window.StoreSupabase?.syncCart(state.items, "cart");
   }

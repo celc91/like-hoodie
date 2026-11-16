@@ -141,6 +141,7 @@
   }
 
   const GA_EVENTS = {
+    view_item: "view_item",
     add_to_cart: "add_to_cart",
     begin_checkout: "begin_checkout",
     order_created: "purchase",
@@ -149,6 +150,7 @@
   };
 
   const META_EVENTS = {
+    view_item: "ViewContent",
     add_to_cart: "AddToCart",
     begin_checkout: "InitiateCheckout",
     order_created: "Purchase",

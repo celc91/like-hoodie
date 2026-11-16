@@ -62,7 +62,7 @@
       '<div class="consent-main">' +
       "<p><strong>Cookies y medición.</strong> Usamos almacenamiento esencial para tu carrito. " +
       "Con tu permiso, cargamos analítica y, si lo aceptas, publicidad para medir campañas. " +
-      'Puedes cambiarlo en <a href="cookies.html">Cookies</a>.</p>' +
+      'Puedes cambiarlo en <a href="/cookies.html">Cookies</a>.</p>' +
       '<div class="cookie-actions">' +
       '<button type="button" class="btn btn-ghost btn-sm" data-consent-action="essential">Solo esenciales</button>' +
       '<button type="button" class="btn btn-ghost btn-sm" data-consent-action="config">Configurar</button>' +

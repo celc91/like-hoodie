@@ -100,6 +100,7 @@
   function safeItems(items) {
     if (!Array.isArray(items)) return [];
     return items.slice(0, 50).map((item) => ({
+      sku: String(item.sku || "").slice(0, 40),
       name: String(item.name || "Sudadera personalizada").slice(0, 120),
       qty: Math.max(1, Math.min(99, Number(item.qty) || 1)),
       unitPrice: Math.max(0, Number(item.unitPrice) || 0),
@@ -439,6 +440,46 @@
     }
   }
 
+  // Compra cobrada: GA4 purchase + Meta Purchase (con event_id para deduplicar
+  // el envío del servidor). Se llama al crear un pedido ya pagado o cuando Clip
+  // confirma el cobro.
+  function trackPurchase(payload) {
+    if (!window.LikeHoodieConsent || typeof window.LikeHoodieConsent.track !== "function") {
+      return false;
+    }
+    const items = Array.isArray(payload && payload.items) ? payload.items : [];
+    const number = payload && payload.number;
+    if (!number) return false;
+
+    const gaItems = items.map((item) => ({
+      item_id: String(item.sku || "LH-CUSTOM"),
+      item_name: String(item.name || "Sudadera personalizada"),
+      item_variant: String(item.size || ""),
+      price: Number(item.unitPrice) || 0,
+      quantity: Number(item.qty) || 1,
+    }));
+
+    window.LikeHoodieConsent.track(
+      "order_created",
+      {
+        value: Number(payload.total) || 0,
+        currency: "MXN",
+        transaction_id: number,
+        num_items: Number(payload.itemCount) || gaItems.length,
+        content_type: "product",
+        content_ids: gaItems.map((item) => item.item_id),
+        contents: gaItems.map((item) => ({
+          id: item.item_id,
+          quantity: item.quantity,
+          item_price: item.price,
+        })),
+        items: gaItems,
+      },
+      { eventId: "lh-" + number }
+    );
+    return true;
+  }
+
   async function placeOrder(order) {
     if (!(await ensure())) return null;
     cancelPendingSync();
@@ -493,16 +534,15 @@
         item_count: itemCount,
       });
 
-      if (window.LikeHoodieConsent && typeof window.LikeHoodieConsent.track === "function") {
-        window.LikeHoodieConsent.track(
-          "order_created",
-          {
-            value: order.total,
-            currency: "MXN",
-            transaction_id: result.number,
-          },
-          { eventId: "lh-" + result.number }
-        );
+      // GA4 y Meta solo ven compras cobradas. Un pedido demo o pendiente
+      // (Clip sin confirmar) no es una venta y contaminaría los informes.
+      if (result.payment_status === "paid") {
+        trackPurchase({
+          number: result.number,
+          total: order.total,
+          itemCount,
+          items,
+        });
       }
 
       return {
@@ -588,14 +628,15 @@
     return data && typeof data === "object" ? data : { status: "error" };
   }
 
-  async function getOrderPayment(number) {    const value = Number(String(number == null ? "" : number).replace(/\D/g, ""));
+  async function getOrderPayment(number) {
+    const value = Number(String(number == null ? "" : number).replace(/\D/g, ""));
     if (!Number.isInteger(value) || value <= 0) return null;
     if (!(await ensure())) return null;
 
     try {
       const { data, error } = await client
         .from("orders")
-        .select("number,payment_method,payment_status,paid_at")
+        .select("number,payment_method,payment_status,paid_at,total,item_count,items")
         .eq("number", value)
         .maybeSingle();
       if (error) return null;
@@ -705,6 +746,7 @@
     getLogoAsset,
     processLogoAsset,
     placeOrder,
+    trackPurchase,
     getConfig,
     createClipCheckout,
     payClipOrder,

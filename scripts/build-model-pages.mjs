@@ -18,7 +18,8 @@ const SITE = "https://likehoodie.com";
 const CSS_VERSION = "20261115-perf3";
 const WHATSAPP_VERSION = "20261114-fase4d";
 const MONITOR_VERSION = "20261114-fase5";
-const PRODUCT_VERSION = "20261114-csp1";
+const PRODUCT_VERSION = "20261116-medicion1";
+const ANALYTICS_VERSION = "20261116-medicion1";
 
 const escapeHTML = (value) =>
   String(value)
@@ -101,7 +102,7 @@ function page(model) {
   <meta property="og:site_name" content="like hoodie">
   <meta property="og:locale" content="es_MX">
   <meta property="og:title" content="${escapeHTML(model.name)} — like hoodie">
-  <meta property="og:description" content="${escapeHTML(model.description.slice(0, 155))}">
+  <meta property="og:description" content="${escapeHTML(metaDescription(model.description))}">
   <meta property="og:url" content="${url}">
   <meta property="og:image" content="${ogImage}">
   <meta property="og:image:width" content="1200">
@@ -111,7 +112,7 @@ function page(model) {
   <meta property="product:price:currency" content="MXN">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${escapeHTML(model.name)} — like hoodie">
-  <meta name="twitter:description" content="${escapeHTML(model.description.slice(0, 155))}">
+  <meta name="twitter:description" content="${escapeHTML(metaDescription(model.description))}">
   <meta name="twitter:image" content="${ogImage}">
   <meta name="twitter:image:alt" content="Sudadera ${escapeHTML(model.name)} de like hoodie">
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -122,6 +123,9 @@ function page(model) {
   <link rel="stylesheet" href="../styles.css?v=${CSS_VERSION}">
   <link rel="stylesheet" href="producto.css?v=${CSS_VERSION}">
   <script src="../supabase-config.js?v=20261110-pub1"></script>
+  <script src="../analytics-config.js?v=${ANALYTICS_VERSION}"></script>
+  <script src="../analytics.js?v=${ANALYTICS_VERSION}"></script>
+  <script src="../legal.js?v=${ANALYTICS_VERSION}"></script>
   <script src="../monitor.js?v=${MONITOR_VERSION}"></script>
   <script type="application/ld+json">${JSON.stringify(productSchema)}</script>
   <script type="application/ld+json">${JSON.stringify(breadcrumbSchema)}</script>
@@ -174,7 +178,7 @@ function page(model) {
             <option value="XL">XL</option>
             <option value="XXL">XXL (+$49)</option>
           </select>
-          <a class="btn btn-primary btn-block" data-buy-link data-model="${escapeHTML(model.id)}" data-base-price="${model.price}" href="../?comprar=${model.id}&amp;talla=M#modelos">Comprar talla M</a>
+          <a class="btn btn-primary btn-block" data-buy-link data-model="${escapeHTML(model.id)}" data-sku="${escapeHTML(model.sku || "")}" data-name="${escapeHTML(model.name)}" data-base-price="${model.price}" href="../?comprar=${model.id}&amp;talla=M#modelos">Comprar talla M</a>
           <p class="product-note">Preparamos el archivo de impresión al momento. La compra se completa en la tienda.</p>
         </div>
 
@@ -257,6 +261,7 @@ const catalog = Object.fromEntries(
     model.id,
     {
       name: model.name,
+      sku: model.sku,
       product: model.product,
       color: model.colorHex,
       colorName: model.colorName,
