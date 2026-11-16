@@ -323,7 +323,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = public
-as $
+as $$
 declare
   v_days integer := greatest(1, least(coalesce(p_days, 30), 365));
   v_start timestamptz := now() - make_interval(days => greatest(1, least(coalesce(p_days, 30), 365)));
@@ -473,7 +473,7 @@ begin
     'top_sizes', v_sizes
   );
 end;
-$;
+$$;
 
 grant execute on function public.admin_stats(integer) to authenticated;
 

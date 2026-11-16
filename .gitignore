@@ -21,3 +21,6 @@ logo-prep-out/
 !.env.example
 supabase/functions/.env
 supabase/.temp/
+
+# Estado local de Supabase CLI
+supabase/.branches/
