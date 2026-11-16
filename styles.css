@@ -8309,3 +8309,62 @@ body.is-locked .wa-float {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Reseñas — la sección se oculta sola mientras resenas.json esté vacío
+   --------------------------------------------------------------------------- */
+
+.reviews {
+  padding: 72px 0;
+  background: var(--cream);
+}
+
+.reviews__summary {
+  max-width: 34ch;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin: 32px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--paper);
+}
+
+.review-card__stars {
+  margin: 0;
+  color: var(--orange);
+  font-size: 1.05rem;
+  letter-spacing: 3px;
+  line-height: 1;
+}
+
+.review-card__text {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+
+.review-card__meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.review-card__meta strong {
+  color: var(--ink);
+}

@@ -13,6 +13,8 @@ semántico.
   de cobrar en una instalación limpia.
 - **Suite RLS (fase B.5):** `supabase/tests/rls.test.sql` con 121 casos y los 10
   bloqueantes de la auditoría.
+- **Reseñas:** sección `#resenas` alimentada por `resenas.json`; permanece oculta
+  mientras no haya reseñas reales con consentimiento. Ver `docs/resenas.md`.
 - **CI RLS:** workflow `RLS` con bootstrap local, runner de concurrencia y pgTAP.
 
 ### Corregido
