@@ -315,6 +315,10 @@ begin
     email_confirmed_at,
     created_at,
     updated_at,
+    confirmation_token,
+    recovery_token,
+    email_change,
+    email_change_token_new,
     raw_app_meta_data,
     raw_user_meta_data,
     is_super_admin
@@ -328,6 +332,10 @@ begin
     now(),
     now(),
     now(),
+    '',
+    '',
+    '',
+    '',
     '{"provider":"email","providers":["email"]}'::jsonb,
     '{"fixture":"lh-rls-local"}'::jsonb,
     false
@@ -1565,8 +1573,12 @@ select lh_rls_test.pending('SET-06', 'LH-10 has_resend_key denegado para ANON', 
 -- Expectativa: has_resend_key devuelve 42501 para todo authenticated y admin.
 select lh_rls_test.pending('SET-07', 'LH-10 has_resend_key denegado para authenticated', false);
 
--- Expectativa: dos pagos/checkouts paralelos producen una sola llamada Clip y otra 409.
-select lh_rls_test.pending('SET-08', 'LH-06 clip pay y checkout idempotentes bajo concurrencia', false);
+-- BLOQUEANTE-SET-08: resultado medido por scripts/test-clip-idempotency.mjs.
+-- Dos cobros y dos checkouts paralelos contra el runtime real de funciones.
+select ok(
+  coalesce((select pass from public.qa_concurrency_results where case_id = 'SET-08'), false),
+  'BLOQUEANTE-SET-08 — LH-06: dos peticiones paralelas no duplican cargo ni link'
+);
 
 -- ---------------------------------------------------------------------------
 -- Storage: 10

@@ -31,6 +31,9 @@ semántico.
 - **Clip:** `clip-pay` y `clip-checkout` reclaman el pedido de forma atómica
   (`payment_attempt_id`, `clip_claim_id`); dos peticiones paralelas ya no crean
   dos cargos ni dos enlaces. Ver `docs/clip-idempotencia.md`.
+- **Harness SET-08:** `scripts/test-clip-idempotency.mjs` levanta un mock de Clip
+  en la red de Docker, arranca `functions serve` y comprueba con peticiones
+  paralelas que solo hay un cobro y un link.
 
 ### Por hacer
 

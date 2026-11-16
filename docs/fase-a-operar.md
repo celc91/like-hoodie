@@ -74,12 +74,12 @@ en el JSON-LD existente. No se implementa hasta tener el contenido.
 
 Antes de activar cobros:
 
-1. Añadir `orders.currency` (`text not null default 'MXN'`) con migración.
-2. Idempotencia en `clip-pay` y `clip-checkout` (reclamación atómica, LH-06).
+1. ~~Añadir `orders.currency`~~ (hecho).
+2. ~~Idempotencia en `clip-pay` y `clip-checkout`~~ (hecho, ver `docs/clip-idempotencia.md`).
 3. KYC y credenciales de producción.
 4. Pedido real de bajo monto y comprobación del webhook.
 
-El punto 1 y 2 son trabajo de código; el 3 es del negocio.
+El punto 3 es del negocio; el 4 requiere credenciales reales.
 
 ## Orden propuesto
 

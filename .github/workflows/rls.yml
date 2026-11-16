@@ -33,6 +33,9 @@ jobs:
       - name: Concurrencia (PED-13 y NEW-12)
         run: node scripts/test-concurrency.mjs
 
+      - name: Idempotencia de Clip (SET-08)
+        run: node scripts/test-clip-idempotency.mjs
+
       - name: pgTAP
         run: supabase test db
 
