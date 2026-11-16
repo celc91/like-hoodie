@@ -101,7 +101,7 @@ Deno.serve(async (request) => {
   const { data: order, error: orderError } = await userClient
     .from("orders")
     .select(
-      "id, number, total, currency, status, payment_status, payment_method, clip_checkout_id, clip_checkout_url"
+      "id, number, total, currency, status, payment_status, payment_method, clip_checkout_id, clip_checkout_url, clip_claim_id"
     )
     .eq("id", orderId)
     .maybeSingle();
@@ -214,6 +214,52 @@ Deno.serve(async (request) => {
     }
   }
 
+  // Compare-and-swap antes de crear el link: solo una petición gana.
+  const claimId = crypto.randomUUID();
+  const claimBase = admin
+    .from("orders")
+    .update({ clip_claim_id: claimId, clip_claim_at: new Date().toISOString() })
+    .eq("id", order.id)
+    .eq("payment_status", "pending");
+  const claimQuery = order.clip_claim_id
+    ? claimBase.eq("clip_claim_id", order.clip_claim_id)
+    : claimBase.is("clip_claim_id", null);
+  const { data: claimed, error: claimError } = await claimQuery
+    .select("id")
+    .maybeSingle();
+
+  if (claimError) {
+    console.error("clip-checkout: no se pudo reclamar el pedido.", claimError);
+    return json(
+      { enabled: true, error: "No se pudo iniciar el pago" },
+      500,
+      origin
+    );
+  }
+  if (!claimed) {
+    const { data: fresh } = await admin
+      .from("orders")
+      .select("payment_status")
+      .eq("id", order.id)
+      .maybeSingle();
+    if (fresh?.payment_status === "paid") {
+      return json({ enabled: true, alreadyPaid: true }, 200, origin);
+    }
+    return json(
+      { enabled: true, error: "Ya hay un link de pago en preparación" },
+      409,
+      origin
+    );
+  }
+
+  const releaseClaim = async () => {
+    await admin
+      .from("orders")
+      .update({ clip_claim_id: null, clip_claim_at: null })
+      .eq("id", order.id)
+      .eq("clip_claim_id", claimId);
+  };
+
   const webhookSecret = env("CLIP_WEBHOOK_SECRET");
   const payload = {
     amount: total,
@@ -249,6 +295,7 @@ Deno.serve(async (request) => {
     });
   } catch (error) {
     console.error("clip-checkout: error de red con Clip.", error);
+    await releaseClaim();
     return json(
       { enabled: true, error: "No se pudo conectar con Clip" },
       502,
@@ -269,6 +316,7 @@ Deno.serve(async (request) => {
       `clip-checkout: Clip respondió ${response.status}.`,
       raw.slice(0, 500)
     );
+    await releaseClaim();
     return json(
       { enabled: true, error: "No se pudo crear el link de pago" },
       502,
@@ -294,14 +342,18 @@ Deno.serve(async (request) => {
       payment_status: "pending",
       clip_checkout_id: checkoutId,
       clip_checkout_url: checkoutUrl,
+      clip_claim_id: null,
+      clip_claim_at: null,
     })
     .eq("id", order.id)
     .eq("payment_status", "pending")
+    .eq("clip_claim_id", claimId)
     .select("id")
     .maybeSingle();
 
   if (updateError) {
     console.error("clip-checkout: no se pudo guardar el checkout.");
+    await releaseClaim();
     return json(
       { enabled: true, url: checkoutUrl, warning: "No se pudo guardar el checkout" },
       200,
@@ -318,6 +370,12 @@ Deno.serve(async (request) => {
     if (fresh?.payment_status === "paid") {
       return json({ enabled: true, alreadyPaid: true }, 200, origin);
     }
+    await releaseClaim();
+    return json(
+      { enabled: true, error: "El pedido cambió de estado durante el pago" },
+      409,
+      origin
+    );
   }
 
   return json({ enabled: true, url: checkoutUrl, checkoutId }, 200, origin);

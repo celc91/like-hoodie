@@ -28,6 +28,9 @@ semántico.
 - **Concurrencia:** `place_order` serializa por usuario y correo;
   `subscribe_newsletter` por IP y añade el tope global de 500/hora.
 - **Errores de cliente:** se redactan correos y teléfonos antes de guardar.
+- **Clip:** `clip-pay` y `clip-checkout` reclaman el pedido de forma atómica
+  (`payment_attempt_id`, `clip_claim_id`); dos peticiones paralelas ya no crean
+  dos cargos ni dos enlaces. Ver `docs/clip-idempotencia.md`.
 
 ### Por hacer
 

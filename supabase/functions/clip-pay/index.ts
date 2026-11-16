@@ -145,6 +145,53 @@ Deno.serve(async (request) => {
     return json({ error: "Moneda no válida" }, 422, origin);
   }
 
+  // Reclamación atómica: solo una petición pasa de pending a processing.
+  const attemptId = crypto.randomUUID();
+  const { data: claimed, error: claimError } = await admin
+    .from("orders")
+    .update({
+      payment_status: "processing",
+      payment_attempt_id: attemptId,
+      payment_attempt_at: new Date().toISOString(),
+    })
+    .eq("id", order.id)
+    .eq("payment_status", "pending")
+    .select("id")
+    .maybeSingle();
+
+  if (claimError) {
+    console.error("clip-pay: no se pudo reclamar el pedido.", claimError);
+    return json({ error: "No se pudo iniciar el pago" }, 500, origin);
+  }
+
+  if (!claimed) {
+    const { data: fresh } = await admin
+      .from("orders")
+      .select("payment_status")
+      .eq("id", order.id)
+      .maybeSingle();
+    if (fresh?.payment_status === "paid") {
+      return json({ status: "approved", alreadyPaid: true }, 200, origin);
+    }
+    return json(
+      { error: "Ya hay un pago en curso para este pedido" },
+      409,
+      origin
+    );
+  }
+
+  const releaseAttempt = async () => {
+    await admin
+      .from("orders")
+      .update({
+        payment_status: "pending",
+        payment_attempt_id: null,
+        payment_attempt_at: null,
+      })
+      .eq("id", order.id)
+      .eq("payment_attempt_id", attemptId);
+  };
+
   let response: Response;
   try {
     response = await fetch(`${CLIP_API_BASE}/payments`, {
@@ -168,7 +215,13 @@ Deno.serve(async (request) => {
     });
   } catch (error) {
     console.error("clip-pay: error de red con Clip.", error);
-    return json({ error: "No se pudo conectar con Clip" }, 502, origin);
+    // No se sabe si Clip registró el cobro: el pedido queda en processing
+    // para que no se reintente a ciegas.
+    return json(
+      { error: "No se pudo confirmar el pago. No reintentes todavía." },
+      502,
+      origin
+    );
   }
 
   const raw = await response.text();
@@ -184,6 +237,10 @@ Deno.serve(async (request) => {
       `clip-pay: Clip respondió ${response.status}.`,
       raw.slice(0, 500)
     );
+    // Un 4xx es un rechazo definitivo; un 5xx deja el intento en curso.
+    if (response.status >= 400 && response.status < 500) {
+      await releaseAttempt();
+    }
     return json({ error: "No se pudo procesar el pago" }, 502, origin);
   }
 
@@ -200,7 +257,7 @@ Deno.serve(async (request) => {
       : null;
 
   if (status === "approved") {
-    const { error: updateError } = await admin
+    const { data: paid, error: updateError } = await admin
       .from("orders")
       .update({
         payment_method: "clip",
@@ -209,7 +266,11 @@ Deno.serve(async (request) => {
         payment_reference: String(receiptNo || paymentId).slice(0, 120),
         ...(order.status === "pending" ? { status: "confirmed" } : {}),
       })
-      .eq("id", order.id);
+      .eq("id", order.id)
+      .eq("payment_status", "processing")
+      .eq("payment_attempt_id", attemptId)
+      .select("id")
+      .maybeSingle();
 
     if (updateError) {
       console.error("clip-pay: no se pudo marcar el pedido como pagado.", updateError);
@@ -219,6 +280,18 @@ Deno.serve(async (request) => {
         origin
       );
     }
+
+    if (!paid) {
+      console.error("clip-pay: el pedido cambió de estado durante el cobro.");
+      return json(
+        { status: "approved", paymentId, receiptNo, warning: "Estado del pedido modificado" },
+        200,
+        origin
+      );
+    }
+  } else {
+    // Un rechazo explícito devuelve el pedido a pending para reintentar.
+    await releaseAttempt();
   }
 
   // Un pago rechazado deja el pedido pendiente para poder reintentar con otra tarjeta.

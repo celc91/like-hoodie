@@ -199,6 +199,7 @@ En un proyecto nuevo ejecuta:
 23. `supabase/migrations/20261115120000_seguridad_rls_b5.sql` (newsletter, `has_resend_key`, retención y facturas bloqueadas)
 24. `supabase/migrations/20261115130000_locks_concurrencia.sql` (locks de `place_order` y newsletter)
 25. `supabase/migrations/20261115140000_orders_currency.sql` (`orders.currency` para Clip)
+26. `supabase/migrations/20261115150000_clip_idempotencia.sql` (reclamación atómica de pagos y links)
 
 Las migraciones nuevas viven en [`migrations/`](migrations/README.md) y son
 idempotentes. Después de la lista anterior, ejecuta las migraciones en orden.
