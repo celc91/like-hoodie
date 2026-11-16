@@ -31,7 +31,10 @@ export function supabaseUrl(): string {
   return env("SUPABASE_URL");
 }
 
-export async function clientIpHash(request: Request): Promise<string> {
+export async function clientIpHash(
+  request: Request,
+  purpose = "default"
+): Promise<string | null> {
   const forwarded = request.headers.get("x-forwarded-for") || "";
   const chain = forwarded
     .split(",")
@@ -42,8 +45,11 @@ export async function clientIpHash(request: Request): Promise<string> {
     (request.headers.get("x-real-ip") || "").trim() ||
     chain[chain.length - 1] ||
     "unknown";
-  const salt = Deno.env.get("LOOKUP_IP_SALT") || "likehoodie";
-  const bytes = new TextEncoder().encode(`${salt}|${ip}`);
+  // Sin sal no se hashea: una sal publica haria enumerable la IPv4 (LH-11).
+  const salt = Deno.env.get("LOOKUP_IP_SALT");
+  if (!salt) return null;
+  // La finalidad separa los hashes para que no se puedan correlacionar entre tablas.
+  const bytes = new TextEncoder().encode(`${purpose}|${salt}|${ip}`);
   const digest = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(digest)]
     .map((byte) => byte.toString(16).padStart(2, "0"))

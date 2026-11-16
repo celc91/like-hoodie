@@ -114,7 +114,11 @@ Deno.serve(async (request) => {
     return json({ error: "Datos fiscales no válidos" }, 400, origin);
   }
 
-  const ipHash = await clientIpHash(request);
+  const ipHash = await clientIpHash(request, "invoice-request");
+  if (!ipHash) {
+    console.error("invoice-request: falta LOOKUP_IP_SALT.");
+    return json({ error: "Servicio no disponible" }, 503, origin);
+  }
   const { data: allowed, error: limitError } = await supabase.rpc(
     "take_invoice_request",
     { p_ip_hash: ipHash }

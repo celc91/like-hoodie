@@ -105,7 +105,8 @@ Deno.serve(async (req) => {
       .from("logo_assets")
       .update({
         status: "failed",
-        last_error: message,
+        // Nunca se guarda el detalle interno: el cliente lee esta columna (LH-12).
+        last_error: "PROCESSING_FAILED",
         attempts: Number(asset.attempts || 0) + 1,
       })
       .eq("id", assetId);
@@ -119,7 +120,7 @@ Deno.serve(async (req) => {
         .from("logo_assets")
         .update({
           status: "failed",
-          last_error: "source_path fuera de la carpeta del usuario",
+          last_error: "INVALID_PATH",
         })
         .eq("id", assetId);
       return json({ error: "No se pudo procesar el logo" }, 403);
@@ -130,7 +131,7 @@ Deno.serve(async (req) => {
         .from("logo_assets")
         .update({
           status: "failed",
-          last_error: "Máximo de intentos alcanzado",
+          last_error: "MAX_ATTEMPTS",
         })
         .eq("id", assetId);
       return json(
@@ -139,7 +140,11 @@ Deno.serve(async (req) => {
       );
     }
 
-    const ipHash = await clientIpHash(req);
+    const ipHash = await clientIpHash(req, "process-logo");
+    if (!ipHash) {
+      console.error("process-logo: falta LOOKUP_IP_SALT.");
+      return json({ error: "Servicio no disponible" }, 503, origin);
+    }
     const { data: allowed, error: limitError } = await admin.rpc(
       "take_logo_process",
       { p_user_id: asset.user_id, p_ip_hash: ipHash }

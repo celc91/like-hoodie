@@ -74,7 +74,11 @@ Deno.serve(async (request) => {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  const ipHash = await clientIpHash(request);
+  const ipHash = await clientIpHash(request, "clip-pay");
+  if (!ipHash) {
+    console.error("clip-pay: falta LOOKUP_IP_SALT.");
+    return json({ error: "Pago no disponible en este momento" }, 503, origin);
+  }
   const { data: allowed, error: limitError } = await admin.rpc(
     "take_clip_pay",
     { p_ip_hash: ipHash, p_user_id: userData.user.id }

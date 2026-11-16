@@ -352,7 +352,10 @@ Deno.serve(async (request) => {
     .maybeSingle();
 
   if (updateError) {
-    console.error("clip-checkout: no se pudo guardar el checkout.");
+    console.error(
+      "clip-checkout: no se pudo guardar el checkout.",
+      updateError.message || updateError
+    );
     await releaseClaim();
     return json(
       { enabled: true, url: checkoutUrl, warning: "No se pudo guardar el checkout" },

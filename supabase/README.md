@@ -200,6 +200,7 @@ En un proyecto nuevo ejecuta:
 24. `supabase/migrations/20261115130000_locks_concurrencia.sql` (locks de `place_order` y newsletter)
 25. `supabase/migrations/20261115140000_orders_currency.sql` (`orders.currency` para Clip)
 26. `supabase/migrations/20261115150000_clip_idempotencia.sql` (reclamación atómica de pagos y links)
+27. `supabase/migrations/20261115160000_locks_menores.sql` (locks de cupones, topes globales y triggers)
 
 Las migraciones nuevas viven en [`migrations/`](migrations/README.md) y son
 idempotentes. Después de la lista anterior, ejecuta las migraciones en orden.
@@ -275,7 +276,7 @@ pago SAT (`04`/`28`) y correo de envío. Está protegida con RLS: solo el admin 
 `aal2` puede leerla o actualizarla; el navegador nunca la consulta directamente.
 `take_invoice_request()` aplica 10 intentos/hora por IP y 100/hora global, y
 purga los intentos de más de 2 días. Los hashes de IP usan `LOOKUP_IP_SALT`;
-configúralo con `npx supabase secrets set LOOKUP_IP_SALT=...`.
+configúralo con `npx supabase secrets set LOOKUP_IP_SALT=...`. Sin esa variable los endpoints responden 503 y cada finalidad usa un hash distinto.
 
 ## Privacidad
 

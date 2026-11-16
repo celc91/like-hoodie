@@ -46,7 +46,11 @@ Deno.serve(async (request) => {
   const supabase = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const ipHash = await clientIpHash(request);
+  const ipHash = await clientIpHash(request, "order-status");
+  if (!ipHash) {
+    console.error("order-status: falta LOOKUP_IP_SALT.");
+    return json({ error: "Servicio no disponible" }, 503, origin);
+  }
 
   const { data: allowed, error: limitError } = await supabase.rpc(
     "take_order_lookup",

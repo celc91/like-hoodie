@@ -38,6 +38,7 @@ let serveProcess = null;
 let anonKey = "";
 let serviceKey = "";
 let network = "";
+let serveLog = "";
 
 function run(command, args, options = {}) {
   return new Promise((resolveRun) => {
@@ -168,6 +169,7 @@ function writeFunctionsEnv() {
       "CLIP_WEBHOOK_SECRET=test_likehoodie_webhook",
       `CLIP_API_BASE=${MOCK_URL}`,
       "SITE_URL=http://localhost:3000",
+      "LOOKUP_IP_SALT=qa-lookup-salt",
     ].join("\n"),
     "utf8"
   );
@@ -204,8 +206,8 @@ async function startFunctions() {
       });
 
   let log = "";
-  serveProcess.stdout.on("data", (d) => (log += d));
-  serveProcess.stderr.on("data", (d) => (log += d));
+  serveProcess.stdout.on("data", (d) => { log += d; serveLog = log; });
+  serveProcess.stderr.on("data", (d) => { log += d; serveLog = log; });
 
   const deadline = Date.now() + 120_000;
   while (Date.now() < deadline) {
@@ -293,7 +295,9 @@ async function seed(userId) {
       detail jsonb,
       created_at timestamptz not null default now()
     );
-    delete from public.orders where user_id = '${userId}';
+    delete from public.orders
+     where user_id = '${userId}'
+        or lower(email) = '${EMAIL}';
     insert into public.profiles (id, email, role)
     values ('${userId}', '${EMAIL}', 'customer')
     on conflict (id) do update set role = 'customer';
@@ -393,6 +397,7 @@ async function main() {
     console.log(`Cobros a Clip: ${detail.payments} (esperado 1)`);
     console.log(`Links creados: ${detail.checkouts} (esperado 1)`);
     console.log(pass ? "SET-08 OK" : "SET-08 FALLO");
+    if (!pass) console.log(`--- runtime ---\n${serveLog.slice(-2500)}`);
   } finally {
     stopServe();
     await run("docker", ["rm", "-f", MOCK_NAME]);

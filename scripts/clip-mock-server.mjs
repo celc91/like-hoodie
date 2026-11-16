@@ -1,10 +1,10 @@
 // Mock mínimo de la API de Clip para el harness local de idempotencia.
 // Se ejecuta dentro de la red de Docker para que edge-runtime lo alcance.
 import { createServer } from "node:http";
+import { randomUUID } from "node:crypto";
 
 const PORT = Number(process.env.PORT || 4599);
 const hits = { payments: 0, checkout: 0 };
-const CHECKOUT_ID = "30000000-0000-4000-8000-0000000000e1";
 
 createServer((request, response) => {
   const chunks = [];
@@ -35,7 +35,7 @@ createServer((request, response) => {
         response.end(
           JSON.stringify({
             payment_request_url: "https://pay.clip.mx/qa",
-            payment_request_id: CHECKOUT_ID,
+            payment_request_id: randomUUID(),
             amount: 899,
             currency: "MXN",
             status: "CHECKOUT_CREATED",

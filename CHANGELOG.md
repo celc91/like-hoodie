@@ -28,6 +28,13 @@ semántico.
 - **Concurrencia:** `place_order` serializa por usuario y correo;
   `subscribe_newsletter` por IP y añade el tope global de 500/hora.
 - **Errores de cliente:** se redactan correos y teléfonos antes de guardar.
+- **Topes de abuso:** los contadores globales de seguimiento, errores, facturas,
+  logos y cobros se serializan; cupones se bloquea por IP y los triggers de
+  eventos, carritos y logos por usuario.
+- **`LOOKUP_IP_SALT`:** sin la variable los endpoints responden 503 en vez de
+  usar una sal pública, y cada finalidad usa su propio hash.
+- **`process-logo`:** `last_error` guarda solo códigos genéricos
+  (`PROCESSING_FAILED`, `INVALID_PATH`, `MAX_ATTEMPTS`).
 - **Clip:** `clip-pay` y `clip-checkout` reclaman el pedido de forma atómica
   (`payment_attempt_id`, `clip_claim_id`); dos peticiones paralelas ya no crean
   dos cargos ni dos enlaces. Ver `docs/clip-idempotencia.md`.
