@@ -1,5 +1,6 @@
 // like hoodie ♡ — registro público de errores de cliente con rate limit por IP.
-// No guarda cookies, correo, dirección ni datos de tarjeta.
+// Redacta correos y teléfonos antes de guardar. No guarda cookies, dirección ni
+// datos de tarjeta.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import {
@@ -11,8 +12,17 @@ import {
   supabaseUrl,
 } from "../_shared/clip.ts";
 
+function redact(value: string): string {
+  return value
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[correo]")
+    .replace(/\+?\d[\d\s().-]{7,18}\d/g, (match) =>
+      match.replace(/\D/g, "").length >= 10 ? "[telefono]" : match
+    );
+}
+
 function clean(value: unknown, max: number): string {
-  return String(value || "").replace(/\s+/g, " ").trim().slice(0, max);
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  return redact(text).slice(0, max);
 }
 
 Deno.serve(async (request) => {
