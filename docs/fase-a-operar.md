@@ -26,10 +26,18 @@ libre sin redacción, así que la garantía no está demostrada. Dos opciones:
 
 Recomendación: la 1, porque además evita guardar datos personales por accidente.
 
-## 2. Fotografías [negocio]
+## 2. Fotografías (mejora pendiente, no bloqueante)
 
-El editor aplica color con capas de tinte y máscaras, así que las fotos deben ser
-claras, con buena luz y fondo transparente.
+No hay fotos nuevas por ahora: se mantienen los mockups actuales de
+`assets/`, con licencia de uso comercial. El sitio funciona con ellos y no
+bloquean publicar.
+
+Sustituirlos es una mejora de confianza y conversión, no un requisito técnico.
+Conviene hacerlo cuando existan prendas producidas y fotos propias.
+
+Son la base del configurador: el color se aplica con `mix-blend-mode` sobre la
+foto y la máscara, así que la prenda debe ser clara para que el tinte produzca
+los siete colores.
 
 | Archivo | Medida actual | Sustituir por |
 |---|---|---|
@@ -84,7 +92,7 @@ El punto 3 es del negocio; el 4 requiere credenciales reales.
 ## Orden propuesto
 
 1. Datos legales y frase de PII (bloquea publicar).
-2. Fotos (bloquea conversión).
-3. `orders.currency` + idempotencia de Clip.
-4. Activar Clip y pedido de prueba.
+2. `orders.currency` + idempotencia de Clip (hecho).
+3. Activar Clip y pedido de prueba.
+4. Fotos reales cuando existan prendas producidas.
 5. Reseñas cuando haya clientes reales.
