@@ -160,6 +160,7 @@ Deno.serve(async (request) => {
       unpaid: [409, "La factura se solicita después de que el pago esté aprobado"],
       cancelled: [409, "El pedido está cancelado"],
       issued: [409, "La factura de este pedido ya fue emitida"],
+      locked: [409, "La solicitud ya fue revisada o cancelada; contacta con soporte"],
     };
     const [status, message] = reasons[data?.reason] || [
       409,

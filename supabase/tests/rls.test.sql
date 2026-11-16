@@ -1119,9 +1119,44 @@ select lh_rls_test.pending('PED-06', 'INSERT directo orders denegado 42501 y sin
 -- Expectativa: UPDATE/DELETE de A o B sobre OA afectan cero filas y no lo alteran.
 select lh_rls_test.pending('PED-07', 'cliente no puede actualizar borrar pagar o revalorar OA', false);
 
--- BLOQUEANTE-PED-08: debe demostrar que el precio del navegador no determina
--- el cobro; unitPrice=1 devuelve 22023, sin pedido, correo ni consumo de Q1.
-select lh_rls_test.pending('PED-08', 'unitPrice manipulado devuelve 22023 sin efectos laterales', true);
+-- BLOQUEANTE-PED-08: el precio del navegador no determina el cobro.
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('PED-08', 'precio_manipulado',
+  (lh_rls_test.try_sql(format(
+    'select public.place_order(%L::jsonb, %L::jsonb, %L::uuid, %L, NULL)',
+    jsonb_build_object(
+      'name', 'Cliente QA',
+      'email', 'qa-a-order@example.invalid',
+      'phone', '5512345678',
+      'address', 'Calle QA 1',
+      'addressRef', 'Ref QA',
+      'city', 'CDMX',
+      'state', 'CDMX',
+      'zip', '01000'
+    )::text,
+    jsonb_build_array(jsonb_build_object(
+      'product', 'hoodie',
+      'colorHex', '#1c1c1f',
+      'materialId', 'cotton400',
+      'techniqueId', 'dtg',
+      'qty', 1,
+      'size', 'M',
+      'unitPrice', 1
+    ))::text,
+    lh_rls_test.fixture_id('CA')::text,
+    ''
+  )) = '22023'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('PED-08', 'sin_pedido',
+  (select count(*) = 1 from public.orders where user_id = lh_rls_test.uid_a()));
+insert into lh_rls_test.check values ('PED-08', 'sin_descuento',
+  (select used_count = 0 from public.coupons where code = 'QA_UNICO_10'));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'PED-08'),
+  'BLOQUEANTE-PED-08 — unitPrice manipulado da 22023 y no crea pedido ni consume cupon'
+);
 
 -- Expectativa: pedido valido calcula 899+99=998, usuario UC, estado pending y demo/demo.
 select lh_rls_test.pending('PED-09', 'place_order valido recalcula 998 y fuerza usuario estado y demo', false);
@@ -1192,9 +1227,42 @@ select lh_rls_test.pending('FAC-03', 'ADM2 lectura y notas permitidas pero sin I
 -- Expectativa: submit_invoice_request y confirm_invoice_request no son RPC de navegador.
 select lh_rls_test.pending('FAC-04', 'RPC publicas de factura solo service_role 42501 en navegador', false);
 
--- BLOQUEANTE-FAC-05: debe demostrar que otra solicitud no reinicia una factura
--- review o cancelled ni sustituye datos fiscales, verificacion o billing; respuesta locked.
-select lh_rls_test.pending('FAC-05', 'LH-07 resubmission review cancelled devuelve locked sin cambios', true);
+-- BLOQUEANTE-FAC-05: una solicitud review o cancelled no se puede reiniciar.
+select lh_rls_test.as_service_role();
+select lh_rls_test.register_fixture('O_REVIEW',
+  lh_rls_test.seed_order(lh_rls_test.uid_a(), 990010, 'qa-fac05-review@example.invalid', 'paid'));
+select lh_rls_test.register_fixture('O_CANCEL',
+  lh_rls_test.seed_order(lh_rls_test.uid_a(), 990011, 'qa-fac05-cancel@example.invalid', 'paid'));
+select lh_rls_test.register_fixture('F_REVIEW',
+  lh_rls_test.seed_invoice(lh_rls_test.fixture_id('O_REVIEW'), 'review', null, now(), '04'));
+select lh_rls_test.register_fixture('F_CANCEL',
+  lh_rls_test.seed_invoice(lh_rls_test.fixture_id('O_CANCEL'), 'cancelled', null, null, '04'));
+
+insert into lh_rls_test.check values ('FAC-05', 'review_locked',
+  ((select public.submit_invoice_request(
+      990010, 'qa-fac05-review@example.invalid', 'XAXX010101000', 'OTRO NOMBRE',
+      '601', '00000', 'G03', 'otro@example.invalid', 'ataque', '28'
+    ) ->> 'reason') = 'locked'));
+insert into lh_rls_test.check values ('FAC-05', 'cancelled_locked',
+  ((select public.submit_invoice_request(
+      990011, 'qa-fac05-cancel@example.invalid', 'XAXX010101000', 'OTRO NOMBRE',
+      '601', '00000', 'G03', 'otro@example.invalid', 'ataque', '28'
+    ) ->> 'reason') = 'locked'));
+insert into lh_rls_test.check values ('FAC-05', 'review_intacta',
+  (select status = 'review' and legal_name = 'Empresa QA' and verified_at is not null
+     from public.invoice_requests where id = lh_rls_test.fixture_id('F_REVIEW')));
+insert into lh_rls_test.check values ('FAC-05', 'cancelled_intacta',
+  (select status = 'cancelled' and legal_name = 'Empresa QA'
+     from public.invoice_requests where id = lh_rls_test.fixture_id('F_CANCEL')));
+insert into lh_rls_test.check values ('FAC-05', 'pedidos_intactos',
+  (select count(*) = 2 from public.orders
+    where id in (lh_rls_test.fixture_id('O_REVIEW'), lh_rls_test.fixture_id('O_CANCEL'))
+      and billing_status = 'pending'));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'FAC-05'),
+  'BLOQUEANTE-FAC-05 — review y cancelled responden locked sin cambiar datos'
+);
 
 -- Expectativa: alta backend valida nace unverified, token 24 h y pedido pending.
 select lh_rls_test.pending('FAC-06', 'submit valido crea unverified sin excluir pedido antes de verificar', false);
