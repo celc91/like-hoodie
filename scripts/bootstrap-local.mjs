@@ -100,13 +100,10 @@ async function cli(args, options = {}) {
 }
 
 async function detectPsql() {
+  // Solo se comprueba el cliente. El contenedor puede no existir todavía:
+  // la base arranca después de este paso.
   const probe = await run("psql", ["--version"]);
-  if (probe.code === 0) return;
-  useDocker = true;
-  const probe2 = await run("docker", ["exec", CONTAINER, "psql", "-U", "postgres", "-d", "postgres", "-c", "select 1"]);
-  if (probe2.code !== 0) {
-    throw new Error(`No hay psql ni contenedor ${CONTAINER}: ${probe2.err.trim()}`);
-  }
+  useDocker = probe.code !== 0;
 }
 
 function psqlArgs() {
