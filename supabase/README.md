@@ -155,6 +155,21 @@ La integración usa **Checkout redireccionado** y dos Edge Functions:
 - `clip-checkout`: recibe el ID del pedido, valida la sesión y crea el link de pago con el total de `orders.total`.
 - `clip-webhook`: recibe el aviso de Clip, consulta `GET /v2/checkout/{id}` y actualiza el pedido.
 
+### Bootstrap reproducible en local
+
+`supabase start` aplica `supabase/migrations/` al arrancar, pero esas migraciones
+asumen el esquema base (`schema.sql` y `fase*.sql`), que no vive en `migrations/`.
+Para una base local nueva usa:
+
+```powershell
+node scripts/bootstrap-local.mjs
+```
+
+El script aparta `migrations/`, arranca limpio, aplica los 28 scripts base en el
+orden canónico, devuelve `migrations/` y ejecuta `supabase migration up`. Es el
+mismo camino que usa el workflow `RLS`. No usar `supabase db reset` hasta mover
+el esquema base a una migración de línea base: fallaría por el mismo motivo.
+
 ### Orden de SQL
 
 En un proyecto nuevo ejecuta:
