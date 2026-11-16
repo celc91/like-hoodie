@@ -14,6 +14,16 @@ begin;
 
 select plan(121);
 
+-- Los casos de concurrencia (PED-13, NEW-12) los mide scripts/test-concurrency.mjs
+-- con conexiones independientes y commits reales. Si el runner no se ejecutó,
+-- la tabla está vacía y ambos quedan en rojo, como debe ser.
+create table if not exists public.qa_concurrency_results (
+  case_id text primary key,
+  pass boolean not null,
+  detail jsonb,
+  created_at timestamptz not null default now()
+);
+
 create schema lh_rls_test;
 
 create table lh_rls_test.fixture (
@@ -1170,9 +1180,12 @@ select lh_rls_test.pending('PED-11', 'place_order con carrito ajeno denegado y C
 -- Expectativa: solo existe la firma de cinco argumentos; cuatro argumentos 42883.
 select lh_rls_test.pending('PED-12', 'una sola firma place_order segura y ANON sin EXECUTE', false);
 
--- BLOQUEANTE-PED-13: debe demostrar con conexiones paralelas y commits que
--- una rafaga no supera tres pedidos por correo ni cinco por usuario ni envia correos extra.
-select lh_rls_test.pending('PED-13', 'LH-01 concurrencia maximo 3 por correo y 5 por usuario', true);
+-- BLOQUEANTE-PED-13: resultado medido por scripts/test-concurrency.mjs.
+-- 20 conexiones paralelas, mismo usuario y correo, commits reales.
+select ok(
+  coalesce((select pass from public.qa_concurrency_results where case_id = 'PED-13'), false),
+  'BLOQUEANTE-PED-13 — LH-01: 20 llamadas paralelas no superan 3 por correo ni 5 por usuario'
+);
 
 -- Expectativa: los limites secuenciales rechazan la cuarta por correo y sexta por usuario.
 select lh_rls_test.pending('PED-14', 'LH-01 cuarta por correo y sexta por usuario devuelven P0001', false);
@@ -1462,9 +1475,12 @@ select lh_rls_test.pending('NEW-10', 'confirmacion backend genera cupon unico co
 -- Expectativa: confirmar dos veces devuelve mismo codigo; baja impide nuevo cupon.
 select lh_rls_test.pending('NEW-11', 'confirmacion idempotente y baja sin regenerar cupon', false);
 
--- BLOQUEANTE-NEW-12: debe demostrar con 50 conexiones paralelas que no se
--- superan cinco intentos, cinco suscriptores ni cinco envios por IP; resto rate.
-select lh_rls_test.pending('NEW-12', 'LH-02 concurrencia maximo cinco altas intentos y correos por IP', true);
+-- BLOQUEANTE-NEW-12: resultado medido por scripts/test-concurrency.mjs.
+-- 50 altas paralelas desde una misma IP, commits reales.
+select ok(
+  coalesce((select pass from public.qa_concurrency_results where case_id = 'NEW-12'), false),
+  'BLOQUEANTE-NEW-12 — LH-02: 50 altas paralelas no superan 5 intentos ni 5 envios por IP'
+);
 
 -- Expectativa: seiscientas altas distribuidas no superan tope global 500 por hora.
 select lh_rls_test.pending('NEW-13', 'LH-02 tope global quinientos intentos por hora', false);
