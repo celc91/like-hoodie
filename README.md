@@ -307,6 +307,9 @@ Los hashes de IP del seguimiento y de las solicitudes de factura usan el secreto
 npx supabase secrets set LOOKUP_IP_SALT=<cadena-aleatoria-larga>
 ```
 
+Sin esta variable, los endpoints que la usan responden `503`: fallan cerrados en
+vez de hashear con una sal pública.
+
 ## Pagos con Clip
 
 La integración con **Clip Checkout redireccionado** está creada en `supabase/functions/`:
@@ -443,7 +446,7 @@ La configuración de ambos buckets y sus políticas RLS está en `supabase/stora
 - El panel de administración exige **MFA TOTP**, guarda la sesión en `sessionStorage` y la cierra a los 30 minutos de inactividad. El primer acceso obliga a enrolar la app con QR; después solo se pide el código de 6 dígitos. No hay códigos de recuperación: si se pierde el dispositivo, se elimina el factor en Supabase y se vuelve a enrolar.
 - `/.well-known/security.txt` indica cómo reportar una vulnerabilidad.
 
-Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supabase/README.md) (desde `schema.sql` hasta `fase10-facturacion-individual.sql` y las migraciones de `supabase/migrations/`) y despliega `process-logo` e `invoice-request`.
+Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supabase/README.md) (desde `schema.sql` hasta `fase10-facturacion-individual.sql` y las migraciones de `supabase/migrations/`) y despliega las funciones con `npx supabase functions deploy`. Para una base local desde cero, `node scripts/bootstrap-local.mjs`.
 
 ## Estructura
 
@@ -455,6 +458,8 @@ Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supab
 ├── vectorize.js      # Vectorizador de logos en el navegador
 ├── eventos.js        # Calendario de conciertos
 ├── eventos.json      # Cartelera generada desde eventos.csv
+├── resenas.js        # Pinta las reseñas con consentimiento
+├── resenas.json      # Reseñas reales (vacío = sección oculta)
 ├── store-supabase.js # Sincronización de carritos, pedidos y eventos
 ├── supabase-config.js# URL y publishable key de Supabase
 ├── admin.html        # Panel de administración
@@ -465,6 +470,7 @@ Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supab
 ├── .well-known/      # security.txt
 ├── supabase/         # Esquema SQL, políticas y Edge Functions (Clip, process-logo e invoice-request)
 ├── supabase/migrations/ # Migraciones nuevas versionadas
+├── supabase/tests/   # Suite pgTAP de RLS y abuso (121 casos)
 ├── scripts/          # Sincronización de la cartelera de eventos
 ├── legal.js          # Aviso de cookies y almacenamiento local
 ├── privacidad.html   # Aviso de privacidad
@@ -515,6 +521,7 @@ El editor usa una maqueta fotográfica frontal y trasera con fondo transparente,
 - [x] Cartelera editable por CSV sin API key.
 - [x] WhatsApp y monitorización (errores, print, checkout y disponibilidad).
 - [ ] Fotos y reseñas reales.
+- [x] Sección de reseñas preparada y oculta hasta tener contenido real.
 - [x] Canva evaluado y descartado por ahora (ver abajo).
 
 ### Decisión: Canva
@@ -536,13 +543,15 @@ Si más adelante hay demanda, se probará primero con un enlace a plantillas Can
 - Los precios de las tarjetas de la colección están fijados en el HTML; si cambia la base, hay que actualizarlos.
 - La primera compra de un modelo sube su logo y crea el asset de impresión; las siguientes en la misma sesión reutilizan esa caché.
 
+- La sección de reseñas existe pero permanece oculta hasta tener reseñas reales con consentimiento.
+
 ## Contribuir y licencia
 
 - Guía de contribución: [`CONTRIBUTING.md`](CONTRIBUTING.md).
 - Seguridad: [`SECURITY.md`](SECURITY.md). No abras issues públicos para vulnerabilidades.
 - Historial de cambios: [`CHANGELOG.md`](CHANGELOG.md).
 - Código bajo **MIT** ([`LICENSE`](LICENSE)); marca, fotos y diseños reservados ([`ASSETS-LICENSE.md`](ASSETS-LICENSE.md)).
-- CI en [`.github/workflows`](.github/workflows): enlaces, HTML y Lighthouse. Los dos primeros corren en cada push a `main`; Lighthouse se lanza a mano desde Actions.
+- CI en [`.github/workflows`](.github/workflows): enlaces, HTML, RLS y Lighthouse. Enlaces, HTML y RLS corren en cada push a `main` y en cada PR; Lighthouse se lanza a mano desde Actions. RLS levanta Supabase local, aplica el bootstrap, ejecuta el runner de concurrencia, el harness de Clip y los 121 casos de pgTAP.
 
 ## Antes de publicar la tienda real
 

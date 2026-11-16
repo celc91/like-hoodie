@@ -22,6 +22,20 @@ Para el panel y los pedidos necesitas el proyecto de Supabase:
 2. Pega la URL y la publishable key en `supabase-config.js`.
 3. Crea un usuario administrador y entra a `admin.html`.
 
+## Probar la base y la seguridad en local
+
+Requiere Docker y la CLI de Supabase. La suite crea una base desechable; nunca
+toca producción.
+
+```sh
+node scripts/bootstrap-local.mjs       # arranca y aplica esquema + migraciones
+node scripts/test-concurrency.mjs      # PED-13 y NEW-12
+node scripts/test-clip-idempotency.mjs # SET-08 con mock de Clip
+npx supabase test db                   # 121 casos pgTAP
+```
+
+El workflow `RLS` ejecuta lo mismo en cada PR y en cada push a `main`.
+
 ## Ramas y commits
 
 - Parte de `main` y usa una rama corta: `editor/capas`, `catalogo/nuevo-modelo`,
