@@ -24,6 +24,17 @@ create table lh_rls_test.fixture (
 grant select, insert, update, delete on lh_rls_test.fixture
   to anon, authenticated, service_role;
 
+-- Resultados parciales por caso: cada caso emite una sola aserción pgTAP.
+create table lh_rls_test.check (
+  case_id text not null,
+  step text not null,
+  pass boolean not null,
+  primary key (case_id, step)
+);
+
+grant select, insert, update, delete on lh_rls_test.check
+  to anon, authenticated, service_role;
+
 -- ---------------------------------------------------------------------------
 -- Identificadores sintéticos
 -- ---------------------------------------------------------------------------
@@ -1036,6 +1047,24 @@ grant usage on schema lh_rls_test to anon, authenticated, service_role;
 grant execute on all functions in schema lh_rls_test
   to anon, authenticated, service_role;
 
+-- Ejecuta SQL como el rol actual y devuelve 'ok' o el SQLSTATE, sin abortar
+-- la transacción. Se usa para comprobar denegaciones esperadas.
+create or replace function lh_rls_test.try_sql(p_sql text)
+returns text
+language plpgsql
+set search_path = public, extensions, pg_temp
+as $$
+begin
+  execute p_sql;
+  return 'ok';
+exception when others then
+  return SQLSTATE;
+end;
+$$;
+
+grant execute on function lh_rls_test.try_sql(text)
+  to anon, authenticated, service_role;
+
 -- La función privilegiada de Auth solo puede invocarse al sembrar como
 -- service_role. Estos grants existen únicamente dentro de la transacción local.
 revoke all on function lh_rls_test.create_auth_user(uuid, text)
@@ -1055,9 +1084,28 @@ select lh_rls_test.pending('PED-01', 'ANON SELECT orders devuelve conjunto vacio
 -- Expectativa: CART obtiene exactamente OC y ningun pedido de A o B.
 select lh_rls_test.pending('PED-02', 'CART SELECT orders devuelve solo OC', false);
 
--- BLOQUEANTE-PED-03: debe demostrar aislamiento real de PII entre clientes;
--- A lee OA, B recibe cero filas directamente y mediante join con carts.
-select lh_rls_test.pending('PED-03', 'A lee OA; B no lee OA ni por SELECT directo ni por join', true);
+-- BLOQUEANTE-PED-03: aislamiento real de PII entre clientes.
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('PED-03', 'a_directo',
+  (select count(*) = 1 from public.orders where id = lh_rls_test.fixture_id('OA')));
+
+select lh_rls_test.as_b();
+insert into lh_rls_test.check values ('PED-03', 'b_directo',
+  (select count(*) = 0 from public.orders where id = lh_rls_test.fixture_id('OA')));
+insert into lh_rls_test.check values ('PED-03', 'b_join',
+  (select count(*) = 0
+     from public.orders o
+     join public.carts c on c.id = o.cart_id
+    where o.id = lh_rls_test.fixture_id('OA')));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('PED-03', 'canario',
+  (select count(*) = 1 from public.orders where id = lh_rls_test.fixture_id('OA')));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'PED-03'),
+  'BLOQUEANTE-PED-03 — A lee OA; B no lo lee directo ni por join; canario intacto'
+);
 
 -- Expectativa: ADM1 no activa orders_admin_select y no lee pedidos ajenos.
 select lh_rls_test.pending('PED-04', 'ADM1 SELECT orders devuelve conjunto vacio', false);
@@ -1154,9 +1202,30 @@ select lh_rls_test.pending('FAC-06', 'submit valido crea unverified sin excluir 
 -- Expectativa: invalid/notfound/unpaid/cancelled no crean solicitud ni envian correo.
 select lh_rls_test.pending('FAC-07', 'submit invalido no coincidente demo y cancelado falla sin efectos', false);
 
--- BLOQUEANTE-FAC-08: debe demostrar que una solicitud unverified no puede
--- marcarse issued ni recibir UUID ni cambiar billing/billed_at del pedido.
-select lh_rls_test.pending('FAC-08', 'unverified no puede emitirse devuelve P0001 sin UUID', true);
+-- BLOQUEANTE-FAC-08: una solicitud unverified no puede emitirse.
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('FAC-08', 'emision',
+  (lh_rls_test.try_sql(format(
+    'select public.mark_invoice_request_issued(%L::uuid, %L)',
+    lh_rls_test.fixture_id('F0'),
+    '11111111-1111-4111-8111-111111111111'
+  )) = 'P0001'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('FAC-08', 'estado',
+  (select status = 'unverified' from public.invoice_requests
+    where id = lh_rls_test.fixture_id('F0')));
+insert into lh_rls_test.check values ('FAC-08', 'uuid',
+  (select uuid is null from public.invoice_requests
+    where id = lh_rls_test.fixture_id('F0')));
+insert into lh_rls_test.check values ('FAC-08', 'pedido',
+  (select billing_status = 'pending' and billing_uuid is null
+     from public.orders where id = lh_rls_test.fixture_id('OA')));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'FAC-08'),
+  'BLOQUEANTE-FAC-08 — unverified no se emite (P0001) y no toca UUID ni billing'
+);
 
 -- Expectativa: token backend lleva unverified a review, consume token y marca individual.
 select lh_rls_test.pending('FAC-09', 'confirm token backend produce review individual y verified_at', false);
@@ -1272,9 +1341,34 @@ select lh_rls_test.pending('NEW-01', 'newsletter_subscribers no legible desde na
 -- Expectativa: UPDATE/DELETE directos devuelven 42501 y conservan N0.
 select lh_rls_test.pending('NEW-02', 'newsletter_subscribers inmutable desde navegador', false);
 
--- BLOQUEANTE-NEW-03: debe demostrar el ataque completo LH-03: INSERT directo
--- con token elegido 42501, confirmacion notfound, cero cupones/correos y alta RPC funcional.
-select lh_rls_test.pending('NEW-03', 'LH-03 ANON no inserta token elegido ni obtiene cupon', true);
+-- BLOQUEANTE-NEW-03: ataque completo LH-03 desde ANON.
+select lh_rls_test.as_anon();
+insert into lh_rls_test.check values ('NEW-03', 'insert_directo',
+  (lh_rls_test.try_sql(format(
+    'insert into public.newsletter_subscribers(email, token, confirmed) values (%L, %L::uuid, false)',
+    'qa-new-03@example.invalid',
+    '30000000-0000-4000-8000-000000000003'
+  )) = '42501'));
+insert into lh_rls_test.check values ('NEW-03', 'confirmar_token_elegido',
+  ((select public.confirm_newsletter('30000000-0000-4000-8000-000000000003'::uuid) ->> 'reason') = 'notfound'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('NEW-03', 'sin_cupon',
+  (select count(*) = 0 from public.coupons where code like 'LH-%'));
+
+select lh_rls_test.as_anon();
+insert into lh_rls_test.check values ('NEW-03', 'alta_rpc',
+  ((select public.subscribe_newsletter('qa-new-03-alt@example.invalid') ->> 'ok') = 'true'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('NEW-03', 'fila_rpc',
+  (select count(*) = 1 from public.newsletter_subscribers
+    where lower(email) = 'qa-new-03-alt@example.invalid'));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'NEW-03'),
+  'BLOQUEANTE-NEW-03 — ANON no inserta ni confirma token elegido, sin cupon; la RPC sigue funcionando'
+);
 
 -- Expectativa: CART, A, B y ADM2 tampoco insertan suscriptores directamente.
 select lh_rls_test.pending('NEW-04', 'LH-03 INSERT directo denegado para todo authenticated', false);
@@ -1400,9 +1494,39 @@ select lh_rls_test.pending('STO-01', 'buckets privados limites MIME 5 MiB logos 
 -- Expectativa: ANON recibe 42501 al leer o insertar storage.objects.
 select lh_rls_test.pending('STO-02', 'ANON sin lectura ni escritura Storage', false);
 
--- BLOQUEANTE-STO-03: debe demostrar que B no lista, descarga ni firma SA;
--- A si accede, el objeto tiene bytes canarios y el bucket permanece privado.
-select lh_rls_test.pending('STO-03', 'B no lee descarga ni firma SA; A si; sin bytes cruzados', true);
+-- BLOQUEANTE-STO-03: aislamiento de objetos entre usuarios.
+select lh_rls_test.as_b();
+insert into lh_rls_test.check values ('STO-03', 'b_no_lee',
+  (select count(*) = 0 from storage.objects
+    where bucket_id = 'order-logos'
+      and name = (lh_rls_test.uid_a()::text || '/original.png')));
+insert into lh_rls_test.check values ('STO-03', 'b_no_lee_print',
+  (select count(*) = 0 from storage.objects
+    where bucket_id = 'order-prints'
+      and name = (lh_rls_test.uid_a()::text || '/print.png')));
+
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('STO-03', 'a_lee',
+  (select count(*) = 1 from storage.objects
+    where bucket_id = 'order-logos'
+      and name = (lh_rls_test.uid_a()::text || '/original.png')));
+insert into lh_rls_test.check values ('STO-03', 'a_no_ajeno',
+  (select count(*) = 0 from storage.objects
+    where bucket_id = 'order-logos'
+      and name = (lh_rls_test.uid_b()::text || '/original.png')));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('STO-03', 'bucket_privado',
+  (select not public from storage.buckets where id = 'order-logos'));
+insert into lh_rls_test.check values ('STO-03', 'canario',
+  (select count(*) = 1 from storage.objects
+    where bucket_id = 'order-logos'
+      and name = (lh_rls_test.uid_a()::text || '/original.png')));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'STO-03'),
+  'BLOQUEANTE-STO-03 — B no lee logo ni print ajenos; A lee solo lo suyo; bucket privado'
+);
 
 -- Expectativa: upload propio permitido y listado limitado al primer componente UID.
 select lh_rls_test.pending('STO-04', 'upload logo propio permitido y listado solo propio', false);
@@ -1432,13 +1556,65 @@ select lh_rls_test.pending('STO-10', 'sin URL publica y enlaces firmados expiran
 -- Expectativa: perfiles limitados a propio; solo ADM2 lee todos.
 select lh_rls_test.pending('PRIV-01', 'profiles lectura propia y admin solo aal2', false);
 
--- BLOQUEANTE-PRIV-02: debe demostrar que UPDATE/INSERT/DELETE no elevan role;
--- el perfil permanece customer e is_admin false incluso con claim aal2.
-select lh_rls_test.pending('PRIV-02', 'cliente no puede autoasignarse admin ni insertar perfil admin', true);
+-- BLOQUEANTE-PRIV-02: un cliente no puede elevar su rol.
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('PRIV-02', 'update_rol', false);
+with u as (
+  update public.profiles set role = 'admin' where id = auth.uid() returning 1
+)
+update lh_rls_test.check
+   set pass = (select count(*) = 0 from u)
+ where case_id = 'PRIV-02' and step = 'update_rol';
+insert into lh_rls_test.check values ('PRIV-02', 'insert_admin',
+  (lh_rls_test.try_sql(format(
+    'insert into public.profiles(id, email, role) values (%L::uuid, %L, %L)',
+    '10000000-0000-4000-8000-0000000000ff',
+    'qa-intruso@example.invalid',
+    'admin'
+  )) = '42501'));
+insert into lh_rls_test.check values ('PRIV-02', 'rol_intacto',
+  (select role = 'customer' from public.profiles where id = auth.uid()));
 
--- BLOQUEANTE-PRIV-03: debe demostrar MFA en todas las superficies, no solo una:
--- ADM1 is_admin false, datos admin vacios y RPC 42501; ADM2 pasa controles.
-select lh_rls_test.pending('PRIV-03', 'ADM1 sin privilegios en tablas Storage y RPC; ADM2 si', true);
+select lh_rls_test.use_actor('authenticated', lh_rls_test.uid_a(), 'aal2');
+insert into lh_rls_test.check values ('PRIV-02', 'aal2_sin_admin',
+  ((select public.is_admin()) = false));
+
+select lh_rls_test.as_service_role();
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'PRIV-02'),
+  'BLOQUEANTE-PRIV-02 — el cliente no se asigna admin ni con aal2'
+);
+
+-- BLOQUEANTE-PRIV-03: MFA obligatorio en todas las superficies.
+select lh_rls_test.as_admin_aal1();
+insert into lh_rls_test.check values ('PRIV-03', 'aal1_is_admin',
+  ((select public.is_admin()) = false));
+insert into lh_rls_test.check values ('PRIV-03', 'aal1_orders',
+  (select count(*) = 0 from public.orders where id = lh_rls_test.fixture_id('OA')));
+insert into lh_rls_test.check values ('PRIV-03', 'aal1_client_errors',
+  (select count(*) = 0 from public.client_errors));
+insert into lh_rls_test.check values ('PRIV-03', 'aal1_admin_stats',
+  (lh_rls_test.try_sql('select public.admin_stats(30)') = '42501'));
+insert into lh_rls_test.check values ('PRIV-03', 'aal1_storage',
+  (select count(*) = 0 from storage.objects
+    where bucket_id = 'order-prints'
+      and name = (lh_rls_test.uid_a()::text || '/print.png')));
+
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('PRIV-03', 'aal2_is_admin',
+  ((select public.is_admin()) = true));
+insert into lh_rls_test.check values ('PRIV-03', 'aal2_orders',
+  (select count(*) = 1 from public.orders where id = lh_rls_test.fixture_id('OA')));
+insert into lh_rls_test.check values ('PRIV-03', 'aal2_client_errors',
+  (select count(*) = 2 from public.client_errors));
+insert into lh_rls_test.check values ('PRIV-03', 'aal2_admin_stats',
+  (lh_rls_test.try_sql('select public.admin_stats(30)') = 'ok'));
+
+select lh_rls_test.as_service_role();
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'PRIV-03'),
+  'BLOQUEANTE-PRIV-03 — aal1 no es admin en tablas, Storage ni RPC; aal2 sí'
+);
 
 -- Expectativa: aal2 sin perfil admin y perfil customer previo no conceden admin.
 select lh_rls_test.pending('PRIV-04', 'is_admin exige simultaneamente perfil admin y aal2', false);
