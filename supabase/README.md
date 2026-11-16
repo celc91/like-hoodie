@@ -196,6 +196,9 @@ En un proyecto nuevo ejecuta:
 20. `supabase/migrations/20261115000300_admin_stats_pagados.sql` (métricas sin demo)
 21. `supabase/migrations/20261115000400_cupones_unicos.sql` (cupón único por suscriptor)
 22. `supabase/migrations/20261115000500_aviso_factura.sql` (aviso al admin y helper Resend)
+23. `supabase/migrations/20261115120000_seguridad_rls_b5.sql` (newsletter, `has_resend_key`, retención y facturas bloqueadas)
+24. `supabase/migrations/20261115130000_locks_concurrencia.sql` (locks de `place_order` y newsletter)
+25. `supabase/migrations/20261115140000_orders_currency.sql` (`orders.currency` para Clip)
 
 Las migraciones nuevas viven en [`migrations/`](migrations/README.md) y son
 idempotentes. Después de la lista anterior, ejecuta las migraciones en orden.

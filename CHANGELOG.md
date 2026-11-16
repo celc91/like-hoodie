@@ -6,6 +6,29 @@ semántico.
 
 ## [Sin publicar]
 
+### Añadido
+
+- **`orders.currency`:** columna `text not null default 'MXN'` con check de tres
+  letras. `clip-pay` y `clip-checkout` ya la consultaban y el flujo fallaba antes
+  de cobrar en una instalación limpia.
+- **Suite RLS (fase B.5):** `supabase/tests/rls.test.sql` con 121 casos y los 10
+  bloqueantes de la auditoría.
+- **CI RLS:** workflow `RLS` con bootstrap local, runner de concurrencia y pgTAP.
+
+### Corregido
+
+- **`schema.sql`:** el cuerpo de `admin_stats()` abría con `as $` en vez de
+  `as $$`, lo que impedía cualquier instalación limpia.
+- **`has_resend_key()`:** revocado también a `authenticated`.
+- **Alta de newsletter:** sin `INSERT` directo desde el navegador.
+- **`cleanup_monitoring()`:** incluye las cinco tablas de intentos que quedaban
+  sin purgar.
+- **Facturación:** una solicitud `review` o `cancelled` responde `locked` y no se
+  puede reiniciar.
+- **Concurrencia:** `place_order` serializa por usuario y correo;
+  `subscribe_newsletter` por IP y añade el tope global de 500/hora.
+- **Errores de cliente:** se redactan correos y teléfonos antes de guardar.
+
 ### Por hacer
 
 - (ninguno pendiente en el editor)
