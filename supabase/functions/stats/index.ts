@@ -299,15 +299,15 @@ const PRESETS: Record<number, string> = {
   90: "last_90d",
 };
 
-async function loadMeta(days: number) {
-  const token = env("META_ACCESS_TOKEN");
+async function loadMeta(days: number, tokenOverride = "") {
+  const token = env("META_ACCESS_TOKEN") || tokenOverride;
   const account = env("META_AD_ACCOUNT_ID") || DEFAULT_AD_ACCOUNT;
 
   const empty = {
     configured: false,
     error: null,
     missing: ["META_ACCESS_TOKEN"],
-    hint: "Genera un token con ads_read en Business Settings y guárdalo como secreto META_ACCESS_TOKEN.",
+    hint: "No hay token de Meta. Se usa META_ACCESS_TOKEN o, si no existe, el token de CAPI guardado en Vault.",
     ads: { spend: 0, impressions: 0, clicks: 0, ctr: 0, cpc: 0, purchases: 0, revenue: 0 },
   };
 
@@ -364,10 +364,14 @@ async function loadMeta(days: number) {
     };
   } catch (error) {
     console.error("stats: Meta", error);
+    const message = error instanceof Error ? error.message : "No se pudo leer Meta.";
+    const permission = message.includes("403") || message.includes("ads_read");
     return {
       ...empty,
       configured: true,
-      error: error instanceof Error ? error.message : "No se pudo leer Meta.",
+      error: permission
+        ? "El token de Meta no tiene permiso ads_read sobre la cuenta publicitaria. Genera uno en Business Settings (System user → Generate token, ads_read) y guárdalo como META_ACCESS_TOKEN."
+        : message,
     };
   }
 }
@@ -415,12 +419,23 @@ Deno.serve(async (request) => {
   const days = allowed.includes(Number(body.days)) ? Number(body.days) : 28;
   const property = env("GA_PROPERTY_ID") || DEFAULT_PROPERTY;
 
-  const [ga, meta] = await Promise.all([loadAnalytics(days, property), loadMeta(days)]);
-
   const admin = createClient(url, service, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data: capi } = await admin.rpc("meta_last_response");
+
+  // Token de Meta: primero el secreto propio; si no existe, el de CAPI en Vault.
+  let metaToken = env("META_ACCESS_TOKEN");
+  if (!metaToken) {
+    const { data: vaultToken } = await admin.rpc("stats_meta_token");
+    if (vaultToken) metaToken = String(vaultToken);
+  }
+
+  const [ga, meta, capiResult] = await Promise.all([
+    loadAnalytics(days, property),
+    loadMeta(days, metaToken),
+    admin.rpc("meta_last_response"),
+  ]);
+  const capi = capiResult.data;
 
   return json(
     {
