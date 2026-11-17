@@ -94,6 +94,8 @@ semántico.
   `20261117000200_precios_volumen.sql`.
 - Eliminada la firma antigua `item_unit_price(jsonb)` para evitar ambigüedad
   con la nueva firma que recibe cantidad.
+- Límites de pedidos por usuario y correo serializados con locks para que no se
+  superen bajo concurrencia.
 
 ### Verificado
 

@@ -122,6 +122,9 @@ begin
     raise exception 'Codigo postal no valido: deben ser 5 digitos';
   end if;
 
+  perform pg_advisory_xact_lock(hashtext('order-user:' || v_uid::text));
+  perform pg_advisory_xact_lock(hashtext('order-email:' || v_email));
+
   if (
     select count(*) from public.orders
      where user_id = v_uid

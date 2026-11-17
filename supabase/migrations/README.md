@@ -42,6 +42,9 @@ npx supabase db query --remote --yes --file supabase/migrations/20261115000200_f
 - `20261117000300_item_price_firma.sql`
   - elimina la firma antigua `item_unit_price(jsonb)` para dejar una sola
     función con cantidad y evitar ambigüedad.
+- `20261117000900_order_locks.sql`
+  - serializa los límites por usuario y correo con locks de transacción para
+    que no se acepten más pedidos de los permitidos bajo concurrencia.
 
 Las migraciones son idempotentes: se pueden volver a ejecutar. No ejecutes
 `security-hardening.sql` sobre una base ya migrada sin revisar antes la versión
