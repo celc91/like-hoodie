@@ -57,6 +57,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **WhatsApp:** botón flotante y enlaces con mensaje contextual en tienda, producto y seguimiento.
 - **Monitorización:** errores JS y fallos de compra/print visibles en **Salud** del admin; comprobación externa cada 30 min de páginas, Edge Functions, Supabase Auth y caducidad TLS, con aviso por issue y cierre automático al recuperarse. El seguimiento y los errores pasan por Edge Functions con rate limit atómico por IP, tope global y retención de 90 días.
 - **Retención de archivos:** limpieza semanal de `order-logos` y `order-prints`; logos sin pedido a los 30 días y logos de pedidos cerrados a los 180 días. Ver `docs/retencion.md`.
+- **Reseñas:** sección `#resenas` con `resenas.json`; oculta hasta tener reseñas reales con consentimiento.
 - **DNSSEC:** activo y validado; `node scripts/check-dns.mjs` comprueba DS y `AD` en dos resolutores. La monitorización falla si desaparece el DS o la validación. Ver `docs/dns-dnssec.md`.
 - **Cálculo de precio:** el precio del modelo se actualiza al elegir talla; la compra se completa en la tienda.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
@@ -464,6 +465,7 @@ La configuración de ambos buckets y sus políticas RLS está en `supabase/stora
 - **Cloudflare** aplica CSP, HSTS y cabeceras de seguridad, bloquea los archivos internos (`/supabase/`, `/scripts/`, `*.sql`, `*.ts`, `*.md`) y redirige `www` al dominio principal. La CSP no permite scripts inline (`script-src` sin `unsafe-inline`); los estilos inline siguen permitidos. DMARC está en `quarantine`, con CAA y DNSSEC activado (DS en propagación por Cloudflare Registrar).
 - El panel de administración exige **MFA TOTP**, guarda la sesión en `sessionStorage` y la cierra a los 30 minutos de inactividad. El primer acceso obliga a enrolar la app con QR; después solo se pide el código de 6 dígitos. No hay códigos de recuperación: si se pierde el dispositivo, se elimina el factor en Supabase y se vuelve a enrolar.
 - `/.well-known/security.txt` indica cómo reportar una vulnerabilidad.
+- Informes de seguridad: [`docs/auditoria-rls.md`](docs/auditoria-rls.md), [`docs/auditoria-b5-matriz.md`](docs/auditoria-b5-matriz.md) y [`docs/auditoria-17.md`](docs/auditoria-17.md).
 
 Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supabase/README.md) (desde `schema.sql` hasta `fase10-facturacion-individual.sql` y las migraciones de `supabase/migrations/`) y despliega las funciones con `npx supabase functions deploy`. Para una base local desde cero, `node scripts/bootstrap-local.mjs`.
 
@@ -498,7 +500,7 @@ Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supab
 ├── assets/           # Fotos de producto, máscaras, modelos y fuentes locales
 ├── assets/fonts/     # Bricolage Grotesque e Inter (WOFF2)
 ├── vendor/           # Supabase JS e ImageTracer fijados localmente
-├── docs/             # Capturas para la documentación
+├── docs/             # Capturas e informes de auditoría
 ├── .github/          # Plantillas de issue/PR y workflows
 ├── preview.png       # Captura para el README
 ├── 404.html          # Página de error

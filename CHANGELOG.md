@@ -4,6 +4,92 @@ Todos los cambios visibles del proyecto. Formato basado en
 [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado
 semántico.
 
+## [Sin publicar]
+
+### Añadido
+
+- **`orders.currency`:** columna `text not null default 'MXN'` con check de tres
+  letras. `clip-pay` y `clip-checkout` ya la consultaban y el flujo fallaba antes
+  de cobrar en una instalación limpia.
+- **Suite RLS (fase B.5):** `supabase/tests/rls.test.sql` con 121 casos, 36 con
+  aserciones reales (los 10 bloqueantes incluidos).
+- **Reseñas:** sección `#resenas` alimentada por `resenas.json`; permanece oculta
+  mientras no haya reseñas reales con consentimiento. Ver `docs/resenas.md`.
+- **CI RLS:** workflow `RLS` con bootstrap local, runner de concurrencia y pgTAP.
+- **Medición de producto:** las fichas de modelo cargan analítica con
+  consentimiento y envían `view_item` (GA4) / `ViewContent` (Meta) con SKU,
+  talla y precio.
+- **Ecommerce en GA4 y Meta:** `add_to_cart`, `begin_checkout` y `purchase`
+  llevan `items[]` con `item_id` (SKU), nombre, variante, precio y cantidad;
+  Meta recibe también `content_ids` y `contents`.
+
+### Corregido
+
+- **Compras demo en GA4 y Meta:** `Purchase` solo se envía cuando
+  `payment_status = 'paid'`. El trigger `orders_meta_purchase` escucha ahora
+  `INSERT` y `UPDATE` y descarta pedidos demo o pendientes. Ver
+  `supabase/meta-capi-3-solo-pagados.sql`.
+- **Fichas de producto:** no cargaban GA4 ni píxel, así que las visitas a los
+  modelos no se medían.
+- **`og:description` de las fichas:** ya no se corta a media palabra.
+- **CSP y píxel de Meta:** el `form-action 'self'` bloqueaba los envíos del
+  píxel (PageView, AddToCart). La CSP del dominio permite ahora
+  `https://www.facebook.com` y `https://*.facebook.com` en `form-action` y
+  `frame-src`.
+
+- **`schema.sql`:** el cuerpo de `admin_stats()` abría con `as $` en vez de
+  `as $$`, lo que impedía cualquier instalación limpia.
+- **`has_resend_key()`:** revocado también a `authenticated`.
+- **Alta de newsletter:** sin `INSERT` directo desde el navegador.
+- **`cleanup_monitoring()`:** incluye las cinco tablas de intentos que quedaban
+  sin purgar.
+- **Facturación:** una solicitud `review` o `cancelled` responde `locked` y no se
+  puede reiniciar.
+- **Concurrencia:** `place_order` serializa por usuario y correo;
+  `subscribe_newsletter` por IP y añade el tope global de 500/hora.
+- **Errores de cliente:** se redactan correos y teléfonos antes de guardar.
+- **Topes de abuso:** los contadores globales de seguimiento, errores, facturas,
+  logos y cobros se serializan; cupones se bloquea por IP y los triggers de
+  eventos, carritos y logos por usuario.
+- **`LOOKUP_IP_SALT`:** sin la variable los endpoints responden 503 en vez de
+  usar una sal pública, y cada finalidad usa su propio hash.
+- **`process-logo`:** `last_error` guarda solo códigos genéricos
+  (`PROCESSING_FAILED`, `INVALID_PATH`, `MAX_ATTEMPTS`).
+- **Validaciones de pedido:** `place_order` devuelve `22023` en datos inválidos y
+  `42501` en carrito ajeno, en vez de `P0001` genérico.
+- **Métricas:** la serie de 14 días del admin cuenta solo pedidos pagados, igual
+  que los KPIs.
+- **Storage:** las políticas de `order-logos` rechazan `..`, barras iniciales,
+  dobles barras y barras inversas.
+- **Clip:** `clip-pay` y `clip-checkout` reclaman el pedido de forma atómica
+  (`payment_attempt_id`, `clip_claim_id`); dos peticiones paralelas ya no crean
+  dos cargos ni dos enlaces. Ver `docs/clip-idempotencia.md`.
+- **Harness SET-08:** `scripts/test-clip-idempotency.mjs` levanta un mock de Clip
+  en la red de Docker, arranca `functions serve` y comprueba con peticiones
+  paralelas que solo hay un cobro y un link.
+- **Códigos HTTP (Q-10):** el harness mide Storage y funciones y publica los
+  códigos como anotación; `STO-09` y `STO-10` leen esa medición. Valores en
+  `docs/auditoria-b5-matriz.md`.
+- **`cleanup-storage`:** protege los logos referenciados por `logoPath` en
+  pedidos activos; antes solo miraba `logoAssetId`.
+- **Precios:** `item_unit_price` cuenta el suplemento de logo si hay
+  `logoAssetId` o `printPath`, y el de equipo si hay `rosterNumber`.
+- **`place_order`:** topes de texto alineados con el editor (`rosterName` 40,
+  `rosterNumber` 3, texto 16 por cara) con `22023`.
+- **Informe:** revisión delta del 17 en `docs/auditoria-17.md`.
+- **Tests de cobertura:** `SET-01/02`, `RATE-14`, `PED-12/16`, `STO-07/08`,
+  `FAC-09/10/11` y `CUP-11/12` pasan a aserciones reales.
+
+### Por hacer
+
+- (ninguno pendiente en el editor)
+
+### Descartado por ahora
+
+- **Canva Connect:** requiere Canva Pro para PNG transparente, export máximo
+  8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
+  por un enlace a plantillas y subida manual.
+
 ## [1.18.1] — 2026-11-17
 
 ### Cambiado
@@ -116,83 +202,6 @@ semántico.
   **$901** y total **$10,812**.
 - Carrito y modal muestran el mismo precio y el nombre/dorsal por persona.
 - `html-validate`, `node --check` y precios/facturación (**41**).
-
-## [Sin publicar]
-
-### Añadido
-
-- **`orders.currency`:** columna `text not null default 'MXN'` con check de tres
-  letras. `clip-pay` y `clip-checkout` ya la consultaban y el flujo fallaba antes
-  de cobrar en una instalación limpia.
-- **Suite RLS (fase B.5):** `supabase/tests/rls.test.sql` con 121 casos y los 10
-  bloqueantes de la auditoría.
-- **Reseñas:** sección `#resenas` alimentada por `resenas.json`; permanece oculta
-  mientras no haya reseñas reales con consentimiento. Ver `docs/resenas.md`.
-- **CI RLS:** workflow `RLS` con bootstrap local, runner de concurrencia y pgTAP.
-- **Medición de producto:** las fichas de modelo cargan analítica con
-  consentimiento y envían `view_item` (GA4) / `ViewContent` (Meta) con SKU,
-  talla y precio.
-- **Ecommerce en GA4 y Meta:** `add_to_cart`, `begin_checkout` y `purchase`
-  llevan `items[]` con `item_id` (SKU), nombre, variante, precio y cantidad;
-  Meta recibe también `content_ids` y `contents`.
-
-### Corregido
-
-- **Compras demo en GA4 y Meta:** `Purchase` solo se envía cuando
-  `payment_status = 'paid'`. El trigger `orders_meta_purchase` escucha ahora
-  `INSERT` y `UPDATE` y descarta pedidos demo o pendientes. Ver
-  `supabase/meta-capi-3-solo-pagados.sql`.
-- **Fichas de producto:** no cargaban GA4 ni píxel, así que las visitas a los
-  modelos no se medían.
-- **`og:description` de las fichas:** ya no se corta a media palabra.
-- **CSP y píxel de Meta:** el `form-action 'self'` bloqueaba los envíos del
-  píxel (PageView, AddToCart). La CSP del dominio permite ahora
-  `https://www.facebook.com` y `https://*.facebook.com` en `form-action` y
-  `frame-src`.
-
-- **`schema.sql`:** el cuerpo de `admin_stats()` abría con `as $` en vez de
-  `as $$`, lo que impedía cualquier instalación limpia.
-- **`has_resend_key()`:** revocado también a `authenticated`.
-- **Alta de newsletter:** sin `INSERT` directo desde el navegador.
-- **`cleanup_monitoring()`:** incluye las cinco tablas de intentos que quedaban
-  sin purgar.
-- **Facturación:** una solicitud `review` o `cancelled` responde `locked` y no se
-  puede reiniciar.
-- **Concurrencia:** `place_order` serializa por usuario y correo;
-  `subscribe_newsletter` por IP y añade el tope global de 500/hora.
-- **Errores de cliente:** se redactan correos y teléfonos antes de guardar.
-- **Topes de abuso:** los contadores globales de seguimiento, errores, facturas,
-  logos y cobros se serializan; cupones se bloquea por IP y los triggers de
-  eventos, carritos y logos por usuario.
-- **`LOOKUP_IP_SALT`:** sin la variable los endpoints responden 503 en vez de
-  usar una sal pública, y cada finalidad usa su propio hash.
-- **`process-logo`:** `last_error` guarda solo códigos genéricos
-  (`PROCESSING_FAILED`, `INVALID_PATH`, `MAX_ATTEMPTS`).
-- **Validaciones de pedido:** `place_order` devuelve `22023` en datos inválidos y
-  `42501` en carrito ajeno, en vez de `P0001` genérico.
-- **Métricas:** la serie de 14 días del admin cuenta solo pedidos pagados, igual
-  que los KPIs.
-- **Storage:** las políticas de `order-logos` rechazan `..`, barras iniciales,
-  dobles barras y barras inversas.
-- **Clip:** `clip-pay` y `clip-checkout` reclaman el pedido de forma atómica
-  (`payment_attempt_id`, `clip_claim_id`); dos peticiones paralelas ya no crean
-  dos cargos ni dos enlaces. Ver `docs/clip-idempotencia.md`.
-- **Harness SET-08:** `scripts/test-clip-idempotency.mjs` levanta un mock de Clip
-  en la red de Docker, arranca `functions serve` y comprueba con peticiones
-  paralelas que solo hay un cobro y un link.
-- **Códigos HTTP (Q-10):** el harness mide Storage y funciones y publica los
-  códigos como anotación; `STO-09` y `STO-10` leen esa medición. Valores en
-  `docs/auditoria-b5-matriz.md`.
-
-### Por hacer
-
-- (ninguno pendiente en el editor)
-
-### Descartado por ahora
-
-- **Canva Connect:** requiere Canva Pro para PNG transparente, export máximo
-  8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
-  por un enlace a plantillas y subida manual.
 
 ## [1.15.0] — 2026-11-17
 
