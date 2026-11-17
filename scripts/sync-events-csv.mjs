@@ -100,8 +100,16 @@ async function main() {
   const indexOf = (name) => header.indexOf(name);
   const seen = new Set();
   const events = [];
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // La cartelera es de Ciudad MAcxico y el runner corre en UTC: sin fijar la
+  // zona, un evento de esta noche se descarta a media tarde.
+  const CDMX_OFFSET = "-06:00";
+  const cdmxDay = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Mexico_City",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  const today = new Date(`${cdmxDay}T00:00:00${CDMX_OFFSET}`);
 
   for (const row of rows.slice(1)) {
     const name = String(row[indexOf("name")] || "").replace(/\s+/g, " ").trim();
@@ -110,7 +118,8 @@ async function main() {
     const city = String(row[indexOf("city")] || "").replace(/\s+/g, " ").trim();
     const url = String(row[indexOf("url")] || "").trim();
 
-    const date = new Date(start);
+    const hasZone = /(Z|[+-]\d\d:\d\d)$/.test(start);
+    const date = new Date(hasZone ? start : `${start}${CDMX_OFFSET}`);
     if (!name || !start || Number.isNaN(date.getTime())) continue;
     if (!/^https?:\/\//i.test(url)) continue;
     if (date < today) continue;
