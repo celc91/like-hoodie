@@ -1531,7 +1531,7 @@ insert into lh_rls_test.check values ('FAC-13', 'estado',
   (select status = 'cancelled' and verify_token is null
      from public.invoice_requests where id = lh_rls_test.fixture_id('F_C13')));
 insert into lh_rls_test.check values ('FAC-13', 'pedido',
-  (select billing_status = 'pending from public.orders
+  (select billing_status = 'pending' from public.orders
     where id = lh_rls_test.fixture_id('O_C13')));
 
 select lh_rls_test.as_admin_aal2();
