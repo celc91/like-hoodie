@@ -221,6 +221,78 @@ async function scenarioNew12() {
   return { pass, attempts, subscribers, accepted };
 }
 
+async function scenarioCup10(unitPrice) {
+  await sql(`
+    insert into public.coupons (code, percent, active, max_uses, used_count, expires_at)
+    values ('QA_CUP_PAR', 10, true, 1, 0, now() + interval '1 day')
+    on conflict (code) do update
+      set percent = 10, active = true, max_uses = 1, used_count = 0,
+          expires_at = excluded.expires_at;
+    delete from public.orders where lower(email) = 'qa-cup10@example.invalid';
+  `);
+
+  const newCart = async () =>
+    (await sql(`insert into public.carts (user_id, status) values ('${UID}', 'open') returning id;`))
+      .trim()
+      .split("\n")
+      .filter(Boolean)
+      .pop();
+
+  const cart1 = await newCart();
+  const cart2 = await newCart();
+
+  const customer = JSON.stringify({
+    name: "Cliente QA",
+    email: "qa-cup10@example.invalid",
+    phone: "5512345678",
+    address: "Calle QA 1",
+    addressRef: "Ref QA",
+    city: "CDMX",
+    state: "CDMX",
+    zip: "01000",
+  });
+  const items = JSON.stringify([
+    {
+      product: "hoodie",
+      colorHex: "#1c1c1f",
+      materialId: "cotton400",
+      techniqueId: "dtg",
+      qty: 1,
+      size: "M",
+      unitPrice,
+    },
+  ]);
+
+  const call = (cartId) =>
+    spawnPsql([
+      "begin;",
+      `select set_config('request.jwt.claims','${claims()}',true);`,
+      "set local role authenticated;",
+      `select public.place_order('${customer}'::jsonb,'${items}'::jsonb,'${cartId}'::uuid,'','QA_CUP_PAR');`,
+      "commit;",
+    ].join("\n"));
+
+  const results = await Promise.all([call(cart1), call(cart2)]);
+  const accepted = results.filter((r) => r.code === 0).length;
+  const discounted = Number(
+    (await sql("select count(*) from public.orders where coupon = 'QA_CUP_PAR' and discount > 0;")).trim()
+  );
+  const used = Number(
+    (await sql("select used_count from public.coupons where code = 'QA_CUP_PAR';")).trim()
+  );
+
+  const pass = discounted === 1 && used === 1 && accepted === 2;
+
+  await sql(`
+    insert into public.qa_concurrency_results (case_id, pass, detail)
+    values ('CUP-10', ${pass}, '{"discounted":${discounted},"used":${used},"accepted":${accepted}}'::jsonb)
+    on conflict (case_id) do update
+      set pass = excluded.pass, detail = excluded.detail, created_at = now();
+  `);
+
+  return { pass, discounted, used, accepted };
+}
+
 async function main() {
   console.log("Concurrencia B.5 — base local, nunca producción.");
   await detectPsql();
@@ -237,7 +309,12 @@ async function main() {
     `NEW-12 ${nw.pass ? "OK" : "FALLO"} — intentos=${nw.attempts}, suscriptores=${nw.subscribers}, aceptados=${nw.accepted}/50`
   );
 
-  if (!ped.pass || !nw.pass) {
+  const cup = await scenarioCup10(unitPrice);
+  console.log(
+    `CUP-10 ${cup.pass ? "OK" : "FALLO"} — con descuento=${cup.discounted}, used_count=${cup.used}, aceptados=${cup.accepted}/2`
+  );
+
+  if (!ped.pass || !nw.pass || !cup.pass) {
     console.error("Resultado: FALLO");
     process.exit(1);
   }

@@ -1220,8 +1220,43 @@ select ok(
   'BLOQUEANTE-PED-08 — unitPrice manipulado da 22023 y no crea pedido ni consume cupon'
 );
 
--- Expectativa: pedido valido calcula 899+99=998, usuario UC, estado pending y demo/demo.
-select lh_rls_test.pending('PED-09', 'place_order valido recalcula 998 y fuerza usuario estado y demo', false);
+-- PED-09: un pedido válido ignora campos extra que intentan imponer total,
+-- estado o pago, y recalcula todo en servidor.
+select lh_rls_test.as_cart();
+select public.place_order(
+  lh_rls_test.valid_customer('{"email":"qa-ped09@example.invalid"}'::jsonb),
+  jsonb_set(
+    jsonb_set(
+      jsonb_set(lh_rls_test.valid_items(), '{0,total}', '1'::jsonb),
+      '{0,status}', '"delivered"'::jsonb
+    ),
+    '{0,paymentStatus}', '"paid"'::jsonb
+  ),
+  lh_rls_test.fixture_id('CC'),
+  '',
+  null
+);
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('PED-09', 'campos',
+  (select status = 'pending'
+      and payment_status = 'demo'
+      and payment_method = 'demo'
+      and user_id = lh_rls_test.uid_c()
+      and subtotal = public.item_unit_price(lh_rls_test.valid_items() -> 0, 1)
+      and item_count = 1
+      and shipping = case when subtotal >= 1200 then 0 else 99 end
+      and total = subtotal + shipping
+     from public.orders
+    where cart_id = lh_rls_test.fixture_id('CC')));
+insert into lh_rls_test.check values ('PED-09', 'carrito',
+  (select status = 'converted' from public.carts
+    where id = lh_rls_test.fixture_id('CC')));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'PED-09'),
+  'PED-09 — el pedido válido recalcula precio, usuario, estado y pago; el carrito se convierte'
+);
 
 -- Q-02: cada validacion devuelve 22023 y no crea pedido.
 select lh_rls_test.as_a();
@@ -1445,11 +1480,69 @@ select lh_rls_test.pending('FAC-10', 'confirm invalido caducado cancelado impago
 -- Expectativa: review sin verified_at o sin SAT devuelve P0001 al emitir.
 select lh_rls_test.pending('FAC-11', 'LH-08 emision exige verified_at y sat_payment_form', false);
 
--- Expectativa: review verificada emite una vez y segunda llamada es idempotente.
-select lh_rls_test.pending('FAC-12', 'review verificada pasa issued y repeticion alreadyIssued', false);
+-- FAC-12: emitir una solicitud review verificada y repetir el UUID.
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('FAC-12', 'primera',
+  ((select public.mark_invoice_request_issued(
+      lh_rls_test.fixture_id('F_REVIEW'),
+      '22222222-2222-4222-8222-222222222222'
+    ) ->> 'ok') = 'true'));
 
--- Expectativa: cancelar review devuelve pedido a pending; cancelar issued P0001.
-select lh_rls_test.pending('FAC-13', 'cancelacion permitida solo antes de issued y restaura billing', false);
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('FAC-12', 'estado',
+  (select status = 'issued' and uuid = '22222222-2222-4222-8222-222222222222'
+     from public.invoice_requests where id = lh_rls_test.fixture_id('F_REVIEW')));
+insert into lh_rls_test.check values ('FAC-12', 'pedido',
+  (select billing_status = 'individual'
+      and billing_uuid = '22222222-2222-4222-8222-222222222222'
+     from public.orders where id = lh_rls_test.fixture_id('O_REVIEW')));
+
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('FAC-12', 'segunda',
+  ((select public.mark_invoice_request_issued(
+      lh_rls_test.fixture_id('F_REVIEW'),
+      '22222222-2222-4222-8222-222222222222'
+    ) ->> 'alreadyIssued') = 'true'));
+
+select lh_rls_test.as_service_role();
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'FAC-12'),
+  'FAC-12 — review verificada se emite una vez y la repetición es idempotente'
+);
+
+-- FAC-13: cancelar antes de emitir; una emitida no se cancela.
+select lh_rls_test.as_service_role();
+select lh_rls_test.register_fixture('O_C13',
+  lh_rls_test.seed_order(lh_rls_test.uid_a(), 990020, 'qa-fac13@example.invalid', 'paid'));
+select lh_rls_test.register_fixture('F_C13',
+  lh_rls_test.seed_invoice(lh_rls_test.fixture_id('O_C13'), 'review', null, now(), '04'));
+update public.orders set billing_status = 'individual'
+ where id = lh_rls_test.fixture_id('O_C13');
+
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('FAC-13', 'cancelar',
+  ((select public.cancel_invoice_request(lh_rls_test.fixture_id('F_C13')) ->> 'ok') = 'true'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('FAC-13', 'estado',
+  (select status = 'cancelled' and verify_token is null
+     from public.invoice_requests where id = lh_rls_test.fixture_id('F_C13')));
+insert into lh_rls_test.check values ('FAC-13', 'pedido',
+  (select billing_status = 'pending from public.orders
+    where id = lh_rls_test.fixture_id('O_C13')));
+
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('FAC-13', 'emitida',
+  (lh_rls_test.try_sql(format(
+    'select public.cancel_invoice_request(%L::uuid)',
+    lh_rls_test.fixture_id('F_REVIEW')
+  )) = 'P0001'));
+
+select lh_rls_test.as_service_role();
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'FAC-13'),
+  'FAC-13 — cancelar review restaura billing; una factura emitida no se cancela'
+);
 
 -- Expectativa: todas las RPC administrativas de facturacion devuelven 42501 sin aal2.
 select lh_rls_test.pending('FAC-14', 'RPC individuales y globales denegadas para no admin y ADM1', false);
@@ -1488,8 +1581,46 @@ select lh_rls_test.pending('LOG-05', 'logo con usuario o ruta ajena denegado', f
 -- Expectativa: UPDATE/DELETE directos afectan cero filas incluso para ADM2.
 select lh_rls_test.pending('LOG-06', 'logo_assets sin UPDATE DELETE directo desde navegador', false);
 
--- Expectativa: cincuenta assets permitidos y 51 devuelve P0001.
-select lh_rls_test.pending('LOG-07', 'maximo cincuenta altas logo_assets en 24 horas', false);
+-- LOG-07: 50 altas por día; la 51 devuelve P0001 y una vieja no cuenta.
+select lh_rls_test.as_service_role();
+insert into public.logo_assets (user_id, source_path, width_cm, created_at)
+values (
+  lh_rls_test.uid_c(),
+  lh_rls_test.uid_c()::text || '/old.png',
+  20,
+  now() - interval '25 hours'
+);
+
+select lh_rls_test.as_cart();
+insert into public.logo_assets (user_id, source_path, width_cm)
+select
+  lh_rls_test.uid_c(),
+  lh_rls_test.uid_c()::text || '/l' || n || '.png',
+  20
+from generate_series(1, 50) as n;
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('LOG-07', 'cincuenta',
+  (select count(*) = 50 from public.logo_assets
+    where user_id = lh_rls_test.uid_c()
+      and created_at > now() - interval '24 hours'));
+insert into lh_rls_test.check values ('LOG-07', 'viejo',
+  (select count(*) = 51 from public.logo_assets
+    where user_id = lh_rls_test.uid_c()));
+
+select lh_rls_test.as_cart();
+insert into lh_rls_test.check values ('LOG-07', 'cincuenta_y_uno',
+  (lh_rls_test.try_sql(format(
+    'insert into public.logo_assets (user_id, source_path, width_cm) values (%L::uuid, %L, 20)',
+    lh_rls_test.uid_c(),
+    lh_rls_test.uid_c()::text || '/l51.png'
+  )) = 'P0001'));
+
+select lh_rls_test.as_service_role();
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'LOG-07'),
+  'LOG-07 — el tope de 50 logos por 24 h se aplica y un asset viejo no cuenta'
+);
 
 -- Expectativa: sesenta INSERT paralelos dejan como maximo cincuenta assets.
 select lh_rls_test.pending('LOG-08', 'LH-05 limite cincuenta logos tambien bajo concurrencia', false);
@@ -1525,14 +1656,50 @@ select lh_rls_test.pending('CUP-06', 'rate coupon usa IP garantizada y evita cub
 -- Expectativa: treinta notfound y llamada 31 rate con exactamente treinta intentos.
 select lh_rls_test.pending('CUP-07', 'LH-04 limite secuencial 30 validaciones por IP', false);
 
--- Expectativa: Q1 solo descuenta una vez; segundo pedido sin cupon ni descuento.
-select lh_rls_test.pending('CUP-08', 'cupon unico no aplica descuento en segundo pedido', false);
+-- CUP-08: un cupón de un solo uso no descuenta dos veces.
+select lh_rls_test.as_service_role();
+select lh_rls_test.register_fixture('CUP8A', lh_rls_test.seed_cart(lh_rls_test.uid_c()));
+select lh_rls_test.register_fixture('CUP8B', lh_rls_test.seed_cart(lh_rls_test.uid_c()));
+
+select lh_rls_test.as_cart();
+select public.place_order(
+  lh_rls_test.valid_customer('{"email":"qa-cup08@example.invalid"}'::jsonb),
+  lh_rls_test.valid_items(),
+  lh_rls_test.fixture_id('CUP8A'),
+  '',
+  'QA_UNICO_10'
+);
+select public.place_order(
+  lh_rls_test.valid_customer('{"email":"qa-cup08@example.invalid"}'::jsonb),
+  lh_rls_test.valid_items(),
+  lh_rls_test.fixture_id('CUP8B'),
+  '',
+  'QA_UNICO_10'
+);
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('CUP-08', 'primero',
+  (select coupon = 'QA_UNICO_10' and discount > 0 from public.orders
+    where cart_id = lh_rls_test.fixture_id('CUP8A')));
+insert into lh_rls_test.check values ('CUP-08', 'segundo',
+  (select coupon is null and discount = 0 from public.orders
+    where cart_id = lh_rls_test.fixture_id('CUP8B')));
+insert into lh_rls_test.check values ('CUP-08', 'uso',
+  (select used_count = 1 from public.coupons where code = 'QA_UNICO_10'));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'CUP-08'),
+  'CUP-08 — el cupón único descuenta una vez y el segundo pedido va sin descuento'
+);
 
 -- Expectativa: cien validaciones paralelas producen como maximo treinta consultas e intentos.
 select lh_rls_test.pending('CUP-09', 'LH-04 concurrencia no supera treinta validaciones por IP', false);
 
--- Expectativa: dos pedidos paralelos con Q1 producen como maximo un descuento.
-select lh_rls_test.pending('CUP-10', 'cupon unico mantiene used_count uno bajo concurrencia', false);
+-- BLOQUEANTE? No: medido por scripts/test-concurrency.mjs con dos pedidos reales.
+select ok(
+  coalesce((select pass from public.qa_concurrency_results where case_id = 'CUP-10'), false),
+  'CUP-10 — dos pedidos paralelos con el mismo cupón único dejan un solo descuento'
+);
 
 -- Expectativa: reejecutar coupons/setup-premios no reabre lectura ni recrea policy publica.
 select lh_rls_test.pending('CUP-11', 'LH-08 scripts heredados no reabren coupons', false);
@@ -1600,8 +1767,47 @@ select lh_rls_test.pending('NEW-09', 'confirm_newsletter rechaza token inexisten
 -- Expectativa: token backend confirma y emite un unico LH de 10%, max_uses 1 y 90 dias.
 select lh_rls_test.pending('NEW-10', 'confirmacion backend genera cupon unico correcto', false);
 
--- Expectativa: confirmar dos veces devuelve mismo codigo; baja impide nuevo cupon.
-select lh_rls_test.pending('NEW-11', 'confirmacion idempotente y baja sin regenerar cupon', false);
+-- NEW-11: confirmar dos veces no genera otro cupón; la baja lo impide.
+select lh_rls_test.as_service_role();
+select lh_rls_test.register_fixture('N11',
+  lh_rls_test.seed_subscriber(
+    'qa-new11@example.invalid',
+    '40000000-0000-4000-8000-000000000011'::uuid,
+    false
+  ));
+
+select lh_rls_test.as_anon();
+select public.confirm_newsletter('40000000-0000-4000-8000-000000000011'::uuid);
+select public.confirm_newsletter('40000000-0000-4000-8000-000000000011'::uuid);
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('NEW-11', 'codigo',
+  (select coalesce(coupon_code like 'LH-%', false) from public.newsletter_subscribers
+    where token = '40000000-0000-4000-8000-000000000011'::uuid));
+insert into lh_rls_test.check values ('NEW-11', 'unico',
+  (select count(*) = 1 from public.coupons
+    where code = (select coupon_code from public.newsletter_subscribers
+                   where token = '40000000-0000-4000-8000-000000000011'::uuid)));
+
+select lh_rls_test.as_anon();
+select public.unsubscribe_newsletter('40000000-0000-4000-8000-000000000011'::uuid);
+insert into lh_rls_test.check values ('NEW-11', 'motivo',
+  ((select public.confirm_newsletter('40000000-0000-4000-8000-000000000011'::uuid) ->> 'reason') = 'unsubscribed'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('NEW-11', 'baja',
+  (select confirmed = false and unsubscribed_at is not null
+     from public.newsletter_subscribers
+    where token = '40000000-0000-4000-8000-000000000011'::uuid));
+insert into lh_rls_test.check values ('NEW-11', 'sin_nuevo',
+  (select count(*) = 1 from public.coupons
+    where code = (select coupon_code from public.newsletter_subscribers
+                   where token = '40000000-0000-4000-8000-000000000011'::uuid)));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'NEW-11'),
+  'NEW-11 — confirmar dos veces no duplica el cupón y la baja queda registrada'
+);
 
 -- BLOQUEANTE-NEW-12: resultado medido por scripts/test-concurrency.mjs.
 -- 50 altas paralelas desde una misma IP, commits reales.
