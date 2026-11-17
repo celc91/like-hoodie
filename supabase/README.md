@@ -226,6 +226,8 @@ Después, las migraciones de `supabase/migrations/` en orden:
 16. `20261117110000` — diagnóstico de Meta
 17. `20261117120000` — serie pagada y rutas de Storage
 18. `20261117130000` — códigos de error de `place_order`
+19. `20261117140000` — suplementos de logo y equipo
+20. `20261117150000` — límites de texto por artículo
 
 Las migraciones nuevas viven en [`migrations/`](migrations/README.md) y son
 idempotentes. Después de la lista anterior, ejecuta las migraciones en orden.

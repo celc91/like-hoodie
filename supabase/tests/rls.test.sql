@@ -1299,6 +1299,20 @@ insert into lh_rls_test.check values ('PED-10', 'cincuenta_y_uno',
        from generate_series(1, 51)),
     ''
   )) = '22023'));
+insert into lh_rls_test.check values ('PED-10', 'roster_largo',
+  (lh_rls_test.try_sql(format(
+    'select public.place_order(%L::jsonb, %L::jsonb, null, %L, null)',
+    lh_rls_test.valid_customer(),
+    jsonb_set(lh_rls_test.valid_items(), '{0,rosterName}', to_jsonb(repeat('a', 41))),
+    ''
+  )) = '22023'));
+insert into lh_rls_test.check values ('PED-10', 'texto_largo',
+  (lh_rls_test.try_sql(format(
+    'select public.place_order(%L::jsonb, %L::jsonb, null, %L, null)',
+    lh_rls_test.valid_customer(),
+    jsonb_set(lh_rls_test.valid_items(), '{0,front}', jsonb_build_object('text', repeat('b', 17))),
+    ''
+  )) = '22023'));
 
 select lh_rls_test.as_service_role();
 insert into lh_rls_test.check values ('PED-10', 'sin_pedido',

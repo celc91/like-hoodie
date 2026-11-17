@@ -13,7 +13,7 @@ Revisión estática, sin pruebas de penetración.
 | 3 | Precios | `rosterNumber` sin `rosterName` no pagaba el suplemento de equipo | baja | corregido |
 | 4 | Precios | `printSize` lo declara el cliente; el servidor imprime al ancho de la cara y no puede verificar el tamaño pagado | baja | riesgo aceptado |
 | 5 | Precios | `pricingGroup` lo elige el cliente para agrupar cantidades y alcanzar un tramo de volumen | informativo | regla de negocio |
-| 6 | Precios | `rosterName`/`rosterNumber` sin límite de longitud (el artículo está topado a 4 MiB) | baja | pendiente |
+| 6 | Precios | `rosterName`/`rosterNumber` sin límite de longitud (el artículo está topado a 4 MiB) | baja | corregido |
 | 7 | Aprobación | El cliente no puede cambiar `design_approval_status`; la política de `orders` no permite UPDATE | — | correcto |
 | 8 | Locks | `place_order` bloquea usuario y correo antes de contar, y el cupón con `for update` | — | correcto |
 | 9 | Regresiones | Las migraciones del 17 no reabren cupones, newsletter, `has_resend_key`, facturas ni idempotencia de Clip | — | correcto |
