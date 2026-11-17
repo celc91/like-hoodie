@@ -414,6 +414,22 @@ La documentación dice que `admin_stats()` solo cuenta pedidos pagados. PED-15 a
 
 Cuando una fuente no fija si la plataforma devuelve `400`, `403` o `404`, el contrato de seguridad exige denegación y ausencia de contenido/efectos. Antes de implementar aserciones HTTP estrictas debe registrarse el código elegido por la versión local fijada de Supabase. Nunca se acepta `200` con datos, URL firmada u objeto creado como equivalente.
 
+**Medido** con la CLI 3.2.0 y el runtime local:
+
+| Caso | Código |
+|---|---|
+| Función sin sesión (`clip-pay`, `clip-checkout`, `process-logo`) | `401` |
+| Payload inválido (`invoice-request`) | `400` |
+| Upload PNG válido | `200` |
+| MIME no permitido | `400` |
+| Archivo de 6 MB (límite 5 MB) | `400` |
+| Ruta con `..` | `400` |
+| Doble barra | `200` (Storage normaliza a la carpeta del usuario) |
+| URL pública de bucket privado | `400` |
+| Enlace firmado (crear y usar) | `200` |
+
+Las aserciones viven en `STO-09`, `STO-10` y en `scripts/test-clip-idempotency.mjs`.
+
 ## 10. Ejecución local prevista
 
 Estos comandos son instrucciones para el implementador; no se ejecutaron durante el diseño. Requieren Docker y una instancia local desechable, sin `--linked`, `--remote` ni secretos de producción.

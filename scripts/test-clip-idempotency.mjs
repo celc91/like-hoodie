@@ -411,21 +411,31 @@ async function runQ10(token, userId) {
   });
   codes.urlPublica = publico.status;
 
-  await storageDelete(control, token);
+  // Storage normaliza "//" antes de guardar. Se comprueba que no escape.
+  const evil = Number(
+    (await sqlAdmin(`select count(*) from storage.objects where name like '%q10-evil%'`)).trim()
+  );
+  const doble = Number(
+    (await sqlAdmin(
+      `select count(*) from storage.objects where name = '${userId}/q10-doble.png'`
+    )).trim()
+  );
+  codes.objetosMaliciosos = evil;
+  codes.dobleNormalizado = doble;
 
-  const sto09 =
-    codes.mimeFalso === 400 &&
-    [400, 413].includes(codes.excedido);
-  const sto10 =
-    [400, 403].includes(codes.urlPublica) &&
-    codes.firma === 200 &&
-    codes.firmaGet === 200;
+  await storageDelete(control, token);
+  await storageDelete(`${userId}/q10-doble.png`, token);
+
+  const sto09 = codes.mimeFalso === 400 && codes.excedido === 400;
+  const sto10 = codes.urlPublica === 400 && codes.firma === 200 && codes.firmaGet === 200;
   const funciones =
     codes.clipPaySinSesion === 401 &&
     codes.clipCheckoutSinSesion === 401 &&
     codes.processLogoSinSesion === 401 &&
     codes.invoiceInvalida === 400;
-  const pass = sto09 && sto10 && funciones && codes.uploadOk === 200;
+  const rutas = codes.rutaPuntoPunto === 400 && evil === 0;
+  const dobleBarra = codes.dobleBarra === 200 ? doble === 1 : [400, 403].includes(codes.dobleBarra);
+  const pass = sto09 && sto10 && funciones && rutas && dobleBarra && codes.uploadOk === 200;
 
   return { pass, sto09, sto10, detail: { ...codes } };
 }

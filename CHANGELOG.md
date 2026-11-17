@@ -180,6 +180,9 @@ semántico.
 - **Harness SET-08:** `scripts/test-clip-idempotency.mjs` levanta un mock de Clip
   en la red de Docker, arranca `functions serve` y comprueba con peticiones
   paralelas que solo hay un cobro y un link.
+- **Códigos HTTP (Q-10):** el harness mide Storage y funciones y publica los
+  códigos como anotación; `STO-09` y `STO-10` leen esa medición. Valores en
+  `docs/auditoria-b5-matriz.md`.
 
 ### Por hacer
 
