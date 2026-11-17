@@ -336,6 +336,11 @@ La pestaña **Estadísticas** del panel lee datos reales de Google Analytics 4 y
 Meta a través de la Edge Function `stats` (`supabase/functions/stats`). Solo
 responde a administradores con MFA (`is_admin()`).
 
+Muestra usuarios, sesiones, vistas, conversiones e ingresos de GA4, el gráfico
+por día, canales, páginas y eventos; y de Meta el gasto, las impresiones, los
+clics, las compras y el estado de la Conversions API. Periodos de 7, 28 o 90
+días.
+
 Secretos de la función (Supabase → Edge Functions → Secrets):
 
 | Secreto | Para qué |
@@ -349,10 +354,24 @@ Para GA4: crea una cuenta de servicio en Google Cloud, habilita la Analytics Dat
 API, descarga su clave JSON y añádela en GA4 → *Administrar* → *Acceso a la
 propiedad* como **Lectora**.
 
+Para Meta: asigna la cuenta publicitaria al system user con *View performance* y
+genera un token con `ads_read`. Si no defines `META_ACCESS_TOKEN`, la función
+reutiliza el token de Conversions API de Vault.
+
 Ejecuta una vez `supabase/estadisticas.sql`: da permiso a `service_role` para leer
-`meta_last_response()`, que es lo que muestra el estado de la Conversions API.
+`meta_last_response()` y crea `stats_meta_token()`.
 
 Sin secretos, la pestaña no inventa cifras: muestra qué falta configurar.
+
+**Tráfico interno:** abre una vez `https://likehoodie.com/?interno=1` en cada
+navegador con el que pruebes. La web envía `traffic_type = internal` y el filtro
+*Internal Traffic* de GA4 descarta esas visitas. `?interno=0` lo desactiva.
+
+**Enlaces con UTM:** la misma pestaña genera enlaces por página y canal (WhatsApp,
+Instagram bio/historia, Facebook) con botón de copiar.
+
+La guía completa, con el detalle de permisos, comprobaciones y limitaciones, está
+en [`docs/estadisticas.md`](docs/estadisticas.md).
 
 ## Pagos con Clip
 
@@ -513,18 +532,20 @@ Después de un despliegue limpio, sigue el orden de [`supabase/README.md`](supab
 ├── factura.html      # Solicitud pública de factura individual
 ├── factura.js        # Envío de la solicitud a invoice-request
 ├── .well-known/      # security.txt
-├── supabase/         # Esquema SQL, políticas y Edge Functions (Clip, process-logo e invoice-request)
+├── supabase/         # Esquema SQL, políticas y Edge Functions (Clip, process-logo, invoice-request y stats)
 ├── supabase/migrations/ # Migraciones nuevas versionadas
 ├── supabase/tests/   # Suite pgTAP de RLS y abuso (121 casos)
 ├── scripts/          # Sincronización de la cartelera de eventos
 ├── legal.js          # Aviso de cookies y almacenamiento local
+├── analytics.js      # Consentimiento y eventos hacia GA4 y Meta
+├── analytics-config.js # IDs de medición (GA4 y píxel)
 ├── privacidad.html   # Aviso de privacidad
 ├── cookies.html      # Política de cookies
 ├── terminos.html     # Términos y condiciones
 ├── assets/           # Fotos de producto, máscaras, modelos y fuentes locales
 ├── assets/fonts/     # Bricolage Grotesque e Inter (WOFF2)
 ├── vendor/           # Supabase JS e ImageTracer fijados localmente
-├── docs/             # Capturas e informes de auditoría
+├── docs/             # Guías (estadisticas.md) e informes de auditoría
 ├── .github/          # Plantillas de issue/PR y workflows
 ├── preview.png       # Captura para el README
 ├── 404.html          # Página de error

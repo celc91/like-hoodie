@@ -321,6 +321,27 @@ npx supabase secrets set CLEANUP_SECRET=... --remote=<project-ref>
 El workflow **Retención** la ejecuta cada lunes y admite `dryRun=1` manual.
 Consulta `docs/retencion.md` para la política completa.
 
+## 11. Estadísticas del panel (GA4 y Meta)
+
+La pestaña **Estadísticas** del panel usa la Edge Function `stats`
+(`supabase/functions/stats`). Necesita:
+
+1. Ejecutar una vez `supabase/estadisticas.sql` (permite a `service_role` leer
+   `meta_last_response()` y crea `stats_meta_token()`).
+2. Configurar los secretos de la función:
+
+```sh
+npx supabase secrets set GA_SERVICE_ACCOUNT="$(cat cuenta.json)" \
+  META_ACCESS_TOKEN=... --remote=<project-ref>
+```
+
+Opcionales: `GA_PROPERTY_ID` (`344891849` por defecto) y `META_AD_ACCOUNT_ID`
+(`act_2254330422156099` por defecto).
+
+La función exige una sesión de administrador con MFA. Sin secretos responde con
+`configured: false` y el panel muestra qué falta. La guía completa está en
+[`docs/estadisticas.md`](../docs/estadisticas.md).
+
 ## Privacidad
 
 Antes de operar, actualiza `privacidad.html` y `cookies.html` para mencionar:

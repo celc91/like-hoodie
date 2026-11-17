@@ -76,6 +76,14 @@ propiedad está en estado *Activo* y excluye esos eventos.
 Para desmarcar un navegador, abre `?interno=0`. La marca es local a cada
 navegador: si pruebas desde el móvil, hazlo también allí.
 
+El filtro **no es retroactivo**: solo descarta los eventos nuevos. Tampoco se
+filtra por IP porque la IP doméstica cambia y la etiqueta de Google se gestiona
+ahora desde un contenedor de Tag Manager (`GTM-NRSCJ44D`).
+
+La pestaña **Estadísticas** del panel consulta la GA4 Data API con una cuenta de
+servicio de solo lectura (`GA_SERVICE_ACCOUNT`). No usa la sesión de Google del
+navegador. Detalle en [`docs/estadisticas.md`](docs/estadisticas.md).
+
 ### Enlaces con UTM
 
 El panel (pestaña *Estadísticas*) genera el enlace con `utm_source`,

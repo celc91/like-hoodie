@@ -16,6 +16,8 @@ semántico.
 - **Reseñas:** sección `#resenas` alimentada por `resenas.json`; permanece oculta
   mientras no haya reseñas reales con consentimiento. Ver `docs/resenas.md`.
 - **CI RLS:** workflow `RLS` con bootstrap local, runner de concurrencia y pgTAP.
+- **`docs/estadisticas.md`:** guía del panel de estadísticas (GA4 Data API,
+  Meta Ads Insights, tráfico interno, UTM y comprobaciones).
 - **Enlaces con UTM en el panel:** generador por página y canal (WhatsApp,
   Instagram, Facebook) con botón de copiar.
 - **Tráfico interno:** `?interno=1` marca el navegador con
