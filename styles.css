@@ -8265,6 +8265,32 @@ body.is-locked .wa-float {
   width: min(560px, calc(100vw - 28px));
 }
 
+.modal-panel--team {
+  width: min(680px, calc(100vw - 28px));
+}
+
+.team-table input[type="text"] {
+  width: 100%;
+  min-width: 110px;
+}
+
+.team-table select {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 11px;
+}
+
+.team-table .team-qty {
+  width: 56px;
+}
+
+.team-add-row {
+  margin-top: 8px;
+}
+
 .quote-table-wrap {
   margin: 18px 0 14px;
   overflow-x: auto;

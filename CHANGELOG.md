@@ -4,6 +4,30 @@ Todos los cambios visibles del proyecto. Formato basado en
 [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado
 semántico.
 
+## [1.16.0] — 2026-11-17
+
+### Añadido
+
+- **Nombres y números para equipos:** modal con una fila por persona (nombre,
+  número, talla y cantidad), precio de +$49 por pieza y descuento por volumen
+  compartido con el grupo.
+- **Grupo de equipo:** cada persona genera su propia línea de carrito con talla
+  y dorsal, y el descuento por volumen se recalcula sobre el total del grupo.
+- **Admin:** el detalle del pedido muestra nombre y número de cada pieza.
+
+### Seguridad y datos
+
+- `item_unit_price()` cobra `name_number_fee` cuando el artículo trae
+  `nameNumber`, `rosterName` o `rosterNumber`.
+- Migración `20261117001000_nombre_numero.sql`.
+
+### Verificado
+
+- `place_order()` probado con 12 piezas de equipo: 5% de descuento, unitario
+  **$901** y total **$10,812**.
+- Carrito y modal muestran el mismo precio y el nombre/dorsal por persona.
+- `html-validate`, `node --check` y precios/facturación (**41**).
+
 ## [Sin publicar]
 
 ### Añadido

@@ -1953,13 +1953,18 @@
           }
           const logos = logoItems.join("");
 
+          const roster = item.rosterName || item.rosterNumber
+            ? ` · Equipo: ${escapeHTML(item.rosterName || "Sin nombre")}${
+                item.rosterNumber ? ` #${escapeHTML(item.rosterNumber)}` : ""
+              }`
+            : "";
           return `<li>
             <div class="detail-item-main">
               <span>${escapeHTML(item.name || "Sudadera")} · ${escapeHTML(
             item.colorName || ""
           )} · Talla ${escapeHTML(item.size || "—")} · ${escapeHTML(
             item.materialName || ""
-          )} · ${escapeHTML(item.techniqueName || "")} · x${escapeHTML(item.qty)}</span>
+          )} · ${escapeHTML(item.techniqueName || "")} · x${escapeHTML(item.qty)}${roster}</span>
               <strong>${formatMoney((Number(item.unitPrice) || 0) * (Number(item.qty) || 0))}</strong>
             </div>
             <div class="design-previews">

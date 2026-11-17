@@ -86,7 +86,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="image" href="assets/hoodie-front-800.webp" imagesrcset="assets/hoodie-front-480.webp 480w, assets/hoodie-front-800.webp 800w, assets/hoodie-front.webp 1003w" imagesizes="(max-width: 720px) 90vw, 520px" type="image/webp" fetchpriority="high">
 <script src="boot.js?v=20261114-csp1"></script>
-  <link rel="stylesheet" href="styles.css?v=20261117-vol1">
+  <link rel="stylesheet" href="styles.css?v=20261117-equipos1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -757,6 +757,7 @@
                 </button>
               </div>
               <button type="button" class="btn btn-ghost btn-block quote-button" data-quote-sizes>Cotizar por tallas</button>
+              <button type="button" class="btn btn-ghost btn-block quote-button" data-team-open>Nombres y números</button>
             </div>
           </div>
           </div>
@@ -1459,6 +1460,34 @@
     </div>
   </div>
 
+  <!-- MODAL NOMBRES Y NÚMEROS -->
+  <div class="modal" data-team-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="team-title" inert>
+    <div class="modal-panel modal-panel--team">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <button type="button" class="icon-btn modal-close" data-close-team aria-label="Cerrar nombres y números">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+      </button>
+      <span class="eyebrow">Equipos</span>
+      <h2 id="team-title">Nombres y números</h2>
+      <p class="modal-sub">Agrega una fila por persona. El nombre y el número se imprimen al reverso del diseño actual. +$49 por pieza.</p>
+      <div class="quote-table-wrap">
+        <table class="quote-table team-table">
+          <thead>
+            <tr><th scope="col">Nombre</th><th scope="col">Número</th><th scope="col">Talla</th><th scope="col">Cant.</th><th scope="col"></th></tr>
+          </thead>
+          <tbody data-team-body></tbody>
+        </table>
+      </div>
+      <button type="button" class="btn btn-ghost btn-block team-add-row" data-team-add-row>+ Agregar persona</button>
+      <div class="quote-summary">
+        <span>Piezas <strong data-team-count>0</strong></span>
+        <span>Total <strong data-team-total>$0 MXN</strong></span>
+      </div>
+      <button type="button" class="btn btn-primary btn-block" data-team-add>Agregar equipo al carrito</button>
+      <p class="form-error" data-team-error role="alert" hidden></p>
+    </div>
+  </div>
+
   <div class="toast-region" data-toast-region aria-live="polite"></div>
 
   <div class="option-tooltip" id="option-tooltip" data-option-tooltip role="tooltip" aria-hidden="true">
@@ -1468,13 +1497,13 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="store-supabase.js?v=20261117-vol2"></script>
+  <script src="store-supabase.js?v=20261117-equipos1"></script>
   <script src="monitor.js?v=20261114-fase5"></script>
   <script src="clip-config.js?v=20261112-sandbox2"></script>
 <script src="modelos/modelos-data.js?v=20261114-fase6"></script>
-<script src="app.js?v=20261117-vol2"></script>
+<script src="app.js?v=20261117-equipos1"></script>
   <script src="whatsapp-config.js?v=20261114-fase4d"></script>
-  <script src="whatsapp.js?v=20261117-vol2"></script>
+  <script src="whatsapp.js?v=20261117-equipos1"></script>
   <script src="eventos.js?v=20261115-perf2"></script>
   <script src="resenas.js?v=20261116-res1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>

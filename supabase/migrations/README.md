@@ -45,6 +45,9 @@ npx supabase db query --remote --yes --file supabase/migrations/20261115000200_f
 - `20261117000900_order_locks.sql`
   - serializa los límites por usuario y correo con locks de transacción para
     que no se acepten más pedidos de los permitidos bajo concurrencia.
+- `20261117001000_nombre_numero.sql`
+  - tarifa `name_number_fee` de +$49 por pieza;
+  - `item_unit_price()` cobra nombre y número cuando el artículo lo indica.
 
 Las migraciones son idempotentes: se pueden volver a ejecutar. No ejecutes
 `security-hardening.sql` sobre una base ya migrada sin revisar antes la versión

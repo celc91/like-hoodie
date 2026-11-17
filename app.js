@@ -18,6 +18,7 @@
   const SHIPPING_COST = 99;
   const LOGO_PRICE = 99;
   const XXL_PRICE = 49;
+  const NAME_NUMBER_FEE = 49;
   const PRINT_SIZES = {
     logo: { name: "Logo", fee: 0, note: "Hasta 10 cm. Incluido." },
     carta: { name: "Carta", fee: 30, note: "Hasta 22 cm." },
@@ -484,6 +485,7 @@
 
   const sizeModal = $("[data-size-modal]");
   const quoteModal = $("[data-quote-modal]");
+  const teamModal = $("[data-team-modal]");
 
   const hoodiePreview = $("[data-preview-hoodie]");
   const hoodiePhoto = $("[data-hoodie-photo]");
@@ -542,6 +544,14 @@
   const quoteError = $("[data-quote-error]");
   const quoteAddButton = $("[data-quote-add]");
   const quoteCloseButton = $("[data-close-quote]");
+  const teamOpenButton = $("[data-team-open]");
+  const teamBody = $("[data-team-body]");
+  const teamCount = $("[data-team-count]");
+  const teamTotal = $("[data-team-total]");
+  const teamError = $("[data-team-error]");
+  const teamAddButton = $("[data-team-add]");
+  const teamAddRowButton = $("[data-team-add-row]");
+  const teamCloseButton = $("[data-close-team]");
   const deliveryEstimate = $("[data-delivery-estimate]");
   const checkoutDelivery = $("[data-checkout-delivery]");
   const logoInput = $("[data-logo-input]");
@@ -894,6 +904,13 @@
           const sizeInfo = PRINT_SIZES[item.printSize];
           if (sizeInfo) customLines.push(`Impresión: ${sizeInfo.name}`);
         }
+        if (item.rosterName || item.rosterNumber) {
+          customLines.push(
+            `Equipo: ${item.rosterName || "Sin nombre"}${
+              item.rosterNumber ? ` #${item.rosterNumber}` : ""
+            }`
+          );
+        }
         if (front.text) {
           customLines.push(`Frente: “${front.text}”${textMeta(front)}`);
         }
@@ -1001,7 +1018,7 @@
     cartDrawer.classList.remove("is-open");
     overlay.classList.remove("is-open");
     cartDrawer.setAttribute("aria-hidden", "true");
-    if (!checkoutModal.classList.contains("is-open") && !sizeModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open")) {
+    if (!checkoutModal.classList.contains("is-open") && !sizeModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open") && !teamModal.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
     }
     refreshInertState();
@@ -1017,7 +1034,7 @@
   const FOCUSABLE_SELECTOR =
     'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
   const pageRegions = [header, pageMain, pageFooter, mobileMenu].filter(Boolean);
-  const dialogElements = [cartDrawer, checkoutModal, sizeModal, quoteModal].filter(Boolean);
+  const dialogElements = [cartDrawer, checkoutModal, sizeModal, quoteModal, teamModal].filter(Boolean);
 
   function visibleFocusables(container) {
     return [...container.querySelectorAll(FOCUSABLE_SELECTOR)].filter(
@@ -1051,6 +1068,7 @@
       if (top === checkoutModal) closeCheckout();
       else if (top === sizeModal) closeSizeGuide();
       else if (top === quoteModal) closeQuote();
+      else if (top === teamModal) closeTeam();
       else if (top === cartDrawer) closeCart();
       return;
     }
@@ -1679,7 +1697,7 @@
     checkoutModal.classList.remove("is-open");
     checkoutModal.setAttribute("aria-hidden", "true");
     refreshInertState();
-    if (!cartDrawer.classList.contains("is-open") && !sizeModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open")) {
+    if (!cartDrawer.classList.contains("is-open") && !sizeModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open") && !teamModal.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
     }
     if (lastFocusedElement && document.contains(lastFocusedElement)) {
@@ -2179,7 +2197,7 @@
     sizeModal.classList.remove("is-open");
     sizeModal.setAttribute("aria-hidden", "true");
     refreshInertState();
-    if (!cartDrawer.classList.contains("is-open") && !checkoutModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open")) {
+    if (!cartDrawer.classList.contains("is-open") && !checkoutModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open") && !teamModal.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
     }
     if (lastFocusedElement && document.contains(lastFocusedElement)) {
@@ -2311,7 +2329,8 @@
     if (
       !cartDrawer.classList.contains("is-open") &&
       !checkoutModal.classList.contains("is-open") &&
-      !sizeModal.classList.contains("is-open")
+      !sizeModal.classList.contains("is-open") &&
+      !teamModal.classList.contains("is-open")
     ) {
       document.body.classList.remove("is-locked");
     }
@@ -2423,6 +2442,189 @@
   if (quoteModal) {
     quoteModal.addEventListener("click", (event) => {
       if (event.target === quoteModal) closeQuote();
+    });
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Nombres y números para equipos                                         */
+  /* ---------------------------------------------------------------------- */
+
+  function teamRowMarkup(name = "", number = "", size = state.size, qty = 1) {
+    const sizes = quoteSizes()
+      .map(
+        (value) =>
+          `<option value="${escapeHTML(value)}" ${
+            value === size ? "selected" : ""
+          }>${escapeHTML(value)}</option>`
+      )
+      .join("");
+    return `<tr data-team-row>
+      <td><input type="text" maxlength="40" placeholder="Nombre" autocomplete="off" data-team-name value="${escapeHTML(
+        name
+      )}"></td>
+      <td><input type="text" maxlength="3" inputmode="numeric" placeholder="00" autocomplete="off" data-team-number value="${escapeHTML(
+        number
+      )}"></td>
+      <td><select data-team-size aria-label="Talla">${sizes}</select></td>
+      <td><input class="team-qty" type="number" min="1" max="99" step="1" value="${escapeHTML(
+        qty
+      )}" data-team-qty aria-label="Cantidad"></td>
+      <td><button class="link-btn" type="button" data-team-remove aria-label="Quitar persona">Quitar</button></td>
+    </tr>`;
+  }
+
+  function addTeamRow(values = {}) {
+    if (!teamBody) return;
+    teamBody.insertAdjacentHTML(
+      "beforeend",
+      teamRowMarkup(values.name, values.number, values.size, values.qty)
+    );
+  }
+
+  function teamRows() {
+    if (!teamBody) return [];
+    return [...teamBody.querySelectorAll("[data-team-row]")].map((row) => ({
+      name: String(row.querySelector("[data-team-name]")?.value || "").trim(),
+      number: String(row.querySelector("[data-team-number]")?.value || "").trim(),
+      size: row.querySelector("[data-team-size]")?.value || state.size,
+      qty: Math.max(1, Math.min(99, Number(row.querySelector("[data-team-qty]")?.value) || 1)),
+    }));
+  }
+
+  function updateTeamSummary() {
+    const rows = teamRows().filter((row) => row.name || row.number);
+    const totalQty = rows.reduce((sum, row) => sum + row.qty, 0);
+    let total = 0;
+    rows.forEach((row) => {
+      const base = baseUnitForSize(row.size) + NAME_NUMBER_FEE;
+      total += priceWithVolume(base, totalQty || 1) * row.qty;
+    });
+    if (teamCount) teamCount.textContent = String(totalQty);
+    if (teamTotal) teamTotal.textContent = formatPrice(total);
+  }
+
+  function openTeam() {
+    if (!teamModal) return;
+    lastFocusedElement = document.activeElement;
+    if (teamBody) {
+      teamBody.innerHTML = "";
+      addTeamRow({ size: state.size });
+      addTeamRow({ size: state.size });
+      addTeamRow({ size: state.size });
+    }
+    if (teamError) teamError.hidden = true;
+    teamModal.classList.add("is-open");
+    teamModal.setAttribute("aria-hidden", "false");
+    refreshInertState();
+    document.body.classList.add("is-locked");
+    updateTeamSummary();
+    window.setTimeout(() => {
+      const first = teamBody && teamBody.querySelector("[data-team-name]");
+      if (first) first.focus({ preventScroll: true });
+    }, 80);
+  }
+
+  function closeTeam() {
+    if (!teamModal) return;
+    teamModal.classList.remove("is-open");
+    teamModal.setAttribute("aria-hidden", "true");
+    refreshInertState();
+    if (
+      !cartDrawer.classList.contains("is-open") &&
+      !checkoutModal.classList.contains("is-open") &&
+      !sizeModal.classList.contains("is-open") &&
+      !quoteModal.classList.contains("is-open")
+    ) {
+      document.body.classList.remove("is-locked");
+    }
+    if (lastFocusedElement && document.contains(lastFocusedElement)) {
+      lastFocusedElement.focus({ preventScroll: true });
+    }
+  }
+
+  function addTeamToCart() {
+    const rows = teamRows().filter((row) => row.name || row.number);
+    if (!rows.length) {
+      if (teamError) {
+        teamError.textContent = "Agrega al menos una persona.";
+        teamError.hidden = false;
+      }
+      return;
+    }
+    if (rows.some((row) => !row.name)) {
+      if (teamError) {
+        teamError.textContent = "Cada persona necesita un nombre.";
+        teamError.hidden = false;
+      }
+      return;
+    }
+    if (teamError) teamError.hidden = true;
+
+    const group = uid();
+    const designSnapshot = buildDesignSnapshot();
+    const baseKey = JSON.stringify(designSnapshot);
+    const totalQty = rows.reduce((sum, row) => sum + row.qty, 0);
+
+    rows.forEach((row) => {
+      const baseUnit = baseUnitForSize(row.size) + NAME_NUMBER_FEE;
+      state.items.push({
+        id: uid(),
+        sku: "LH-TEAM",
+        key: `${baseKey}:team:${group}:${row.size}:${row.name}:${row.number}`,
+        pricingGroup: group,
+        product: state.product,
+        name: PRODUCTS[state.product].itemName,
+        colorHex: state.color,
+        colorName: state.colorName,
+        size: row.size,
+        materialId: state.material.id,
+        materialName: state.material.name,
+        materialDelta: state.material.delta,
+        techniqueId: state.technique.id,
+        techniqueName: state.technique.name,
+        techniquePrice: techniqueFee(),
+        printSize: state.printSize,
+        nameNumber: true,
+        rosterName: row.name,
+        rosterNumber: row.number,
+        front: designSnapshot.front,
+        back: designSnapshot.back,
+        baseUnitPrice: baseUnit,
+        unitPrice: priceWithVolume(baseUnit, totalQty),
+        qty: row.qty,
+      });
+    });
+
+    state.cartStep = "cart";
+    saveCart();
+    renderCart();
+    closeTeam();
+    openCart();
+    showToast(`${totalQty} piezas del equipo agregadas a la cesta.`);
+  }
+
+  if (teamOpenButton) teamOpenButton.addEventListener("click", openTeam);
+  if (teamCloseButton) teamCloseButton.addEventListener("click", closeTeam);
+  if (teamAddButton) teamAddButton.addEventListener("click", addTeamToCart);
+  if (teamAddRowButton) {
+    teamAddRowButton.addEventListener("click", () => {
+      addTeamRow({ size: state.size });
+      updateTeamSummary();
+    });
+  }
+  if (teamBody) {
+    teamBody.addEventListener("input", updateTeamSummary);
+    teamBody.addEventListener("click", (event) => {
+      const remove = event.target.closest("[data-team-remove]");
+      if (!remove) return;
+      const row = remove.closest("[data-team-row]");
+      if (row) row.remove();
+      updateTeamSummary();
+    });
+  }
+  if (teamModal) {
+    teamModal.addEventListener("click", (event) => {
+      if (event.target === teamModal) closeTeam();
     });
   }
 

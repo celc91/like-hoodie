@@ -200,6 +200,7 @@ En un proyecto nuevo ejecuta:
 24. `supabase/migrations/20261117000200_precios_volumen.sql` (tamaño de impresión y volumen)
 25. `supabase/migrations/20261117000300_item_price_firma.sql` (firma única de `item_unit_price`)
 26. `supabase/migrations/20261117000900_order_locks.sql` (límites atómicos de pedidos)
+27. `supabase/migrations/20261117001000_nombre_numero.sql` (nombres y números de equipo)
 23. `supabase/migrations/20261115120000_seguridad_rls_b5.sql` (newsletter, `has_resend_key`, retención y facturas bloqueadas)
 24. `supabase/migrations/20261115130000_locks_concurrencia.sql` (locks de `place_order` y newsletter)
 25. `supabase/migrations/20261115140000_orders_currency.sql` (`orders.currency` para Clip)

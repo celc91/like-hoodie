@@ -27,6 +27,7 @@ const couponSql = read("supabase/migrations/20261115000400_cupones_unicos.sql");
 const noticeSql = read("supabase/migrations/20261115000500_aviso_factura.sql");
 const volumeSql = read("supabase/migrations/20261117000200_precios_volumen.sql");
 const approvalSql = read("supabase/migrations/20261117000100_aprobacion_diseno.sql");
+const teamSql = read("supabase/migrations/20261117001000_nombre_numero.sql");
 const confirmJs = read("confirmar.js");
 const styles = read("styles.css");
 
@@ -126,6 +127,13 @@ check(
   "entrega: fecha estimada",
   indexPage.includes("data-delivery-estimate") &&
     app.includes("deliveryEstimateText")
+);
+check(
+  "equipos: nombres y números",
+  indexPage.includes("data-team-modal") &&
+    app.includes("nameNumber") &&
+    app.includes("NAME_NUMBER_FEE") &&
+    teamSql.includes("name_number_fee")
 );
 
 const failed = checks.filter((item) => !item.ok);

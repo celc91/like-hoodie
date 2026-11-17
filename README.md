@@ -46,6 +46,7 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Factura individual:** `/factura.html` captura RFC, razón social, régimen fiscal, CP, uso del CFDI, forma de pago SAT y correo de envío. El cliente confirma el correo de compra y la solicitud pasa a revisión; el admin emite manualmente y captura el UUID. No emite CFDI desde la web.
 - **Precio por tamaño y volumen:** el configurador distingue impresión logo, carta y doble carta, y aplica descuentos por cantidad: 5% desde 12 piezas, 10% desde 24 y 15% desde 48.
 - **Cotizador por tallas:** permite repartir un mismo diseño entre XS–XXL, calcular el total y agregar el grupo al carrito.
+- **Nombres y números:** agrega una fila por persona con nombre, dorsal, talla y cantidad; suma +$49 por pieza y aplica el descuento por volumen al grupo.
 - **Aprobación del diseño:** el pedido queda pendiente de aprobación; el admin registra vista previa enviada, aprobada o rechazada antes de imprimir.
 - **Fecha estimada:** muestra una fecha de llegada calculada con producción y envío en días hábiles.
 - **WhatsApp:** botón flotante y enlaces con mensaje contextual en tienda, producto y seguimiento.

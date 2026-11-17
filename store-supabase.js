@@ -126,6 +126,9 @@
         ? String(item.pricingGroup)
         : "",
       baseUnitPrice: Math.max(0, Number(item.baseUnitPrice) || Number(item.unitPrice) || 0),
+      nameNumber: item.nameNumber === true,
+      rosterName: String(item.rosterName || "").slice(0, 40),
+      rosterNumber: String(item.rosterNumber || "").slice(0, 3),
       front: safeDesign(item.front),
       back: safeDesign(item.back),
     }));
