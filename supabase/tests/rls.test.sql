@@ -1812,11 +1812,17 @@ select lh_rls_test.pending('STO-07', 'delete logo propio o admin y nunca cruzado
 -- Expectativa: order-prints solo lectura ADM2 y escritura backend.
 select lh_rls_test.pending('STO-08', 'prints inaccesibles a clientes y sin escritura directa admin', false);
 
--- Expectativa: SVG/MIME falso/exceso devuelve 400 o 413 sin objeto almacenado.
-select lh_rls_test.pending('STO-09', 'Storage aplica MIME real y tamanos sin via alternativa', false);
+-- BLOQUEANTE? No: medido por scripts/test-clip-idempotency.mjs contra Storage.
+select ok(
+  coalesce((select pass from public.qa_concurrency_results where case_id = 'STO-09'), false),
+  'STO-09 — MIME falso y exceso de tamano se rechazan sin guardar objeto'
+);
 
--- Expectativa: URL publica 403, firmada maximo 3600 segundos y expirada 403.
-select lh_rls_test.pending('STO-10', 'sin URL publica y enlaces firmados expiran en una hora', false);
+-- Medido por scripts/test-clip-idempotency.mjs contra Storage.
+select ok(
+  coalesce((select pass from public.qa_concurrency_results where case_id = 'STO-10'), false),
+  'STO-10 — bucket privado y enlace firmado funciona; la URL publica no'
+);
 
 -- ---------------------------------------------------------------------------
 -- Privilegios: 9

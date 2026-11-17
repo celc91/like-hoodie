@@ -340,6 +340,96 @@ async function post(path, body, token) {
   return { status: response.status, data };
 }
 
+const PNG_1PX = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+  "base64"
+);
+
+async function storageUpload(path, body, contentType, token) {
+  const response = await fetch(`${API}/storage/v1/object/order-logos/${path}`, {
+    method: "POST",
+    headers: {
+      apikey: anonKey,
+      authorization: `Bearer ${token}`,
+      "content-type": contentType,
+      "x-upsert": "true",
+    },
+    body,
+    signal: AbortSignal.timeout(30_000),
+  });
+  return response.status;
+}
+
+async function storageSign(path, token) {
+  const response = await fetch(`${API}/storage/v1/object/sign/order-logos/${path}`, {
+    method: "POST",
+    headers: {
+      apikey: anonKey,
+      authorization: `Bearer ${token}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ expiresIn: 60 }),
+    signal: AbortSignal.timeout(20_000),
+  });
+  if (!response.ok) return { status: response.status, fetchStatus: null };
+  const data = await response.json();
+  const signed = await fetch(`${API}/storage/v1${data.signedURL}`, {
+    signal: AbortSignal.timeout(20_000),
+  });
+  return { status: response.status, fetchStatus: signed.status };
+}
+
+async function storageDelete(path, token) {
+  await fetch(`${API}/storage/v1/object/order-logos/${path}`, {
+    method: "DELETE",
+    headers: { apikey: anonKey, authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(15_000),
+  });
+}
+
+async function runQ10(token, userId) {
+  const foreign = "10000000-0000-4000-8000-0000000000ff";
+  const control = `${userId}/q10-ok.png`;
+
+  const codes = {};
+  codes.clipPaySinSesion = (await post("clip-pay", { orderId: foreign }, null)).status;
+  codes.clipCheckoutSinSesion = (await post("clip-checkout", { orderId: foreign }, null)).status;
+  codes.processLogoSinSesion = (await post("process-logo", { assetId: foreign }, null)).status;
+  codes.invoiceInvalida = (await post("invoice-request", { orderNumber: 1, email: "nadie@example.invalid" }, null)).status;
+
+  codes.uploadOk = await storageUpload(control, PNG_1PX, "image/png", token);
+  codes.mimeFalso = await storageUpload(`${userId}/q10-mime.txt`, PNG_1PX, "text/plain", token);
+  codes.excedido = await storageUpload(`${userId}/q10-big.png`, Buffer.alloc(6 * 1024 * 1024), "image/png", token);
+  codes.rutaPuntoPunto = await storageUpload(`${userId}/../${foreign}/q10-evil.png`, PNG_1PX, "image/png", token);
+  codes.dobleBarra = await storageUpload(`${userId}//q10-doble.png`, PNG_1PX, "image/png", token);
+
+  const signed = await storageSign(control, token);
+  codes.firma = signed.status;
+  codes.firmaGet = signed.fetchStatus;
+  const publico = await fetch(`${API}/storage/v1/object/public/order-logos/${control}`, {
+    signal: AbortSignal.timeout(20_000),
+  });
+  codes.urlPublica = publico.status;
+
+  await storageDelete(control, token);
+
+  const sto09 =
+    codes.mimeFalso === 400 &&
+    [400, 413].includes(codes.excedido);
+  const sto10 =
+    [400, 403].includes(codes.urlPublica) &&
+    codes.firma === 200 &&
+    codes.firmaGet === 200;
+  const funciones =
+    codes.clipPaySinSesion === 401 &&
+    codes.clipCheckoutSinSesion === 401 &&
+    codes.processLogoSinSesion === 401 &&
+    codes.invoiceInvalida === 400;
+  const pass = sto09 && sto10 && funciones && codes.uploadOk === 200;
+
+  return { pass, sto09, sto10, detail: { ...codes } };
+}
+
 function stopServe() {
   if (!serveProcess || serveProcess.killed) return;
   if (process.platform === "win32") {
@@ -410,6 +500,23 @@ async function main() {
     console.log(`Cobros a Clip: ${detail.payments} (esperado 1)`);
     console.log(`Links creados: ${detail.checkouts} (esperado 1)`);
     console.log(pass ? "SET-08 OK" : "SET-08 FALLO");
+
+    const q10 = await runQ10(token, userId);
+    const q10Json = JSON.stringify(q10.detail).replace(/'/g, "''");
+    await sql(`
+      insert into public.qa_concurrency_results (case_id, pass, detail)
+      values ('STO-09', ${q10.sto09}, '${q10Json}'::jsonb),
+             ('STO-10', ${q10.sto10}, '${q10Json}'::jsonb),
+             ('Q-10', ${q10.pass}, '${q10Json}'::jsonb)
+      on conflict (case_id) do update
+        set pass = excluded.pass, detail = excluded.detail, created_at = now();
+    `);
+    console.log(`Q-10 codigos: ${q10Json}`);
+    console.log(`::notice::Q10 ${q10Json}`);
+    if (!q10.pass) {
+      console.log(`::error::Q10 FALLO ${q10Json}`);
+    }
+    pass = pass && q10.pass;
     if (!pass) console.log(`--- runtime ---\n${serveLog.slice(-2500)}`);
   } finally {
     stopServe();
