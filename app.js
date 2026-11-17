@@ -149,7 +149,35 @@
       name: "Playfair Display",
       className: "font-playfair",
     },
+    bungee: {
+      name: "Bungee",
+      className: "font-bungee",
+    },
+    caveat: {
+      name: "Caveat",
+      className: "font-caveat",
+    },
   };
+
+  const TEXT_EFFECTS = ["none", "outline", "shadow"];
+  const TEXT_EFFECT_NAMES = { outline: "Contorno", shadow: "Sombra" };
+
+  function textEffectClass(effect) {
+    if (effect === "outline") return "text-effect-outline";
+    if (effect === "shadow") return "text-effect-shadow";
+    return "";
+  }
+
+  /* Color del contorno: contrasta con el relleno del texto. */
+  function outlineColorFor(fill) {
+    const clean = String(fill || "").replace("#", "");
+    if (!/^[0-9a-f]{6}$/i.test(clean)) return "#1c1c1f";
+    const red = parseInt(clean.slice(0, 2), 16);
+    const green = parseInt(clean.slice(2, 4), 16);
+    const blue = parseInt(clean.slice(4, 6), 16);
+    const luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255;
+    return luminance > 0.58 ? "#1c1c1f" : "#fffdf8";
+  }
 
   const state = {
     color: "#1c1c1f",
@@ -180,6 +208,7 @@
         textColor: "#fffdf8",
         textScale: 1,
         textFont: "bricolage",
+        textEffect: "none",
         logo: null,
         logoName: "",
         logoPath: "",
@@ -207,6 +236,7 @@
         textColor: "#fffdf8",
         textScale: 1,
         textFont: "bricolage",
+        textEffect: "none",
         logo: null,
         logoName: "",
         logoPath: "",
@@ -359,15 +389,24 @@
     );
   }
 
-  function baseUnitForSize(size) {
+  function basePriceForColor(hex) {
+    const product = PRODUCTS[state.product] || PRODUCTS.hoodie;
+    return product.prices[hex] || product.fallbackPrice || state.basePrice;
+  }
+
+  function baseUnitForColorSize(size, hex) {
     return (
-      state.basePrice +
+      basePriceForColor(hex) +
       state.material.delta +
       techniqueFee() +
       logoCount() * LOGO_PRICE +
       printSizeFee() +
       (size === "XXL" ? XXL_PRICE : 0)
     );
+  }
+
+  function baseUnitForSize(size) {
+    return baseUnitForColorSize(size, state.color);
   }
 
   function cartGroupTotals() {
@@ -486,6 +525,23 @@
   const sizeModal = $("[data-size-modal]");
   const quoteModal = $("[data-quote-modal]");
   const teamModal = $("[data-team-modal]");
+  const multiModal = $("[data-multi-modal]");
+  const multiOpenButton = $("[data-multi-open]");
+  const multiBody = $("[data-multi-body]");
+  const multiCount = $("[data-multi-count]");
+  const multiTotal = $("[data-multi-total]");
+  const multiError = $("[data-multi-error]");
+  const multiAddButton = $("[data-multi-add]");
+  const multiCloseButton = $("[data-close-multi]");
+  const shareModal = $("[data-share-modal]");
+  const shareOpenButton = $("[data-share-open]");
+  const shareCloseButton = $("[data-close-share]");
+  const shareNameInput = $("[data-share-name]");
+  const shareLinkInput = $("[data-share-link]");
+  const copyShareButton = $("[data-copy-share]");
+  const saveDesignButton = $("[data-save-design]");
+  const savedList = $("[data-saved-list]");
+  const shareError = $("[data-share-error]");
 
   const hoodiePreview = $("[data-preview-hoodie]");
   const hoodiePhoto = $("[data-hoodie-photo]");
@@ -524,6 +580,7 @@
   const logoSizeValue = $("[data-logo-size-value]");
   const textColorButtons = $$("[data-text-color]");
   const fontButtons = $$("[data-text-font]");
+  const effectButtons = $$("[data-text-effect]");
   const optionTooltip = $("[data-option-tooltip]");
   const tooltipTitle = $("[data-tooltip-title]");
   const tooltipDesc = $("[data-tooltip-desc]");
@@ -581,6 +638,7 @@
   const guideToggle = $("[data-guide-toggle]");
   const layersList = $("[data-layers-list]");
   const templateGrid = $("[data-template-grid]");
+  const clipGrid = $("[data-clip-grid]");
   const recoverDraftButton = $("[data-recover-draft]");
   const alignControl = $("[data-align-control]");
   const alignTarget = $("[data-align-target]");
@@ -649,6 +707,8 @@
     archivo: { family: "Archivo Black", weight: 400 },
     bebas: { family: "Bebas Neue", weight: 400 },
     playfair: { family: "Playfair Display", weight: 700 },
+    bungee: { family: "Bungee", weight: 400 },
+    caveat: { family: "Caveat", weight: 700 },
   };
 
   function thumbWrap(ctx, text, maxWidth) {
@@ -715,10 +775,32 @@
     ctx.textBaseline = "middle";
     if ("letterSpacing" in ctx) ctx.letterSpacing = (size * 0.02).toFixed(2) + "px";
 
-    const lines = thumbWrap(ctx, front.text.toUpperCase(), W * 0.42);
+    const effect = TEXT_EFFECTS.includes(front.textEffect)
+      ? front.textEffect
+      : "none";
+    if (effect === "shadow") {
+      ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
+      ctx.shadowOffsetX = size * 0.06;
+      ctx.shadowOffsetY = size * 0.08;
+      ctx.shadowBlur = size * 0.02;
+    }
+    if (effect === "outline") {
+      ctx.strokeStyle = outlineColorFor(front.textColor);
+      ctx.lineWidth = size * 0.075;
+      ctx.lineJoin = "round";
+    }
+
+    const rawText = ["playfair", "caveat"].includes(front.textFont)
+      ? front.text
+      : front.text.toUpperCase();
+    const lines = thumbWrap(ctx, rawText, W * 0.42);
     const lineHeight = size * 0.9;
     const startY = -((lines.length - 1) * lineHeight) / 2;
-    lines.forEach((line, i) => ctx.fillText(line, 0, startY + i * lineHeight));
+    lines.forEach((line, i) => {
+      const y = startY + i * lineHeight;
+      if (effect === "outline") ctx.strokeText(line, 0, y);
+      ctx.fillText(line, 0, y);
+    });
     ctx.restore();
 
     return canvas.toDataURL("image/png");
@@ -893,6 +975,9 @@
           const parts = [];
           const font = TEXT_FONTS[design.textFont];
           if (font && design.textFont !== "bricolage") parts.push(font.name);
+          if (TEXT_EFFECT_NAMES[design.textEffect]) {
+            parts.push(TEXT_EFFECT_NAMES[design.textEffect]);
+          }
           const percent = Math.round((design.textScale || 1) * 100);
           if (percent !== 100) parts.push(`${percent}%`);
           return parts.length ? ` (${parts.join(", ")})` : "";
@@ -937,7 +1022,9 @@
                 ${isDark ? "" : '<div class="fabric-tint"></div>'}
                 <img class="hoodie-photo" src="${thumbImage}" alt="" width="1003" height="1229" loading="lazy">
                 <div class="print-area print-area--thumb">
-                  ${front.text ? `<span class="print-text editor-item font-${escapeHTML(front.textFont || "bricolage")}" style="--x:${front.textX}%;--y:${front.textY}%;--item-scale:${front.textScale || 1};--item-rotate:${front.textRotate || 0}deg;color:${escapeHTML(front.textColor || "#fffdf9")}">${escapeHTML(front.text)}</span>` : ""}
+                  ${front.text ? `<span class="print-text editor-item font-${escapeHTML(front.textFont || "bricolage")} ${textEffectClass(
+                    front.textEffect
+                  )}" style="--x:${front.textX}%;--y:${front.textY}%;--item-scale:${front.textScale || 1};--item-rotate:${front.textRotate || 0}deg;--text-outline:${outlineColorFor(front.textColor)};color:${escapeHTML(front.textColor || "#fffdf9")}">${escapeHTML(front.text)}</span>` : ""}
                   ${front.logoData ? `<img class="print-logo editor-item" src="${front.logoData}" alt="" style="--x:${front.logoX}%;--y:${front.logoY}%;--item-scale:${front.logoScale || 1};--item-rotate:${front.logoRotate || 0}deg">` : ""}
                 </div>
               </div>`}
@@ -1014,11 +1101,25 @@
     }
   }
 
+  function anyDialogOpen() {
+    return [
+      cartDrawer,
+      checkoutModal,
+      sizeModal,
+      quoteModal,
+      teamModal,
+      multiModal,
+      shareModal,
+    ]
+      .filter(Boolean)
+      .some((dialog) => dialog.classList.contains("is-open"));
+  }
+
   function closeCart(returnFocus = true) {
     cartDrawer.classList.remove("is-open");
     overlay.classList.remove("is-open");
     cartDrawer.setAttribute("aria-hidden", "true");
-    if (!checkoutModal.classList.contains("is-open") && !sizeModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open") && !teamModal.classList.contains("is-open")) {
+    if (!anyDialogOpen()) {
       document.body.classList.remove("is-locked");
     }
     refreshInertState();
@@ -1034,7 +1135,7 @@
   const FOCUSABLE_SELECTOR =
     'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
   const pageRegions = [header, pageMain, pageFooter, mobileMenu].filter(Boolean);
-  const dialogElements = [cartDrawer, checkoutModal, sizeModal, quoteModal, teamModal].filter(Boolean);
+  const dialogElements = [cartDrawer, checkoutModal, sizeModal, quoteModal, teamModal, multiModal, shareModal].filter(Boolean);
 
   function visibleFocusables(container) {
     return [...container.querySelectorAll(FOCUSABLE_SELECTOR)].filter(
@@ -1069,6 +1170,8 @@
       else if (top === sizeModal) closeSizeGuide();
       else if (top === quoteModal) closeQuote();
       else if (top === teamModal) closeTeam();
+      else if (top === multiModal) closeMulti();
+      else if (top === shareModal) closeShare();
       else if (top === cartDrawer) closeCart();
       return;
     }
@@ -1697,7 +1800,7 @@
     checkoutModal.classList.remove("is-open");
     checkoutModal.setAttribute("aria-hidden", "true");
     refreshInertState();
-    if (!cartDrawer.classList.contains("is-open") && !sizeModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open") && !teamModal.classList.contains("is-open")) {
+    if (!anyDialogOpen()) {
       document.body.classList.remove("is-locked");
     }
     if (lastFocusedElement && document.contains(lastFocusedElement)) {
@@ -2197,7 +2300,7 @@
     sizeModal.classList.remove("is-open");
     sizeModal.setAttribute("aria-hidden", "true");
     refreshInertState();
-    if (!cartDrawer.classList.contains("is-open") && !checkoutModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open") && !teamModal.classList.contains("is-open")) {
+    if (!anyDialogOpen()) {
       document.body.classList.remove("is-locked");
     }
     if (lastFocusedElement && document.contains(lastFocusedElement)) {
@@ -2326,12 +2429,7 @@
     quoteModal.classList.remove("is-open");
     quoteModal.setAttribute("aria-hidden", "true");
     refreshInertState();
-    if (
-      !cartDrawer.classList.contains("is-open") &&
-      !checkoutModal.classList.contains("is-open") &&
-      !sizeModal.classList.contains("is-open") &&
-      !teamModal.classList.contains("is-open")
-    ) {
+    if (!anyDialogOpen()) {
       document.body.classList.remove("is-locked");
     }
     if (lastFocusedElement && document.contains(lastFocusedElement)) {
@@ -2529,12 +2627,7 @@
     teamModal.classList.remove("is-open");
     teamModal.setAttribute("aria-hidden", "true");
     refreshInertState();
-    if (
-      !cartDrawer.classList.contains("is-open") &&
-      !checkoutModal.classList.contains("is-open") &&
-      !sizeModal.classList.contains("is-open") &&
-      !quoteModal.classList.contains("is-open")
-    ) {
+    if (!anyDialogOpen()) {
       document.body.classList.remove("is-locked");
     }
     if (lastFocusedElement && document.contains(lastFocusedElement)) {
@@ -2628,6 +2721,605 @@
     });
   }
 
+  /* ---------------------------------------------------------------------- */
+  /* Varios colores                                                          */
+  /* ---------------------------------------------------------------------- */
+
+  function colorNameFor(hex) {
+    const match = colorSwatches.find(
+      (button) =>
+        String(button.dataset.color || "").toLowerCase() ===
+        String(hex || "").toLowerCase()
+    );
+    return match ? match.dataset.name : hex;
+  }
+
+  function multiColorList() {
+    const product = PRODUCTS[state.product] || PRODUCTS.hoodie;
+    return Object.keys(product.prices);
+  }
+
+  function multiQuantities() {
+    const values = {};
+    if (!multiBody) return values;
+    multiBody.querySelectorAll("[data-multi-color]").forEach((input) => {
+      values[input.dataset.multiColor] = Math.max(
+        0,
+        Math.min(99, Number(input.value) || 0)
+      );
+    });
+    return values;
+  }
+
+  function updateMultiSummary() {
+    const values = multiQuantities();
+    const totalQty = Object.values(values).reduce((sum, qty) => sum + qty, 0);
+    let total = 0;
+    if (multiBody) {
+      multiBody.querySelectorAll("[data-multi-row]").forEach((row) => {
+        const hex = row.dataset.multiRow;
+        const base = baseUnitForColorSize(state.size, hex);
+        const unit = priceWithVolume(base, totalQty || 1);
+        const qty = values[hex] || 0;
+        const priceCell = row.querySelector("[data-multi-price]");
+        const subtotalCell = row.querySelector("[data-multi-subtotal]");
+        if (priceCell) priceCell.textContent = formatPrice(unit);
+        if (subtotalCell) subtotalCell.textContent = formatPrice(unit * qty);
+        total += unit * qty;
+      });
+    }
+    if (multiCount) multiCount.textContent = String(totalQty);
+    if (multiTotal) multiTotal.textContent = formatPrice(total);
+    return { values, totalQty, total };
+  }
+
+  function renderMultiRows() {
+    if (!multiBody) return;
+    multiBody.innerHTML = multiColorList()
+      .map((hex) => {
+        const name = colorNameFor(hex);
+        const qty = hex.toLowerCase() === state.color.toLowerCase() ? 1 : 0;
+        return `<tr data-multi-row="${escapeHTML(hex)}">
+          <td><span class="multi-swatch" style="--sw:${escapeHTML(
+            hex
+          )};background:${escapeHTML(hex)}"></span><strong>${escapeHTML(
+          name
+        )}</strong></td>
+          <td><input type="number" inputmode="numeric" min="0" max="99" step="1" value="${qty}" data-multi-color="${escapeHTML(
+          hex
+        )}" aria-label="Cantidad en ${escapeHTML(name)}"></td>
+          <td data-multi-price></td>
+          <td data-multi-subtotal></td>
+        </tr>`;
+      })
+      .join("");
+    updateMultiSummary();
+  }
+
+  function openMulti() {
+    if (!multiModal) return;
+    if (!hasAnyDesign()) {
+      showToast("Añade un texto o un logo antes de elegir colores.");
+      return;
+    }
+    lastFocusedElement = document.activeElement;
+    if (multiError) multiError.hidden = true;
+    renderMultiRows();
+    multiModal.classList.add("is-open");
+    multiModal.setAttribute("aria-hidden", "false");
+    refreshInertState();
+    document.body.classList.add("is-locked");
+    window.setTimeout(() => {
+      const input = multiBody && multiBody.querySelector("[data-multi-color]");
+      if (input) {
+        input.focus({ preventScroll: true });
+        input.select();
+      }
+    }, 80);
+  }
+
+  function closeMulti() {
+    if (!multiModal) return;
+    multiModal.classList.remove("is-open");
+    multiModal.setAttribute("aria-hidden", "true");
+    refreshInertState();
+    if (!anyDialogOpen()) document.body.classList.remove("is-locked");
+    if (lastFocusedElement && document.contains(lastFocusedElement)) {
+      lastFocusedElement.focus({ preventScroll: true });
+    }
+  }
+
+  function addMultiToCart() {
+    const { values, totalQty } = updateMultiSummary();
+    if (!totalQty) {
+      if (multiError) {
+        multiError.textContent = "Elige al menos una pieza.";
+        multiError.hidden = false;
+      }
+      return;
+    }
+    if (
+      state.technique.id === "sublimacion" &&
+      state.material.id !== "polyester280"
+    ) {
+      if (multiError) {
+        multiError.textContent =
+          "La sublimación requiere poliéster. Cambia el material o la técnica.";
+        multiError.hidden = false;
+      }
+      return;
+    }
+    if (multiError) multiError.hidden = true;
+
+    const group = uid();
+    const designSnapshot = buildDesignSnapshot();
+    const baseKey = JSON.stringify(designSnapshot);
+    let added = 0;
+
+    multiColorList().forEach((hex) => {
+      const qty = values[hex] || 0;
+      if (!qty) return;
+      const baseUnit = baseUnitForColorSize(state.size, hex);
+      state.items.push({
+        id: uid(),
+        sku: "LH-CUSTOM",
+        key: `${baseKey}:multi:${group}:${hex}`,
+        pricingGroup: group,
+        product: state.product,
+        name: PRODUCTS[state.product].itemName,
+        colorHex: hex,
+        colorName: colorNameFor(hex),
+        size: state.size,
+        materialId: state.material.id,
+        materialName: state.material.name,
+        materialDelta: state.material.delta,
+        techniqueId: state.technique.id,
+        techniqueName: state.technique.name,
+        techniquePrice: techniqueFee(),
+        printSize: state.printSize,
+        front: designSnapshot.front,
+        back: designSnapshot.back,
+        baseUnitPrice: baseUnit,
+        unitPrice: priceWithVolume(baseUnit, totalQty),
+        qty,
+      });
+      added += qty;
+    });
+
+    if (!added) return;
+    state.cartStep = "cart";
+    saveCart();
+    renderCart();
+    closeMulti();
+    openCart();
+    showToast(`${added} piezas en varios colores agregadas.`);
+  }
+
+  if (multiOpenButton) multiOpenButton.addEventListener("click", openMulti);
+  if (multiCloseButton) multiCloseButton.addEventListener("click", closeMulti);
+  if (multiAddButton) multiAddButton.addEventListener("click", addMultiToCart);
+  if (multiBody) multiBody.addEventListener("input", updateMultiSummary);
+  if (multiModal) {
+    multiModal.addEventListener("click", (event) => {
+      if (event.target === multiModal) closeMulti();
+    });
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Guardar y compartir                                                    */
+  /* ---------------------------------------------------------------------- */
+
+  const SAVED_DESIGNS_KEY = "likehoodie_saved_designs_v1";
+  const SHARE_HASH = "#diseno=";
+
+  function readSavedDesigns() {
+    try {
+      const raw = localStorage.getItem(SAVED_DESIGNS_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(parsed)) return [];
+      return parsed
+        .filter(
+          (entry) =>
+            entry &&
+            typeof entry.id === "string" &&
+            typeof entry.name === "string" &&
+            entry.draft &&
+            entry.draft.designs
+        )
+        .slice(0, 5);
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function writeSavedDesigns(list) {
+    try {
+      localStorage.setItem(SAVED_DESIGNS_KEY, JSON.stringify(list.slice(0, 5)));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function renderSavedDesigns() {
+    if (!savedList) return;
+    const list = readSavedDesigns();
+    if (!list.length) {
+      savedList.innerHTML =
+        '<p class="saved-empty">Todavía no hay diseños guardados en este dispositivo.</p>';
+      return;
+    }
+    savedList.innerHTML = list
+      .map((entry) => {
+        const date = new Date(entry.at);
+        const label = Number.isNaN(date.getTime())
+          ? ""
+          : date.toLocaleDateString("es-MX", {
+              day: "numeric",
+              month: "short",
+            });
+        return `<div class="saved-row" data-saved-id="${escapeHTML(entry.id)}">
+          <span class="saved-row__main">
+            <span class="saved-row__name">${escapeHTML(entry.name)}</span>
+            <span class="saved-row__date">${escapeHTML(label)}</span>
+          </span>
+          <button type="button" class="link-btn" data-saved-load="${escapeHTML(
+            entry.id
+          )}">Cargar</button>
+          <button type="button" class="link-btn link-btn--danger" data-saved-delete="${escapeHTML(
+            entry.id
+          )}">Eliminar</button>
+        </div>`;
+      })
+      .join("");
+  }
+
+  function savedDesignName() {
+    const typed = shareNameInput ? shareNameInput.value.trim() : "";
+    if (typed) return typed.slice(0, 40);
+    const front = state.designs.front.text || state.designs.back.text;
+    return front ? front.slice(0, 40) : "Mi diseño";
+  }
+
+  function saveCurrentDesign() {
+    if (shareError) shareError.hidden = true;
+    if (!hasAnyDesign()) {
+      if (shareError) {
+        shareError.textContent = "Añade un texto o un logo antes de guardar.";
+        shareError.hidden = false;
+      }
+      return;
+    }
+    const entry = {
+      id: uid(),
+      name: savedDesignName(),
+      at: new Date().toISOString(),
+      draft: draftSnapshot(),
+    };
+    const list = [entry, ...readSavedDesigns()].slice(0, 5);
+    if (writeSavedDesigns(list)) {
+      renderSavedDesigns();
+      showToast("Diseño guardado en este dispositivo.");
+      return;
+    }
+
+    // Sin espacio para el logo: se guarda el diseño sin la imagen.
+    const light = {
+      ...entry,
+      draft: {
+        ...entry.draft,
+        designs: {
+          front: { ...entry.draft.designs.front, logoData: "" },
+          back: { ...entry.draft.designs.back, logoData: "" },
+        },
+      },
+    };
+    if (writeSavedDesigns([light, ...readSavedDesigns()].slice(0, 5))) {
+      renderSavedDesigns();
+      showToast("Guardado sin el logo por límite de espacio.");
+    } else if (shareError) {
+      shareError.textContent =
+        "No hay espacio para guardar. Elimina un diseño e inténtalo de nuevo.";
+      shareError.hidden = false;
+    }
+  }
+
+  function loadSavedDesign(id) {
+    const entry = readSavedDesigns().find((item) => item.id === id);
+    if (!entry) return;
+    if (!applyStoredDraft(entry.draft, { silent: true })) {
+      showToast("No pudimos cargar ese diseño.");
+      return;
+    }
+    closeShare();
+    showToast(`Diseño “${entry.name}” cargado.`);
+  }
+
+  function deleteSavedDesign(id) {
+    writeSavedDesigns(readSavedDesigns().filter((item) => item.id !== id));
+    renderSavedDesigns();
+  }
+
+  function encodeSharePayload(payload) {
+    const bytes = new TextEncoder().encode(JSON.stringify(payload));
+    let binary = "";
+    bytes.forEach((byte) => {
+      binary += String.fromCharCode(byte);
+    });
+    return btoa(binary)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+  }
+
+  function decodeSharePayload(value) {
+    const base64 = String(value || "")
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+    const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+    const binary = atob(padded);
+    const bytes = Uint8Array.from(binary, (character) =>
+      character.charCodeAt(0)
+    );
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+
+  function cleanSharedSide(saved) {
+    if (!saved || typeof saved !== "object") return null;
+    const clamp = (value, min, max) => {
+      const number = Number(value);
+      const safe = Number.isFinite(number) ? number : min;
+      return Math.max(min, Math.min(max, safe));
+    };
+    return {
+      text: String(saved.text || "").slice(0, 16),
+      textColor: /^#[0-9a-f]{6}$/i.test(String(saved.textColor || ""))
+        ? String(saved.textColor).toLowerCase()
+        : "#fffdf8",
+      textScale: clamp(saved.textScale || 1, 0.5, 2.2),
+      textRotate: clamp(saved.textRotate || 0, -180, 180),
+      textFont: TEXT_FONTS[saved.textFont] ? saved.textFont : "bricolage",
+      textEffect: TEXT_EFFECTS.includes(saved.textEffect)
+        ? saved.textEffect
+        : "none",
+      textLocked: false,
+      textHidden: Boolean(saved.textHidden),
+      layerOrder:
+        Array.isArray(saved.layerOrder) &&
+        saved.layerOrder.every((layer) => layer === "text" || layer === "logo")
+          ? saved.layerOrder.slice(0, 2)
+          : ["text", "logo"],
+      textX: clamp(saved.textX ?? 50, 0, 100),
+      textY: clamp(saved.textY ?? 49, 0, 100),
+      logoX: clamp(saved.logoX ?? 50, 0, 100),
+      logoY: clamp(saved.logoY ?? 32, 0, 100),
+      logoScale: clamp(saved.logoScale || 1, 0.3, 3),
+      logoRotate: clamp(saved.logoRotate || 0, -180, 180),
+    };
+  }
+
+  function buildSharePayload() {
+    const draft = draftSnapshot();
+    return {
+      v: 1,
+      shared: true,
+      product: PRODUCTS[draft.product] ? draft.product : "hoodie",
+      color: PRODUCTS[state.product].prices[draft.color]
+        ? draft.color
+        : Object.keys(PRODUCTS[state.product].prices)[0],
+      colorName: draft.colorName,
+      size: draft.size,
+      printSize: PRINT_SIZES[draft.printSize] ? draft.printSize : "logo",
+      view: draft.view,
+      material: { id: draft.material.id },
+      technique: { id: draft.technique.id },
+      designs: {
+        front: cleanSharedSide(draft.designs.front),
+        back: cleanSharedSide(draft.designs.back),
+      },
+    };
+  }
+
+  function shareHasText(payload) {
+    return ["front", "back"].some(
+      (side) => payload.designs[side] && payload.designs[side].text.trim()
+    );
+  }
+
+  function buildShareLink() {
+    const payload = buildSharePayload();
+    if (!shareHasText(payload)) return "";
+    const base = `${location.origin}${location.pathname}${location.search}`;
+    return `${base}${SHARE_HASH}${encodeSharePayload(payload)}`;
+  }
+
+  function updateShareLink() {
+    if (!shareLinkInput) return;
+    const link = buildShareLink();
+    shareLinkInput.value = link || "Añade un texto para compartir";
+    if (copyShareButton) copyShareButton.disabled = !link;
+  }
+
+  async function copyShareLink() {
+    const link = shareLinkInput ? shareLinkInput.value : "";
+    if (!link || link === "Añade un texto para compartir") {
+      if (shareError) {
+        shareError.textContent =
+          "El enlace necesita al menos un texto. El logo no se comparte.";
+        shareError.hidden = false;
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(link);
+      showToast("Enlace copiado.");
+    } catch (error) {
+      shareLinkInput.focus();
+      shareLinkInput.select();
+      try {
+        document.execCommand("copy");
+        showToast("Enlace copiado.");
+      } catch (fallbackError) {
+        showToast("Copia el enlace manualmente.");
+      }
+    }
+  }
+
+  function openShare() {
+    if (!shareModal) return;
+    lastFocusedElement = document.activeElement;
+    if (shareError) shareError.hidden = true;
+    if (shareNameInput) {
+      shareNameInput.value = "";
+    }
+    updateShareLink();
+    renderSavedDesigns();
+    shareModal.classList.add("is-open");
+    shareModal.setAttribute("aria-hidden", "false");
+    refreshInertState();
+    document.body.classList.add("is-locked");
+    window.setTimeout(() => {
+      if (shareNameInput) shareNameInput.focus({ preventScroll: true });
+    }, 80);
+  }
+
+  function closeShare() {
+    if (!shareModal) return;
+    shareModal.classList.remove("is-open");
+    shareModal.setAttribute("aria-hidden", "true");
+    refreshInertState();
+    if (!anyDialogOpen()) document.body.classList.remove("is-locked");
+    if (lastFocusedElement && document.contains(lastFocusedElement)) {
+      lastFocusedElement.focus({ preventScroll: true });
+    }
+  }
+
+  function loadSharedDesignFromHash() {
+    if (!location.hash.startsWith(SHARE_HASH)) return;
+    const value = location.hash.slice(SHARE_HASH.length);
+    try {
+      const payload = decodeSharePayload(value);
+      if (
+        !payload ||
+        payload.v !== 1 ||
+        !payload.designs ||
+        !payload.designs.front ||
+        !payload.designs.back
+      ) {
+        throw new Error("Enlace no válido");
+      }
+      if (payload.product && PRODUCTS[payload.product]) {
+        setProduct(payload.product);
+      }
+      const colors = Object.keys(PRODUCTS[state.product].prices);
+      const color = colors.includes(String(payload.color).toLowerCase())
+        ? String(payload.color).toLowerCase()
+        : colors[0];
+      selectColor(color, colorNameFor(color));
+      const sizes = state.product === "tote" ? ["Única"] : ["XS", "S", "M", "L", "XL", "XXL"];
+      state.size = sizes.includes(payload.size) ? payload.size : sizes[2] || sizes[0];
+      state.printSize = PRINT_SIZES[payload.printSize]
+        ? payload.printSize
+        : "logo";
+      const material = materialButtons.find(
+        (button) => button.dataset.material === payload.material?.id
+      );
+      if (material) {
+        state.material = {
+          id: material.dataset.material,
+          name: material.dataset.name,
+          delta: Number(material.dataset.delta) || 0,
+          desc: material.dataset.desc,
+        };
+      }
+      const technique = techniqueButtons.find(
+        (button) => button.dataset.technique === payload.technique?.id
+      );
+      if (technique) {
+        state.technique = {
+          id: technique.dataset.technique,
+          name: technique.dataset.name,
+          price: Number(technique.dataset.cost) || 0,
+          desc: technique.dataset.desc,
+        };
+      }
+      const draft = {
+        v: 1,
+        product: state.product,
+        color: state.color,
+        colorName: state.colorName,
+        size: state.size,
+        printSize: state.printSize,
+        view: payload.view === "back" ? "back" : "front",
+        material: state.material,
+        technique: state.technique,
+        designs: {
+          front: cleanSharedSide(payload.designs.front),
+          back: cleanSharedSide(payload.designs.back),
+        },
+      };
+      if (!draft.designs.front || !draft.designs.back) {
+        throw new Error("Diseño incompleto");
+      }
+      // El enlace no transporta logos: se limpian para no reutilizar el del visitante.
+      ["front", "back"].forEach((side) => {
+        const design = state.designs[side];
+        design.logo = null;
+        design.logoName = "";
+        design.logoData = "";
+        design.logoPath = "";
+        design.logoAssetId = "";
+        design.logoVectorResult = null;
+        design.printStatus = "";
+        design.printPath = "";
+        design.printDpi = null;
+        design.printWidthCm = null;
+        design.printError = "";
+        design.logoLocked = false;
+        design.logoHidden = false;
+      });
+      history.replaceState(
+        null,
+        "",
+        `${location.pathname}${location.search}`
+      );
+      applyStoredDraft(draft, { silent: true });
+      showToast("Diseño compartido cargado. Revisa que todo esté bien.");
+    } catch (error) {
+      showToast("El enlace del diseño no es válido.");
+    }
+  }
+
+  if (shareOpenButton) shareOpenButton.addEventListener("click", openShare);
+  if (shareCloseButton) shareCloseButton.addEventListener("click", closeShare);
+  if (saveDesignButton) {
+    saveDesignButton.addEventListener("click", saveCurrentDesign);
+  }
+  if (copyShareButton) copyShareButton.addEventListener("click", copyShareLink);
+  if (savedList) {
+    savedList.addEventListener("click", (event) => {
+      const load = event.target.closest("[data-saved-load]");
+      if (load) {
+        loadSavedDesign(load.dataset.savedLoad);
+        return;
+      }
+      const remove = event.target.closest("[data-saved-delete]");
+      if (remove) deleteSavedDesign(remove.dataset.savedDelete);
+    });
+  }
+  if (shareModal) {
+    shareModal.addEventListener("click", (event) => {
+      if (event.target === shareModal) closeShare();
+    });
+  }
+
+  document.querySelectorAll("[data-product-jump]").forEach((button) => {
+    button.addEventListener("click", () => {
+      setProduct(button.dataset.productJump);
+      scrollToDesigner();
+    });
+  });
+
   const sizeGuideButton = $("[data-size-guide]");
   if (sizeGuideButton) sizeGuideButton.addEventListener("click", openSizeGuide);
   const closeSizeButton = $("[data-close-sizes]");
@@ -2656,6 +3348,18 @@
     const design = activeDesign();
     fontButtons.forEach((button) => {
       const active = button.dataset.textFont === design.textFont;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  }
+
+  function updateTextEffectUI() {
+    const design = activeDesign();
+    const effect = TEXT_EFFECTS.includes(design.textEffect)
+      ? design.textEffect
+      : "none";
+    effectButtons.forEach((button) => {
+      const active = button.dataset.textEffect === effect;
       button.classList.toggle("is-active", active);
       button.setAttribute("aria-pressed", String(active));
     });
@@ -2915,6 +3619,17 @@
         printText.classList.remove(item.className);
       });
       printText.classList.add(font.className);
+      const effect = TEXT_EFFECTS.includes(design.textEffect)
+        ? design.textEffect
+        : "none";
+      ["text-effect-outline", "text-effect-shadow"].forEach((name) => {
+        printText.classList.remove(name);
+      });
+      if (effect !== "none") printText.classList.add(textEffectClass(effect));
+      printText.style.setProperty(
+        "--text-outline",
+        outlineColorFor(design.textColor)
+      );
       printText.setAttribute(
         "aria-label",
         design.text
@@ -2959,6 +3674,7 @@
 
     updateTextColorUI();
     updateTextFontUI();
+    updateTextEffectUI();
     updateMaterialUI();
     updateTechniqueUI();
     updatePrintSizeUI();
@@ -3524,6 +4240,16 @@
     });
   });
 
+  effectButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const effect = button.dataset.textEffect;
+      activeDesign().textEffect = TEXT_EFFECTS.includes(effect)
+        ? effect
+        : "none";
+      updatePreview();
+    });
+  });
+
   if (textSizeInput) {
     textSizeInput.addEventListener("input", () => {
       const design = activeDesign();
@@ -4060,6 +4786,9 @@
       textScale: design.textScale || 1,
       textRotate: design.textRotate || 0,
       textFont: design.textFont || "bricolage",
+      textEffect: TEXT_EFFECTS.includes(design.textEffect)
+        ? design.textEffect
+        : "none",
       logoName: design.logoName || "",
       logoData: design.logoData || "",
       logoPath: design.logoPath || "",
@@ -4151,7 +4880,7 @@
     }
   }
 
-  function applyStoredDraft(draft) {
+  function applyStoredDraft(draft, options = {}) {
     if (!draft) return false;
     if (PRODUCTS[draft.product]) setProduct(draft.product);
     if (draft.color) selectColor(draft.color, draft.colorName);
@@ -4168,6 +4897,9 @@
       const saved = draft.designs[side];
       if (!saved) return;
       const design = { ...state.designs[side], ...saved };
+      design.textEffect = TEXT_EFFECTS.includes(saved.textEffect)
+        ? saved.textEffect
+        : "none";
       design.logo = saved.logoData || design.logo || "";
       design.logoRaster = saved.logoData || design.logoRaster || "";
       design.logoVectorResult = null;
@@ -4186,7 +4918,7 @@
     resetHistory();
     if (recoverDraftButton) recoverDraftButton.hidden = true;
     hasStoredDraft = false;
-    showToast("Diseño recuperado.");
+    if (!options.silent) showToast("Diseño recuperado.");
     return true;
   }
 
@@ -4220,6 +4952,7 @@
           design.textColor,
           design.textScale,
           design.textFont,
+          design.textEffect || "none",
           design.textX,
           design.textY,
           design.textRotate || 0,
@@ -4649,6 +5382,7 @@
             <button type="button" class="layer-btn" data-layer-move="down" aria-label="Bajar capa" ${isBottom ? "disabled" : ""}>↓</button>
             <button type="button" class="layer-btn${entry.hidden ? " is-on" : ""}" data-layer-toggle="hidden" aria-label="${entry.hidden ? "Mostrar" : "Ocultar"} capa">${eye}</button>
             <button type="button" class="layer-btn${entry.locked ? " is-on" : ""}" data-layer-toggle="locked" aria-label="${entry.locked ? "Desbloquear" : "Bloquear"} capa">${lock}</button>
+            <button type="button" class="layer-btn layer-btn--danger" data-layer-delete aria-label="Eliminar ${escapeHTML(entry.label)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13M10 11v5M14 11v5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </span>
         </div>`;
       })
@@ -4687,6 +5421,44 @@
           design.layerOrder = order;
           updatePreview();
         }
+        return;
+      }
+
+      const remove = event.target.closest("[data-layer-delete]");
+      if (remove) {
+        if (elementLocked(design, type)) {
+          showToast("Capa bloqueada; desbloquéala para eliminarla.");
+          return;
+        }
+        if (type === "text") {
+          design.text = "";
+          if (textInput) textInput.value = "";
+          if (charCount) charCount.textContent = "0";
+          setActiveCoord("text");
+        } else {
+          design.logo = null;
+          design.logoName = "";
+          design.logoPath = "";
+          design.logoData = "";
+          design.logoRaster = "";
+          design.logoIsVector = false;
+          design.logoVectorResult = null;
+          design.vectorMode = "";
+          design.logoAssetId = "";
+          design.printStatus = "";
+          design.printPath = "";
+          design.printDpi = null;
+          design.printWidthCm = null;
+          design.printError = "";
+          design.logoLocked = false;
+          design.logoHidden = false;
+          vectorKey = "";
+          if (logoInput) logoInput.value = "";
+          if (uploadFile) uploadFile.hidden = true;
+          setActiveCoord("logo");
+        }
+        updatePreview();
+        showToast("Capa eliminada.");
         return;
       }
 
@@ -4907,6 +5679,7 @@
       textScale: 1,
       textRotate: 0,
       textFont: "bricolage",
+      textEffect: "none",
       logo: "",
       logoName: "",
       logoPath: "",
@@ -5145,8 +5918,150 @@
   /* Plantillas de diseño                                                   */
   /* ---------------------------------------------------------------------- */
 
-  const TEMPLATES = [
+  const CLIP_ART = [
     {
+      id: "star",
+      name: "Estrella",
+      body: '<path d="M256 36l62 146 158 14-120 104 36 156-136-82-136 82 36-156L36 196l158-14z"/>',
+    },
+    {
+      id: "heart",
+      name: "Corazón",
+      body: '<path d="M256 452S52 330 52 190c0-64 50-114 112-114 40 0 74 20 92 52 18-32 52-52 92-52 62 0 112 50 112 114 0 140-204 262-204 262z"/>',
+    },
+    {
+      id: "bolt",
+      name: "Rayo",
+      body: '<path d="M300 24 96 296h132l-28 192 216-292H280z"/>',
+    },
+    {
+      id: "moon",
+      name: "Luna",
+      body: '<path d="M330 40a212 212 0 1 0 142 344A180 180 0 0 1 330 40z"/>',
+    },
+    {
+      id: "sun",
+      name: "Sol",
+      body: '<circle cx="256" cy="256" r="92"/><path d="M256 24l26 66h-52zM256 488l-26-66h52zM24 256l66-26v52zM488 256l-66 26v-52zM92 92l58 38-37 37zM420 420l-58-38 37-37zM420 92l-38 58-37-37zM92 420l38-58 37 37z"/>',
+    },
+    {
+      id: "mountain",
+      name: "Montaña",
+      body: '<path d="M20 430 190 120l98 180 52-90 152 220z"/>',
+    },
+    {
+      id: "crown",
+      name: "Corona",
+      body: '<path d="M44 400h424l40-240-136 96L256 64 140 256 4 160z"/>',
+    },
+    {
+      id: "wave",
+      name: "Ola",
+      body: '<path d="M0 300c80-70 160-70 240 0s160 70 240 0v130c-80 70-160 70-240 0S80 360 0 430z"/>',
+    },
+  ];
+
+  function clipArtSvg(item, color, size) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="${size}" height="${size}"><g fill="${color}">${item.body}</g></svg>`;
+  }
+
+  function svgToPngBlob(svg, size) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(
+        new Blob([svg], { type: "image/svg+xml" })
+      );
+      const image = new Image();
+      image.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(image, 0, 0, size, size);
+          canvas.toBlob((blob) => {
+            URL.revokeObjectURL(url);
+            if (blob) resolve(blob);
+            else reject(new Error("Sin imagen"));
+          }, "image/png");
+        } catch (error) {
+          URL.revokeObjectURL(url);
+          reject(error);
+        }
+      };
+      image.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("SVG no válido"));
+      };
+      image.src = url;
+    });
+  }
+
+  async function applyClipArt(id) {
+    const item = CLIP_ART.find((entry) => entry.id === id);
+    if (!item || !clipGrid || clipGrid.dataset.busy === "true") return;
+    const design = activeDesign();
+    if (design.logoLocked) {
+      showToast("El logo está bloqueado. Desbloquéalo desde Capas.");
+      return;
+    }
+    const side = state.view;
+    const color = design.textColor || contrastFor(state.color);
+    clipGrid.dataset.busy = "true";
+    clipGrid.setAttribute("aria-busy", "true");
+    const buttons = [...clipGrid.querySelectorAll("button")];
+    buttons.forEach((button) => {
+      button.disabled = true;
+    });
+    try {
+      const svg = clipArtSvg(item, color, 3600);
+      const blob = await svgToPngBlob(svg, 3600);
+      const file = new File([blob], `clip-${item.id}.png`, {
+        type: "image/png",
+      });
+      setTool("logo");
+      const applied = await applyLogoFile(file, side, { silent: true });
+      if (applied) {
+        const appliedDesign = state.designs[side];
+        if (appliedDesign && appliedDesign.logo) {
+          appliedDesign.logoName = `Clip art · ${item.name}`;
+          updatePreview();
+        }
+        showToast(`Clip art “${item.name}” agregado.`);
+      }
+    } catch (error) {
+      showToast("No pudimos agregar el clip art. Inténtalo de nuevo.");
+    } finally {
+      clipGrid.dataset.busy = "false";
+      clipGrid.removeAttribute("aria-busy");
+      buttons.forEach((button) => {
+        button.disabled = false;
+      });
+    }
+  }
+
+  function renderClipArt() {
+    if (!clipGrid) return;
+    clipGrid.innerHTML = CLIP_ART.map(
+      (item) => `<button type="button" class="clip-btn" data-clip="${item.id}" aria-label="Agregar ${escapeHTML(
+        item.name
+      )}">
+        ${clipArtSvg(item, "currentColor", 38).replace("<svg ", '<svg aria-hidden="true" ')}
+        <span>${escapeHTML(item.name)}</span>
+      </button>`
+    ).join("");
+  }
+
+  if (clipGrid) {
+    clipGrid.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-clip]");
+      if (!button) return;
+      applyClipArt(button.dataset.clip);
+    });
+  }
+
+  renderClipArt();
+
+  const TEMPLATES = [    {
       id: "clasica",
       name: "Clásica",
       desc: "Texto centrado al pecho",
@@ -5471,6 +6386,9 @@
         textScale: front.textScale,
         textRotate: front.textRotate || 0,
         textFont: front.textFont,
+        textEffect: TEXT_EFFECTS.includes(front.textEffect)
+          ? front.textEffect
+          : "none",
         logoName: front.logoName,
         logoPath: front.logoPath || "",
         logoData: front.logoData || "",
@@ -5498,6 +6416,9 @@
         textScale: back.textScale,
         textRotate: back.textRotate || 0,
         textFont: back.textFont,
+        textEffect: TEXT_EFFECTS.includes(back.textEffect)
+          ? back.textEffect
+          : "none",
         logoName: back.logoName,
         logoPath: back.logoPath || "",
         logoData: back.logoData || "",
@@ -5901,6 +6822,7 @@
   renderCart();
   hasStoredDraft = Boolean(readStoredDraft());
   if (recoverDraftButton) recoverDraftButton.hidden = !hasStoredDraft;
+  loadSharedDesignFromHash();
   window.StoreSupabase?.init();
 
   // Vuelta desde Clip: si el pedido ya está cobrado, se mide la compra aquí.
@@ -6141,7 +7063,7 @@
     link.id = "lh-display-fonts";
     link.rel = "stylesheet";
     link.href =
-      "https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Playfair+Display:wght@600;700;800&display=swap";
+      "https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bungee&family=Caveat:wght@600;700&family=Playfair+Display:wght@600;700;800&display=swap";
     document.head.appendChild(link);
   }
 

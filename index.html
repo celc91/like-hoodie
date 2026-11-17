@@ -86,7 +86,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="image" href="assets/hoodie-front-800.webp" imagesrcset="assets/hoodie-front-480.webp 480w, assets/hoodie-front-800.webp 800w, assets/hoodie-front.webp 1003w" imagesizes="(max-width: 720px) 90vw, 520px" type="image/webp" fetchpriority="high">
 <script src="boot.js?v=20261114-csp1"></script>
-  <link rel="stylesheet" href="styles.css?v=20261117-equipos1">
+  <link rel="stylesheet" href="styles.css?v=20261117-medios1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -416,6 +416,7 @@
                 <button type="button" class="swatch" style="--sw:#26324f" data-color="#26324f" data-name="Marino" aria-label="Azul marino" aria-pressed="false"></button>
                 <button type="button" class="swatch" style="--sw:#efb7c4" data-color="#efb7c4" data-name="Rosa" aria-label="Rosa" aria-pressed="false"></button>
               </div>
+              <button type="button" class="link-btn multi-color-link" data-multi-open>Añadir el mismo diseño en varios colores</button>
             </div>
 
             <div class="product-panel" data-product-panel="hoodie">
@@ -532,6 +533,7 @@
                 <span>Diseño de <strong data-editing-label>frente</strong></span>
                 <span class="editing-bar__actions">
                   <button type="button" class="link-btn" data-recover-draft hidden>Recuperar diseño</button>
+                  <button type="button" class="link-btn" data-share-open>Guardar / compartir</button>
                   <button type="button" class="link-btn" data-reset-print>Centrar diseño</button>
                 </span>
               </div>
@@ -603,6 +605,28 @@
                       <button type="button" class="font-option" data-text-font="playfair" aria-pressed="false">
                         <span class="font-option-sample" aria-hidden="true">Aa</span>
                         <span class="font-option-name">Playfair</span>
+                      </button>
+                      <button type="button" class="font-option" data-text-font="bungee" aria-pressed="false">
+                        <span class="font-option-sample" aria-hidden="true">Aa</span>
+                        <span class="font-option-name">Bungee</span>
+                      </button>
+                      <button type="button" class="font-option" data-text-font="caveat" aria-pressed="false">
+                        <span class="font-option-sample" aria-hidden="true">Aa</span>
+                        <span class="font-option-name">Caveat</span>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="font-row">
+                    <span class="control-label">Efecto</span>
+                    <div class="font-options effect-options" role="group" aria-label="Efecto del texto">
+                      <button type="button" class="font-option is-active" data-text-effect="none" aria-pressed="true">
+                        <span class="font-option-name">Normal</span>
+                      </button>
+                      <button type="button" class="font-option" data-text-effect="outline" aria-pressed="false">
+                        <span class="font-option-name">Contorno</span>
+                      </button>
+                      <button type="button" class="font-option" data-text-effect="shadow" aria-pressed="false">
+                        <span class="font-option-name">Sombra</span>
                       </button>
                     </div>
                   </div>
@@ -683,8 +707,17 @@
                     </div>
                     <input class="size-range" id="logo-size" type="range" min="50" max="300" step="5" value="100" data-logo-size>
                   </div>
-                </div>
               </div>
+
+              <div class="control clip-art-control">
+                <div class="control-head">
+                  <span class="control-label">Clip art</span>
+                  <span class="control-value">Se agrega como logo +$99</span>
+                </div>
+                <div class="clip-grid" data-clip-grid role="group" aria-label="Clip art incluido"></div>
+                <p class="option-note">Diseños vectoriales listos para imprimir. Se colocan en la cara actual.</p>
+              </div>
+            </div>
             </div>
 
             <div class="personalize-panel layers-panel" data-personalize-panel="capas" hidden>
@@ -693,7 +726,7 @@
                 <span class="personalize-note">Frente y espalda</span>
               </div>
               <div class="layers-list" data-layers-list></div>
-              <p class="layers-note">Arriba se dibuja encima. El ojo oculta y el candado bloquea el elemento.</p>
+              <p class="layers-note">Arriba se dibuja encima. El ojo oculta, el candado bloquea y la papelera elimina.</p>
             </div>
 
             <div class="personalize-panel templates-panel" data-personalize-panel="plantillas" hidden>
@@ -758,6 +791,12 @@
               </div>
               <button type="button" class="btn btn-ghost btn-block quote-button" data-quote-sizes>Cotizar por tallas</button>
               <button type="button" class="btn btn-ghost btn-block quote-button" data-team-open>Nombres y números</button>
+              <div class="related-row" role="group" aria-label="También te puede gustar">
+                <span class="related-label">Completa el look</span>
+                <button type="button" class="related-link" data-product-jump="tote">Tote bag</button>
+                <a class="related-link" href="modelos/cocodrilo.html">Cocodrilo</a>
+                <a class="related-link" href="modelos/corazon.html">Corazón</a>
+              </div>
             </div>
           </div>
           </div>
@@ -1488,6 +1527,67 @@
     </div>
   </div>
 
+  <!-- MODAL VARIOS COLORES -->
+  <div class="modal" data-multi-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="multi-title" inert>
+    <div class="modal-panel modal-panel--quote">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <button type="button" class="icon-btn modal-close" data-close-multi aria-label="Cerrar varios colores">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+      </button>
+      <span class="eyebrow">Mismo diseño</span>
+      <h2 id="multi-title">Varios colores</h2>
+      <p class="modal-sub">Elige cantidades por color. El descuento por volumen se aplica al total de este grupo.</p>
+      <div class="quote-table-wrap">
+        <table class="quote-table multi-table">
+          <thead>
+            <tr><th scope="col">Color</th><th scope="col">Cantidad</th><th scope="col">Precio unitario</th><th scope="col">Subtotal</th></tr>
+          </thead>
+          <tbody data-multi-body></tbody>
+        </table>
+      </div>
+      <div class="quote-summary">
+        <span>Piezas <strong data-multi-count>0</strong></span>
+        <span>Total <strong data-multi-total>$0 MXN</strong></span>
+      </div>
+      <button type="button" class="btn btn-primary btn-block" data-multi-add>Agregar al carrito</button>
+      <p class="form-error" data-multi-error role="alert" hidden></p>
+    </div>
+  </div>
+
+  <!-- MODAL GUARDAR Y COMPARTIR -->
+  <div class="modal" data-share-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="share-title" inert>
+    <div class="modal-panel modal-panel--share">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <button type="button" class="icon-btn modal-close" data-close-share aria-label="Cerrar guardar y compartir">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+      </button>
+      <span class="eyebrow">Tu diseño</span>
+      <h2 id="share-title">Guardar y compartir</h2>
+      <p class="modal-sub">Guarda una copia en este dispositivo o comparte el diseño con quien quieras.</p>
+
+      <div class="share-block">
+        <label class="control-label" for="share-name">Nombre del diseño</label>
+        <input class="text-input" id="share-name" type="text" maxlength="40" placeholder="Ej. Equipo Lobos" autocomplete="off" data-share-name>
+        <button type="button" class="btn btn-primary btn-block" data-save-design>Guardar en este dispositivo</button>
+      </div>
+
+      <div class="share-block">
+        <span class="control-label">Enlace para compartir</span>
+        <div class="share-link-row">
+          <input class="text-input" type="text" readonly data-share-link value="Generando enlace…" aria-label="Enlace para compartir">
+          <button type="button" class="btn btn-ghost" data-copy-share>Copiar</button>
+        </div>
+        <p class="option-note">Incluye texto, tipografía, efecto, colores, talla y colocación. Por seguridad no incluye el logo ni tus datos.</p>
+      </div>
+
+      <div class="saved-designs">
+        <span class="control-label">Diseños guardados</span>
+        <div class="saved-list" data-saved-list></div>
+      </div>
+      <p class="form-error" data-share-error role="alert" hidden></p>
+    </div>
+  </div>
+
   <div class="toast-region" data-toast-region aria-live="polite"></div>
 
   <div class="option-tooltip" id="option-tooltip" data-option-tooltip role="tooltip" aria-hidden="true">
@@ -1497,11 +1597,11 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="store-supabase.js?v=20261117-equipos1"></script>
+  <script src="store-supabase.js?v=20261117-medios1"></script>
   <script src="monitor.js?v=20261114-fase5"></script>
   <script src="clip-config.js?v=20261112-sandbox2"></script>
 <script src="modelos/modelos-data.js?v=20261114-fase6"></script>
-<script src="app.js?v=20261117-equipos1"></script>
+<script src="app.js?v=20261117-medios1"></script>
   <script src="whatsapp-config.js?v=20261114-fase4d"></script>
   <script src="whatsapp.js?v=20261117-equipos1"></script>
   <script src="eventos.js?v=20261115-perf2"></script>

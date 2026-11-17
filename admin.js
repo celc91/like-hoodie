@@ -1776,6 +1776,8 @@
       archivo: "'Archivo Black', 'Arial Black', sans-serif",
       bebas: "'Bebas Neue', 'Arial Narrow', sans-serif",
       playfair: "'Playfair Display', Georgia, serif",
+      bungee: "Bungee, 'Arial Black', sans-serif",
+      caveat: "Caveat, 'Comic Sans MS', cursive",
     };
     return fonts[id] || fonts.bricolage;
   }
@@ -1784,6 +1786,16 @@
   function safeHex(value, fallback) {
     const clean = String(value || "").trim();
     return /^#[0-9a-f]{6}$/i.test(clean) ? clean : fallback;
+  }
+
+  /* Contorno legible sobre el color de relleno del texto. */
+  function outlineHex(value) {
+    const clean = String(safeHex(value, "#fffdf8")).slice(1);
+    const red = parseInt(clean.slice(0, 2), 16);
+    const green = parseInt(clean.slice(2, 4), 16);
+    const blue = parseInt(clean.slice(4, 6), 16);
+    const luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255;
+    return luminance > 0.58 ? "#1c1c1f" : "#fffdf8";
   }
 
   /* Prenda con el diseño guardado en el pedido (frente o espalda). */
@@ -1807,6 +1819,10 @@
         : ["text", "logo"];
     const textOnTop = layerOrder.indexOf("text") > layerOrder.indexOf("logo");
 
+    const textEffect = ["outline", "shadow"].includes(design.textEffect)
+      ? design.textEffect
+      : "none";
+
     const textStyle = [
       `left:${Number.isFinite(tx) ? tx : 50}%`,
       `top:${Number.isFinite(ty) ? ty : 49}%`,
@@ -1815,7 +1831,15 @@
       `--tx-rot:${Number(design.textRotate) || 0}deg`,
       `color:${safeHex(design.textColor, "#fffdf8")}`,
       `font-family:${designFont(design.textFont)}`,
-    ].join(";");
+      textEffect === "outline"
+        ? `-webkit-text-stroke:1px ${outlineHex(design.textColor)};paint-order:stroke fill`
+        : "",
+      textEffect === "shadow"
+        ? "text-shadow:0.06em 0.075em 0.01em rgba(0,0,0,0.45)"
+        : "",
+    ]
+      .filter(Boolean)
+      .join(";");
 
     const logoStyle = [
       `left:${Number.isFinite(lx) ? lx : 50}%`,

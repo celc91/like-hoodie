@@ -28,6 +28,7 @@ const noticeSql = read("supabase/migrations/20261115000500_aviso_factura.sql");
 const volumeSql = read("supabase/migrations/20261117000200_precios_volumen.sql");
 const approvalSql = read("supabase/migrations/20261117000100_aprobacion_diseno.sql");
 const teamSql = read("supabase/migrations/20261117001000_nombre_numero.sql");
+const store = read("store-supabase.js");
 const confirmJs = read("confirmar.js");
 const styles = read("styles.css");
 
@@ -134,6 +135,33 @@ check(
     app.includes("nameNumber") &&
     app.includes("NAME_NUMBER_FEE") &&
     teamSql.includes("name_number_fee")
+);
+check(
+  "texto: efectos y tipografías",
+  indexPage.includes("data-text-effect") &&
+    app.includes("text-effect-outline") &&
+    app.includes("bungee") &&
+    app.includes("caveat") &&
+    store.includes("textEffect")
+);
+check(
+  "logo: clip art",
+  indexPage.includes("data-clip-grid") && app.includes("CLIP_ART")
+);
+check(
+  "colores: mismo diseño en varios colores",
+  indexPage.includes("data-multi-modal") && app.includes("addMultiToCart")
+);
+check(
+  "diseño: guardar y compartir",
+  indexPage.includes("data-share-modal") &&
+    app.includes("SAVED_DESIGNS_KEY") &&
+    app.includes("buildShareLink")
+);
+check(
+  "productos relacionados",
+  indexPage.includes("data-product-jump") &&
+    indexPage.includes("modelos/cocodrilo.html")
 );
 
 const failed = checks.filter((item) => !item.ok);

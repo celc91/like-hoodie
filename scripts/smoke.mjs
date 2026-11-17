@@ -38,6 +38,11 @@ check("app: borrador", app.includes("DESIGN_DRAFT_KEY"));
 check("app: inert", app.includes("refreshInertState"));
 check("app: datos de envío", app.includes("addressRef"));
 check("app: validación de teléfono", app.includes("Escribe un teléfono de 10 dígitos."));
+check("app: efectos de texto", app.includes("TEXT_EFFECTS") && app.includes("text-effect-shadow"));
+check("app: clip art", app.includes("CLIP_ART") && index.includes("data-clip-grid"));
+check("app: varios colores", app.includes("addMultiToCart") && index.includes("data-multi-modal"));
+check("app: guardar y compartir", app.includes("buildShareLink") && index.includes("data-share-modal"));
+check("index: productos relacionados", index.includes("data-product-jump"));
 check("admin: colores seguros", admin.includes("function safeHex"));
 check("store: color de texto validado", store.includes("textColor"));
 

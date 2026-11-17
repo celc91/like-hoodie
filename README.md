@@ -47,6 +47,11 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Precio por tamaño y volumen:** el configurador distingue impresión logo, carta y doble carta, y aplica descuentos por cantidad: 5% desde 12 piezas, 10% desde 24 y 15% desde 48.
 - **Cotizador por tallas:** permite repartir un mismo diseño entre XS–XXL, calcular el total y agregar el grupo al carrito.
 - **Nombres y números:** agrega una fila por persona con nombre, dorsal, talla y cantidad; suma +$49 por pieza y aplica el descuento por volumen al grupo.
+- **Efectos y tipografías:** contorno o sombra para el texto, con siete tipografías (Bricolage, Anton, Archivo, Bebas, Playfair, Bungee y Caveat).
+- **Clip art:** ocho diseños vectoriales incluidos que se agregan como logo y pasan por el mismo flujo de impresión.
+- **Varios colores:** agrega el mismo diseño en varios colores con cantidades por color y descuento por volumen compartido.
+- **Guardar y compartir:** guarda hasta cinco diseños en el dispositivo o comparte un enlace con texto, tipografía, efecto, color y colocación. El enlace no incluye logos.
+- **Productos relacionados:** accesos a tote bag y a las fichas de la colección desde el configurador.
 - **Aprobación del diseño:** el pedido queda pendiente de aprobación; el admin registra vista previa enviada, aprobada o rechazada antes de imprimir.
 - **Fecha estimada:** muestra una fecha de llegada calculada con producción y envío en días hábiles.
 - **WhatsApp:** botón flotante y enlaces con mensaje contextual en tienda, producto y seguimiento.

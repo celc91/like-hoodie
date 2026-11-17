@@ -4,6 +4,41 @@ Todos los cambios visibles del proyecto. Formato basado en
 [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado
 semántico.
 
+## [1.17.0] — 2026-11-17
+
+### Añadido
+
+- **Efectos de texto:** contorno y sombra, con color de contraste automático y
+  renderizado en editor, miniaturas, carrito y admin.
+- **Tipografías Bungee y Caveat:** siete opciones con muestra propia.
+- **Clip art:** ocho diseños vectoriales que se rasterizan a 3600 px y usan el
+  flujo normal de logo e impresión (+$99).
+- **Varios colores:** modal con cantidades por color, precio por color y
+  descuento de volumen compartido por `pricingGroup`.
+- **Guardar y compartir:** hasta cinco diseños guardados en `localStorage`;
+  enlace `#diseno=` con texto, tipografía, efecto, color, talla y colocación.
+  El logo no se incluye por seguridad.
+- **Productos relacionados:** tote bag y fichas de la colección desde el
+  configurador.
+- **Capas:** acción de eliminar para texto y logo, con bloqueo respetado.
+
+### Corregido
+
+- **Contorno en el admin:** el detalle del pedido muestra el efecto elegido.
+
+### Verificado
+
+- Efectos y fuentes comprobados en el navegador: clase, trazo, sombra y familia
+  aplicada.
+- Clip art probado de punta a punta con el flujo de logo (sin subida real).
+- Varios colores: 6 negro + 6 blanco = **$11,664** en cliente y servidor, con
+  5% de descuento por 12 piezas.
+- Enlace compartido cargado en otra pestaña: texto, color, fuente y efecto
+  restaurados; logo ausente y hash limpiado.
+- Diseño guardado, cargado y eliminado desde el modal.
+- `html-validate`, `node --check`, smoke (**70**) y precios/facturación
+  (**46**).
+
 ## [1.16.0] — 2026-11-17
 
 ### Añadido

@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const models = JSON.parse(readFileSync(join(root, "modelos", "modelos.json"), "utf8"));
 const SITE = "https://likehoodie.com";
-const CSS_VERSION = "20261117-equipos1";
+const CSS_VERSION = "20261117-medios1";
 const WHATSAPP_VERSION = "20261114-fase4d";
 const MONITOR_VERSION = "20261114-fase5";
 const PRODUCT_VERSION = "20261117-vol1";

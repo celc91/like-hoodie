@@ -891,6 +891,19 @@ section[id] {
   text-transform: none;
 }
 
+.print-text.font-bungee {
+  font-family: "Bungee", "Arial Black", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.print-text.font-caveat {
+  font-family: "Caveat", "Comic Sans MS", cursive;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
 .print-kicker {
   display: block;
   margin-bottom: 0.55em;
@@ -1615,6 +1628,16 @@ section[id] {
 
 .font-option[data-text-font="playfair"] .font-option-sample {
   font-family: "Playfair Display", Georgia, serif;
+  font-weight: 700;
+}
+
+.font-option[data-text-font="bungee"] .font-option-sample {
+  font-family: "Bungee", "Arial Black", sans-serif;
+  font-weight: 400;
+}
+
+.font-option[data-text-font="caveat"] .font-option-sample {
+  font-family: "Caveat", cursive;
   font-weight: 700;
 }
 
@@ -5284,6 +5307,17 @@ details[open] .plus::after {
   filter: saturate(1.08);
 }
 
+/* Efectos elegidos por el cliente: mandan sobre el acabado de la técnica. */
+.hoodie .print-text.text-effect-outline {
+  -webkit-text-stroke: 0.045em var(--text-outline, #1c1c1f);
+  paint-order: stroke fill;
+  text-shadow: none;
+}
+
+.hoodie .print-text.text-effect-shadow {
+  text-shadow: 0.055em 0.07em 0.01em rgba(0, 0, 0, 0.45);
+}
+
 .size-row {
   margin-top: 10px;
 }
@@ -7123,16 +7157,26 @@ p {
   height: 26px;
 }
 
-/* 5. Tipografías: cinco tarjetas iguales, sin truncar -------------------- */
+/* 5. Tipografías: siete tarjetas iguales, sin truncar -------------------- */
 
 .font-row {
   margin-top: 16px;
 }
 
 .font-options {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin-top: 10px;
+}
+
+.effect-options {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.effect-options .font-option {
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
 }
 
 .font-option {
@@ -7990,6 +8034,11 @@ p {
   cursor: default;
 }
 
+.layer-btn--danger:hover:not(:disabled) {
+  background: #fbe3e3;
+  color: #a01d1d;
+}
+
 .layer-btn svg {
   width: 14px;
   height: 14px;
@@ -8269,6 +8318,122 @@ body.is-locked .wa-float {
   width: min(680px, calc(100vw - 28px));
 }
 
+.modal-panel--share {
+  width: min(560px, calc(100vw - 28px));
+}
+
+.share-block {
+  margin: 16px 0;
+}
+
+.share-block > .control-label {
+  display: block;
+  margin-bottom: 7px;
+}
+
+.share-block .text-input {
+  margin-bottom: 8px;
+}
+
+.share-link-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.share-link-row .text-input {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+  font-size: 11px;
+}
+
+.share-link-row .btn {
+  min-height: 40px;
+  white-space: nowrap;
+}
+
+.saved-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.saved-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.saved-row__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.saved-row__name {
+  display: block;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.saved-row__date {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.saved-empty {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.saved-row .link-btn {
+  font-size: 10px;
+}
+
+.saved-row .link-btn--danger {
+  color: #a01d1d;
+}
+
+.related-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 11px;
+}
+
+.related-label {
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.related-link {
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+  text-decoration: none;
+}
+
+.related-link:hover {
+  border-color: var(--ink);
+}
+
 .team-table input[type="text"] {
   width: 100%;
   min-width: 110px;
@@ -8289,6 +8454,72 @@ body.is-locked .wa-float {
 
 .team-add-row {
   margin-top: 8px;
+}
+
+.clip-art-control {
+  margin-top: 14px;
+}
+
+.multi-color-link {
+  margin-top: 10px;
+  font-size: 11px;
+}
+
+.multi-table .multi-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 7px;
+  border-radius: 50%;
+  vertical-align: -3px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+}
+
+.multi-table td {
+  white-space: nowrap;
+}
+
+.clip-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.clip-btn {
+  display: grid;
+  place-items: center;
+  min-height: 58px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+
+.clip-btn:hover:not(:disabled) {
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.clip-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.clip-btn svg {
+  width: 100%;
+  max-width: 38px;
+  height: auto;
+}
+
+.clip-btn span {
+  margin-top: 4px;
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .quote-table-wrap {

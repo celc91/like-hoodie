@@ -42,7 +42,20 @@
         ? String(design.textColor).toLowerCase()
         : null,
       textScale: Number(design.textScale) || 1,
-      textFont: design.textFont || "bricolage",
+      textFont: [
+        "bricolage",
+        "anton",
+        "archivo",
+        "bebas",
+        "playfair",
+        "bungee",
+        "caveat",
+      ].includes(design.textFont)
+        ? design.textFont
+        : "bricolage",
+      textEffect: ["none", "outline", "shadow"].includes(design.textEffect)
+        ? design.textEffect
+        : "none",
       logoName: String(design.logoName || "").slice(0, 160),
       logoPath: String(design.logoPath || "").slice(0, 300),
       logoData:
