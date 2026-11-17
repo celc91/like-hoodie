@@ -449,6 +449,73 @@ function stopServe() {
   }
 }
 
+async function runSto07(token, userId) {
+  const foreign = "10000000-0000-4000-8000-0000000000ff";
+  const ownPath = `${userId}/st07-a.png`;
+  const foreignPath = `${foreign}/st07-b.png`;
+
+  const svcHeaders = {
+    apikey: serviceKey,
+    authorization: `Bearer ${serviceKey}`,
+    "content-type": "image/png",
+  };
+
+  const uploaded = await fetch(`${API}/storage/v1/object/order-logos/${foreignPath}`, {
+    method: "POST",
+    headers: { ...svcHeaders, "x-upsert": "true" },
+    body: PNG_1PX,
+    signal: AbortSignal.timeout(20_000),
+  });
+  const own = await storageUpload(ownPath, PNG_1PX, "image/png", token);
+
+  const cross = await fetch(`${API}/storage/v1/object/order-logos/${foreignPath}`, {
+    method: "DELETE",
+    headers: { apikey: anonKey, authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(20_000),
+  });
+  const ownDelete = await fetch(`${API}/storage/v1/object/order-logos/${ownPath}`, {
+    method: "DELETE",
+    headers: { apikey: anonKey, authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(20_000),
+  });
+  const foreignStill = await fetch(`${API}/storage/v1/object/sign/order-logos/${foreignPath}`, {
+    method: "POST",
+    headers: {
+      apikey: serviceKey,
+      authorization: `Bearer ${serviceKey}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ expiresIn: 60 }),
+    signal: AbortSignal.timeout(20_000),
+  });
+
+  await fetch(`${API}/storage/v1/object/order-logos/${foreignPath}`, {
+    method: "DELETE",
+    headers: { apikey: serviceKey, authorization: `Bearer ${serviceKey}` },
+    signal: AbortSignal.timeout(20_000),
+  });
+
+  const pass =
+    uploaded.status === 200 &&
+    own === 200 &&
+    [400, 403, 404].includes(cross.status) &&
+    [200, 204].includes(ownDelete.status) &&
+    foreignStill.status === 200;
+
+  await sql(`
+    insert into public.qa_concurrency_results (case_id, pass, detail)
+    values ('STO-07', ${pass}, '{"upload":${uploaded.status},"own":${own},"cross":${cross.status},"ownDelete":${ownDelete.status},"foreignStill":${foreignStill.status}}'::jsonb)
+    on conflict (case_id) do update
+      set pass = excluded.pass, detail = excluded.detail, created_at = now();
+  `);
+
+  console.log(
+    `::notice::STO07 {"upload":${uploaded.status},"own":${own},"cross":${cross.status},"ownDelete":${ownDelete.status},"foreignStill":${foreignStill.status}}`
+  );
+
+  return pass;
+}
+
 async function main() {
   await detect();
   await readKeys();
@@ -526,7 +593,14 @@ async function main() {
     if (!q10.pass) {
       console.log(`::error::Q10 FALLO ${q10Json}`);
     }
-    pass = pass && q10.pass;
+
+    const sto07 = await runSto07(token, userId);
+    console.log(sto07 ? "STO-07 OK" : "STO-07 FALLO");
+    if (!sto07) {
+      console.log(`::error::STO-07 FALLO`);
+    }
+
+    pass = pass && q10.pass && sto07;
     if (!pass) console.log(`--- runtime ---\n${serveLog.slice(-2500)}`);
   } finally {
     stopServe();
