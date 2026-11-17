@@ -19,7 +19,7 @@ const CSS_VERSION = "20261117-medios1";
 const WHATSAPP_VERSION = "20261114-fase4d";
 const MONITOR_VERSION = "20261114-fase5";
 const PRODUCT_VERSION = "20261117-vol1";
-const ANALYTICS_VERSION = "20261116-medicion1";
+const ANALYTICS_VERSION = "20261117-utm1";
 
 const escapeHTML = (value) =>
   String(value)

@@ -16,6 +16,11 @@ semántico.
 - **Reseñas:** sección `#resenas` alimentada por `resenas.json`; permanece oculta
   mientras no haya reseñas reales con consentimiento. Ver `docs/resenas.md`.
 - **CI RLS:** workflow `RLS` con bootstrap local, runner de concurrencia y pgTAP.
+- **Enlaces con UTM en el panel:** generador por página y canal (WhatsApp,
+  Instagram, Facebook) con botón de copiar.
+- **Tráfico interno:** `?interno=1` marca el navegador con
+  `traffic_type = internal`; el filtro de GA4 está activo y excluye esas
+  visitas.
 - **Pestaña Estadísticas en el panel:** lee GA4 (usuarios, sesiones, vistas,
   conversiones, ingresos, canales, páginas y eventos) y Meta (gasto,
   impresiones, clics, compras y estado de la Conversions API) con la Edge

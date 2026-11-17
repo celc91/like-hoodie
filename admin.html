@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bungee&family=Caveat:wght@600;700&family=Playfair+Display:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="admin.css?v=20261117-stats1">
+<link rel="stylesheet" href="admin.css?v=20261117-utm1">
 </head>
 <body>
   <div class="login" id="login-view" role="main" aria-label="Acceso al panel">
@@ -257,6 +257,49 @@
             </article>
           </div>
           <p class="meta-health" id="meta-health"></p>
+        </article>
+
+        <article class="card analytics-links">
+          <div class="card-head">
+            <h2>Enlaces con UTM</h2>
+            <span class="muted">Para saber de dónde llega cada visita</span>
+          </div>
+
+          <div class="utm-grid">
+            <label>Página
+              <select id="utm-page">
+                <option value="/">Inicio</option>
+                <option value="/modelos/cocodrilo.html">Cocodrilo de Miami</option>
+                <option value="/modelos/insignia.html">Insignia atardecer</option>
+                <option value="/modelos/panorama.html">Panorama Vice</option>
+                <option value="/modelos/corazon.html">Corazón neón</option>
+                <option value="/#personalizar">Diseñar la mía</option>
+              </select>
+            </label>
+            <label>Fuente
+              <input type="text" id="utm-source" value="instagram" autocomplete="off" spellcheck="false">
+            </label>
+            <label>Medio
+              <input type="text" id="utm-medium" value="social" autocomplete="off" spellcheck="false">
+            </label>
+            <label>Campaña
+              <input type="text" id="utm-campaign" value="lanzamiento" autocomplete="off" spellcheck="false">
+            </label>
+          </div>
+
+          <div class="utm-output">
+            <code id="utm-url"></code>
+            <button class="btn btn-dark" type="button" id="utm-copy">Copiar</button>
+          </div>
+
+          <div class="utm-presets" role="group" aria-label="Enlaces rápidos">
+            <button class="btn btn-ghost" type="button" data-utm-source="whatsapp" data-utm-medium="social" data-utm-campaign="lanzamiento">WhatsApp</button>
+            <button class="btn btn-ghost" type="button" data-utm-source="instagram" data-utm-medium="social" data-utm-campaign="bio">Instagram bio</button>
+            <button class="btn btn-ghost" type="button" data-utm-source="instagram" data-utm-medium="story" data-utm-campaign="lanzamiento">Instagram historia</button>
+            <button class="btn btn-ghost" type="button" data-utm-source="facebook" data-utm-medium="social" data-utm-campaign="lanzamiento">Facebook</button>
+          </div>
+
+          <p class="utm-note">Usa siempre el mismo enlace por canal. Si cambias de campaña, cambia también el enlace que publicas.</p>
         </article>
       </section>
 
@@ -550,6 +593,6 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="admin.js?v=20261117-stats1"></script>
+  <script src="admin.js?v=20261117-utm1"></script>
 </body>
 </html>

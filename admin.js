@@ -829,6 +829,73 @@
     }
   }
 
+  /* --------------------------- Enlaces con UTM --------------------------- */
+
+  const UTM_BASE = "https://likehoodie.com";
+
+  function updateUtmLink() {
+    const page = $("#utm-page");
+    const source = $("#utm-source");
+    const medium = $("#utm-medium");
+    const campaign = $("#utm-campaign");
+    const output = $("#utm-url");
+    if (!page || !output) return;
+
+    const url = new URL(page.value || "/", UTM_BASE);
+    [
+      ["utm_source", source],
+      ["utm_medium", medium],
+      ["utm_campaign", campaign],
+    ].forEach(([key, input]) => {
+      const value = String(input && input.value ? input.value : "").trim();
+      if (value) url.searchParams.set(key, value);
+      else url.searchParams.delete(key);
+    });
+
+    output.textContent = url.toString();
+  }
+
+  ["#utm-page", "#utm-source", "#utm-medium", "#utm-campaign"].forEach((selector) => {
+    const element = $(selector);
+    if (!element) return;
+    element.addEventListener("input", updateUtmLink);
+    element.addEventListener("change", updateUtmLink);
+  });
+
+  $$("[data-utm-source]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const source = $("#utm-source");
+      const medium = $("#utm-medium");
+      const campaign = $("#utm-campaign");
+      if (source) source.value = button.dataset.utmSource || "";
+      if (medium) medium.value = button.dataset.utmMedium || "";
+      if (campaign) campaign.value = button.dataset.utmCampaign || "";
+      updateUtmLink();
+    });
+  });
+
+  const utmCopy = $("#utm-copy");
+  if (utmCopy) {
+    utmCopy.addEventListener("click", async () => {
+      const output = $("#utm-url");
+      const text = output ? output.textContent : "";
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        toast("Enlace copiado.");
+      } catch (error) {
+        const range = document.createRange();
+        range.selectNodeContents(output);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        toast("Selecciona y copia el enlace.");
+      }
+    });
+  }
+
+  updateUtmLink();
+
   /* ------------------------------- Stats -------------------------------- */
 
   function renderRank(target, rows) {

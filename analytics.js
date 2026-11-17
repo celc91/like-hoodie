@@ -11,8 +11,31 @@
   "use strict";
 
   const KEY = "likehoodie_consent_v2";
+  const INTERNAL_KEY = "likehoodie_internal";
   const GA_ID = String(window.LIKEHOODIE_GA_ID || "").trim();
   const PIXEL_ID = String(window.LIKEHOODIE_META_PIXEL || "").trim();
+
+  // Tráfico interno: visita una vez ?interno=1 y este navegador quedará marcado.
+  // GA4 excluye esos eventos con el filtro "Internal Traffic" (activo).
+  // ?interno=0 lo desactiva.
+  function readInternal() {
+    try {
+      const flag = new URLSearchParams(window.location.search).get("interno");
+      if (flag === "1") {
+        window.localStorage.setItem(INTERNAL_KEY, "1");
+        return true;
+      }
+      if (flag === "0") {
+        window.localStorage.removeItem(INTERNAL_KEY);
+        return false;
+      }
+      return window.localStorage.getItem(INTERNAL_KEY) === "1";
+    } catch (error) {
+      return false;
+    }
+  }
+
+  const INTERNAL = readInternal();
 
   const GA_OK = GA_ID.indexOf("G-") === 0;
   const PIXEL_OK = /^\d{8,20}$/.test(PIXEL_ID);
@@ -78,7 +101,9 @@
     script.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(GA_ID);
     document.head.appendChild(script);
 
-    window.gtag("config", GA_ID, { anonymize_ip: true });
+    const gaConfig = { anonymize_ip: true };
+    if (INTERNAL) gaConfig.traffic_type = "internal";
+    window.gtag("config", GA_ID, gaConfig);
   }
 
   function revokeGA() {
@@ -126,8 +151,13 @@
   /* ------------------------------ API ----------------------------------- */
 
   function apply(state) {
-    if (state.analytics) loadGA();
-    else revokeGA();
+    if (state.analytics) {
+      loadGA();
+      // Si GA ya estaba cargado (visita con ?interno=1), se marca al vuelo.
+      if (INTERNAL && typeof window.gtag === "function") {
+        window.gtag("set", { traffic_type: "internal" });
+      }
+    } else revokeGA();
     if (state.ads) loadMeta();
     else revokeMeta();
   }

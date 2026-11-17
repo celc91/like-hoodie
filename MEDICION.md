@@ -65,6 +65,24 @@ Las fichas de modelo también cargan esta analítica (con el mismo aviso de
 consentimiento) y envían `view_item` una sola vez por visita, cuando el tamaño
 cambia de valor.
 
+### Tráfico interno
+
+Tus propias visitas no deben contar. Abre una vez
+`https://likehoodie.com/?interno=1` en cada navegador que uses para probar: la
+web guarda la marca en `localStorage` y a partir de ahí envía
+`traffic_type = internal` a GA4. El filtro de datos **Internal Traffic** de la
+propiedad está en estado *Activo* y excluye esos eventos.
+
+Para desmarcar un navegador, abre `?interno=0`. La marca es local a cada
+navegador: si pruebas desde el móvil, hazlo también allí.
+
+### Enlaces con UTM
+
+El panel (pestaña *Estadísticas*) genera el enlace con `utm_source`,
+`utm_medium` y `utm_campaign` para cada página, con atajos para WhatsApp,
+Instagram (bio e historia) y Facebook. Sin UTM, una visita desde una red social
+aparece como **Direct** y no se puede atribuir.
+
 ## Meta Pixel
 
 Se inicia con `fbq('init', …)` y un `PageView` solo si `ads` está aceptado. Los
