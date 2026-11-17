@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bebas+Neue&family=Bungee&family=Caveat:wght@600;700&family=Playfair+Display:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="admin.css?v=20261115-a11y1">
+<link rel="stylesheet" href="admin.css?v=20261117-stats1">
 </head>
 <body>
   <div class="login" id="login-view" role="main" aria-label="Acceso al panel">
@@ -66,6 +66,7 @@
         </a>
         <nav class="tabs" aria-label="Secciones del panel">
           <button class="tab is-active" data-section="resumen" type="button">Resumen</button>
+          <button class="tab" data-section="estadisticas" type="button">Estadísticas</button>
           <button class="tab" data-section="pedidos" type="button">Pedidos</button>
           <button class="tab" data-section="facturacion" type="button">Facturación</button>
           <button class="tab" data-section="carritos" type="button">Carritos</button>
@@ -145,6 +146,118 @@
             </div>
           </article>
         </div>
+      </section>
+
+      <section class="section" data-panel="estadisticas" hidden>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Estadísticas</p>
+            <h1>Cómo te encuentran.</h1>
+          </div>
+          <span class="updated" id="analytics-updated"></span>
+        </div>
+
+        <div class="toolbar">
+          <select id="analytics-period" aria-label="Periodo de las estadísticas">
+            <option value="7">Últimos 7 días</option>
+            <option value="28" selected>Últimos 28 días</option>
+            <option value="90">Últimos 90 días</option>
+          </select>
+          <button class="btn btn-ghost" type="button" id="analytics-refresh">Actualizar</button>
+          <a class="btn btn-ghost" href="https://analytics.google.com/analytics/web/#/a250902548p344891849/reports/intelligenthome" target="_blank" rel="noopener noreferrer">Abrir GA4</a>
+          <a class="btn btn-ghost" href="https://business.facebook.com/events_manager2/list/pixel/1848760170029669/overview" target="_blank" rel="noopener noreferrer">Abrir Meta</a>
+        </div>
+
+        <div class="setup-box" id="analytics-setup" hidden></div>
+
+        <div class="kpis">
+          <article class="kpi">
+            <span>Usuarios</span>
+            <strong id="ga-users">—</strong>
+            <small id="ga-users-note"></small>
+          </article>
+          <article class="kpi">
+            <span>Sesiones</span>
+            <strong id="ga-sessions">—</strong>
+            <small id="ga-sessions-note"></small>
+          </article>
+          <article class="kpi">
+            <span>Vistas</span>
+            <strong id="ga-views">—</strong>
+            <small id="ga-views-note"></small>
+          </article>
+          <article class="kpi">
+            <span>Conversiones</span>
+            <strong id="ga-key">—</strong>
+            <small id="ga-key-note"></small>
+          </article>
+        </div>
+
+        <div class="grid-2">
+          <article class="card chart-card">
+            <div class="card-head">
+              <h2>Usuarios por día</h2>
+              <span class="muted" id="ga-range"></span>
+            </div>
+            <div class="chart" id="ga-chart"></div>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <h2>Canales</h2>
+              <span class="muted">Sesiones</span>
+            </div>
+            <ul class="rank-list" id="ga-channels"></ul>
+          </article>
+        </div>
+
+        <div class="grid-2 analytics-lists">
+          <article class="card">
+            <div class="card-head">
+              <h2>Páginas</h2>
+              <span class="muted">Vistas</span>
+            </div>
+            <ul class="rank-list" id="ga-pages"></ul>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <h2>Eventos</h2>
+              <span class="muted">Conteo</span>
+            </div>
+            <ul class="rank-list" id="ga-events"></ul>
+          </article>
+        </div>
+
+        <article class="card analytics-meta">
+          <div class="card-head">
+            <h2>Meta</h2>
+            <span class="muted" id="meta-note">Publicidad y píxel</span>
+          </div>
+          <div class="kpis">
+            <article class="kpi">
+              <span>Gasto</span>
+              <strong id="meta-spend">—</strong>
+              <small id="meta-spend-note"></small>
+            </article>
+            <article class="kpi">
+              <span>Impresiones</span>
+              <strong id="meta-impressions">—</strong>
+              <small id="meta-clicks-note"></small>
+            </article>
+            <article class="kpi">
+              <span>Clics</span>
+              <strong id="meta-clicks">—</strong>
+              <small id="meta-ctr-note"></small>
+            </article>
+            <article class="kpi">
+              <span>Compras</span>
+              <strong id="meta-purchases">—</strong>
+              <small id="meta-revenue-note"></small>
+            </article>
+          </div>
+          <p class="meta-health" id="meta-health"></p>
+        </article>
       </section>
 
       <section class="section" data-panel="pedidos" hidden>
@@ -437,6 +550,6 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="admin.js?v=20261117-medios1"></script>
+  <script src="admin.js?v=20261117-stats1"></script>
 </body>
 </html>

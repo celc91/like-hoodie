@@ -16,6 +16,10 @@ semántico.
 - **Reseñas:** sección `#resenas` alimentada por `resenas.json`; permanece oculta
   mientras no haya reseñas reales con consentimiento. Ver `docs/resenas.md`.
 - **CI RLS:** workflow `RLS` con bootstrap local, runner de concurrencia y pgTAP.
+- **Pestaña Estadísticas en el panel:** lee GA4 (usuarios, sesiones, vistas,
+  conversiones, ingresos, canales, páginas y eventos) y Meta (gasto,
+  impresiones, clics, compras y estado de la Conversions API) con la Edge
+  Function `stats`. Sin secretos muestra qué falta configurar.
 - **Medición de producto:** las fichas de modelo cargan analítica con
   consentimiento y envían `view_item` (GA4) / `ViewContent` (Meta) con SKU,
   talla y precio.

@@ -552,6 +552,7 @@
         panel.hidden = panel.dataset.panel !== section;
       });
       if (section === "resumen") loadStats();
+      if (section === "estadisticas") loadAnalytics();
       if (section === "pedidos") loadOrders();
       if (section === "facturacion") {
         loadBilling();
@@ -579,14 +580,253 @@
     });
   }
 
+  const analyticsRefresh = $("#analytics-refresh");
+  if (analyticsRefresh) {
+    analyticsRefresh.addEventListener("click", () => {
+      loadAnalytics();
+      toast("Estadísticas actualizadas.");
+    });
+  }
+
+  const analyticsPeriod = $("#analytics-period");
+  if (analyticsPeriod) {
+    analyticsPeriod.addEventListener("change", () => loadAnalytics());
+  }
+
   function loadAll() {
     loadStats();
+    loadAnalytics();
     loadOrders();
     loadBilling();
     loadGlobalHistory();
     loadInvoiceRequests();
     loadCarts();
     loadHealth();
+  }
+
+  /* --------------------------- GA4 y Meta -------------------------------- */
+
+  const ANALYTICS_SETUP = {
+    ga: `
+      <strong>Conecta Google Analytics 4</strong>
+      <p>1. En Google Cloud crea una cuenta de servicio y descarga su clave JSON.</p>
+      <p>2. En GA4 → Administrar → Acceso a la propiedad, añádela como <em>Lectora</em>.</p>
+      <p>3. En Supabase → Edge Functions → Secrets, crea <code>GA_SERVICE_ACCOUNT</code> con ese JSON (y, si hace falta, <code>GA_PROPERTY_ID</code>).</p>`,
+    meta: `
+      <strong>Conecta Meta</strong>
+      <p>En Business Settings genera un token con <code>ads_read</code> y guárdalo como <code>META_ACCESS_TOKEN</code>. La cuenta publicitaria se toma de <code>META_AD_ACCOUNT_ID</code> o de la predeterminada.</p>`,
+  };
+
+  function formatInt(value) {
+    return new Intl.NumberFormat("es-MX").format(Number(value) || 0);
+  }
+
+  function setText(selector, value) {
+    const element = $(selector);
+    if (element) element.textContent = value;
+  }
+
+  function renderAnalyticsChart(daily) {
+    const chart = $("#ga-chart");
+    if (!chart) return;
+
+    let points = Array.isArray(daily) ? daily.slice() : [];
+    if (points.length > 31) {
+      const weeks = [];
+      for (let i = 0; i < points.length; i += 7) {
+        const slice = points.slice(i, i + 7);
+        weeks.push({
+          date: slice[0].date,
+          users: slice.reduce((sum, row) => sum + (Number(row.users) || 0), 0),
+          sessions: slice.reduce((sum, row) => sum + (Number(row.sessions) || 0), 0),
+        });
+      }
+      points = weeks;
+    }
+
+    if (!points.length) {
+      chart.innerHTML = '<p class="empty">Sin datos en este periodo.</p>';
+      return;
+    }
+
+    const max = Math.max(1, ...points.map((row) => Number(row.users) || 0));
+    chart.innerHTML = points
+      .map((row) => {
+        const count = Number(row.users) || 0;
+        const height = Math.max(3, Math.round((count / max) * 100));
+        const date = new Date(`${row.date}T12:00:00`);
+        const label = Number.isNaN(date.getTime())
+          ? row.date
+          : date.toLocaleDateString("es-MX", { day: "2-digit", month: "short" });
+        return `<div class="bar" title="${escapeHTML(label)}: ${count} usuarios · ${
+          Number(row.sessions) || 0
+        } sesiones">
+          <span class="bar-value">${count || ""}</span>
+          <span class="bar-fill" style="height:${height}%"></span>
+          <span class="bar-label">${escapeHTML(label)}</span>
+        </div>`;
+      })
+      .join("");
+  }
+
+  function renderAnalyticsList(target, rows, emptyText) {
+    const element = $(target);
+    if (!element) return;
+    if (!Array.isArray(rows) || !rows.length) {
+      element.innerHTML = `<li><span>${escapeHTML(
+        emptyText || "Sin datos"
+      )}</span><strong>0</strong></li>`;
+      return;
+    }
+    element.innerHTML = rows
+      .map(
+        (row) =>
+          `<li><span>${escapeHTML(String(row.label || "—"))}</span><strong>${formatInt(
+            row.count
+          )}</strong></li>`
+      )
+      .join("");
+  }
+
+  function renderAnalytics(data) {
+    const ga = data.ga || {};
+    const meta = data.meta || {};
+    const days = Number(data.days) || 28;
+    const rangeLabel = `Últimos ${days} días`;
+
+    const setup = $("#analytics-setup");
+    if (setup) {
+      const blocks = [];
+      if (ga.configured === false) blocks.push(ANALYTICS_SETUP.ga);
+      if (meta.configured === false) blocks.push(ANALYTICS_SETUP.meta);
+      if (ga.error) blocks.push(`<strong>GA4 no respondió</strong><p>${escapeHTML(ga.error)}</p>`);
+      if (meta.error) blocks.push(`<strong>Meta no respondió</strong><p>${escapeHTML(meta.error)}</p>`);
+      setup.innerHTML = blocks.join("");
+      setup.hidden = blocks.length === 0;
+    }
+
+    const totals = ga.totals || {};
+    setText("#ga-users", ga.configured && ga.totals ? formatInt(totals.users) : "—");
+    setText("#ga-sessions", ga.configured && ga.totals ? formatInt(totals.sessions) : "—");
+    setText("#ga-views", ga.configured && ga.totals ? formatInt(totals.views) : "—");
+    setText("#ga-key", ga.configured && ga.totals ? formatInt(totals.keyEvents) : "—");
+
+    setText("#ga-users-note", rangeLabel);
+    setText("#ga-sessions-note", ga.totals ? `${formatInt(totals.users)} usuarios` : "");
+    setText(
+      "#ga-views-note",
+      ga.totals && totals.sessions
+        ? `${(Number(totals.views) / Number(totals.sessions)).toFixed(1)} por sesión`
+        : ""
+    );
+    setText(
+      "#ga-key-note",
+      ga.totals
+        ? `${formatMoney(totals.revenue)} en ingresos`
+        : ""
+    );
+
+    setText("#ga-range", ga.totals ? `${rangeLabel} · ${formatMoney(totals.revenue)}` : rangeLabel);
+    renderAnalyticsChart(ga.daily);
+    renderAnalyticsList("#ga-channels", ga.channels, "Sin sesiones");
+    renderAnalyticsList("#ga-pages", ga.pages, "Sin vistas");
+    renderAnalyticsList("#ga-events", ga.events, "Sin eventos");
+
+    const ads = meta.ads || {};
+    setText("#meta-spend", meta.configured ? formatMoney(ads.spend) : "—");
+    setText("#meta-impressions", meta.configured ? formatInt(ads.impressions) : "—");
+    setText("#meta-clicks", meta.configured ? formatInt(ads.clicks) : "—");
+    setText("#meta-purchases", meta.configured ? formatInt(ads.purchases) : "—");
+
+    setText("#meta-spend-note", rangeLabel);
+    setText("#meta-clicks-note", meta.configured ? `${formatInt(ads.clicks)} clics` : "");
+    setText(
+      "#meta-ctr-note",
+      meta.configured && ads.impressions
+        ? `CTR ${(Number(ads.ctr) || 0).toFixed(2)} % · CPC ${formatMoney(ads.cpc)}`
+        : ""
+    );
+    setText(
+      "#meta-revenue-note",
+      meta.configured
+        ? `${formatMoney(ads.revenue)} atribuidos a anuncios`
+        : ""
+    );
+
+    const capi = meta.capi;
+    const health = $("#meta-health");
+    if (health) {
+      if (capi && capi.status) {
+        const when = capi.cuando ? new Date(capi.cuando) : null;
+        const label =
+          when && !Number.isNaN(when.getTime())
+            ? when.toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" })
+            : "sin fecha";
+        health.innerHTML = `Conversions API · último envío <strong>${escapeHTML(
+          String(capi.status)
+        )}</strong> (${escapeHTML(label)}).`;
+      } else {
+        health.textContent =
+          "Todavía no hay envíos de la Conversions API registrados.";
+      }
+    }
+    setText("#meta-note", meta.configured ? rangeLabel : "Sin token configurado");
+  }
+
+  async function loadAnalytics() {
+    if (!client) return;
+    const periodSelect = $("#analytics-period");
+    const days = Number(periodSelect && periodSelect.value) || 28;
+    const button = $("#analytics-refresh");
+    if (button) button.disabled = true;
+
+    try {
+      const { data: sessionData } = await client.auth.getSession();
+      const accessToken = sessionData && sessionData.session
+        ? sessionData.session.access_token
+        : "";
+
+      if (!accessToken) throw new Error("La sesión no es válida. Vuelve a entrar.");
+
+      const response = await fetch(`${config.url}/functions/v1/stats`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: config.publishableKey,
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ days }),
+      });
+
+      if (response.status === 403) {
+        throw new Error("Tu sesión no tiene permisos de administrador con MFA.");
+      }
+      if (!response.ok) {
+        throw new Error(`No se pudieron cargar las estadísticas (${response.status}).`);
+      }
+
+      const data = await response.json();
+      renderAnalytics(data);
+
+      const updated = $("#analytics-updated");
+      if (updated) {
+        const when = new Date(data.generatedAt || Date.now());
+        updated.textContent = `Actualizado ${when.toLocaleTimeString("es-MX", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}`;
+      }
+    } catch (error) {
+      const setup = $("#analytics-setup");
+      if (setup) {
+        setup.hidden = false;
+        setup.innerHTML = `<strong>No se pudieron cargar las estadísticas</strong><p>${escapeHTML(
+          error.message || "Error desconocido."
+        )}</p>`;
+      }
+    } finally {
+      if (button) button.disabled = false;
+    }
   }
 
   /* ------------------------------- Stats -------------------------------- */

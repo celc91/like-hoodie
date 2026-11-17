@@ -330,6 +330,30 @@ npx supabase secrets set LOOKUP_IP_SALT=<cadena-aleatoria-larga>
 Sin esta variable, los endpoints que la usan responden `503`: fallan cerrados en
 vez de hashear con una sal pública.
 
+### Estadísticas (GA4 y Meta)
+
+La pestaña **Estadísticas** del panel lee datos reales de Google Analytics 4 y de
+Meta a través de la Edge Function `stats` (`supabase/functions/stats`). Solo
+responde a administradores con MFA (`is_admin()`).
+
+Secretos de la función (Supabase → Edge Functions → Secrets):
+
+| Secreto | Para qué |
+| --- | --- |
+| `GA_SERVICE_ACCOUNT` | JSON de la cuenta de servicio con acceso de lectura a la propiedad |
+| `GA_PROPERTY_ID` | Opcional; por defecto `344891849` |
+| `META_ACCESS_TOKEN` | Token con `ads_read` para Ads Insights |
+| `META_AD_ACCOUNT_ID` | Opcional; por defecto `act_2084208475729036` |
+
+Para GA4: crea una cuenta de servicio en Google Cloud, habilita la Analytics Data
+API, descarga su clave JSON y añádela en GA4 → *Administrar* → *Acceso a la
+propiedad* como **Lectora**.
+
+Ejecuta una vez `supabase/estadisticas.sql`: da permiso a `service_role` para leer
+`meta_last_response()`, que es lo que muestra el estado de la Conversions API.
+
+Sin secretos, la pestaña no inventa cifras: muestra qué falta configurar.
+
 ## Pagos con Clip
 
 La integración con **Clip Checkout redireccionado** está creada en `supabase/functions/`:
