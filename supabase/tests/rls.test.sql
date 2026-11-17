@@ -918,7 +918,9 @@ $$;
 create or replace function lh_rls_test.valid_items()
 returns jsonb
 language sql
-immutable
+stable
+security definer
+set search_path = public, pg_temp
 as $$
   select jsonb_build_array(jsonb_build_object(
     'product', 'hoodie',
@@ -927,7 +929,16 @@ as $$
     'techniqueId', 'dtg',
     'qty', 1,
     'size', 'M',
-    'unitPrice', 899
+    'unitPrice', public.item_unit_price(
+      jsonb_build_object(
+        'product', 'hoodie',
+        'colorHex', '#1c1c1f',
+        'materialId', 'cotton400',
+        'techniqueId', 'dtg',
+        'qty', 1
+      ),
+      1
+    )
   ));
 $$;
 
