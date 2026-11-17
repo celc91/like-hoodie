@@ -39,6 +39,9 @@ npx supabase db query --remote --yes --file supabase/migrations/20261115000200_f
   - precio por tamaño de impresión (`logo`, `carta`, `doble_carta`);
   - descuentos por volumen: 5% desde 12, 10% desde 24 y 15% desde 48;
   - `pricingGroup` para cotizaciones por tallas.
+- `20261117000300_item_price_firma.sql`
+  - elimina la firma antigua `item_unit_price(jsonb)` para dejar una sola
+    función con cantidad y evitar ambigüedad.
 
 Las migraciones son idempotentes: se pueden volver a ejecutar. No ejecutes
 `security-hardening.sql` sobre una base ya migrada sin revisar antes la versión

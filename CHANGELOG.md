@@ -92,6 +92,8 @@ semántico.
   total del grupo de cotización.
 - Migraciones `20261117000100_aprobacion_diseno.sql` y
   `20261117000200_precios_volumen.sql`.
+- Eliminada la firma antigua `item_unit_price(jsonb)` para evitar ambigüedad
+  con la nueva firma que recibe cantidad.
 
 ### Verificado
 

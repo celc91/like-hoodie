@@ -159,6 +159,9 @@ revoke all on function public.item_unit_price(jsonb, integer) from public;
 revoke all on function public.item_unit_price(jsonb, integer) from anon;
 revoke all on function public.item_unit_price(jsonb, integer) from authenticated;
 
+-- Elimina la firma antigua de un argumento para evitar ambigüedad.
+drop function if exists public.item_unit_price(jsonb);
+
 create or replace function public.place_order(
   p_customer jsonb,
   p_items jsonb,
