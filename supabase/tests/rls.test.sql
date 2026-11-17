@@ -1344,7 +1344,24 @@ select ok(
 );
 
 -- Expectativa: solo existe la firma de cinco argumentos; cuatro argumentos 42883.
-select lh_rls_test.pending('PED-12', 'una sola firma place_order segura y ANON sin EXECUTE', false);
+-- PED-12: una sola firma de place_order y sin EXECUTE para anon.
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('PED-12', 'firma',
+  (select count(*) = 1
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname = 'place_order'
+      and pg_get_function_identity_arguments(p.oid) = 'jsonb, jsonb, uuid, text, text'));
+insert into lh_rls_test.check values ('PED-12', 'anon',
+  (select not has_function_privilege('anon', 'public.place_order(jsonb,jsonb,uuid,text,text)', 'EXECUTE')));
+insert into lh_rls_test.check values ('PED-12', 'auth',
+  (select has_function_privilege('authenticated', 'public.place_order(jsonb,jsonb,uuid,text,text)', 'EXECUTE')));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'PED-12'),
+  'PED-12 — solo existe la firma segura de place_order y anon no puede ejecutarla'
+);
 
 -- BLOQUEANTE-PED-13: resultado medido por scripts/test-concurrency.mjs.
 -- 20 conexiones paralelas, mismo usuario y correo, commits reales.
@@ -1374,7 +1391,30 @@ select ok(
 );
 
 -- Expectativa: admin_stats devuelve 42501 para ANON, CART, A, B y ADM1.
-select lh_rls_test.pending('PED-16', 'admin_stats denegado para todo rol no admin aal2', false);
+-- PED-16: admin_stats solo para admin con aal2.
+select lh_rls_test.as_anon();
+insert into lh_rls_test.check values ('PED-16', 'anon', (lh_rls_test.try_sql('select public.admin_stats(30)') = '42501'));
+
+select lh_rls_test.as_cart();
+insert into lh_rls_test.check values ('PED-16', 'cart', (lh_rls_test.try_sql('select public.admin_stats(30)') = '42501'));
+
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('PED-16', 'a', (lh_rls_test.try_sql('select public.admin_stats(30)') = '42501'));
+
+select lh_rls_test.as_b();
+insert into lh_rls_test.check values ('PED-16', 'b', (lh_rls_test.try_sql('select public.admin_stats(30)') = '42501'));
+
+select lh_rls_test.as_admin_aal1();
+insert into lh_rls_test.check values ('PED-16', 'adm1', (lh_rls_test.try_sql('select public.admin_stats(30)') = '42501'));
+
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('PED-16', 'adm2', (lh_rls_test.try_sql('select public.admin_stats(30)') = 'ok'));
+
+select lh_rls_test.as_service_role();
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'PED-16'),
+  'PED-16 — admin_stats devuelve 42501 a todo rol salvo admin con aal2'
+);
 
 -- ---------------------------------------------------------------------------
 -- Carrito: 8
@@ -1489,13 +1529,129 @@ select ok(
 );
 
 -- Expectativa: token backend lleva unverified a review, consume token y marca individual.
-select lh_rls_test.pending('FAC-09', 'confirm token backend produce review individual y verified_at', false);
+-- FAC-09: confirmar el token del backend deja la solicitud en review.
+select lh_rls_test.as_service_role();
+select lh_rls_test.register_fixture('O_F9',
+  lh_rls_test.seed_order(lh_rls_test.uid_a(), 990030, 'qa-fac09@example.invalid', 'paid'));
+select lh_rls_test.register_fixture('F_F9',
+  lh_rls_test.seed_invoice(
+    lh_rls_test.fixture_id('O_F9'),
+    'unverified',
+    '50000000-0000-4000-8000-000000000009'::uuid,
+    null,
+    '04'
+  ));
+
+insert into lh_rls_test.check values ('FAC-09', 'confirma',
+  ((select public.confirm_invoice_request('50000000-0000-4000-8000-000000000009'::uuid) ->> 'status') = 'review'));
+insert into lh_rls_test.check values ('FAC-09', 'estado',
+  (select status = 'review'
+      and verified_at is not null
+      and verify_token is null
+      and verify_expires_at is null
+     from public.invoice_requests where id = lh_rls_test.fixture_id('F_F9')));
+insert into lh_rls_test.check values ('FAC-09', 'pedido',
+  (select billing_status = 'individual' from public.orders
+    where id = lh_rls_test.fixture_id('O_F9')));
+insert into lh_rls_test.check values ('FAC-09', 'reuso',
+  ((select public.confirm_invoice_request('50000000-0000-4000-8000-000000000009'::uuid) ->> 'reason') = 'notfound'));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'FAC-09'),
+  'FAC-09 — el token backend pasa a review, se consume y marca el pedido individual'
+);
 
 -- Expectativa: token inexistente/caducado/cancelado o pedido invalido no pasa a review.
-select lh_rls_test.pending('FAC-10', 'confirm invalido caducado cancelado impago no cambia estado', false);
+-- FAC-10: tokens inválidos, caducados, cancelados o de pedido impago.
+select lh_rls_test.as_service_role();
+select lh_rls_test.register_fixture('O_F10E',
+  lh_rls_test.seed_order(lh_rls_test.uid_a(), 990031, 'qa-fac10e@example.invalid', 'paid'));
+select lh_rls_test.register_fixture('F_F10E',
+  lh_rls_test.seed_invoice(
+    lh_rls_test.fixture_id('O_F10E'), 'unverified',
+    '50000000-0000-4000-8000-000000000010'::uuid, null, '04'
+  ));
+update public.invoice_requests
+   set verify_expires_at = now() - interval '1 hour'
+ where id = lh_rls_test.fixture_id('F_F10E');
+
+select lh_rls_test.register_fixture('O_F10C',
+  lh_rls_test.seed_order(lh_rls_test.uid_a(), 990032, 'qa-fac10c@example.invalid', 'paid'));
+select lh_rls_test.register_fixture('F_F10C',
+  lh_rls_test.seed_invoice(
+    lh_rls_test.fixture_id('O_F10C'), 'cancelled',
+    '50000000-0000-4000-8000-000000000011'::uuid, null, '04'
+  ));
+
+select lh_rls_test.register_fixture('O_F10U',
+  lh_rls_test.seed_order(lh_rls_test.uid_a(), 990033, 'qa-fac10u@example.invalid', 'demo'));
+select lh_rls_test.register_fixture('F_F10U',
+  lh_rls_test.seed_invoice(
+    lh_rls_test.fixture_id('O_F10U'), 'unverified',
+    '50000000-0000-4000-8000-000000000012'::uuid, null, '04'
+  ));
+
+insert into lh_rls_test.check values ('FAC-10', 'notfound',
+  ((select public.confirm_invoice_request('50000000-0000-4000-8000-000000000099'::uuid) ->> 'reason') = 'notfound'));
+insert into lh_rls_test.check values ('FAC-10', 'caducado',
+  ((select public.confirm_invoice_request('50000000-0000-4000-8000-000000000010'::uuid) ->> 'reason') = 'expired'));
+insert into lh_rls_test.check values ('FAC-10', 'cancelado',
+  ((select public.confirm_invoice_request('50000000-0000-4000-8000-000000000011'::uuid) ->> 'reason') = 'cancelled'));
+insert into lh_rls_test.check values ('FAC-10', 'impago',
+  ((select public.confirm_invoice_request('50000000-0000-4000-8000-000000000012'::uuid) ->> 'reason') = 'unpaid'));
+insert into lh_rls_test.check values ('FAC-10', 'sin_review',
+  (select count(*) = 0 from public.invoice_requests
+    where id in (
+      lh_rls_test.fixture_id('F_F10E'),
+      lh_rls_test.fixture_id('F_F10C'),
+      lh_rls_test.fixture_id('F_F10U')
+    )
+      and status = 'review'));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'FAC-10'),
+  'FAC-10 — tokens inexistente, caducado, cancelado o impago no pasan a review'
+);
 
 -- Expectativa: review sin verified_at o sin SAT devuelve P0001 al emitir.
-select lh_rls_test.pending('FAC-11', 'LH-08 emision exige verified_at y sat_payment_form', false);
+-- FAC-11: emitir exige verified_at y forma SAT.
+select lh_rls_test.as_service_role();
+select lh_rls_test.register_fixture('O_F11A',
+  lh_rls_test.seed_order(lh_rls_test.uid_a(), 990034, 'qa-fac11a@example.invalid', 'paid'));
+select lh_rls_test.register_fixture('F_F11A',
+  lh_rls_test.seed_invoice(lh_rls_test.fixture_id('O_F11A'), 'review', null, null, '04'));
+
+select lh_rls_test.register_fixture('O_F11B',
+  lh_rls_test.seed_order(lh_rls_test.uid_a(), 990035, 'qa-fac11b@example.invalid', 'paid'));
+select lh_rls_test.register_fixture('F_F11B',
+  lh_rls_test.seed_invoice(lh_rls_test.fixture_id('O_F11B'), 'review', null, now(), '04'));
+update public.invoice_requests set sat_payment_form = null
+ where id = lh_rls_test.fixture_id('F_F11B');
+
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('FAC-11', 'sin_verificar',
+  (lh_rls_test.try_sql(format(
+    'select public.mark_invoice_request_issued(%L::uuid, %L)',
+    lh_rls_test.fixture_id('F_F11A'),
+    '33333333-3333-4333-8333-333333333333'
+  )) = 'P0001'));
+insert into lh_rls_test.check values ('FAC-11', 'sin_sat',
+  (lh_rls_test.try_sql(format(
+    'select public.mark_invoice_request_issued(%L::uuid, %L)',
+    lh_rls_test.fixture_id('F_F11B'),
+    '33333333-3333-4333-8333-333333333333'
+  )) = 'P0001'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('FAC-11', 'siguen_review',
+  (select count(*) = 2 from public.invoice_requests
+    where id in (lh_rls_test.fixture_id('F_F11A'), lh_rls_test.fixture_id('F_F11B'))
+      and status = 'review'));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'FAC-11'),
+  'FAC-11 — sin correo verificado o sin forma SAT no se puede emitir'
+);
 
 -- FAC-12: emitir una solicitud review verificada y repetir el UUID.
 select lh_rls_test.as_admin_aal2();
@@ -1719,10 +1875,47 @@ select ok(
 );
 
 -- Expectativa: reejecutar coupons/setup-premios no reabre lectura ni recrea policy publica.
-select lh_rls_test.pending('CUP-11', 'LH-08 scripts heredados no reabren coupons', false);
+-- CUP-11: tras el bootstrap no queda lectura pública de cupones.
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('CUP-11', 'sin_politica',
+  (select count(*) = 0 from pg_policies
+    where schemaname = 'public' and tablename = 'coupons'
+      and policyname = 'coupons_read_active'));
+insert into lh_rls_test.check values ('CUP-11', 'sin_grant_anon',
+  (select not has_table_privilege('anon', 'public.coupons', 'SELECT')));
+insert into lh_rls_test.check values ('CUP-11', 'sin_grant_auth',
+  (select not has_table_privilege('authenticated', 'public.coupons', 'SELECT')));
+
+select lh_rls_test.as_anon();
+insert into lh_rls_test.check values ('CUP-11', 'anon_denegado',
+  (lh_rls_test.try_sql('select code from public.coupons limit 1') = '42501'));
+
+select lh_rls_test.as_service_role();
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'CUP-11'),
+  'CUP-11 — los cupones no se enumeran desde el navegador tras el orden canónico'
+);
 
 -- Expectativa: reejecutar scripts no elimina contador ni guardas review/verified ni firma segura.
-select lh_rls_test.pending('CUP-12', 'LH-08 definiciones seguras sobreviven reejecucion', false);
+-- CUP-12: las definiciones endurecidas sobreviven al orden canónico.
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('CUP-12', 'check_coupon',
+  (select position('coupon_attempts' in pg_get_functiondef('public.check_coupon(text)'::regprocedure)) > 0));
+insert into lh_rls_test.check values ('CUP-12', 'mark_invoice',
+  (select position('verified_at is null' in pg_get_functiondef('public.mark_invoice_request_issued(uuid,text)'::regprocedure)) > 0));
+insert into lh_rls_test.check values ('CUP-12', 'place_order',
+  (select count(*) = 1
+      and bool_and(position('order-user:' in pg_get_functiondef(p.oid)) > 0)
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'place_order'));
+insert into lh_rls_test.check values ('CUP-12', 'newsletter',
+  (select not has_table_privilege('anon', 'public.newsletter_subscribers', 'INSERT')));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'CUP-12'),
+  'CUP-12 — check_coupon, facturas, locks y newsletter conservan sus guardas'
+);
 
 -- ---------------------------------------------------------------------------
 -- Newsletter: 13
@@ -1880,7 +2073,25 @@ select lh_rls_test.pending('RATE-12', 'logo process limites 20 usuario 30 IP y h
 select lh_rls_test.pending('RATE-13', 'LH-05 logo process global 300 bajo concurrencia', false);
 
 -- Expectativa: las siete tablas de intentos rechazan SELECT/INSERT de navegador.
-select lh_rls_test.pending('RATE-14', 'tablas de intentos inaccesibles para todo navegador', false);
+-- RATE-14: las siete tablas de intentos son invisibles al navegador.
+select lh_rls_test.as_anon();
+insert into lh_rls_test.check values ('RATE-14', 'lookup', (lh_rls_test.try_sql('select 1 from public.order_lookup_attempts limit 1') = '42501'));
+insert into lh_rls_test.check values ('RATE-14', 'errores', (lh_rls_test.try_sql('select 1 from public.client_error_attempts limit 1') = '42501'));
+insert into lh_rls_test.check values ('RATE-14', 'facturas', (lh_rls_test.try_sql('select 1 from public.invoice_request_attempts limit 1') = '42501'));
+insert into lh_rls_test.check values ('RATE-14', 'clip', (lh_rls_test.try_sql('select 1 from public.clip_pay_attempts limit 1') = '42501'));
+insert into lh_rls_test.check values ('RATE-14', 'logos', (lh_rls_test.try_sql('select 1 from public.logo_process_attempts limit 1') = '42501'));
+insert into lh_rls_test.check values ('RATE-14', 'cupones', (lh_rls_test.try_sql('select 1 from public.coupon_attempts limit 1') = '42501'));
+insert into lh_rls_test.check values ('RATE-14', 'newsletter', (lh_rls_test.try_sql('select 1 from public.newsletter_attempts limit 1') = '42501'));
+
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('RATE-14', 'cliente', (lh_rls_test.try_sql('select 1 from public.order_lookup_attempts limit 1') = '42501'));
+insert into lh_rls_test.check values ('RATE-14', 'insert', (lh_rls_test.try_sql('insert into public.newsletter_attempts (ip) values (''203.0.113.9'')') = '42501'));
+
+select lh_rls_test.as_service_role();
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'RATE-14'),
+  'RATE-14 — ninguna tabla de intentos se lee ni escribe desde el navegador'
+);
 
 -- Expectativa: cleanup elimina todas las filas fuera de plazo y conserva recientes.
 select lh_rls_test.pending('RATE-15', 'LH-09 retencion completa sin requerir trafico posterior', false);
@@ -1896,10 +2107,46 @@ select lh_rls_test.pending('RATE-17', 'LH-05 LH-11 contador y sal fallan cerrado
 -- ---------------------------------------------------------------------------
 
 -- Expectativa: store_settings no se lee ni modifica desde ningun navegador.
-select lh_rls_test.pending('SET-01', 'store_settings inaccesible e inmutable desde navegador', false);
+-- SET-01: settings solo los toca el backend.
+select lh_rls_test.as_anon();
+insert into lh_rls_test.check values ('SET-01', 'anon', (lh_rls_test.try_sql('select 1 from public.store_settings') = '42501'));
+
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('SET-01', 'cliente', (lh_rls_test.try_sql('select 1 from public.store_settings') = '42501'));
+
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('SET-01', 'admin', (lh_rls_test.try_sql('select 1 from public.store_settings') = '42501'));
+insert into lh_rls_test.check values ('SET-01', 'update', (lh_rls_test.try_sql('update public.store_settings set value = value where key = ''clip_enabled''') = '42501'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('SET-01', 'control', (select count(*) > 0 from public.store_settings));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'SET-01'),
+  'SET-01 — store_settings no se lee ni modifica desde ningún rol de navegador'
+);
 
 -- Expectativa: product_prices e item_unit_price devuelven 42501 en navegador.
-select lh_rls_test.pending('SET-02', 'precios y helper de precio solo servidor', false);
+-- SET-02: precios y helper de precio solo en servidor.
+select lh_rls_test.as_anon();
+insert into lh_rls_test.check values ('SET-02', 'anon_tabla', (lh_rls_test.try_sql('select 1 from public.product_prices') = '42501'));
+insert into lh_rls_test.check values ('SET-02', 'anon_rpc', (lh_rls_test.try_sql('select public.item_unit_price(''{}''::jsonb, 1)') = '42501'));
+
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('SET-02', 'cliente_tabla', (lh_rls_test.try_sql('select 1 from public.product_prices') = '42501'));
+insert into lh_rls_test.check values ('SET-02', 'cliente_rpc', (lh_rls_test.try_sql('select public.item_unit_price(''{}''::jsonb, 1)') = '42501'));
+
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('SET-02', 'admin_tabla', (lh_rls_test.try_sql('select 1 from public.product_prices') = '42501'));
+insert into lh_rls_test.check values ('SET-02', 'admin_rpc', (lh_rls_test.try_sql('select public.item_unit_price(''{}''::jsonb, 1)') = '42501'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('SET-02', 'control', (select count(*) > 0 from public.product_prices));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'SET-02'),
+  'SET-02 — precios e item_unit_price no son accesibles desde el navegador'
+);
 
 -- Expectativa: store_config con Clip false devuelve exactamente payment_provider demo.
 select lh_rls_test.pending('SET-03', 'store_config demo sin claves adicionales', false);
@@ -2030,10 +2277,89 @@ select ok(
 select lh_rls_test.pending('STO-06', 'lectura admin de logos y prints requiere aal2', false);
 
 -- Expectativa: A y ADM2 borran objetos permitidos; B no borra SA.
-select lh_rls_test.pending('STO-07', 'delete logo propio o admin y nunca cruzado', false);
+-- STO-07: borrado de logos por dueño o admin, nunca cruzado.
+select lh_rls_test.as_service_role();
+insert into storage.objects (bucket_id, name, owner)
+values
+  ('order-logos', lh_rls_test.uid_a()::text || '/del-a.png', lh_rls_test.uid_a()),
+  ('order-logos', lh_rls_test.uid_b()::text || '/del-b.png', lh_rls_test.uid_b());
+
+select lh_rls_test.as_b();
+with d as (
+  delete from storage.objects
+   where bucket_id = 'order-logos'
+     and name = (lh_rls_test.uid_a()::text || '/original.png')
+  returning 1
+)
+insert into lh_rls_test.check values ('STO-07', 'b_no_borra', (select count(*) = 0 from d));
+
+select lh_rls_test.as_a();
+with d as (
+  delete from storage.objects
+   where bucket_id = 'order-logos'
+     and name = (lh_rls_test.uid_a()::text || '/del-a.png')
+  returning 1
+)
+insert into lh_rls_test.check values ('STO-07', 'a_borra', (select count(*) = 1 from d));
+
+select lh_rls_test.as_admin_aal2();
+with d as (
+  delete from storage.objects
+   where bucket_id = 'order-logos'
+     and name = (lh_rls_test.uid_b()::text || '/del-b.png')
+  returning 1
+)
+insert into lh_rls_test.check values ('STO-07', 'admin_borra', (select count(*) = 1 from d));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('STO-07', 'canario',
+  (select count(*) = 1 from storage.objects
+    where bucket_id = 'order-logos'
+      and name = (lh_rls_test.uid_a()::text || '/original.png')));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'STO-07'),
+  'STO-07 — el dueño y el admin borran lo suyo; B no puede borrar el logo de A'
+);
 
 -- Expectativa: order-prints solo lectura ADM2 y escritura backend.
-select lh_rls_test.pending('STO-08', 'prints inaccesibles a clientes y sin escritura directa admin', false);
+-- STO-08: order-prints solo lo lee el admin; nadie más escribe.
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('STO-08', 'cliente',
+  (select count(*) = 0 from storage.objects
+    where bucket_id = 'order-prints'
+      and name = (lh_rls_test.uid_a()::text || '/print.png')));
+insert into lh_rls_test.check values ('STO-08', 'cliente_insert',
+  (lh_rls_test.try_sql(format(
+    'insert into storage.objects (bucket_id, name, owner) values (%L, %L, %L::uuid)',
+    'order-prints',
+    lh_rls_test.uid_a()::text || '/x.png',
+    lh_rls_test.uid_a()
+  )) = '42501'));
+
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('STO-08', 'admin',
+  (select count(*) = 1 from storage.objects
+    where bucket_id = 'order-prints'
+      and name = (lh_rls_test.uid_a()::text || '/print.png')));
+insert into lh_rls_test.check values ('STO-08', 'admin_insert',
+  (lh_rls_test.try_sql(format(
+    'insert into storage.objects (bucket_id, name, owner) values (%L, %L, %L::uuid)',
+    'order-prints',
+    lh_rls_test.uid_a()::text || '/x.png',
+    lh_rls_test.uid_a()
+  )) = '42501'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('STO-08', 'canario',
+  (select count(*) = 1 from storage.objects
+    where bucket_id = 'order-prints'
+      and name = (lh_rls_test.uid_a()::text || '/print.png')));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'STO-08'),
+  'STO-08 — prints solo lectura para admin; ni cliente ni admin escriben directo'
+);
 
 -- BLOQUEANTE? No: medido por scripts/test-clip-idempotency.mjs contra Storage.
 select ok(
