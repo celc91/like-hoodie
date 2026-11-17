@@ -153,6 +153,8 @@ Deno.serve(async (request) => {
     const assetRefs = new Map<string, Ref>();
     const activePrintPaths = new Set<string>();
     const closedPrintPaths = new Map<string, number>();
+    const activeLogoPaths = new Set<string>();
+    const closedLogoPaths = new Map<string, number>();
 
     for (const order of orders) {
       const stamp = Date.parse(order.updated_at || "") || 0;
@@ -181,6 +183,18 @@ Deno.serve(async (request) => {
               );
             } else {
               activePrintPaths.add(printPath);
+            }
+          }
+          // El pedido puede referenciar el logo por ruta aunque no tenga asset.
+          const logoPath = String(design.logoPath || "");
+          if (logoPath) {
+            if (closed) {
+              closedLogoPaths.set(
+                logoPath,
+                Math.max(closedLogoPaths.get(logoPath) || 0, stamp)
+              );
+            } else {
+              activeLogoPaths.add(logoPath);
             }
           }
         }
@@ -238,6 +252,18 @@ Deno.serve(async (request) => {
     };
 
     for (const object of logoObjects) {
+      // Un pedido activo puede referenciar el logo por ruta, sin fila en logo_assets.
+      if (activeLogoPaths.has(object.path)) continue;
+      if (closedLogoPaths.has(object.path)) {
+        const closedAt = closedLogoPaths.get(object.path) || 0;
+        if (!closedAt || now - closedAt <= closedMs) continue;
+        addCandidate(BUCKET_LOGOS, object.path, {
+          remove: true,
+          reason: `pedido cerrado +${closedDays}d`,
+        });
+        continue;
+      }
+
       const asset = assetsBySource.get(object.path);
       if (asset) {
         addCandidate(BUCKET_LOGOS, object.path, decisions.get(asset.id)!);
