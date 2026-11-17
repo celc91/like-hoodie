@@ -29,33 +29,37 @@ jobs:
           EVENTS_CSV_URL: ${{ vars.EVENTS_CSV_URL }}
         run: node scripts/sync-events-csv.mjs
 
-      - name: Guardar cambios
+      - name: Comprobar cambios
         run: |
           if git diff --quiet eventos.json; then
             echo "Sin cambios en eventos.json."
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add eventos.json
-          git commit -m "Datos: actualizar cartelera de eventos"
-          git push
+          echo "Hay cambios pendientes de publicar en eventos.json:"
+          git --no-pager diff --stat eventos.json
 
-      - name: Avisar si la cartelera está vieja
+      # main está protegida y el token de Actions no puede saltarse los checks.
+      # En vez de fallar, se abre una incidencia con los pasos para publicar.
+      - name: Avisar si la cartelera necesita publicarse
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           age=$(node -e "const d=require('./eventos.json'); console.log(Math.floor((Date.now()-new Date(d.updated).getTime())/86400000))")
-          existing=$(gh issue list --state open --search 'Actualizar cartelera de eventos in:title' --json number --jq '.[0].number' 2>/dev/null || true)
-          if [ "$age" -le 45 ]; then
+          changed=$(git diff --quiet eventos.json && echo no || echo si)
+          title="Cartelera de eventos pendiente de publicar"
+          existing=$(gh issue list --state open --search "$title in:title" --json number --jq '.[0].number' 2>/dev/null || true)
+
+          if [ "$changed" = "no" ] && [ "$age" -le 45 ]; then
             if [ -n "$existing" ] && [ "$existing" != "null" ]; then
-              gh issue close "$existing" --comment "Cartelera actualizada."
+              gh issue close "$existing" --comment "La cartelera está publicada y al día."
             fi
             exit 0
           fi
+
           if [ -n "$existing" ] && [ "$existing" != "null" ]; then
-            echo "La incidencia de cartelera ya existe: #$existing"
+            echo "La incidencia ya existe: #$existing"
             exit 0
           fi
-          body=$(printf 'La cartelera no se actualiza desde hace %s días.\n\nEdita eventos.csv o publica una hoja de cálculo como CSV y configura la variable EVENTS_CSV_URL. Después ejecuta Actions -> Eventos -> Run workflow.' "$age")
-          gh issue create --title "Actualizar cartelera de eventos" --body "$body"
+
+          body=$(printf 'La cartelera tiene cambios sin publicar o lleva %s días sin actualizarse.\n\nPara publicarla:\n\n```\nnode scripts/sync-events-csv.mjs\ngit add eventos.json\ngit commit -m "Datos: actualizar cartelera de eventos"\ngit push\n```\n\nDespués cierra esta incidencia.' "$age")
+          gh issue create --title "$title" --body "$body"
