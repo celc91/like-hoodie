@@ -113,7 +113,20 @@ async function findNetwork() {
   if (!network) throw new Error("No se pudo detectar la red de Supabase.");
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function pullMockImage() {
+  for (let intento = 1; intento <= 3; intento += 1) {
+    const pull = await run("docker", ["pull", "node:22-alpine"]);
+    if (pull.code === 0) return;
+    console.error(`docker pull node:22-alpine falló (intento ${intento}): ${pull.err.trim().slice(-200)}`);
+    if (intento < 3) await sleep(5000);
+  }
+  throw new Error("No se pudo descargar node:22-alpine para el mock.");
+}
+
 async function startMock() {
+  await pullMockImage();
   await run("docker", ["rm", "-f", MOCK_NAME]);
   const mockFile = join(ROOT, "scripts", "clip-mock-server.mjs");
   const started = await run("docker", [
@@ -130,7 +143,7 @@ async function startMock() {
     throw new Error(`No se pudo arrancar el mock: ${started.err.trim().slice(-300)}`);
   }
 
-  const deadline = Date.now() + 90_000;
+  const deadline = Date.now() + 150_000;
   while (Date.now() < deadline) {
     try {
       const response = await fetch(`http://127.0.0.1:${MOCK_PORT}/__hits`, {
@@ -140,7 +153,7 @@ async function startMock() {
     } catch {
       // aún arrancando
     }
-    await new Promise((r) => setTimeout(r, 1500));
+    await sleep(1500);
   }
   throw new Error("El mock de Clip no respondió a tiempo.");
 }
