@@ -1243,7 +1243,7 @@ insert into lh_rls_test.check values ('PED-09', 'campos',
       and payment_status = 'demo'
       and payment_method = 'demo'
       and user_id = lh_rls_test.uid_c()
-      and subtotal = public.item_unit_price(lh_rls_test.valid_items() -> 0, 1)
+      and subtotal = ((lh_rls_test.valid_items() -> 0) ->> 'unitPrice')::int
       and item_count = 1
       and shipping = case when subtotal >= 1200 then 0 else 99 end
       and total = subtotal + shipping

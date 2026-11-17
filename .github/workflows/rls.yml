@@ -39,7 +39,14 @@ jobs:
         run: node scripts/test-clip-idempotency.mjs
 
       - name: pgTAP
-        run: supabase test db
+        run: |
+          set +e
+          supabase test db 2>&1 | tee pgtap.log
+          code=${PIPESTATUS[0]}
+          grep -E '^(not ok|# Failed test)' pgtap.log | head -30 | while IFS= read -r line; do
+            echo "::error::$line"
+          done
+          exit $code
 
       - name: Detener Supabase
         if: always()
