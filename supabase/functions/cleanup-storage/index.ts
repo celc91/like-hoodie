@@ -202,7 +202,7 @@ Deno.serve(async (request) => {
     ): { remove: boolean; reason: string } => {
       const ref = assetRefs.get(asset.id);
       if (ref && ref.active) return { remove: false, reason: "pedido activo" };
-      if (ref && now - ref.lastClosed <= closedMs) {
+      if (ref && (!ref.lastClosed || now - ref.lastClosed <= closedMs)) {
         return { remove: false, reason: "pedido reciente" };
       }
       if (ref) return { remove: true, reason: `pedido cerrado +${closedDays}d` };
@@ -256,8 +256,10 @@ Deno.serve(async (request) => {
         continue;
       }
       if (activePrintPaths.has(object.path)) continue;
-      const closedAt = closedPrintPaths.get(object.path);
-      if (closedAt && now - closedAt <= closedMs) continue;
+      if (closedPrintPaths.has(object.path)) {
+        const closedAt = closedPrintPaths.get(object.path) || 0;
+        if (!closedAt || now - closedAt <= closedMs) continue;
+      }
       if (object.createdAt && now - object.createdAt > orphanMs) {
         addCandidate(BUCKET_PRINTS, object.path, {
           remove: true,
