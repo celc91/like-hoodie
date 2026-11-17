@@ -168,6 +168,12 @@ semántico.
   usar una sal pública, y cada finalidad usa su propio hash.
 - **`process-logo`:** `last_error` guarda solo códigos genéricos
   (`PROCESSING_FAILED`, `INVALID_PATH`, `MAX_ATTEMPTS`).
+- **Validaciones de pedido:** `place_order` devuelve `22023` en datos inválidos y
+  `42501` en carrito ajeno, en vez de `P0001` genérico.
+- **Métricas:** la serie de 14 días del admin cuenta solo pedidos pagados, igual
+  que los KPIs.
+- **Storage:** las políticas de `order-logos` rechazan `..`, barras iniciales,
+  dobles barras y barras inversas.
 - **Clip:** `clip-pay` y `clip-checkout` reclaman el pedido de forma atómica
   (`payment_attempt_id`, `clip_claim_id`); dos peticiones paralelas ya no crean
   dos cargos ni dos enlaces. Ver `docs/clip-idempotencia.md`.

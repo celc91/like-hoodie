@@ -898,6 +898,39 @@ $$;
 -- Fixture común OA/OB/OC/OG, CA/CB/CC, LA/LB, SA/SB/PA, Q1, N0, F0 y G0
 -- ---------------------------------------------------------------------------
 
+create or replace function lh_rls_test.valid_customer(p_overrides jsonb default '{}'::jsonb)
+returns jsonb
+language sql
+immutable
+as $$
+  select jsonb_build_object(
+    'name', 'Cliente QA',
+    'email', 'qa-a-order@example.invalid',
+    'phone', '5512345678',
+    'address', 'Calle QA 1',
+    'addressRef', 'Ref QA',
+    'city', 'CDMX',
+    'state', 'CDMX',
+    'zip', '01000'
+  ) || coalesce(p_overrides, '{}'::jsonb);
+$$;
+
+create or replace function lh_rls_test.valid_items()
+returns jsonb
+language sql
+immutable
+as $$
+  select jsonb_build_array(jsonb_build_object(
+    'product', 'hoodie',
+    'colorHex', '#1c1c1f',
+    'materialId', 'cotton400',
+    'techniqueId', 'dtg',
+    'qty', 1,
+    'size', 'M',
+    'unitPrice', 899
+  ));
+$$;
+
 create or replace function lh_rls_test.seed_common()
 returns void
 language plpgsql
@@ -1179,11 +1212,73 @@ select ok(
 -- Expectativa: pedido valido calcula 899+99=998, usuario UC, estado pending y demo/demo.
 select lh_rls_test.pending('PED-09', 'place_order valido recalcula 998 y fuerza usuario estado y demo', false);
 
--- Expectativa: datos de contacto/envio y payloads fuera de limite se rechazan sin escribir.
-select lh_rls_test.pending('PED-10', 'place_order rechaza campos invalidos 51 items y exceso de bytes', false);
+-- Q-02: cada validacion devuelve 22023 y no crea pedido.
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('PED-10', 'email',
+  (lh_rls_test.try_sql(format(
+    'select public.place_order(%L::jsonb, %L::jsonb, null, %L, null)',
+    lh_rls_test.valid_customer('{"email":"sin-arroba"}'::jsonb),
+    lh_rls_test.valid_items(),
+    ''
+  )) = '22023'));
+insert into lh_rls_test.check values ('PED-10', 'telefono',
+  (lh_rls_test.try_sql(format(
+    'select public.place_order(%L::jsonb, %L::jsonb, null, %L, null)',
+    lh_rls_test.valid_customer('{"phone":"123"}'::jsonb),
+    lh_rls_test.valid_items(),
+    ''
+  )) = '22023'));
+insert into lh_rls_test.check values ('PED-10', 'direccion',
+  (lh_rls_test.try_sql(format(
+    'select public.place_order(%L::jsonb, %L::jsonb, null, %L, null)',
+    lh_rls_test.valid_customer('{"address":""}'::jsonb),
+    lh_rls_test.valid_items(),
+    ''
+  )) = '22023'));
+insert into lh_rls_test.check values ('PED-10', 'cp',
+  (lh_rls_test.try_sql(format(
+    'select public.place_order(%L::jsonb, %L::jsonb, null, %L, null)',
+    lh_rls_test.valid_customer('{"zip":"12"}'::jsonb),
+    lh_rls_test.valid_items(),
+    ''
+  )) = '22023'));
+insert into lh_rls_test.check values ('PED-10', 'cincuenta_y_uno',
+  (lh_rls_test.try_sql(format(
+    'select public.place_order(%L::jsonb, %L::jsonb, null, %L, null)',
+    lh_rls_test.valid_customer(),
+    (select jsonb_agg(jsonb_build_object('product', 'hoodie', 'qty', 1, 'unitPrice', 899))
+       from generate_series(1, 51)),
+    ''
+  )) = '22023'));
 
--- Expectativa: A no puede crear pedido con CB; CB permanece open.
-select lh_rls_test.pending('PED-11', 'place_order con carrito ajeno denegado y CB sin convertir', false);
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('PED-10', 'sin_pedido',
+  (select count(*) = 1 from public.orders where user_id = lh_rls_test.uid_a()));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'PED-10'),
+  'PED-10 — email, telefono, direccion, CP y 51 articulos dan 22023 sin crear pedido'
+);
+
+-- PED-11: un carrito ajeno se rechaza con 42501 y no se convierte.
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('PED-11', 'carrito_ajeno',
+  (lh_rls_test.try_sql(format(
+    'select public.place_order(%L::jsonb, %L::jsonb, %L::uuid, %L, null)',
+    lh_rls_test.valid_customer(),
+    lh_rls_test.valid_items(),
+    lh_rls_test.fixture_id('CB'),
+    ''
+  )) = '42501'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('PED-11', 'cb_abierto',
+  (select status = 'open' from public.carts where id = lh_rls_test.fixture_id('CB')));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'PED-11'),
+  'PED-11 — pedido con carrito ajeno da 42501 y el carrito sigue abierto'
+);
 
 -- Expectativa: solo existe la firma de cinco argumentos; cuatro argumentos 42883.
 select lh_rls_test.pending('PED-12', 'una sola firma place_order segura y ANON sin EXECUTE', false);
