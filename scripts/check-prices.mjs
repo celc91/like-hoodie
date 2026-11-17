@@ -19,11 +19,14 @@ const hardening = read("supabase/security-hardening.sql");
 const pricing = read("supabase/migrations/20261115000100_precios_tote.sql");
 const invoice = read("supabase/migrations/20261115000200_facturacion_verificacion.sql");
 const invoicePage = read("factura.html");
+const indexPage = read("index.html");
 const invoiceJs = read("factura.js");
 const invoiceFn = read("supabase/functions/invoice-request/index.ts");
 const adminStats = read("supabase/migrations/20261115000300_admin_stats_pagados.sql");
 const couponSql = read("supabase/migrations/20261115000400_cupones_unicos.sql");
 const noticeSql = read("supabase/migrations/20261115000500_aviso_factura.sql");
+const volumeSql = read("supabase/migrations/20261117000200_precios_volumen.sql");
+const approvalSql = read("supabase/migrations/20261117000100_aprobacion_diseno.sql");
 const confirmJs = read("confirmar.js");
 const styles = read("styles.css");
 
@@ -95,6 +98,34 @@ check(
   "rendimiento: fuentes locales",
   styles.includes("assets/fonts/bricolage-grotesque-latin.woff2") &&
     styles.includes("assets/fonts/inter-latin.woff2")
+);
+check(
+  "precios: tamaño de impresión",
+  volumeSql.includes("print_carta_fee") &&
+    volumeSql.includes("print_doble_carta_fee") &&
+    volumeSql.includes("printSize")
+);
+check(
+  "precios: descuentos por volumen",
+  volumeSql.includes("tier_12_discount") &&
+    volumeSql.includes("tier_24_discount") &&
+    volumeSql.includes("tier_48_discount") &&
+    volumeSql.includes("pricingGroup")
+);
+check(
+  "cotizador: modal por tallas",
+  indexPage.includes("data-quote-modal") &&
+    app.includes("data-quote-sizes")
+);
+check(
+  "aprobación: estado en pedidos",
+  approvalSql.includes("design_approval_status") &&
+    approvalSql.includes("design_approved_at")
+);
+check(
+  "entrega: fecha estimada",
+  indexPage.includes("data-delivery-estimate") &&
+    app.includes("deliveryEstimateText")
 );
 
 const failed = checks.filter((item) => !item.ok);

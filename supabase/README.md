@@ -108,7 +108,7 @@ La función no necesita secretos propios: usa `SUPABASE_URL`,
 
 - Los visitantes solo pueden leer y modificar **su propio carrito**.
 - Los pedidos se crean únicamente con la función `public.place_order()`, que recalcula subtotal, envío y total en el servidor. No se permite insertar pedidos directamente desde el navegador.
-- `place_order()` valida cada precio contra `public.product_prices` y rechaza cualquier pedido cuyo `unitPrice` no coincida.
+- `place_order()` valida cada precio contra `public.product_prices` y rechaza cualquier pedido cuyo `unitPrice` no coincida. También valida el tamaño de impresión, el descuento por volumen y el total del grupo de cotización.
 - `place_order()` exige teléfono de 10–15 dígitos, dirección, ciudad, estado y CP de 5 dígitos; guarda `state` y `address_ref` para la guía de envío.
 - La tabla `coupons` no es legible desde el navegador: los códigos se validan solo con `check_coupon()`.
 - Cada suscriptor confirmado recibe un cupón único, de un solo uso y 90 días. `BIENVENIDA10` queda como código legado limitado a 1,000 usos y un año.
@@ -196,6 +196,8 @@ En un proyecto nuevo ejecuta:
 20. `supabase/migrations/20261115000300_admin_stats_pagados.sql` (métricas sin demo)
 21. `supabase/migrations/20261115000400_cupones_unicos.sql` (cupón único por suscriptor)
 22. `supabase/migrations/20261115000500_aviso_factura.sql` (aviso al admin y helper Resend)
+23. `supabase/migrations/20261117000100_aprobacion_diseno.sql` (aprobación del diseño)
+24. `supabase/migrations/20261117000200_precios_volumen.sql` (tamaño de impresión y volumen)
 23. `supabase/migrations/20261115120000_seguridad_rls_b5.sql` (newsletter, `has_resend_key`, retención y facturas bloqueadas)
 24. `supabase/migrations/20261115130000_locks_concurrencia.sql` (locks de `place_order` y newsletter)
 25. `supabase/migrations/20261115140000_orders_currency.sql` (`orders.currency` para Clip)

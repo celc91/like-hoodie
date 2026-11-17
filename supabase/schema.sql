@@ -112,6 +112,9 @@ create table if not exists public.orders (
   payment_method text not null default 'demo',
   payment_status text not null default 'demo',
   admin_notes text,
+  design_approval_status text not null default 'pending'
+    check (design_approval_status in ('pending', 'sent', 'approved', 'rejected')),
+  design_approved_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

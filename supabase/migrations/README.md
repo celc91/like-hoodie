@@ -33,6 +33,12 @@ npx supabase db query --remote --yes --file supabase/migrations/20261115000200_f
 - `20261115000500_aviso_factura.sql`
   - avisa por correo al admin cuando una solicitud de factura queda verificada;
   - retira `has_resend_key()` de `anon`.
+- `20261117000100_aprobacion_diseno.sql`
+  - añade el estado de aprobación del diseño al pedido.
+- `20261117000200_precios_volumen.sql`
+  - precio por tamaño de impresión (`logo`, `carta`, `doble_carta`);
+  - descuentos por volumen: 5% desde 12, 10% desde 24 y 15% desde 48;
+  - `pricingGroup` para cotizaciones por tallas.
 
 Las migraciones son idempotentes: se pueden volver a ejecutar. No ejecutes
 `security-hardening.sql` sobre una base ya migrada sin revisar antes la versión

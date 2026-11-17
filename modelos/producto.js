@@ -52,6 +52,33 @@
     });
   }
 
+  function addBusinessDays(date, days) {
+    var next = new Date(date);
+    var added = 0;
+    while (added < days) {
+      next.setDate(next.getDate() + 1);
+      var day = next.getDay();
+      if (day !== 0 && day !== 6) added += 1;
+    }
+    return next;
+  }
+
+  function renderDelivery() {
+    var target = document.querySelector("[data-delivery-estimate]");
+    if (!target) return;
+    var now = new Date();
+    var cutoff = new Date(now);
+    cutoff.setHours(14, 0, 0, 0);
+    var start = now > cutoff ? addBusinessDays(now, 1) : now;
+    var arrival = addBusinessDays(start, 5);
+    target.textContent =
+      "Llega antes del " +
+      arrival.toLocaleDateString("es-MX", { day: "numeric", month: "short" }) +
+      " · producción 24–48 h + envío 48–72 h";
+  }
+
+  renderDelivery();
+
   select.addEventListener("change", sync);
   sync();
 

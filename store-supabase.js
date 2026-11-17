@@ -119,6 +119,13 @@
         TECHNIQUE_IDS_BY_NAME[item.techniqueName] ||
         "",
       techniqueName: item.techniqueName || "",
+      printSize: ["logo", "carta", "doble_carta"].includes(item.printSize)
+        ? item.printSize
+        : "logo",
+      pricingGroup: /^[0-9a-z-]{8,64}$/i.test(String(item.pricingGroup || ""))
+        ? String(item.pricingGroup)
+        : "",
+      baseUnitPrice: Math.max(0, Number(item.baseUnitPrice) || Number(item.unitPrice) || 0),
       front: safeDesign(item.front),
       back: safeDesign(item.back),
     }));

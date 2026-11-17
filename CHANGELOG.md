@@ -72,6 +72,36 @@ semántico.
   8000 × 3125 px, solo raster y revisión de app. Se sustituye, si hace falta,
   por un enlace a plantillas y subida manual.
 
+## [1.15.0] — 2026-11-17
+
+### Añadido
+
+- **Precio por tamaño de impresión:** `logo` (incluido), `carta` (+$30) y
+  `doble_carta` (+$60).
+- **Descuentos por volumen:** 5% desde 12 piezas, 10% desde 24 y 15% desde 48,
+  calculados por el servidor.
+- **Cotizador por tallas:** reparte un mismo diseño entre XS–XXL, muestra precio
+  unitario con descuento y agrega el grupo al carrito.
+- **Aprobación del diseño:** estado `pending`, `sent`, `approved` o `rejected`
+  en el pedido y control en el admin.
+- **Fecha estimada de llegada** en configurador, producto, carrito y checkout.
+
+### Seguridad y datos
+
+- `place_order()` valida el tamaño de impresión, el descuento por volumen y el
+  total del grupo de cotización.
+- Migraciones `20261117000100_aprobacion_diseno.sql` y
+  `20261117000200_precios_volumen.sql`.
+
+### Verificado
+
+- `place_order()` probado con:
+  - grupo de 12 piezas y descuento del 5%;
+  - impresión carta y precio con suplemento.
+- Cálculo de cliente y servidor alineado: precio unitario y total del grupo.
+- `html-validate`, `node --check`, smoke test (**65**) y precios/facturación
+  (**40**).
+
 ## [1.14.1] — 2026-11-15
 
 ### Añadido

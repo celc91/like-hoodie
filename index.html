@@ -86,7 +86,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="image" href="assets/hoodie-front-800.webp" imagesrcset="assets/hoodie-front-480.webp 480w, assets/hoodie-front-800.webp 800w, assets/hoodie-front.webp 1003w" imagesizes="(max-width: 720px) 90vw, 520px" type="image/webp" fetchpriority="high">
 <script src="boot.js?v=20261114-csp1"></script>
-  <link rel="stylesheet" href="styles.css?v=20261115-perf3">
+  <link rel="stylesheet" href="styles.css?v=20261117-vol1">
 </head>
 <body>
   <a class="skip-link" href="#inicio">Saltar al contenido</a>
@@ -506,6 +506,19 @@
             </div>
             </div>
 
+            <div class="control">
+              <div class="control-head">
+                <span class="control-label">Tamaño de impresión</span>
+                <span class="control-value" data-print-size-label>Logo · incluido</span>
+              </div>
+              <div class="option-pills" role="group" aria-label="Tamaño de impresión">
+                <button type="button" class="option-pill is-active" data-print-size="logo" data-name="Logo" data-fee="0" data-desc="Hasta 10 cm. Incluido en el precio." aria-pressed="true">Logo <em>incluido</em></button>
+                <button type="button" class="option-pill" data-print-size="carta" data-name="Carta" data-fee="30" data-desc="Hasta 22 cm. Ideal para un frente completo." aria-pressed="false">Carta <em>+$30</em></button>
+                <button type="button" class="option-pill" data-print-size="doble_carta" data-name="Doble carta" data-fee="60" data-desc="Hasta 28 cm. Para diseños grandes de frente o espalda." aria-pressed="false">Doble carta <em>+$60</em></button>
+              </div>
+              <p class="option-note" data-print-size-note>Logo hasta 10 cm: incluido. Los descuentos por volumen se aplican desde 12 piezas.</p>
+            </div>
+
             <div class="personalize" data-personalize-shell>
               <div class="personalize-head">
                 <span class="personalize-title">
@@ -732,6 +745,7 @@
                 <span data-preview-technique>DTG</span>
                 <span><span data-size-label>Talla</span> <strong data-preview-size>M</strong></span>
               </p>
+              <p class="delivery-estimate" data-delivery-estimate>Calculando fecha de entrega…</p>
               <div class="price-row">
                 <div class="price-block">
                   <span class="price-label">Total</span>
@@ -742,6 +756,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
               </div>
+              <button type="button" class="btn btn-ghost btn-block quote-button" data-quote-sizes>Cotizar por tallas</button>
             </div>
           </div>
           </div>
@@ -1367,7 +1382,9 @@
             <span>Total a pagar</span>
             <strong data-checkout-total>$0 MXN</strong>
           </div>
+          <p class="checkout-delivery" data-checkout-delivery></p>
           <p class="checkout-coupon" data-checkout-coupon hidden></p>
+          <p class="checkout-approval">Revisaremos tu diseño y te enviaremos una vista previa para aprobar antes de imprimir.</p>
           <button type="submit" class="btn btn-primary btn-block">Confirmar pedido</button>
           <p class="checkout-note">Al continuar aceptas los <a href="terminos.html">términos</a> y la <a href="privacidad.html">política de privacidad</a>.</p>
         </form>
@@ -1378,7 +1395,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 12 5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
         <h2 data-checkout-success-title>¡Pedido confirmado!</h2>
-        <p data-checkout-success-message>Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo. Te contactaremos cuando se active el pago real.</p>
+        <p data-checkout-success-message>Gracias por confiar en like hoodie ♡. Tu pedido quedó registrado como demostración; todavía no se realiza ningún cargo. Te enviaremos una vista previa del diseño para que la apruebes antes de imprimir. Te contactaremos cuando se active el pago real.</p>
         <p class="order-number">Pedido <strong data-order-number>CH-00000</strong></p>
         <a class="btn btn-ghost btn-block" data-order-status-link href="pedido.html">Consultar estado del pedido</a>
         <button type="button" class="btn btn-primary btn-block" data-retry-payment hidden>Reintentar pago</button>
@@ -1414,6 +1431,34 @@
     </div>
   </div>
 
+  <!-- MODAL COTIZAR POR TALLAS -->
+  <div class="modal" data-quote-modal aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="quote-title" inert>
+    <div class="modal-panel modal-panel--quote">
+      <div class="sheet-grab" aria-hidden="true"></div>
+      <button type="button" class="icon-btn modal-close" data-close-quote aria-label="Cerrar cotización">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke-linecap="round"/></svg>
+      </button>
+      <span class="eyebrow">Cotización</span>
+      <h2 id="quote-title">Elige tallas</h2>
+      <p class="modal-sub">Agrega cantidades por talla. El descuento por volumen se aplica al total del grupo.</p>
+      <div class="quote-table-wrap">
+        <table class="quote-table">
+          <thead>
+            <tr><th scope="col">Talla</th><th scope="col">Cantidad</th><th scope="col">Precio unitario</th><th scope="col">Subtotal</th></tr>
+          </thead>
+          <tbody data-quote-body></tbody>
+        </table>
+      </div>
+      <div class="quote-summary">
+        <span>Piezas <strong data-quote-count>0</strong></span>
+        <span>Total <strong data-quote-total>$0 MXN</strong></span>
+      </div>
+      <p class="quote-note">El descuento por volumen se calcula sobre la cantidad total de esta cotización.</p>
+      <button type="button" class="btn btn-primary btn-block" data-quote-add>Agregar al carrito</button>
+      <p class="form-error" data-quote-error role="alert" hidden></p>
+    </div>
+  </div>
+
   <div class="toast-region" data-toast-region aria-live="polite"></div>
 
   <div class="option-tooltip" id="option-tooltip" data-option-tooltip role="tooltip" aria-hidden="true">
@@ -1423,13 +1468,13 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="store-supabase.js?v=20261114-fase4"></script>
+  <script src="store-supabase.js?v=20261117-vol2"></script>
   <script src="monitor.js?v=20261114-fase5"></script>
   <script src="clip-config.js?v=20261112-sandbox2"></script>
 <script src="modelos/modelos-data.js?v=20261114-fase6"></script>
-<script src="app.js?v=20261115-coupon1"></script>
+<script src="app.js?v=20261117-vol2"></script>
   <script src="whatsapp-config.js?v=20261114-fase4d"></script>
-  <script src="whatsapp.js?v=20261114-fase4d"></script>
+  <script src="whatsapp.js?v=20261117-vol2"></script>
   <script src="eventos.js?v=20261115-perf2"></script>
   <script src="resenas.js?v=20261116-res1"></script>
   <script src="analytics-config.js?v=20261112-pixel1"></script>

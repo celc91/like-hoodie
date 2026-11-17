@@ -18,6 +18,16 @@
   const SHIPPING_COST = 99;
   const LOGO_PRICE = 99;
   const XXL_PRICE = 49;
+  const PRINT_SIZES = {
+    logo: { name: "Logo", fee: 0, note: "Hasta 10 cm. Incluido." },
+    carta: { name: "Carta", fee: 30, note: "Hasta 22 cm." },
+    doble_carta: { name: "Doble carta", fee: 60, note: "Hasta 28 cm." },
+  };
+  const VOLUME_TIERS = [
+    { min: 48, discount: 15 },
+    { min: 24, discount: 10 },
+    { min: 12, discount: 5 },
+  ];
   const STORAGE_KEY = "likehoodie_cart_v1";
   const LEGACY_STORAGE_KEY = "chama_cart_v1";
   const DESIGN_DRAFT_KEY = "likehoodie_design_v1";
@@ -145,6 +155,7 @@
     colorName: "Negro",
     basePrice: 899,
     size: "M",
+    printSize: "logo",
     view: "front",
     angle: 0,
     product: "hoodie",
@@ -275,7 +286,11 @@
           Number.isFinite(item.unitPrice) &&
           typeof item.qty === "number" &&
           item.qty > 0
-      );
+      ).map((item) => ({
+        ...item,
+        baseUnitPrice: Number(item.baseUnitPrice) || item.unitPrice,
+        printSize: item.printSize || "logo",
+      }));
     } catch (error) {
       return [];
     }
@@ -327,7 +342,59 @@
     return luminance > 0.58 ? "#1c1c1f" : "#fffdf8";
   }
 
+  function printSizeFee(id = state.printSize) {
+    return PRINT_SIZES[id] ? PRINT_SIZES[id].fee : 0;
+  }
+
+  function volumeDiscount(qty) {
+    const tier = VOLUME_TIERS.find((entry) => qty >= entry.min);
+    return tier ? tier.discount : 0;
+  }
+
+  function priceWithVolume(base, qty) {
+    return Math.max(
+      0,
+      Math.round((base * (100 - volumeDiscount(qty))) / 100)
+    );
+  }
+
+  function baseUnitForSize(size) {
+    return (
+      state.basePrice +
+      state.material.delta +
+      techniqueFee() +
+      logoCount() * LOGO_PRICE +
+      printSizeFee() +
+      (size === "XXL" ? XXL_PRICE : 0)
+    );
+  }
+
+  function cartGroupTotals() {
+    const totals = {};
+    state.items.forEach((item) => {
+      if (!item.pricingGroup) return;
+      totals[item.pricingGroup] =
+        (totals[item.pricingGroup] || 0) + (Number(item.qty) || 0);
+    });
+    return totals;
+  }
+
+  function recalcCartPrices() {
+    const groups = cartGroupTotals();
+    state.items.forEach((item) => {
+      const base =
+        Number(item.baseUnitPrice) || Number(item.unitPrice) || 0;
+      item.baseUnitPrice = base;
+      if (!item.printSize) item.printSize = "logo";
+      const qty = item.pricingGroup
+        ? groups[item.pricingGroup] || item.qty
+        : item.qty;
+      item.unitPrice = priceWithVolume(base, qty);
+    });
+  }
+
   function totals() {
+    recalcCartPrices();
     const subtotal = state.items.reduce(
       (sum, item) => sum + item.unitPrice * item.qty,
       0
@@ -416,6 +483,7 @@
   const closePaymentBanner = $("[data-close-payment-banner]");
 
   const sizeModal = $("[data-size-modal]");
+  const quoteModal = $("[data-quote-modal]");
 
   const hoodiePreview = $("[data-preview-hoodie]");
   const hoodiePhoto = $("[data-hoodie-photo]");
@@ -464,6 +532,18 @@
   const techniqueLabels = $$("[data-technique-label]");
   const techniqueNotes = $$("[data-technique-note]");
   const techniqueWarnings = $$("[data-technique-warning]");
+  const printSizeButtons = $$("[data-print-size]");
+  const printSizeLabels = $$("[data-print-size-label]");
+  const printSizeNotes = $$("[data-print-size-note]");
+  const quoteOpenButton = $("[data-quote-sizes]");
+  const quoteBody = $("[data-quote-body]");
+  const quoteCount = $("[data-quote-count]");
+  const quoteTotal = $("[data-quote-total]");
+  const quoteError = $("[data-quote-error]");
+  const quoteAddButton = $("[data-quote-add]");
+  const quoteCloseButton = $("[data-close-quote]");
+  const deliveryEstimate = $("[data-delivery-estimate]");
+  const checkoutDelivery = $("[data-checkout-delivery]");
   const logoInput = $("[data-logo-input]");
   const uploadFile = $("[data-upload-file]");
   const fileName = $("[data-file-name]");
@@ -810,6 +890,10 @@
         const customLines = [];
         customLines.push(`Material: ${item.materialName || "Algodón 400 g"}`);
         customLines.push(`Técnica: ${item.techniqueName || "DTG"}`);
+        if (item.printSize && item.printSize !== "logo") {
+          const sizeInfo = PRINT_SIZES[item.printSize];
+          if (sizeInfo) customLines.push(`Impresión: ${sizeInfo.name}`);
+        }
         if (front.text) {
           customLines.push(`Frente: “${front.text}”${textMeta(front)}`);
         }
@@ -917,7 +1001,7 @@
     cartDrawer.classList.remove("is-open");
     overlay.classList.remove("is-open");
     cartDrawer.setAttribute("aria-hidden", "true");
-    if (!checkoutModal.classList.contains("is-open") && !sizeModal.classList.contains("is-open")) {
+    if (!checkoutModal.classList.contains("is-open") && !sizeModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
     }
     refreshInertState();
@@ -933,7 +1017,7 @@
   const FOCUSABLE_SELECTOR =
     'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
   const pageRegions = [header, pageMain, pageFooter, mobileMenu].filter(Boolean);
-  const dialogElements = [cartDrawer, checkoutModal, sizeModal].filter(Boolean);
+  const dialogElements = [cartDrawer, checkoutModal, sizeModal, quoteModal].filter(Boolean);
 
   function visibleFocusables(container) {
     return [...container.querySelectorAll(FOCUSABLE_SELECTOR)].filter(
@@ -966,6 +1050,7 @@
       event.preventDefault();
       if (top === checkoutModal) closeCheckout();
       else if (top === sizeModal) closeSizeGuide();
+      else if (top === quoteModal) closeQuote();
       else if (top === cartDrawer) closeCart();
       return;
     }
@@ -997,6 +1082,7 @@
     if (item.qty <= 0) {
       state.items = state.items.filter((entry) => entry.id !== id);
     }
+    recalcCartPrices();
     saveCart();
     renderCart();
 
@@ -1521,6 +1607,7 @@
   function openCheckout() {
     if (state.items.length === 0) return;
     closeCart(false);
+    updateDeliveryEstimate();
     lastFocusedElement = document.activeElement;
     checkoutForm.reset();
     sandboxApproved = null;
@@ -1592,7 +1679,7 @@
     checkoutModal.classList.remove("is-open");
     checkoutModal.setAttribute("aria-hidden", "true");
     refreshInertState();
-    if (!cartDrawer.classList.contains("is-open") && !sizeModal.classList.contains("is-open")) {
+    if (!cartDrawer.classList.contains("is-open") && !sizeModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
     }
     if (lastFocusedElement && document.contains(lastFocusedElement)) {
@@ -2092,12 +2179,251 @@
     sizeModal.classList.remove("is-open");
     sizeModal.setAttribute("aria-hidden", "true");
     refreshInertState();
-    if (!cartDrawer.classList.contains("is-open") && !checkoutModal.classList.contains("is-open")) {
+    if (!cartDrawer.classList.contains("is-open") && !checkoutModal.classList.contains("is-open") && !quoteModal.classList.contains("is-open")) {
       document.body.classList.remove("is-locked");
     }
     if (lastFocusedElement && document.contains(lastFocusedElement)) {
       lastFocusedElement.focus({ preventScroll: true });
     }
+  }
+
+  function addBusinessDays(date, days) {
+    const next = new Date(date);
+    let added = 0;
+    while (added < days) {
+      next.setDate(next.getDate() + 1);
+      const day = next.getDay();
+      if (day !== 0 && day !== 6) added += 1;
+    }
+    return next;
+  }
+
+  function deliveryEstimateText() {
+    const now = new Date();
+    const cutoff = new Date(now);
+    cutoff.setHours(14, 0, 0, 0);
+    const start = now > cutoff ? addBusinessDays(now, 1) : now;
+    const arrival = addBusinessDays(start, 5);
+    const label = arrival.toLocaleDateString("es-MX", {
+      day: "numeric",
+      month: "short",
+    });
+    return `Llega antes del ${label} · producción 24–48 h + envío 48–72 h`;
+  }
+
+  function updateDeliveryEstimate() {
+    const text = deliveryEstimateText();
+    if (deliveryEstimate) deliveryEstimate.textContent = text;
+    if (checkoutDelivery) checkoutDelivery.textContent = text;
+  }
+
+  /* ---------------------------------------------------------------------- */
+  /* Cotizador por tallas                                                   */
+  /* ---------------------------------------------------------------------- */
+
+  function quoteSizes() {
+    return state.product === "tote"
+      ? ["Única"]
+      : ["XS", "S", "M", "L", "XL", "XXL"];
+  }
+
+  function quoteQuantities() {
+    const values = {};
+    if (!quoteBody) return values;
+    quoteBody.querySelectorAll("[data-quote-size]").forEach((input) => {
+      const qty = Math.max(0, Math.min(99, Number(input.value) || 0));
+      values[input.dataset.quoteSize] = qty;
+    });
+    return values;
+  }
+
+  function quoteTotalQty(values = quoteQuantities()) {
+    return Object.values(values).reduce((sum, qty) => sum + qty, 0);
+  }
+
+  function updateQuotePrices() {
+    const values = quoteQuantities();
+    const totalQty = quoteTotalQty(values);
+    const discount = volumeDiscount(totalQty);
+    if (quoteBody) {
+      quoteBody.querySelectorAll("[data-quote-row]").forEach((row) => {
+        const size = row.dataset.quoteRow;
+        const base = baseUnitForSize(size);
+        const unit = priceWithVolume(base, totalQty || 1);
+        const qty = values[size] || 0;
+        const priceCell = row.querySelector("[data-quote-price]");
+        const subtotalCell = row.querySelector("[data-quote-subtotal]");
+        if (priceCell) priceCell.textContent = formatPrice(unit);
+        if (subtotalCell) subtotalCell.textContent = formatPrice(unit * qty);
+      });
+    }
+    if (quoteCount) quoteCount.textContent = String(totalQty);
+    if (quoteTotal) quoteTotal.textContent = formatPrice(
+      quoteSizes().reduce((sum, size) => {
+        const base = baseUnitForSize(size);
+        return sum + priceWithVolume(base, totalQty || 1) * (values[size] || 0);
+      }, 0)
+    );
+    return { values, totalQty, discount };
+  }
+
+  function renderQuoteRows() {
+    if (!quoteBody) return;
+    const sizes = quoteSizes();
+    quoteBody.innerHTML = sizes
+      .map(
+        (size) => `<tr data-quote-row="${escapeHTML(size)}">
+          <td><strong>${escapeHTML(size)}</strong>${
+            size === "XXL" ? " <small>+$49</small>" : ""
+          }</td>
+          <td><input type="number" inputmode="numeric" min="0" max="99" step="1" value="${
+            size === state.size ? 1 : 0
+          }" data-quote-size="${escapeHTML(size)}" aria-label="Cantidad talla ${escapeHTML(size)}"></td>
+          <td data-quote-price></td>
+          <td data-quote-subtotal></td>
+        </tr>`
+      )
+      .join("");
+    updateQuotePrices();
+  }
+
+  function openQuote() {
+    if (!hasAnyDesign()) {
+      showToast("Añade un texto o un logo antes de cotizar.");
+      return;
+    }
+    lastFocusedElement = document.activeElement;
+    quoteModal.classList.add("is-open");
+    quoteModal.setAttribute("aria-hidden", "false");
+    refreshInertState();
+    document.body.classList.add("is-locked");
+    renderQuoteRows();
+    window.setTimeout(() => {
+      const first = quoteBody && quoteBody.querySelector("input");
+      if (first) first.focus({ preventScroll: true });
+    }, 80);
+  }
+
+  function closeQuote() {
+    quoteModal.classList.remove("is-open");
+    quoteModal.setAttribute("aria-hidden", "true");
+    refreshInertState();
+    if (
+      !cartDrawer.classList.contains("is-open") &&
+      !checkoutModal.classList.contains("is-open") &&
+      !sizeModal.classList.contains("is-open")
+    ) {
+      document.body.classList.remove("is-locked");
+    }
+    if (lastFocusedElement && document.contains(lastFocusedElement)) {
+      lastFocusedElement.focus({ preventScroll: true });
+    }
+  }
+
+  function addQuoteToCart() {
+    const { values, totalQty } = updateQuotePrices();
+    if (!totalQty) {
+      if (quoteError) {
+        quoteError.textContent = "Escribe al menos una pieza.";
+        quoteError.hidden = false;
+      }
+      return;
+    }
+    if (
+      state.technique.id === "sublimacion" &&
+      state.material.id !== "polyester280"
+    ) {
+      if (quoteError) {
+        quoteError.textContent =
+          "La sublimación requiere poliéster. Cambia el material o la técnica.";
+        quoteError.hidden = false;
+      }
+      return;
+    }
+    if (quoteError) quoteError.hidden = true;
+
+    const group = uid();
+    const designSnapshot = buildDesignSnapshot();
+    const keySnapshot = {
+      ...designSnapshot,
+      front: {
+        ...designSnapshot.front,
+        logoData: "",
+        logoPath: "",
+        logoAssetId: "",
+        printStatus: "",
+        printPath: "",
+        printDpi: null,
+        printWidthCm: null,
+        textLocked: false,
+        logoLocked: false,
+      },
+      back: {
+        ...designSnapshot.back,
+        logoData: "",
+        logoPath: "",
+        logoAssetId: "",
+        printStatus: "",
+        printPath: "",
+        printDpi: null,
+        printWidthCm: null,
+        textLocked: false,
+        logoLocked: false,
+      },
+    };
+    const baseKey = JSON.stringify(keySnapshot);
+    let added = 0;
+
+    quoteSizes().forEach((size) => {
+      const qty = values[size] || 0;
+      if (!qty) return;
+      const baseUnit = baseUnitForSize(size);
+      state.items.push({
+        id: uid(),
+        sku: "LH-CUSTOM",
+        key: `${baseKey}:quote:${group}:${size}`,
+        pricingGroup: group,
+        product: state.product,
+        name: PRODUCTS[state.product].itemName,
+        colorHex: state.color,
+        colorName: state.colorName,
+        size,
+        materialId: state.material.id,
+        materialName: state.material.name,
+        materialDelta: state.material.delta,
+        techniqueId: state.technique.id,
+        techniqueName: state.technique.name,
+        techniquePrice: techniqueFee(),
+        printSize: state.printSize,
+        front: designSnapshot.front,
+        back: designSnapshot.back,
+        baseUnitPrice: baseUnit,
+        unitPrice: priceWithVolume(baseUnit, totalQty),
+        qty,
+      });
+      added += qty;
+    });
+
+    if (!added) return;
+    state.cartStep = "cart";
+    saveCart();
+    renderCart();
+    closeQuote();
+    openCart();
+    showToast(`${added} piezas agregadas a la cesta.`);
+  }
+
+  const quoteButton = $("[data-quote-sizes]");
+  if (quoteButton) quoteButton.addEventListener("click", openQuote);
+  if (quoteCloseButton) quoteCloseButton.addEventListener("click", closeQuote);
+  if (quoteAddButton) quoteAddButton.addEventListener("click", addQuoteToCart);
+  if (quoteBody) {
+    quoteBody.addEventListener("input", updateQuotePrices);
+  }
+  if (quoteModal) {
+    quoteModal.addEventListener("click", (event) => {
+      if (event.target === quoteModal) closeQuote();
+    });
   }
 
   const sizeGuideButton = $("[data-size-guide]");
@@ -2203,6 +2529,23 @@
     }
   }
 
+  function updatePrintSizeUI() {
+    const selected = PRINT_SIZES[state.printSize] || PRINT_SIZES.logo;
+    printSizeButtons.forEach((button) => {
+      const active = button.dataset.printSize === state.printSize;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+    printSizeLabels.forEach((label) => {
+      label.textContent = `${selected.name} · ${
+        selected.fee > 0 ? `+${formatPrice(selected.fee)}` : "incluido"
+      }`;
+    });
+    printSizeNotes.forEach((note) => {
+      note.textContent = `${selected.note} Los descuentos por volumen se aplican desde 12 piezas: 5% en 12+, 10% en 24+ y 15% en 48+.`;
+    });
+  }
+
   function setTool(tool) {
     toolButtons.forEach((button) => {
       const active = button.dataset.personalizeTool === tool;
@@ -2289,6 +2632,10 @@
       );
     }
     if (state.size === "XXL") parts.push(`XXL +${formatPrice(XXL_PRICE)}`);
+    const printSize = PRINT_SIZES[state.printSize] || PRINT_SIZES.logo;
+    if (printSize.fee > 0) {
+      parts.push(`${printSize.name} +${formatPrice(printSize.fee)}`);
+    }
     parts.push("IVA incluido");
     return parts.join(" · ");
   }
@@ -2403,12 +2750,7 @@
       );
     }
 
-    const total =
-      state.basePrice +
-      state.material.delta +
-      techniqueFee() +
-      logoCount() * LOGO_PRICE +
-      (state.size === "XXL" ? XXL_PRICE : 0);
+    const total = baseUnitForSize(state.size);
 
     if (priceEl) priceEl.textContent = formatPrice(total);
     if (priceNote) priceNote.textContent = priceNoteText();
@@ -2417,6 +2759,7 @@
     updateTextFontUI();
     updateMaterialUI();
     updateTechniqueUI();
+    updatePrintSizeUI();
     // el repintado reescribe el contenido: las asas deben volver
     setupHandles(printText);
     setupHandles(printLogo);
@@ -2898,6 +3241,16 @@
         desc: button.dataset.desc,
       };
       updatePreview();
+    });
+  });
+
+  printSizeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      state.printSize = PRINT_SIZES[button.dataset.printSize]
+        ? button.dataset.printSize
+        : "logo";
+      updatePreview();
+      scheduleDraftSave();
     });
   });
 
@@ -3534,6 +3887,7 @@
       color: state.color,
       colorName: state.colorName,
       size: state.size,
+      printSize: state.printSize,
       view: state.view,
       material: { ...state.material },
       technique: { ...state.technique },
@@ -3600,6 +3954,7 @@
     if (PRODUCTS[draft.product]) setProduct(draft.product);
     if (draft.color) selectColor(draft.color, draft.colorName);
     if (draft.size) state.size = draft.size;
+    if (PRINT_SIZES[draft.printSize]) state.printSize = draft.printSize;
     if (draft.material && draft.material.id) {
       state.material = { ...state.material, ...draft.material };
     }
@@ -4513,8 +4868,10 @@
         techniqueId: technique.id,
         techniqueName: technique.name,
         techniquePrice: technique.price,
+        printSize: "logo",
         front: model.side === "front" ? design : blank,
         back: model.side === "back" ? design : blank,
+        baseUnitPrice: unitPrice,
         unitPrice,
         qty: 1,
       };
@@ -4889,6 +5246,82 @@
   setupHandles(printText);
   setupHandles(printLogo);
 
+  function buildDesignSnapshot() {
+    const front = state.designs.front;
+    const back = state.designs.back;
+    return {
+      color: state.color,
+      size: state.size,
+      printSize: state.printSize,
+      material: {
+        id: state.material.id,
+        name: state.material.name,
+        delta: state.material.delta,
+      },
+      technique: {
+        id: state.technique.id,
+        name: state.technique.name,
+        price: state.technique.price,
+      },
+      front: {
+        text: front.text,
+        textColor: front.textColor,
+        textScale: front.textScale,
+        textRotate: front.textRotate || 0,
+        textFont: front.textFont,
+        logoName: front.logoName,
+        logoPath: front.logoPath || "",
+        logoData: front.logoData || "",
+        logoIsVector: Boolean(front.logoIsVector),
+        logoAssetId: front.logoAssetId || "",
+        printStatus: front.printStatus || "",
+        printDpi: front.printDpi || null,
+        printPath: front.printPath || "",
+        printWidthCm: front.printWidthCm || null,
+        textLocked: Boolean(front.textLocked),
+        logoLocked: Boolean(front.logoLocked),
+        textHidden: Boolean(front.textHidden),
+        logoHidden: Boolean(front.logoHidden),
+        layerOrder: Array.isArray(front.layerOrder) ? front.layerOrder : ["text", "logo"],
+        logoScale: front.logoScale,
+        logoRotate: front.logoRotate || 0,
+        textX: front.textX,
+        textY: front.textY,
+        logoX: front.logoX,
+        logoY: front.logoY,
+      },
+      back: {
+        text: back.text,
+        textColor: back.textColor,
+        textScale: back.textScale,
+        textRotate: back.textRotate || 0,
+        textFont: back.textFont,
+        logoName: back.logoName,
+        logoPath: back.logoPath || "",
+        logoData: back.logoData || "",
+        logoIsVector: Boolean(back.logoIsVector),
+        logoAssetId: back.logoAssetId || "",
+        printStatus: back.printStatus || "",
+        printDpi: back.printDpi || null,
+        printPath: back.printPath || "",
+        printWidthCm: back.printWidthCm || null,
+        textLocked: Boolean(back.textLocked),
+        logoLocked: Boolean(back.logoLocked),
+        textHidden: Boolean(back.textHidden),
+        logoHidden: Boolean(back.logoHidden),
+        layerOrder: Array.isArray(back.layerOrder) ? back.layerOrder : ["text", "logo"],
+        logoScale: back.logoScale,
+        logoRotate: back.logoRotate || 0,
+        textX: back.textX,
+        textY: back.textY,
+        logoX: back.logoX,
+        logoY: back.logoY,
+      },
+      basePrice: state.basePrice,
+      product: state.product,
+    };
+  }
+
   if (addToCartButton) {
     addToCartButton.addEventListener("click", () => {
       // no se puede comprar una sudadera "personalizada" sin diseño
@@ -4917,83 +5350,10 @@
       const front = state.designs.front;
       const back = state.designs.back;
       state.cartStep = "cart";
-      const unitPrice =
-        state.basePrice +
-        state.material.delta +
-        techniqueFee() +
-        logoCount() * LOGO_PRICE +
-        (state.size === "XXL" ? XXL_PRICE : 0);
+      const baseUnit = baseUnitForSize(state.size);
+      const unitPrice = priceWithVolume(baseUnit, 1);
 
-      const designSnapshot = {
-        color: state.color,
-        size: state.size,
-        material: {
-          id: state.material.id,
-          name: state.material.name,
-          delta: state.material.delta,
-        },
-        technique: {
-          id: state.technique.id,
-          name: state.technique.name,
-          price: state.technique.price,
-        },
-        front: {
-          text: front.text,
-          textColor: front.textColor,
-          textScale: front.textScale,
-          textRotate: front.textRotate || 0,
-          textFont: front.textFont,
-          logoName: front.logoName,
-          logoPath: front.logoPath || "",
-          logoData: front.logoData || "",
-          logoIsVector: Boolean(front.logoIsVector),
-          logoAssetId: front.logoAssetId || "",
-          printStatus: front.printStatus || "",
-          printDpi: front.printDpi || null,
-          printPath: front.printPath || "",
-          printWidthCm: front.printWidthCm || null,
-          textLocked: Boolean(front.textLocked),
-          logoLocked: Boolean(front.logoLocked),
-          textHidden: Boolean(front.textHidden),
-          logoHidden: Boolean(front.logoHidden),
-          layerOrder: Array.isArray(front.layerOrder) ? front.layerOrder : ["text", "logo"],
-          logoScale: front.logoScale,
-          logoRotate: front.logoRotate || 0,
-          textX: front.textX,
-          textY: front.textY,
-          logoX: front.logoX,
-          logoY: front.logoY,
-        },
-        back: {
-          text: back.text,
-          textColor: back.textColor,
-          textScale: back.textScale,
-          textRotate: back.textRotate || 0,
-          textFont: back.textFont,
-          logoName: back.logoName,
-          logoPath: back.logoPath || "",
-          logoData: back.logoData || "",
-          logoIsVector: Boolean(back.logoIsVector),
-          logoAssetId: back.logoAssetId || "",
-          printStatus: back.printStatus || "",
-          printDpi: back.printDpi || null,
-          printPath: back.printPath || "",
-          printWidthCm: back.printWidthCm || null,
-          textLocked: Boolean(back.textLocked),
-          logoLocked: Boolean(back.logoLocked),
-          textHidden: Boolean(back.textHidden),
-          logoHidden: Boolean(back.logoHidden),
-          layerOrder: Array.isArray(back.layerOrder) ? back.layerOrder : ["text", "logo"],
-          logoScale: back.logoScale,
-          logoRotate: back.logoRotate || 0,
-          textX: back.textX,
-          textY: back.textY,
-          logoX: back.logoX,
-          logoY: back.logoY,
-        },
-        basePrice: state.basePrice,
-        product: state.product,
-      };
+      const designSnapshot = buildDesignSnapshot();
       const keySnapshot = {
         ...designSnapshot,
         front: {
@@ -5042,8 +5402,10 @@
           techniqueId: state.technique.id,
           techniqueName: state.technique.name,
           techniquePrice: techniqueFee(),
+          printSize: state.printSize,
           front: designSnapshot.front,
           back: designSnapshot.back,
+          baseUnitPrice: baseUnit,
           unitPrice,
           qty: 1,
         });
@@ -5410,6 +5772,8 @@
       `${location.pathname}${cleanQuery ? `?${cleanQuery}` : ""}#modelos`
     );
   }
+  updateDeliveryEstimate();
+  window.setInterval(updateDeliveryEstimate, 60 * 60 * 1000);
 })();
 
 /* --------------------------------------------------------------------------

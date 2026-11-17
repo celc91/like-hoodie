@@ -64,6 +64,13 @@
     cancelled: "Cancelado",
   };
 
+  const APPROVAL_LABELS = {
+    pending: "Pendiente de vista previa",
+    sent: "Vista previa enviada",
+    approved: "Aprobado por el cliente",
+    rejected: "Rechazado por el cliente",
+  };
+
   const PAYMENT_LABELS = {
     demo: "Demostración",
     pending: "Pago pendiente",
@@ -2047,6 +2054,19 @@
             )
             .join("")}
         </select>
+        <label for="detail-approval">Aprobación del diseño</label>
+        <select id="detail-approval">
+          ${Object.entries(APPROVAL_LABELS)
+            .map(
+              ([value, label]) =>
+                `<option value="${value}" ${
+                  value === (order.design_approval_status || "pending")
+                    ? "selected"
+                    : ""
+                }>${label}</option>`
+            )
+            .join("")}
+        </select>
         <label for="detail-notes">Notas internas</label>
         <textarea id="detail-notes" placeholder="Producción, entrega o incidencias…">${escapeHTML(
           order.admin_notes || ""
@@ -2074,6 +2094,7 @@
 
     $("#detail-save").addEventListener("click", async () => {
       const status = $("#detail-status").value;
+      const approval = $("#detail-approval").value;
       const adminNotes = $("#detail-notes").value.slice(0, 1000);
       const carrier = $("#detail-carrier").value.trim().slice(0, 60);
       const trackingNumber = $("#detail-tracking").value.trim().slice(0, 80);
@@ -2086,6 +2107,11 @@
         .from("orders")
         .update({
           status,
+          design_approval_status: approval,
+          design_approved_at:
+            approval === "approved"
+              ? order.design_approved_at || new Date().toISOString()
+              : null,
           admin_notes: adminNotes,
           carrier: carrier || null,
           tracking_number: trackingNumber || null,
