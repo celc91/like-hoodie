@@ -4,6 +4,27 @@ Todos los cambios visibles del proyecto. Formato basado en
 [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado
 semántico.
 
+## [1.18.1] — 2026-11-17
+
+### Cambiado
+
+- **DNSSEC activo:** se reinició la configuración en Cloudflare Registrar y el
+  DS quedó publicado en el registro `.com`.
+  - DS: `2371 13 2 31AEB0FC067B281933D9BE9BDE3325F4D50C351593E72EEDA07CFA439AEEF72C`.
+  - El registro confirma `delegationSigned: true`.
+- **Comprobador DNS:** consulta Google y `1.1.1.1` para no depender de la caché
+  de un solo resolutor.
+- **Disponibilidad:** ahora falla si falta el DS o si ningún resolutor valida
+  (`AD=false`), en vez de emitir solo un aviso.
+- **Guía DNSSEC:** actualizada con el estado activo y el procedimiento de
+  reversión.
+
+### Verificado
+
+- `node scripts/check-dns.mjs`: `Registros DS: 1`, `Validación DNSSEC (AD): sí`.
+- RDAP de Verisign: `delegationSigned: true`.
+- Google DNS y `1.1.1.1` validan respuestas `A` con `AD=true`.
+
 ## [1.18.0] — 2026-11-17
 
 ### Añadido

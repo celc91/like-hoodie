@@ -12,10 +12,8 @@
 
 const domain = process.argv[2] || "likehoodie.com";
 
-async function resolve(name, type) {
-  const url = `https://dns.google/resolve?name=${encodeURIComponent(
-    name
-  )}&type=${type}&do=1`;
+async function resolve(name, type, base = "https://dns.google/resolve") {
+  const url = `${base}?name=${encodeURIComponent(name)}&type=${type}&do=1`;
   const response = await fetch(url, {
     headers: { accept: "application/dns-json" },
     signal: AbortSignal.timeout(15000),
@@ -25,32 +23,44 @@ async function resolve(name, type) {
 }
 
 try {
-  const [ds, a, ns] = await Promise.all([
-    resolve(domain, "DS"),
-    resolve(domain, "A"),
-    resolve(domain, "NS"),
+  const [dsGoogle, dsCloudflare, aGoogle, aCloudflare, ns] = await Promise.all([
+    resolve(domain, "DS").catch(() => null),
+    resolve(domain, "DS", "https://1.1.1.1/dns-query").catch(() => null),
+    resolve(domain, "A").catch(() => null),
+    resolve(domain, "A", "https://1.1.1.1/dns-query").catch(() => null),
+    resolve(domain, "NS").catch(() => null),
   ]);
 
-  const dsRecords = Array.isArray(ds.Answer) ? ds.Answer.length : 0;
-  const nameservers = Array.isArray(ns.Answer)
+  const dsAnswers = [
+    ...(Array.isArray(dsGoogle?.Answer) ? dsGoogle.Answer : []),
+    ...(Array.isArray(dsCloudflare?.Answer) ? dsCloudflare.Answer : []),
+  ].filter((entry) => entry.type === 43);
+  const dsRecords = new Set(
+    dsAnswers.map((entry) => String(entry.data || "").trim().toLowerCase())
+  ).size;
+  const nameservers = Array.isArray(ns?.Answer)
     ? ns.Answer.filter((entry) => entry.type === 2).map((entry) =>
         String(entry.data || "").replace(/\.$/, "")
       )
     : [];
-  const validated = Boolean(a.AD);
+  // Distintos resolutores pueden tardar más en validar; basta con uno.
+  const validated = Boolean(aGoogle?.AD || aCloudflare?.AD);
+  const dsData = dsAnswers[0]?.data || "";
 
   console.log(`Dominio: ${domain}`);
   console.log(`Nameservers: ${nameservers.join(", ") || "sin respuesta"}`);
   console.log(`Registros DS: ${dsRecords}`);
+  if (dsRecords) console.log(`DS: ${dsData}`);
   console.log(`Validación DNSSEC (AD): ${validated ? "sí" : "no"}`);
 
   if (dsRecords === 0) {
     console.warn(
       "DNSSEC pendiente: falta el registro DS en el registrador (Cloudflare)."
     );
+    if (process.env.REQUIRE_DNSSEC === "1") process.exitCode = 1;
   } else if (!validated) {
     console.error(
-      "DNSSEC mal configurado: hay DS pero el resolutor no valida la respuesta."
+      "DNSSEC mal configurado: hay DS pero ningún resolutor valida la respuesta."
     );
     process.exitCode = 1;
   } else {

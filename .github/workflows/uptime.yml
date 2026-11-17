@@ -92,9 +92,20 @@ jobs:
             report="${report}- Certificado TLS: caduca en ${tls_days} días\n"
           fi
 
-          ds=$(curl -fsS --max-time 15 "https://dns.google/resolve?name=likehoodie.com&type=DS" || true)
-          if ! printf '%s' "$ds" | grep -q '"Answer"'; then
-            echo "::warning title=DNSSEC::likehoodie.com no tiene registro DS. DNSSEC sigue pendiente."
+          ds_google=$(curl -fsS --max-time 15 "https://dns.google/resolve?name=likehoodie.com&type=DS&do=1" || true)
+          ds_cloudflare=$(curl -fsS --max-time 15 "https://1.1.1.1/dns-query?name=likehoodie.com&type=DS&do=1" \
+            -H "accept: application/dns-json" || true)
+          if ! printf '%s%s' "$ds_google" "$ds_cloudflare" | grep -q '"type":43'; then
+            fail=1
+            report="${report}- DNSSEC: falta el registro DS en el registrador\n"
+          else
+            ad_google=$(curl -fsS --max-time 15 "https://dns.google/resolve?name=likehoodie.com&type=A&do=1" || true)
+            ad_cloudflare=$(curl -fsS --max-time 15 "https://1.1.1.1/dns-query?name=likehoodie.com&type=A&do=1" \
+              -H "accept: application/dns-json" || true)
+            if ! printf '%s%s' "$ad_google" "$ad_cloudflare" | grep -q '"AD":true'; then
+              fail=1
+              report="${report}- DNSSEC: el DS existe pero ningún resolutor valida (AD=false)\n"
+            fi
           fi
 
           if [ "$fail" = "1" ]; then

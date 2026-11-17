@@ -4,31 +4,38 @@
 
 - DNS y registrador: **Cloudflare**.
 - Nameservers: `ashley.ns.cloudflare.com`, `carter.ns.cloudflare.com`.
-- Registro DS: **pendiente** (comprobado con `node scripts/check-dns.mjs`).
-- Sin DS, los resolutores no pueden validar DNSSEC aunque Cloudflare firme la
-  zona.
+- DNSSEC: **activo y validado** desde el 17 de noviembre de 2026.
+- DS publicado en el registro `.com`:
 
-## Activarlo
+  ```text
+  likehoodie.com. 3600 IN DS 2371 13 2
+  31AEB0FC067B281933D9BE9BDE3325F4D50C351593E72EEDA07CFA439AEEF72C
+  ```
 
-1. Entra en <https://dash.cloudflare.com> con la cuenta del dominio.
-2. Selecciona **likehoodie.com → DNS → Settings**.
-3. Activa **DNSSEC**.
-4. Cloudflare es también el registrador, así que publica el DS directamente.
-   Si la pantalla muestra un **DS record** y no lo publica sola, cópialo y
-   añádelo en **Domain Registration → Manage → DNSSEC**.
-5. Espera la propagación (de minutos a 24 h) y verifica:
+## Verificación
 
-   ```sh
-   node scripts/check-dns.mjs
-   ```
+```sh
+node scripts/check-dns.mjs
+```
 
-   Debe mostrar `Registros DS: 1` o más y `Validación DNSSEC (AD): sí`.
+Debe mostrar `Registros DS: 1` y `Validación DNSSEC (AD): sí`.
 
-## Seguridad
+La comprobación consulta Google y `1.1.1.1` porque distintos resolutores
+pueden tardar más en validar. El workflow **Disponibilidad** falla si el DS
+desaparece o si ningún resolutor valida la respuesta.
 
-- No cambies los nameservers para activar DNSSEC.
-- Si el DS no coincide con la zona, el dominio puede dejar de resolver en
-  resolutores validadores. Guarda el DS que muestra Cloudflare antes de
-  publicarlo.
-- El workflow **Disponibilidad** avisa con un `warning` mientras falte el DS,
-  pero no falla para no generar incidencias diarias por un pendiente conocido.
+## Historial
+
+- Cloudflare mantuvo el DS en estado pendiente desde el 14 de noviembre.
+- El 17 de noviembre se desactivó y reactivó DNSSEC desde el registrador.
+- El DS se publicó y la validación quedó activa en menos de 15 minutos.
+
+## Cómo desactivarlo (solo si hace falta)
+
+1. Entra en **Domain Registration → likehoodie.com → Settings**.
+2. Pulsa **Disable DNSSEC** y confirma.
+3. Espera a que el registrador retire el DS.
+4. Mantén la firma de la zona en Cloudflare hasta que expire el TTL del DS.
+
+Nunca retires el DS sin desactivar antes la firma ni cambies los nameservers
+con DNSSEC activo.
