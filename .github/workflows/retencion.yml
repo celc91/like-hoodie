@@ -1,0 +1,48 @@
+name: Retención
+
+on:
+  schedule:
+    - cron: "40 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Solo simular (1) o borrar de verdad (0)"
+        required: false
+        default: "0"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: retention
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    name: Limpiar logos y archivos antiguos
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Ejecutar función de retención
+        env:
+          CLEANUP_SECRET: ${{ secrets.CLEANUP_SECRET }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
+        run: |
+          if [ -z "$CLEANUP_SECRET" ]; then
+            echo "::error title=Retención::Falta el secreto CLEANUP_SECRET."
+            exit 1
+          fi
+          if [ "$DRY_RUN" != "1" ]; then
+            DRY_RUN=0
+          fi
+          code=$(curl -sS --retry 2 --retry-delay 5 --max-time 120 \
+            -X POST "https://qrblsclpzoaxfaggsrda.supabase.co/functions/v1/cleanup-storage?dryRun=${DRY_RUN}" \
+            -H "x-cleanup-secret: ${CLEANUP_SECRET}" \
+            -H "Content-Type: application/json" \
+            -o /tmp/cleanup.json -w "%{http_code}" || echo "000")
+          cat /tmp/cleanup.json 2>/dev/null || true
+          if [ "$code" != "200" ]; then
+            echo "::error title=Retención::La función respondió HTTP ${code}."
+            exit 1
+          fi
+          grep -q '"ok":true' /tmp/cleanup.json

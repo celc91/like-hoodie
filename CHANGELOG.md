@@ -4,6 +4,39 @@ Todos los cambios visibles del proyecto. Formato basado en
 [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado
 semántico.
 
+## [1.18.0] — 2026-11-17
+
+### Añadido
+
+- **Retención de logos:** Edge Function `cleanup-storage` que borra archivos
+  antiguos de `order-logos` y `order-prints` con la API de Storage y limpia sus
+  filas en `logo_assets`.
+  - 30 días para logos sin pedido y archivos huérfanos.
+  - 180 días para pedidos entregados o cancelados.
+- **Cron de retención:** workflow semanal **Retención**, con ejecución manual y
+  modo `dryRun`.
+- **Monitorización externa:** comprobación de Supabase Auth, caducidad del
+  certificado TLS y cierre automático de la incidencia de disponibilidad cuando
+  el servicio se recupera.
+- **DNSSEC:** guía de activación en Cloudflare y `scripts/check-dns.mjs` para
+  verificar DS y validación `AD`.
+- **Privacidad:** plazos concretos de logos y archivos de impresión.
+
+### Seguridad
+
+- `cleanup-storage` solo acepta `POST` y exige `x-cleanup-secret`; no usa JWT.
+- Pruebas: 401 sin secreto, 405 con `GET`.
+- El secreto está en Supabase (`CLEANUP_SECRET`) y en GitHub Actions.
+
+### Verificado
+
+- Simulación de retención en producción: **79 logos, 70 prints, 35 assets y 9
+  pedidos** revisados; **0 candidatos** con los datos actuales.
+- Workflows de HTML, Enlaces, RLS, Pages y Disponibilidad sin cambios de
+  seguridad.
+- `node scripts/check-dns.mjs`: sin DS, aviso de DNSSEC pendiente.
+- Smoke y precios actualizados con las comprobaciones nuevas.
+
 ## [1.17.0] — 2026-11-17
 
 ### Añadido

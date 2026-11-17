@@ -70,6 +70,33 @@ jobs:
             report="${report}- Edge Function invoice-request: HTTP ${invoice_code}\n"
           fi
 
+          auth_code=$(curl -sS --retry 2 --retry-delay 4 -o /dev/null -w "%{http_code}" --max-time 20 \
+            "https://qrblsclpzoaxfaggsrda.supabase.co/auth/v1/health" \
+            -H "apikey: ${key}" || echo "000")
+          if [ "$auth_code" != "200" ]; then
+            fail=1
+            report="${report}- Supabase Auth: HTTP ${auth_code}\n"
+          fi
+
+          expiry=$(echo | openssl s_client -servername likehoodie.com -connect likehoodie.com:443 2>/dev/null \
+            | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
+          tls_days=-1
+          if [ -n "$expiry" ]; then
+            end=$(date -d "$expiry" +%s 2>/dev/null || echo 0)
+            if [ "$end" != "0" ]; then
+              tls_days=$(( (end - $(date +%s)) / 86400 ))
+            fi
+          fi
+          if [ "$tls_days" -lt 14 ]; then
+            fail=1
+            report="${report}- Certificado TLS: caduca en ${tls_days} días\n"
+          fi
+
+          ds=$(curl -fsS --max-time 15 "https://dns.google/resolve?name=likehoodie.com&type=DS" || true)
+          if ! printf '%s' "$ds" | grep -q '"Answer"'; then
+            echo "::warning title=DNSSEC::likehoodie.com no tiene registro DS. DNSSEC sigue pendiente."
+          fi
+
           if [ "$fail" = "1" ]; then
             echo "failed=true" >> "$GITHUB_OUTPUT"
             printf "%b" "$report" > /tmp/report.txt
@@ -89,4 +116,15 @@ jobs:
             gh issue comment "$existing" --body "$body"
           else
             gh issue create --title "🚨 likehoodie.com no responde" --body "$body"
+          fi
+
+      - name: Cerrar incidencia si se recuperó
+        if: steps.check.outputs.failed == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          existing=$(gh issue list --state open --search 'likehoodie.com no responde in:title' --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "$existing" ] && [ "$existing" != "null" ]; then
+            gh issue comment "$existing" --body "Servicio recuperado a las $(date -u '+%Y-%m-%d %H:%M UTC'). La comprobación automática vuelve a pasar."
+            gh issue close "$existing"
           fi

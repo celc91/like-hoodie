@@ -55,7 +55,9 @@ Tienda online de demostración para vender sudaderas personalizadas. Incluye cat
 - **Aprobación del diseño:** el pedido queda pendiente de aprobación; el admin registra vista previa enviada, aprobada o rechazada antes de imprimir.
 - **Fecha estimada:** muestra una fecha de llegada calculada con producción y envío en días hábiles.
 - **WhatsApp:** botón flotante y enlaces con mensaje contextual en tienda, producto y seguimiento.
-- **Monitorización:** errores JS y fallos de compra/print visibles en **Salud** del admin; comprobación de disponibilidad cada 30 min con aviso por issue. El seguimiento y los errores pasan por Edge Functions con rate limit atómico por IP, tope global y retención de 90 días.
+- **Monitorización:** errores JS y fallos de compra/print visibles en **Salud** del admin; comprobación externa cada 30 min de páginas, Edge Functions, Supabase Auth y caducidad TLS, con aviso por issue y cierre automático al recuperarse. El seguimiento y los errores pasan por Edge Functions con rate limit atómico por IP, tope global y retención de 90 días.
+- **Retención de archivos:** limpieza semanal de `order-logos` y `order-prints`; logos sin pedido a los 30 días y logos de pedidos cerrados a los 180 días. Ver `docs/retencion.md`.
+- **DNSSEC:** verificación con `node scripts/check-dns.mjs` y guía en `docs/dns-dnssec.md`; el registro DS sigue pendiente en Cloudflare.
 - **Cálculo de precio:** el precio del modelo se actualiza al elegir talla; la compra se completa en la tienda.
 - **Carrito:** cantidades, eliminación, subtotal, envío y envío gratis desde $1,200 MXN.
 - **Persistencia:** el carrito se guarda en `localStorage` y se sincroniza con Supabase.

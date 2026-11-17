@@ -43,6 +43,11 @@ check("app: clip art", app.includes("CLIP_ART") && index.includes("data-clip-gri
 check("app: varios colores", app.includes("addMultiToCart") && index.includes("data-multi-modal"));
 check("app: guardar y compartir", app.includes("buildShareLink") && index.includes("data-share-modal"));
 check("index: productos relacionados", index.includes("data-product-jump"));
+check("retención: función", read("supabase/functions/cleanup-storage/index.ts").includes("CLEANUP_SECRET"));
+check("retención: workflow", read(".github/workflows/retencion.yml").includes("cleanup-storage?dryRun"));
+check("privacidad: retención de logos", read("privacidad.html").includes("180 días"));
+check("dns: comprobador", read("scripts/check-dns.mjs").includes('"DS"'));
+check("uptime: TLS y recuperación", read(".github/workflows/uptime.yml").includes("Certificado TLS") && read(".github/workflows/uptime.yml").includes("Cerrar incidencia"));
 check("admin: colores seguros", admin.includes("function safeHex"));
 check("store: color de texto validado", store.includes("textColor"));
 

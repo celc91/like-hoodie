@@ -283,6 +283,22 @@ pago SAT (`04`/`28`) y correo de envío. Está protegida con RLS: solo el admin 
 purga los intentos de más de 2 días. Los hashes de IP usan `LOOKUP_IP_SALT`;
 configúralo con `npx supabase secrets set LOOKUP_IP_SALT=...`. Sin esa variable los endpoints responden 503 y cada finalidad usa un hash distinto.
 
+## 10. Retención de logos
+
+La función `cleanup-storage` borra archivos antiguos de los buckets privados
+`order-logos` y `order-prints` y sus filas en `logo_assets`:
+
+- 30 días para logos sin pedido y archivos huérfanos;
+- 180 días para pedidos entregados o cancelados.
+
+```sh
+npx supabase functions deploy cleanup-storage --remote=<project-ref>
+npx supabase secrets set CLEANUP_SECRET=... --remote=<project-ref>
+```
+
+El workflow **Retención** la ejecuta cada lunes y admite `dryRun=1` manual.
+Consulta `docs/retencion.md` para la política completa.
+
 ## Privacidad
 
 Antes de operar, actualiza `privacidad.html` y `cookies.html` para mencionar:
