@@ -1198,8 +1198,22 @@ select ok(
 -- Expectativa: los limites secuenciales rechazan la cuarta por correo y sexta por usuario.
 select lh_rls_test.pending('PED-14', 'LH-01 cuarta por correo y sexta por usuario devuelven P0001', false);
 
--- Expectativa: admin_stats solo incluye pagados no cancelados en todos sus agregados.
-select lh_rls_test.pending('PED-15', 'admin_stats cuenta un pagado 1000 y excluye demo pending cancelado', false);
+-- La serie de 14 días debe sumar lo mismo que los KPIs: solo pagados.
+select lh_rls_test.as_admin_aal2();
+insert into lh_rls_test.check values ('PED-15', 'serie_igual_a_rango',
+  (with j as (select public.admin_stats(30) as v)
+   select
+     (select coalesce(sum((e.value ->> 'orders')::int), 0) from jsonb_array_elements(v -> 'series') as e(value))
+       = (v ->> 'orders_range')::int
+     and
+     (select coalesce(sum((e.value ->> 'revenue')::numeric), 0) from jsonb_array_elements(v -> 'series') as e(value))
+       = (v ->> 'revenue_range')::numeric
+   from j));
+select lh_rls_test.as_service_role();
+select ok(
+  coalesce((select pass from lh_rls_test.check where case_id = 'PED-15' and step = 'serie_igual_a_rango'), false),
+  'PED-15 — la serie de admin_stats solo cuenta pagados, igual que los KPIs'
+);
 
 -- Expectativa: admin_stats devuelve 42501 para ANON, CART, A, B y ADM1.
 select lh_rls_test.pending('PED-16', 'admin_stats denegado para todo rol no admin aal2', false);
@@ -1627,8 +1641,61 @@ select ok(
 -- Expectativa: upload propio permitido y listado limitado al primer componente UID.
 select lh_rls_test.pending('STO-04', 'upload logo propio permitido y listado solo propio', false);
 
--- Expectativa: rutas ajenas, barra inicial y aliases con .. no escapan carpeta propia.
-select lh_rls_test.pending('STO-05', 'Storage rechaza o normaliza rutas sin escape de tenant', false);
+-- Q-06: ninguna variante de ruta puede escapar de la carpeta del usuario.
+select lh_rls_test.as_a();
+insert into lh_rls_test.check values ('STO-05', 'punto_punto',
+  (lh_rls_test.try_sql(format(
+    'insert into storage.objects(bucket_id, name, owner) values (%L, %L, %L::uuid)',
+    'order-logos',
+    lh_rls_test.uid_a()::text || '/../' || lh_rls_test.uid_b()::text || '/x.png',
+    lh_rls_test.uid_a()
+  )) = '42501'));
+insert into lh_rls_test.check values ('STO-05', 'barra_inicial',
+  (lh_rls_test.try_sql(format(
+    'insert into storage.objects(bucket_id, name, owner) values (%L, %L, %L::uuid)',
+    'order-logos',
+    '/' || lh_rls_test.uid_a()::text || '/x.png',
+    lh_rls_test.uid_a()
+  )) = '42501'));
+insert into lh_rls_test.check values ('STO-05', 'doble_barra',
+  (lh_rls_test.try_sql(format(
+    'insert into storage.objects(bucket_id, name, owner) values (%L, %L, %L::uuid)',
+    'order-logos',
+    lh_rls_test.uid_a()::text || '//x.png',
+    lh_rls_test.uid_a()
+  )) = '42501'));
+insert into lh_rls_test.check values ('STO-05', 'barra_inversa',
+  (lh_rls_test.try_sql(format(
+    'insert into storage.objects(bucket_id, name, owner) values (%L, %L, %L::uuid)',
+    'order-logos',
+    lh_rls_test.uid_a()::text || '/x\y.png',
+    lh_rls_test.uid_a()
+  )) = '42501'));
+insert into lh_rls_test.check values ('STO-05', 'carpeta_ajena',
+  (lh_rls_test.try_sql(format(
+    'insert into storage.objects(bucket_id, name, owner) values (%L, %L, %L::uuid)',
+    'order-logos',
+    lh_rls_test.uid_b()::text || '/x.png',
+    lh_rls_test.uid_a()
+  )) = '42501'));
+insert into lh_rls_test.check values ('STO-05', 'control',
+  (lh_rls_test.try_sql(format(
+    'insert into storage.objects(bucket_id, name, owner) values (%L, %L, %L::uuid)',
+    'order-logos',
+    lh_rls_test.uid_a()::text || '/ok.png',
+    lh_rls_test.uid_a()
+  )) = 'ok'));
+
+select lh_rls_test.as_service_role();
+insert into lh_rls_test.check values ('STO-05', 'canario',
+  (select count(*) = 1 from storage.objects
+    where bucket_id = 'order-logos'
+      and name = (lh_rls_test.uid_a()::text || '/ok.png')));
+
+select ok(
+  (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'STO-05'),
+  'STO-05 — rutas con .., barras o carpeta ajena se rechazan; la propia funciona'
+);
 
 -- Expectativa: ADM1 no lee logos/prints; ADM2 si.
 select lh_rls_test.pending('STO-06', 'lectura admin de logos y prints requiere aal2', false);
