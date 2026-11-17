@@ -343,7 +343,7 @@ Secretos de la función (Supabase → Edge Functions → Secrets):
 | `GA_SERVICE_ACCOUNT` | JSON de la cuenta de servicio con acceso de lectura a la propiedad |
 | `GA_PROPERTY_ID` | Opcional; por defecto `344891849` |
 | `META_ACCESS_TOKEN` | Token con `ads_read` para Ads Insights |
-| `META_AD_ACCOUNT_ID` | Opcional; por defecto `act_2084208475729036` |
+| `META_AD_ACCOUNT_ID` | Opcional; por defecto `act_2254330422156099` |
 
 Para GA4: crea una cuenta de servicio en Google Cloud, habilita la Analytics Data
 API, descarga su clave JSON y añádela en GA4 → *Administrar* → *Acceso a la

@@ -61,7 +61,7 @@ const publishableKey = (): string => {
 
 const GA_SCOPE = "https://www.googleapis.com/auth/analytics.readonly";
 const DEFAULT_PROPERTY = "344891849";
-const DEFAULT_AD_ACCOUNT = "act_2084208475729036";
+const DEFAULT_AD_ACCOUNT = "act_2254330422156099";
 
 type ServiceAccount = {
   client_email?: string;
