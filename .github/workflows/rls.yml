@@ -27,7 +27,7 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 3.2.0
 
       - name: Bootstrap de la base local
         run: node scripts/bootstrap-local.mjs
