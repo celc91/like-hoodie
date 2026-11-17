@@ -1,3 +1,19 @@
+-- Script heredado (LH-08). Si la base ya tiene el esquema actual, no se
+-- reejecuta: reabriria permisos que las migraciones posteriores cierran.
+do $do$
+begin
+  if exists (
+    select 1
+      from information_schema.columns
+     where table_schema = 'public'
+       and table_name = 'orders'
+       and column_name = 'currency'
+  ) then
+    raise exception 'Script heredado: la base ya esta migrada. Usa scripts/bootstrap-local.mjs o supabase db push.';
+  end if;
+end;
+$do$;
+
 -- Endurecimiento de la lista del club y de los cupones
 -- Ejecuta esto en Supabase → SQL Editor → Run
 

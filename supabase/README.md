@@ -172,40 +172,58 @@ el esquema base a una migración de línea base: fallaría por el mismo motivo.
 
 ### Orden de SQL
 
-En un proyecto nuevo ejecuta:
+Para una base local nueva, usa `node scripts/bootstrap-local.mjs`: aplica esta
+secuencia y después las migraciones. Si lo haces a mano, respeta el orden.
 
-1. `schema.sql`
-2. `storage-logos.sql`
-3. `security-hardening.sql`
-4. `coupons.sql`
-5. `clip-payments.sql`
-6. `email-notifications.sql`
-7. `fase1-pedidos-seguros.sql` (**siempre al final**)
-8. `fase3-seguimiento.sql`
-9. `fase3-monitorizacion.sql`
-10. `fase4-seguridad.sql` (límites, rate limit y retención)
-11. `fase5-ratelimit.sql` (contador atómico `take_order_lookup`)
-12. `fase6-limites.sql` (topes de `items`, monitorización y `clip-pay`)
-13. `fase7-abuso.sql` (eventos, carritos, logos y `process-logo`)
-14. `antispam-cupones.sql` (límite de intentos de cupón)
-15. `fase8-admin-mfa.sql` (MFA `aal2` obligatorio para admin)
-16. `fase9-facturacion-global.sql` (cierre semanal y factura global)
-17. `fase10-facturacion-individual.sql` (solicitudes de factura individual)
-18. `supabase/migrations/20261115000100_precios_tote.sql` (precios por producto)
-19. `supabase/migrations/20261115000200_facturacion_verificacion.sql` (correo y forma SAT)
-20. `supabase/migrations/20261115000300_admin_stats_pagados.sql` (métricas sin demo)
-21. `supabase/migrations/20261115000400_cupones_unicos.sql` (cupón único por suscriptor)
-22. `supabase/migrations/20261115000500_aviso_factura.sql` (aviso al admin y helper Resend)
-23. `supabase/migrations/20261117000100_aprobacion_diseno.sql` (aprobación del diseño)
-24. `supabase/migrations/20261117000200_precios_volumen.sql` (tamaño de impresión y volumen)
-25. `supabase/migrations/20261117000300_item_price_firma.sql` (firma única de `item_unit_price`)
-26. `supabase/migrations/20261117000900_order_locks.sql` (límites atómicos de pedidos)
-27. `supabase/migrations/20261117001000_nombre_numero.sql` (nombres y números de equipo)
-23. `supabase/migrations/20261115120000_seguridad_rls_b5.sql` (newsletter, `has_resend_key`, retención y facturas bloqueadas)
-24. `supabase/migrations/20261115130000_locks_concurrencia.sql` (locks de `place_order` y newsletter)
-25. `supabase/migrations/20261115140000_orders_currency.sql` (`orders.currency` para Clip)
-26. `supabase/migrations/20261115150000_clip_idempotencia.sql` (reclamación atómica de pagos y links)
-27. `supabase/migrations/20261115160000_locks_menores.sql` (locks de cupones, topes globales y triggers)
+```text
+schema.sql
+storage-logos.sql
+security-hardening.sql
+coupons.sql
+clip-payments.sql
+email-notifications.sql
+fase1-pedidos-seguros.sql
+fase3-seguimiento.sql
+fase3-monitorizacion.sql
+fase4-seguridad.sql
+fase5-ratelimit.sql
+fase6-limites.sql
+logo-assets.sql
+fase7-abuso.sql
+fase8-admin-mfa.sql
+fase9-facturacion-global.sql
+fase10-facturacion-individual.sql
+newsletter.sql
+optin-1-columnas.sql
+optin-2-funciones.sql
+security-fixes.sql
+antispam.sql
+optin-3-alta.sql
+antispam-cupones.sql
+meta-capi-1-consentimiento.sql
+meta-capi-2-compra.sql
+order-email-baja.sql
+order-email-baja-pago.sql
+```
+
+Después, las migraciones de `supabase/migrations/` en orden:
+
+1. `20261115000100` — precios por producto
+2. `20261115000200` — verificación de factura
+3. `20261115000300` — métricas solo con pagados
+4. `20261115000400` — cupón único por suscriptor
+5. `20261115000500` — aviso de factura al admin
+6. `20261115120000` — cierre de newsletter, sal y facturas bloqueadas
+7. `20261115130000` — locks de pedidos y newsletter
+8. `20261115140000` — orders.currency
+9. `20261115150000` — idempotencia de Clip
+10. `20261115160000` — locks de cupones y topes globales
+11. `20261117000100` — aprobación del diseño
+12. `20261117000200` — precios por volumen
+13. `20261117000300` — firma única de item_unit_price
+14. `20261117000900` — límites atómicos de pedidos
+15. `20261117001000` — nombres y números de equipo
+16. `20261117110000` — diagnóstico de Meta
 
 Las migraciones nuevas viven en [`migrations/`](migrations/README.md) y son
 idempotentes. Después de la lista anterior, ejecuta las migraciones en orden.
