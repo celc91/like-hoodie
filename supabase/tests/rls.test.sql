@@ -1222,6 +1222,9 @@ select ok(
 
 -- PED-09: un pedido válido ignora campos extra que intentan imponer total,
 -- estado o pago, y recalcula todo en servidor.
+select lh_rls_test.as_service_role();
+select lh_rls_test.register_fixture('PED9C', lh_rls_test.seed_cart(lh_rls_test.uid_c()));
+
 select lh_rls_test.as_cart();
 select public.place_order(
   lh_rls_test.valid_customer('{"email":"qa-ped09@example.invalid"}'::jsonb),
@@ -1232,7 +1235,7 @@ select public.place_order(
     ),
     '{0,paymentStatus}', '"paid"'::jsonb
   ),
-  lh_rls_test.fixture_id('CC'),
+  lh_rls_test.fixture_id('PED9C'),
   '',
   null
 );
@@ -1248,10 +1251,10 @@ insert into lh_rls_test.check values ('PED-09', 'campos',
       and shipping = case when subtotal >= 1200 then 0 else 99 end
       and total = subtotal + shipping
      from public.orders
-    where cart_id = lh_rls_test.fixture_id('CC')));
+    where cart_id = lh_rls_test.fixture_id('PED9C')));
 insert into lh_rls_test.check values ('PED-09', 'carrito',
   (select status = 'converted' from public.carts
-    where id = lh_rls_test.fixture_id('CC')));
+    where id = lh_rls_test.fixture_id('PED9C')));
 
 select ok(
   (select coalesce(bool_and(pass), false) from lh_rls_test.check where case_id = 'PED-09'),
