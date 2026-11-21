@@ -12,6 +12,9 @@ pestaña explica qué conectar.
 - Usuarios por día (agrupados por semana en periodos de 90 días).
 - Países de las visitas, canales de adquisición, páginas y eventos más
   frecuentes.
+- Filtro por país: al elegir uno, el gráfico diario y todos los indicadores se
+  limitan a ese país. La tarjeta *Países* sigue mostrando la lista completa para
+  poder cambiar de filtro.
 - Periodos de 7, 28 o 90 días.
 
 **Meta**

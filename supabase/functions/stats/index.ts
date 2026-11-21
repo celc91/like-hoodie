@@ -176,7 +176,7 @@ const number = (value: unknown): number => {
 const metric = (row: GaRow, index: number): number =>
   number(row.metricValues?.[index]?.value);
 
-async function loadAnalytics(days: number, property: string) {
+async function loadAnalytics(days: number, property: string, country = "") {
   const raw = env("GA_SERVICE_ACCOUNT");
   if (!raw) {
     return {
@@ -201,9 +201,27 @@ async function loadAnalytics(days: number, property: string) {
     const token = await googleAccessToken(account);
     const range = { startDate: `${days}daysAgo`, endDate: "today" };
 
+    // El filtro de país se aplica a todo menos a la lista de países, para que
+    // el selector siga ofreciendo el resto de opciones.
+    const countryFilter = country
+      ? {
+          dimensionFilter: {
+            filter: {
+              fieldName: "country",
+              stringFilter: {
+                matchType: "EXACT",
+                value: country,
+                caseSensitive: false,
+              },
+            },
+          },
+        }
+      : {};
+
     const [totalsRows, daily, channels, countries, pages, events] = await Promise.all([
       gaReport(token, property, {
         dateRanges: [range],
+        ...countryFilter,
         metrics: [
           { name: "activeUsers" },
           { name: "sessions" },
@@ -214,6 +232,7 @@ async function loadAnalytics(days: number, property: string) {
       }),
       gaReport(token, property, {
         dateRanges: [range],
+        ...countryFilter,
         dimensions: [{ name: "date" }],
         metrics: [{ name: "activeUsers" }, { name: "sessions" }],
         orderBys: [{ dimension: { dimensionName: "date" } }],
@@ -221,6 +240,7 @@ async function loadAnalytics(days: number, property: string) {
       }),
       gaReport(token, property, {
         dateRanges: [range],
+        ...countryFilter,
         dimensions: [{ name: "sessionDefaultChannelGroup" }],
         metrics: [{ name: "sessions" }],
         orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
@@ -235,6 +255,7 @@ async function loadAnalytics(days: number, property: string) {
       }),
       gaReport(token, property, {
         dateRanges: [range],
+        ...countryFilter,
         dimensions: [{ name: "pageTitle" }],
         metrics: [{ name: "screenPageViews" }],
         orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }],
@@ -242,6 +263,7 @@ async function loadAnalytics(days: number, property: string) {
       }),
       gaReport(token, property, {
         dateRanges: [range],
+        ...countryFilter,
         dimensions: [{ name: "eventName" }],
         metrics: [{ name: "eventCount" }],
         orderBys: [{ metric: { metricName: "eventCount" }, desc: true }],
@@ -421,7 +443,7 @@ Deno.serve(async (request) => {
     return json({ error: "No autorizado" }, 403, origin);
   }
 
-  let body: { days?: number } = {};
+  let body: { days?: number; country?: string } = {};
   try {
     body = await request.json();
   } catch {
@@ -430,6 +452,8 @@ Deno.serve(async (request) => {
 
   const allowed = [7, 28, 90];
   const days = allowed.includes(Number(body.days)) ? Number(body.days) : 28;
+  const country =
+    typeof body.country === "string" ? body.country.trim().slice(0, 60) : "";
   const property = env("GA_PROPERTY_ID") || DEFAULT_PROPERTY;
 
   const admin = createClient(url, service, {
@@ -444,7 +468,7 @@ Deno.serve(async (request) => {
   }
 
   const [ga, meta, capiResult] = await Promise.all([
-    loadAnalytics(days, property),
+    loadAnalytics(days, property, country),
     loadMeta(days, metaToken),
     admin.rpc("meta_last_response"),
   ]);
@@ -453,6 +477,7 @@ Deno.serve(async (request) => {
   return json(
     {
       days,
+      country,
       generatedAt: new Date().toISOString(),
       ga,
       meta: { ...meta, capi: capi || null },

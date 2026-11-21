@@ -593,6 +593,11 @@
     analyticsPeriod.addEventListener("change", () => loadAnalytics());
   }
 
+  const analyticsCountry = $("#analytics-country");
+  if (analyticsCountry) {
+    analyticsCountry.addEventListener("change", () => loadAnalytics());
+  }
+
   function loadAll() {
     loadStats();
     loadAnalytics();
@@ -731,6 +736,31 @@
     const days = Number(data.days) || 28;
     const rangeLabel = `Últimos ${days} días`;
 
+    const countrySelect = $("#analytics-country");
+    let activeCountry = "";
+    if (countrySelect) {
+      const selected = countrySelect.value;
+      const list = Array.isArray(ga.countries) ? ga.countries : [];
+      const options = ['<option value="">Todos los países</option>'];
+      list.forEach((row) => {
+        const raw = String(row.label || "");
+        if (!raw || raw === "Sin país") return;
+        options.push(
+          `<option value="${escapeHTML(raw)}">${escapeHTML(countryLabel(raw))}</option>`
+        );
+      });
+      if (selected && !list.some((row) => String(row.label) === selected)) {
+        options.push(
+          `<option value="${escapeHTML(selected)}">${escapeHTML(
+            countryLabel(selected)
+          )}</option>`
+        );
+      }
+      countrySelect.innerHTML = options.join("");
+      countrySelect.value = selected;
+      activeCountry = countrySelect.value;
+    }
+
     const setup = $("#analytics-setup");
     if (setup) {
       const blocks = [];
@@ -763,7 +793,10 @@
         : ""
     );
 
-    setText("#ga-range", ga.totals ? `${rangeLabel} · ${formatMoney(totals.revenue)}` : rangeLabel);
+    const rangeParts = [rangeLabel];
+    if (ga.totals) rangeParts.push(formatMoney(totals.revenue));
+    if (activeCountry) rangeParts.push(countryLabel(activeCountry));
+    setText("#ga-range", rangeParts.join(" · "));
     renderAnalyticsChart(ga.daily);
     renderAnalyticsList("#ga-channels", ga.channels, "Sin sesiones");
     renderAnalyticsList(
@@ -821,7 +854,9 @@
   async function loadAnalytics() {
     if (!client) return;
     const periodSelect = $("#analytics-period");
+    const countrySelect = $("#analytics-country");
     const days = Number(periodSelect && periodSelect.value) || 28;
+    const country = countrySelect ? countrySelect.value : "";
     const button = $("#analytics-refresh");
     if (button) button.disabled = true;
 
@@ -840,7 +875,7 @@
           apikey: config.publishableKey,
           Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify({ days }),
+        body: JSON.stringify({ days, country }),
       });
 
       if (response.status === 403) {

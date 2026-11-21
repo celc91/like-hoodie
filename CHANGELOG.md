@@ -17,7 +17,8 @@ semántico.
   mientras no haya reseñas reales con consentimiento. Ver `docs/resenas.md`.
 - **CI RLS:** workflow `RLS` con bootstrap local, runner de concurrencia y pgTAP.
 - **Países en el panel:** la pestaña Estadísticas muestra los países de las
-  visitas (usuarios por país, con los nombres en español).
+  visitas (usuarios por país, con los nombres en español) y permite filtrar por
+  país el gráfico diario y todos los indicadores.
 - **`docs/estadisticas.md`:** guía del panel de estadísticas (GA4 Data API,
   Meta Ads Insights, tráfico interno, UTM y comprobaciones).
 - **Enlaces con UTM en el panel:** generador por página y canal (WhatsApp,
