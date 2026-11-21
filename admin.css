@@ -1306,7 +1306,7 @@ a { color: inherit; }
   }
 }
 
-/* ------------------------------ Estadísticas ------------------------------ */
+/* ------------------------------ Estadï¿½sticas ------------------------------ */
 
 .setup-box {
   margin: 0 0 16px;
@@ -1340,6 +1340,16 @@ a { color: inherit; }
 
 .analytics-lists,
 .analytics-meta { margin-top: 14px; }
+
+.analytics-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .analytics-grid-3 { grid-template-columns: 1fr; }
+}
 
 .analytics-meta .kpis { margin-bottom: 0; }
 

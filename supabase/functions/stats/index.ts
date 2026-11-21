@@ -201,7 +201,7 @@ async function loadAnalytics(days: number, property: string) {
     const token = await googleAccessToken(account);
     const range = { startDate: `${days}daysAgo`, endDate: "today" };
 
-    const [totalsRows, daily, channels, pages, events] = await Promise.all([
+    const [totalsRows, daily, channels, countries, pages, events] = await Promise.all([
       gaReport(token, property, {
         dateRanges: [range],
         metrics: [
@@ -225,6 +225,13 @@ async function loadAnalytics(days: number, property: string) {
         metrics: [{ name: "sessions" }],
         orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
         limit: 6,
+      }),
+      gaReport(token, property, {
+        dateRanges: [range],
+        dimensions: [{ name: "country" }],
+        metrics: [{ name: "activeUsers" }, { name: "sessions" }],
+        orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+        limit: 12,
       }),
       gaReport(token, property, {
         dateRanges: [range],
@@ -270,6 +277,11 @@ async function loadAnalytics(days: number, property: string) {
         label: String(row.dimensionValues?.[0]?.value || "Sin canal"),
         count: metric(row, 0),
       })),
+      countries: countries.map((row) => ({
+        label: String(row.dimensionValues?.[0]?.value || "Sin país"),
+        count: metric(row, 0),
+        sessions: metric(row, 1),
+      })),
       pages: pages.map((row) => ({
         label: String(row.dimensionValues?.[0]?.value || "Sin título"),
         count: metric(row, 0),
@@ -287,6 +299,7 @@ async function loadAnalytics(days: number, property: string) {
       totals: null,
       daily: [],
       channels: [],
+      countries: [],
       pages: [],
       events: [],
     };

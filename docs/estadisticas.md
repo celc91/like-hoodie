@@ -10,7 +10,8 @@ pestaña explica qué conectar.
 
 - Usuarios, sesiones, vistas, conversiones e ingresos del periodo.
 - Usuarios por día (agrupados por semana en periodos de 90 días).
-- Canales de adquisición, páginas y eventos más frecuentes.
+- Países de las visitas, canales de adquisición, páginas y eventos más
+  frecuentes.
 - Periodos de 7, 28 o 90 días.
 
 **Meta**

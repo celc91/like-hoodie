@@ -669,6 +669,43 @@
       .join("");
   }
 
+  const COUNTRY_NAMES = {
+    Mexico: "México",
+    "United States": "Estados Unidos",
+    Spain: "España",
+    Colombia: "Colombia",
+    Argentina: "Argentina",
+    Chile: "Chile",
+    Peru: "Perú",
+    Canada: "Canadá",
+    France: "Francia",
+    Germany: "Alemania",
+    "United Kingdom": "Reino Unido",
+    Brazil: "Brasil",
+    Ecuador: "Ecuador",
+    Guatemala: "Guatemala",
+    "Costa Rica": "Costa Rica",
+    Panama: "Panamá",
+    "Dominican Republic": "República Dominicana",
+    Bolivia: "Bolivia",
+    Uruguay: "Uruguay",
+    Venezuela: "Venezuela",
+    Honduras: "Honduras",
+    "El Salvador": "El Salvador",
+    Nicaragua: "Nicaragua",
+    Paraguay: "Paraguay",
+    Cuba: "Cuba",
+    "Puerto Rico": "Puerto Rico",
+    India: "India",
+    Philippines: "Filipinas",
+  };
+
+  function countryLabel(value) {
+    const name = String(value || "").trim();
+    if (!name || /^\(not set\)$/i.test(name)) return "Sin país";
+    return COUNTRY_NAMES[name] || name;
+  }
+
   function renderAnalyticsList(target, rows, emptyText) {
     const element = $(target);
     if (!element) return;
@@ -729,6 +766,14 @@
     setText("#ga-range", ga.totals ? `${rangeLabel} · ${formatMoney(totals.revenue)}` : rangeLabel);
     renderAnalyticsChart(ga.daily);
     renderAnalyticsList("#ga-channels", ga.channels, "Sin sesiones");
+    renderAnalyticsList(
+      "#ga-countries",
+      (ga.countries || []).map((row) => ({
+        label: countryLabel(row.label),
+        count: row.count,
+      })),
+      "Sin visitas"
+    );
     renderAnalyticsList("#ga-pages", ga.pages, "Sin vistas");
     renderAnalyticsList("#ga-events", ga.events, "Sin eventos");
 
