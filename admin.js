@@ -999,8 +999,29 @@
   };
 
   let conversations = [];
+  let editingConversation = null;
+  let salesView = "board";
+  const salesFilter = { query: "", source: "" };
 
-  async function loadConversations() {
+  try {
+    salesView = window.localStorage.getItem("lh-sales-view") === "list" ? "list" : "board";
+  } catch (error) {
+    /* sin almacenamiento */
+  }
+
+  function relativeTime(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    const minutes = Math.round((Date.now() - date.getTime()) / 60000);
+    if (minutes < 1) return "ahora";
+    if (minutes < 60) return `hace ${minutes} min`;
+    const hours = Math.round(minutes / 60);
+    if (hours < 24) return `hace ${hours} h`;
+    const days = Math.round(hours / 24);
+    return `hace ${days} d`;
+  }
+
+  async function loadConversations(options = {}) {
     if (!client) return;
     const { data, error } = await client
       .from("conversations")
@@ -1009,12 +1030,23 @@
       .limit(500);
 
     if (error) {
-      toast("No se pudieron cargar las conversaciones.");
+      if (!options.silent) toast("No se pudieron cargar las conversaciones.");
       return;
     }
 
     conversations = Array.isArray(data) ? data : [];
     renderConversations();
+  }
+
+  function filteredConversations() {
+    const query = salesFilter.query.trim().toLowerCase();
+    return conversations.filter((conversation) => {
+      if (salesFilter.source && conversation.source !== salesFilter.source) return false;
+      if (!query) return true;
+      return [conversation.name, conversation.product, conversation.notes].some((value) =>
+        String(value || "").toLowerCase().includes(query)
+      );
+    });
   }
 
   function renderConversations() {
@@ -1035,62 +1067,28 @@
     setText("#sales-revenue", formatMoney(revenue));
     setText("#sales-aov", `Ticket medio ${formatMoney(aov)}`);
 
-    const funnel = $("#sales-funnel");
-    if (funnel) {
-      const counts = {};
-      conversations.forEach((c) => {
-        counts[c.stage] = (counts[c.stage] || 0) + 1;
-      });
-      const max = Math.max(1, ...Object.values(counts));
-
-      funnel.innerHTML = SALES_STAGES.map((stage) => {
-        const count = counts[stage.id] || 0;
-        const width = Math.round((count / max) * 100);
-        const pct = total ? Math.round((count / total) * 100) : 0;
-        return `<div class="funnel-row" data-stage="${stage.id}">
-          <span class="funnel-label">${stage.label}</span>
-          <div class="funnel-track"><div class="funnel-fill" style="width:${width}%"></div></div>
-          <span class="funnel-value">${count}<small>${pct} %</small></span>
-        </div>`;
-      }).join("");
+    const badge = $("#sales-badge");
+    if (badge) {
+      badge.hidden = pending === 0;
+      badge.textContent = String(pending);
     }
 
-    const body = $("#conv-body");
-    const empty = $("#conv-empty");
-    if (body) {
-      if (!conversations.length) {
-        body.innerHTML = "";
-        if (empty) empty.hidden = false;
-      } else {
-        if (empty) empty.hidden = true;
-        body.innerHTML = conversations
-          .map((c) => {
-            const options = SALES_STAGES.map(
-              (stage) =>
-                `<option value="${stage.id}"${stage.id === c.stage ? " selected" : ""}>${stage.label}</option>`
-            ).join("");
-            return `<tr>
-              <td>${escapeHTML(c.name)}</td>
-              <td>${escapeHTML(SOURCE_LABEL[c.source] || c.source)}</td>
-              <td>${escapeHTML(c.product || "—")}</td>
-              <td>
-                <select class="conv-stage" data-conv-stage="${c.id}" aria-label="Etapa de ${escapeHTML(
-                  c.name
-                )}">${options}</select>
-              </td>
-              <td>
-                <input class="conv-amount" type="number" min="0" max="100000" step="1"
-                  value="${Number(c.amount) || 0}" data-conv-amount="${c.id}"
-                  aria-label="Monto de ${escapeHTML(c.name)}">
-              </td>
-              <td class="conv-note" title="${escapeHTML(c.notes || "")}">${escapeHTML(
-                c.notes || "—"
-              )}</td>
-              <td><button class="conv-delete" type="button" data-conv-delete="${c.id}">Quitar</button></td>
-            </tr>`;
-          })
-          .join("");
-      }
+    const boardButton = $("#sales-view-board");
+    const listButton = $("#sales-view-list");
+    if (boardButton) boardButton.classList.toggle("is-active", salesView === "board");
+    if (listButton) listButton.classList.toggle("is-active", salesView === "list");
+
+    const board = $("#sales-board");
+    const list = $("#sales-list");
+    if (board) board.hidden = salesView !== "board";
+    if (list) list.hidden = salesView !== "list";
+
+    const rows = filteredConversations();
+
+    if (salesView === "board" && board) {
+      renderSalesBoard(rows);
+    } else {
+      renderSalesList(rows);
     }
 
     const updated = $("#sales-updated");
@@ -1102,17 +1100,88 @@
     }
   }
 
-  async function updateConversation(id, patch) {
-    if (!client || !id) return;
+  function renderSalesBoard(rows) {
+    const board = $("#sales-board");
+    if (!board) return;
+
+    const byStage = {};
+    rows.forEach((conversation) => {
+      (byStage[conversation.stage] = byStage[conversation.stage] || []).push(conversation);
+    });
+
+    board.innerHTML = SALES_STAGES.map((stage) => {
+      const items = byStage[stage.id] || [];
+      const cards = items.length
+        ? items
+            .map(
+              (c) => `<article class="board-card" draggable="true" data-conv-id="${c.id}" tabindex="0">
+                <div class="board-card__top">
+                  <strong>${escapeHTML(c.name)}</strong>
+                  <span class="source-pill">${escapeHTML(SOURCE_LABEL[c.source] || c.source)}</span>
+                </div>
+                <p class="board-card__product">${escapeHTML(c.product || "—")}</p>
+                ${Number(c.amount) > 0 ? `<p class="board-card__amount">${formatMoney(c.amount)}</p>` : ""}
+                ${c.notes ? `<p class="board-card__note">${escapeHTML(c.notes)}</p>` : ""}
+                <span class="board-card__time">${relativeTime(c.created_at)}</span>
+              </article>`
+            )
+            .join("")
+        : '<p class="board-empty">—</p>';
+
+      return `<section class="board-col" data-stage="${stage.id}">
+        <header class="board-col__head"><span>${stage.label}</span><em>${items.length}</em></header>
+        <div class="board-col__body">${cards}</div>
+      </section>`;
+    }).join("");
+  }
+
+  function renderSalesList(rows) {
+    const body = $("#conv-body");
+    const empty = $("#conv-empty");
+    if (!body) return;
+
+    if (!rows.length) {
+      body.innerHTML = "";
+      if (empty) empty.hidden = false;
+      return;
+    }
+
+    if (empty) empty.hidden = true;
+    body.innerHTML = rows
+      .map((c) => {
+        const options = SALES_STAGES.map(
+          (stage) =>
+            `<option value="${stage.id}"${stage.id === c.stage ? " selected" : ""}>${stage.label}</option>`
+        ).join("");
+        return `<tr>
+          <td>${escapeHTML(c.name)}</td>
+          <td>${escapeHTML(SOURCE_LABEL[c.source] || c.source)}</td>
+          <td>${escapeHTML(c.product || "—")}</td>
+          <td><select class="conv-stage" data-conv-stage="${c.id}" aria-label="Etapa de ${escapeHTML(
+            c.name
+          )}">${options}</select></td>
+          <td><input class="conv-amount" type="number" min="0" max="100000" step="1" value="${
+            Number(c.amount) || 0
+          }" data-conv-amount="${c.id}" aria-label="Monto de ${escapeHTML(c.name)}"></td>
+          <td class="conv-note" title="${escapeHTML(c.notes || "")}">${escapeHTML(c.notes || "—")}</td>
+          <td><button class="conv-delete" type="button" data-conv-delete="${c.id}">Quitar</button></td>
+        </tr>`;
+      })
+      .join("");
+  }
+
+  async function updateConversation(id, patch, options = {}) {
+    if (!client || !id) return false;
     const { error } = await client.from("conversations").update(patch).eq("id", id);
     if (error) {
       toast("No se pudo actualizar la conversación.");
-      return;
+      return false;
     }
     const index = conversations.findIndex((c) => c.id === id);
     if (index >= 0) conversations[index] = { ...conversations[index], ...patch };
     renderConversations();
-    toast("Conversación actualizada.");
+    if (!options.silent) toast("Conversación actualizada.");
+    return true;
   }
 
   async function deleteConversation(id) {
@@ -1125,6 +1194,153 @@
     conversations = conversations.filter((c) => c.id !== id);
     renderConversations();
     toast("Conversación quitada.");
+  }
+
+  /* ---------------------------- Ficha (modal) ---------------------------- */
+
+  function openConversationModal(conversation) {
+    const modal = $("#conv-modal");
+    if (!modal) return;
+
+    editingConversation = conversation || null;
+    setText("#conv-modal-title", conversation ? "Editar conversación" : "Nueva conversación");
+
+    if ($("#conv-d-name")) $("#conv-d-name").value = conversation ? conversation.name : "";
+    if ($("#conv-d-source")) $("#conv-d-source").value = conversation ? conversation.source : "marketplace";
+    if ($("#conv-d-stage")) $("#conv-d-stage").value = conversation ? conversation.stage : "nuevo";
+    if ($("#conv-d-product")) {
+      $("#conv-d-product").value = conversation ? conversation.product : "Sudadera Cocodrilo GTA 6";
+    }
+    if ($("#conv-d-amount")) {
+      $("#conv-d-amount").value = conversation ? Number(conversation.amount) || 0 : "";
+    }
+    if ($("#conv-d-notes")) $("#conv-d-notes").value = conversation ? conversation.notes || "" : "";
+    if ($("#conv-d-delete")) $("#conv-d-delete").hidden = !conversation;
+
+    modal.classList.add("is-open");
+    modal.setAttribute("aria-hidden", "false");
+    modal.removeAttribute("inert");
+    window.setTimeout(() => $("#conv-d-name")?.focus(), 60);
+  }
+
+  function closeConversationModal() {
+    const modal = $("#conv-modal");
+    if (!modal) return;
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    modal.setAttribute("inert", "");
+    editingConversation = null;
+  }
+
+  async function saveConversationFromModal() {
+    if (!client) return;
+    const name = ($("#conv-d-name")?.value || "").trim();
+    if (!name) {
+      toast("Escribe un nombre.");
+      return;
+    }
+
+    const payload = {
+      name: name.slice(0, 80),
+      source: $("#conv-d-source")?.value || "marketplace",
+      stage: $("#conv-d-stage")?.value || "nuevo",
+      product: ($("#conv-d-product")?.value || "").trim().slice(0, 120),
+      amount: Math.max(0, Math.min(100000, Number($("#conv-d-amount")?.value) || 0)),
+      notes: ($("#conv-d-notes")?.value || "").trim().slice(0, 1000),
+    };
+
+    if (editingConversation) {
+      const saved = await updateConversation(editingConversation.id, payload, { silent: true });
+      if (!saved) return;
+      toast("Conversación actualizada.");
+    } else {
+      const { data, error } = await client.from("conversations").insert(payload).select().single();
+      if (error) {
+        toast("No se pudo añadir la conversación.");
+        return;
+      }
+      conversations.unshift(data);
+      renderConversations();
+      toast("Conversación añadida.");
+    }
+
+    closeConversationModal();
+  }
+
+  const convSave = $("#conv-d-save");
+  if (convSave) convSave.addEventListener("click", saveConversationFromModal);
+
+  const convDelete = $("#conv-d-delete");
+  if (convDelete) {
+    convDelete.addEventListener("click", () => {
+      if (!editingConversation) return;
+      if (!window.confirm("¿Quitar esta conversación del embudo?")) return;
+      deleteConversation(editingConversation.id);
+      closeConversationModal();
+    });
+  }
+
+  $$("[data-close-conv]").forEach((button) =>
+    button.addEventListener("click", closeConversationModal)
+  );
+
+  const convModal = $("#conv-modal");
+  if (convModal) {
+    convModal.addEventListener("click", (event) => {
+      if (event.target === convModal) closeConversationModal();
+    });
+  }
+
+  /* ------------------------- Tablero y lista ----------------------------- */
+
+  const salesBoard = $("#sales-board");
+  if (salesBoard) {
+    salesBoard.addEventListener("click", (event) => {
+      if (event.target.closest(".board-col__head")) return;
+      const card = event.target.closest("[data-conv-id]");
+      if (!card) return;
+      const conversation = conversations.find((c) => c.id === card.dataset.convId);
+      if (conversation) openConversationModal(conversation);
+    });
+
+    salesBoard.addEventListener("dragstart", (event) => {
+      const card = event.target.closest("[data-conv-id]");
+      if (!card) return;
+      event.dataTransfer.setData("text/plain", card.dataset.convId);
+      event.dataTransfer.effectAllowed = "move";
+      card.classList.add("is-dragging");
+    });
+
+    salesBoard.addEventListener("dragend", (event) => {
+      const card = event.target.closest("[data-conv-id]");
+      if (card) card.classList.remove("is-dragging");
+      salesBoard.querySelectorAll(".board-col.is-over").forEach((col) => col.classList.remove("is-over"));
+    });
+
+    salesBoard.addEventListener("dragover", (event) => {
+      const col = event.target.closest(".board-col");
+      if (!col) return;
+      event.preventDefault();
+      col.classList.add("is-over");
+    });
+
+    salesBoard.addEventListener("dragleave", (event) => {
+      const col = event.target.closest(".board-col");
+      if (!col) return;
+      if (!col.contains(event.relatedTarget)) col.classList.remove("is-over");
+    });
+
+    salesBoard.addEventListener("drop", (event) => {
+      const col = event.target.closest(".board-col");
+      if (!col) return;
+      event.preventDefault();
+      col.classList.remove("is-over");
+      const id = event.dataTransfer.getData("text/plain");
+      const stage = col.dataset.stage;
+      const conversation = conversations.find((c) => c.id === id);
+      if (!conversation || !stage || conversation.stage === stage) return;
+      updateConversation(id, { stage });
+    });
   }
 
   const convBody = $("#conv-body");
@@ -1151,41 +1367,63 @@
     });
   }
 
-  const convForm = $("#conv-form");
-  if (convForm) {
-    convForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const name = ($("#conv-name")?.value || "").trim();
-      if (!name || !client) return;
-
-      const payload = {
-        name: name.slice(0, 80),
-        source: $("#conv-source")?.value || "marketplace",
-        product: ($("#conv-product")?.value || "").trim().slice(0, 120),
-        stage: "nuevo",
-        amount: Math.max(0, Math.min(100000, Number($("#conv-amount")?.value) || 0)),
-        notes: ($("#conv-notes")?.value || "").trim().slice(0, 1000),
-      };
-
-      const { data, error } = await client
-        .from("conversations")
-        .insert(payload)
-        .select()
-        .single();
-
-      if (error) {
-        toast("No se pudo añadir la conversación.");
-        return;
-      }
-
-      conversations.unshift(data);
+  const salesSearch = $("#sales-search");
+  if (salesSearch) {
+    salesSearch.addEventListener("input", () => {
+      salesFilter.query = salesSearch.value;
       renderConversations();
-      convForm.reset();
-      const product = $("#conv-product");
-      if (product) product.value = "Sudadera Cocodrilo GTA 6";
-      toast("Conversación añadida.");
     });
   }
+
+  const salesSource = $("#sales-source");
+  if (salesSource) {
+    salesSource.addEventListener("change", () => {
+      salesFilter.source = salesSource.value;
+      renderConversations();
+    });
+  }
+
+  const salesViewBoard = $("#sales-view-board");
+  if (salesViewBoard) {
+    salesViewBoard.addEventListener("click", () => {
+      salesView = "board";
+      try {
+        window.localStorage.setItem("lh-sales-view", "board");
+      } catch (error) {
+        /* sin almacenamiento */
+      }
+      renderConversations();
+    });
+  }
+
+  const salesViewList = $("#sales-view-list");
+  if (salesViewList) {
+    salesViewList.addEventListener("click", () => {
+      salesView = "list";
+      try {
+        window.localStorage.setItem("lh-sales-view", "list");
+      } catch (error) {
+        /* sin almacenamiento */
+      }
+      renderConversations();
+    });
+  }
+
+  const salesNew = $("#sales-new");
+  if (salesNew) salesNew.addEventListener("click", () => openConversationModal(null));
+
+  // Auto-refresco: cada 60 s y al volver a la pestaña.
+  window.setInterval(() => {
+    if (document.visibilityState !== "visible") return;
+    const app = $("#app-view");
+    if (app && !app.hidden) loadConversations({ silent: true });
+  }, 60000);
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && currentSection === "ventas") {
+      loadConversations({ silent: true });
+    }
+  });
 
   /* ------------------------------- Stats -------------------------------- */
 

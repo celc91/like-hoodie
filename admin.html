@@ -67,7 +67,7 @@
         <nav class="tabs" aria-label="Secciones del panel">
           <button class="tab is-active" data-section="resumen" type="button">Resumen</button>
           <button class="tab" data-section="estadisticas" type="button">Estadísticas</button>
-          <button class="tab" data-section="ventas" type="button">Ventas</button>
+          <button class="tab" data-section="ventas" type="button">Ventas<span class="tab-badge" id="sales-badge" hidden>0</span></button>
           <button class="tab" data-section="pedidos" type="button">Pedidos</button>
           <button class="tab" data-section="facturacion" type="button">Facturación</button>
           <button class="tab" data-section="carritos" type="button">Carritos</button>
@@ -347,40 +347,25 @@
           </article>
         </div>
 
-        <div class="grid-2">
-          <article class="card">
-            <div class="card-head">
-              <h2>Embudo</h2>
-              <span class="muted">Conversaciones por etapa</span>
-            </div>
-            <div class="funnel" id="sales-funnel"></div>
-          </article>
-
-          <article class="card">
-            <div class="card-head">
-              <h2>Nueva conversación</h2>
-              <span class="muted">Registro manual</span>
-            </div>
-            <form class="conv-form" id="conv-form">
-              <input id="conv-name" type="text" placeholder="Nombre" maxlength="80" required>
-              <select id="conv-source" aria-label="Origen">
-                <option value="marketplace">Marketplace</option>
-                <option value="meta_ads">Anuncio Meta</option>
-                <option value="whatsapp">WhatsApp</option>
-                <option value="instagram">Instagram</option>
-                <option value="web">Web</option>
-                <option value="otro">Otro</option>
-              </select>
-              <input id="conv-product" type="text" value="Sudadera Cocodrilo GTA 6" maxlength="120" placeholder="Producto">
-              <input id="conv-amount" type="number" min="0" max="100000" step="1" placeholder="Monto MXN">
-              <input id="conv-notes" type="text" maxlength="1000" placeholder="Nota (opcional)">
-              <button class="btn btn-dark" type="submit">Añadir</button>
-            </form>
-            <p class="muted conv-hint">Se guarda en Supabase y solo lo ve el administrador.</p>
-          </article>
+        <div class="toolbar sales-toolbar">
+          <input type="search" id="sales-search" placeholder="Buscar por nombre, producto o nota" aria-label="Buscar conversaciones">
+          <select id="sales-source" aria-label="Filtrar por origen">
+            <option value="">Todos los orígenes</option>
+            <option value="marketplace">Marketplace</option>
+            <option value="meta_ads">Anuncio Meta</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="instagram">Instagram</option>
+            <option value="web">Web</option>
+            <option value="otro">Otro</option>
+          </select>
+          <button class="btn btn-ghost is-active" type="button" id="sales-view-board">Tablero</button>
+          <button class="btn btn-ghost" type="button" id="sales-view-list">Lista</button>
+          <button class="btn btn-dark" type="button" id="sales-new">Nueva conversación</button>
         </div>
 
-        <div class="table-wrap">
+        <div class="sales-board" id="sales-board" role="group" aria-label="Embudo de conversaciones"></div>
+
+        <div class="table-wrap" id="sales-list" hidden>
           <table class="admin-table">
             <thead>
               <tr>
@@ -398,6 +383,57 @@
           <p class="empty" id="conv-empty" hidden>Sin conversaciones registradas.</p>
         </div>
       </section>
+
+      <div class="modal" id="conv-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="conv-modal-title" inert>
+        <div class="modal-card">
+          <button class="modal-close" type="button" data-close-conv aria-label="Cerrar">×</button>
+          <p class="eyebrow">Conversación</p>
+          <h2 id="conv-modal-title">Nueva conversación</h2>
+          <div class="conv-detail">
+            <label for="conv-d-name">Nombre</label>
+            <input id="conv-d-name" type="text" maxlength="80">
+
+            <div class="conv-d-row">
+              <div>
+                <label for="conv-d-source">Origen</label>
+                <select id="conv-d-source">
+                  <option value="marketplace">Marketplace</option>
+                  <option value="meta_ads">Anuncio Meta</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="web">Web</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+              <div>
+                <label for="conv-d-stage">Etapa</label>
+                <select id="conv-d-stage">
+                  <option value="nuevo">Nuevo</option>
+                  <option value="respondido">Respondido</option>
+                  <option value="interesado">Interesado</option>
+                  <option value="apartado">Apartado</option>
+                  <option value="cerrado">Cerrado</option>
+                  <option value="perdido">Perdido</option>
+                </select>
+              </div>
+            </div>
+
+            <label for="conv-d-product">Producto</label>
+            <input id="conv-d-product" type="text" maxlength="120">
+
+            <label for="conv-d-amount">Monto (MXN)</label>
+            <input id="conv-d-amount" type="number" min="0" max="100000" step="1">
+
+            <label for="conv-d-notes">Nota</label>
+            <textarea id="conv-d-notes" maxlength="1000" rows="3"></textarea>
+
+            <div class="conv-d-actions">
+              <button class="btn btn-ghost" type="button" id="conv-d-delete" hidden>Eliminar</button>
+              <button class="btn btn-dark" type="button" id="conv-d-save">Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <section class="section" data-panel="pedidos" hidden>
         <div class="section-head">
@@ -689,6 +725,6 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="admin.js?v=20261123-ventas1"></script>
+  <script src="admin.js?v=20261123-crm1"></script>
 </body>
 </html>
