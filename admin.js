@@ -837,6 +837,13 @@
         ? `${formatMoney(ads.costPerConversation)} por conversación`
         : ""
     );
+    setText("#meta-purchases", meta.configured ? formatInt(ads.purchases) : "—");
+    setText(
+      "#meta-revenue-note",
+      meta.configured
+        ? `${formatMoney(ads.revenue)} atribuidos a anuncios`
+        : ""
+    );
 
     const capi = meta.capi;
     const health = $("#meta-health");

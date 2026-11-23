@@ -50,8 +50,9 @@ semántico.
   `ads_read`. Ahora usa un token de larga duración (60 días) con acceso a la
   cuenta del boost de Marketplace (`act_2084208475729036`), así que la tarjeta
   GASTO muestra el gasto real del periodo elegido. La tarjeta Meta muestra
-  también **conversaciones iniciadas** y su coste, y escribe **tasa de clics** y
-  **costo por clic** en lugar de CTR y CPC.
+  también **conversaciones iniciadas** y su coste, conserva **compras** y valor
+  atribuido, y escribe **tasa de clics** y **costo por clic** en lugar de CTR y
+  CPC.
 - **Compras demo en GA4 y Meta:** `Purchase` solo se envía cuando
   `payment_status = 'paid'`. El trigger `orders_meta_purchase` escucha ahora
   `INSERT` y `UPDATE` y descarta pedidos demo o pendientes. Ver

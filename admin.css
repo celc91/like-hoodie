@@ -1351,7 +1351,10 @@ a { color: inherit; }
   .analytics-grid-3 { grid-template-columns: 1fr; }
 }
 
-.analytics-meta .kpis { margin-bottom: 0; }
+.analytics-meta .kpis {
+  margin-bottom: 0;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
 
 .meta-health {
   margin: 14px 0 0;

@@ -20,7 +20,7 @@ pestaña explica qué conectar.
 **Meta**
 
 - Gasto, impresiones, clics, tasa de clics, costo por clic, conversaciones
-  iniciadas y coste por conversación.
+  iniciadas, coste por conversación, compras y valor atribuido.
 - Estado del último envío de la Conversions API.
 - Enlaces directos a GA4 y a Events Manager.
 
