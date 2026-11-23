@@ -1839,10 +1839,6 @@ a { color: inherit; }
 
 /* El tablero se queda dentro de la ventana: las columnas scrollean, no la pagina. */
 @media (min-width: 900px) {
-  .sales-board {
-    height: calc(100vh - 470px);
-    min-height: 160px;
-  }
   .board-col {
     height: 100%;
     min-height: 0;
@@ -1850,9 +1846,18 @@ a { color: inherit; }
   }
   .board-col__body {
     min-height: 0;
+    overflow-x: hidden;
     overflow-y: auto;
   }
 }
+
+.board-card { max-width: 100%; }
+
+/* Cabecera mas compacta en Ventas para dejar sitio al tablero. */
+[data-panel="ventas"] .kpi { padding: 14px 16px; border-radius: 14px; }
+[data-panel="ventas"] .kpi strong { font-size: clamp(22px, 2.4vw, 30px); }
+[data-panel="ventas"] .kpi > span { margin-bottom: 6px; }
+[data-panel="ventas"] .kpi small { margin-top: 4px; }
 
 .modal { overscroll-behavior: contain; }
 
