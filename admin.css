@@ -1840,11 +1840,18 @@ a { color: inherit; }
 /* El tablero se queda dentro de la ventana: las columnas scrollean, no la pagina. */
 @media (min-width: 900px) {
   .sales-board {
-    max-height: calc(100vh - 320px);
-    min-height: 320px;
+    height: calc(100vh - 400px);
+    min-height: 260px;
   }
-  .board-col { min-height: 0; }
-  .board-col__body { min-height: 0; overflow-y: auto; }
+  .board-col {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .board-col__body {
+    min-height: 0;
+    overflow-y: auto;
+  }
 }
 
 .modal { overscroll-behavior: contain; }
