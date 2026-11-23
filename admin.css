@@ -1840,8 +1840,8 @@ a { color: inherit; }
 /* El tablero se queda dentro de la ventana: las columnas scrollean, no la pagina. */
 @media (min-width: 900px) {
   .sales-board {
-    height: calc(100vh - 400px);
-    min-height: 260px;
+    height: calc(100vh - 470px);
+    min-height: 160px;
   }
   .board-col {
     height: 100%;
