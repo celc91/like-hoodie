@@ -62,8 +62,15 @@
       return fail("El enlace caducó o ya se usó. Pide uno nuevo.");
     }
 
-    const { data } = await client.auth.getSession();
-    if (data && data.session) return showForm();
+    // supabase-js procesa el hash de forma asíncrona: se reintenta un momento
+    // antes de dar el enlace por caducado.
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      const { data } = await client.auth.getSession();
+      if (data && data.session) return showForm();
+      await new Promise(function (resolve) {
+        window.setTimeout(resolve, 250);
+      });
+    }
 
     // Flujo PKCE: el token llega como ?code=
     const code = new URLSearchParams(search).get("code");
