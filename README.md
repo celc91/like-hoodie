@@ -375,9 +375,17 @@ en [`docs/estadisticas.md`](docs/estadisticas.md).
 
 ### Ventas (embudo de conversaciones)
 
-La pestaña **Ventas** registra las conversaciones de Marketplace, anuncios y
-WhatsApp y su etapa: *nuevo → respondido → interesado → apartado → cerrado* (o
-*perdido*). Muestra el embudo, la tasa de cierre, los ingresos y el ticket medio.
+La pestaña **Ventas** es un CRM ligero: registra las conversaciones de
+Marketplace, anuncios y WhatsApp y su etapa (*nuevo → respondido → interesado →
+apartado → cerrado* o *perdido*).
+
+- **Tablero por etapas** con arrastrar y soltar para mover una conversación.
+- **Ficha editable** al pulsar una tarjeta (nombre, origen, etapa, monto, nota).
+- **Vista lista** y **búsqueda/filtro** por origen.
+- **Auto-refresco** cada 60 segundos y al volver a la pestaña.
+- **Aviso** con el número de conversaciones sin responder en la pestaña.
+- KPIs: conversaciones, abiertas, cerradas, tasa de cierre, ingresos y ticket
+  medio.
 
 Meta no expone los chats de Marketplace por API, así que el registro es manual:
 se añaden desde la propia pestaña y se cambian de etapa con un selector. Los

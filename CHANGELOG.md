@@ -20,6 +20,9 @@ semántico.
   de Marketplace, anuncios y WhatsApp, su etapa (*nuevo*, *respondido*,
   *interesado*, *apartado*, *cerrado*, *perdido*), tasa de cierre, ingresos y
   ticket medio. Tabla `conversations` con RLS de administrador.
+- **Ventas como CRM:** tablero por etapas con arrastrar y soltar, ficha
+  editable, vista lista, búsqueda y filtro por origen, auto-refresco cada 60 s
+  y aviso de conversaciones sin responder en la pestaña.
 - **Países en el panel:** la pestaña Estadísticas muestra los países de las
   visitas (usuarios por país, con los nombres en español) y permite filtrar por
   país el gráfico diario y todos los indicadores.
