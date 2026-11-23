@@ -53,6 +53,8 @@ semántico.
   también **conversaciones iniciadas** y su coste, conserva **compras** y valor
   atribuido, y escribe **tasa de clics** y **costo por clic** en lugar de CTR y
   CPC.
+- **Cifras en pesos:** todos los importes del panel usan dos decimales
+  (`$500.00`, `$108.18`), incluido el gasto y el coste por conversación de Meta.
 - **Compras demo en GA4 y Meta:** `Purchase` solo se envía cuando
   `payment_status = 'paid'`. El trigger `orders_meta_purchase` escucha ahora
   `INSERT` y `UPDATE` y descarta pedidos demo o pendientes. Ver
