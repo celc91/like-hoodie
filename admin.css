@@ -1585,11 +1585,12 @@ a { color: inherit; }
 .sales-board {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(248px, 1fr);
+  grid-auto-columns: minmax(190px, 1fr);
   align-items: start;
   gap: 10px;
   overflow-x: auto;
   padding-bottom: 8px;
+  scrollbar-width: thin;
 }
 
 .board-col {
@@ -1809,4 +1810,28 @@ a { color: inherit; }
 
 @media (max-width: 640px) {
   .conv-d-row { grid-template-columns: 1fr; }
+}
+
+/* ------------------------- Ajustes responsivos del CRM ------------------------- */
+
+@media (max-width: 1031px) {
+  .tabs { flex-wrap: wrap; }
+}
+
+@media (max-width: 720px) {
+  .sales-toolbar { flex-wrap: wrap; }
+  .sales-toolbar input[type="search"] { flex: 1 1 100%; }
+  .sales-summary { flex: 1 1 100%; margin-left: 0; }
+  .sales-board { grid-auto-columns: minmax(220px, 84vw); }
+}
+
+@media (max-width: 560px) {
+  .tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { padding: 8px 12px; font-size: 10px; }
 }
