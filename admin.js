@@ -816,20 +816,25 @@
     setText("#meta-spend", meta.configured ? formatMoney(ads.spend) : "—");
     setText("#meta-impressions", meta.configured ? formatInt(ads.impressions) : "—");
     setText("#meta-clicks", meta.configured ? formatInt(ads.clicks) : "—");
-    setText("#meta-purchases", meta.configured ? formatInt(ads.purchases) : "—");
 
     setText("#meta-spend-note", rangeLabel);
-    setText("#meta-clicks-note", meta.configured ? `${formatInt(ads.clicks)} clics` : "");
     setText(
-      "#meta-ctr-note",
+      "#meta-clicks-note",
       meta.configured && ads.impressions
-        ? `CTR ${(Number(ads.ctr) || 0).toFixed(2)} % · CPC ${formatMoney(ads.cpc)}`
+        ? `Tasa de clics ${(Number(ads.ctr) || 0).toFixed(2)} %`
         : ""
     );
     setText(
-      "#meta-revenue-note",
-      meta.configured
-        ? `${formatMoney(ads.revenue)} atribuidos a anuncios`
+      "#meta-ctr-note",
+      meta.configured && ads.clicks
+        ? `Costo por clic ${formatMoney(ads.cpc)}`
+        : ""
+    );
+    setText("#meta-conversations", meta.configured ? formatInt(ads.conversations) : "—");
+    setText(
+      "#meta-conversation-note",
+      meta.configured && ads.conversations
+        ? `${formatMoney(ads.costPerConversation)} por conversación`
         : ""
     );
 

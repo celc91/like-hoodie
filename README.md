@@ -338,8 +338,8 @@ responde a administradores con MFA (`is_admin()`).
 
 Muestra usuarios, sesiones, vistas, conversiones e ingresos de GA4, el gráfico
 por día, canales, páginas y eventos; y de Meta el gasto, las impresiones, los
-clics, las compras y el estado de la Conversions API. Periodos de 7, 28 o 90
-días.
+clics, las conversaciones iniciadas y el estado de la Conversions API. Periodos
+de 7, 28 o 90 días.
 
 Secretos de la función (Supabase → Edge Functions → Secrets):
 

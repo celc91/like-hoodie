@@ -35,7 +35,7 @@ semántico.
   visitas.
 - **Pestaña Estadísticas en el panel:** lee GA4 (usuarios, sesiones, vistas,
   conversiones, ingresos, canales, páginas y eventos) y Meta (gasto,
-  impresiones, clics, compras y estado de la Conversions API) con la Edge
+  impresiones, clics, conversaciones y estado de la Conversions API) con la Edge
   Function `stats`. Sin secretos muestra qué falta configurar.
 - **Medición de producto:** las fichas de modelo cargan analítica con
   consentimiento y envían `view_item` (GA4) / `ViewContent` (Meta) con SKU,
@@ -49,7 +49,9 @@ semántico.
 - **Gasto de Meta en Estadísticas:** el secreto `META_ACCESS_TOKEN` no tenía
   `ads_read`. Ahora usa un token de larga duración (60 días) con acceso a la
   cuenta del boost de Marketplace (`act_2084208475729036`), así que la tarjeta
-  GASTO muestra el gasto real del periodo elegido.
+  GASTO muestra el gasto real del periodo elegido. La tarjeta Meta muestra
+  también **conversaciones iniciadas** y su coste, y escribe **tasa de clics** y
+  **costo por clic** en lugar de CTR y CPC.
 - **Compras demo en GA4 y Meta:** `Purchase` solo se envía cuando
   `payment_status = 'paid'`. El trigger `orders_meta_purchase` escucha ahora
   `INSERT` y `UPDATE` y descarta pedidos demo o pendientes. Ver

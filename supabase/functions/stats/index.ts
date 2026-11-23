@@ -343,7 +343,7 @@ async function loadMeta(days: number, tokenOverride = "") {
     error: null,
     missing: ["META_ACCESS_TOKEN"],
     hint: "No hay token de Meta. Se usa META_ACCESS_TOKEN o, si no existe, el token de CAPI guardado en Vault.",
-    ads: { spend: 0, impressions: 0, clicks: 0, ctr: 0, cpc: 0, purchases: 0, revenue: 0 },
+    ads: { spend: 0, impressions: 0, clicks: 0, ctr: 0, cpc: 0, purchases: 0, revenue: 0, conversations: 0 },
   };
 
   if (!token) return empty;
@@ -383,18 +383,28 @@ async function loadMeta(days: number, tokenOverride = "") {
     const purchaseValue =
       values.find((item) => item.action_type === "offsite_conversion.fb_pixel_purchase") ||
       values.find((item) => item.action_type === "purchase");
+    const conversationAction =
+      actions.find(
+        (item) => item.action_type === "onsite_conversion.messaging_conversation_started_7d"
+      ) ||
+      actions.find((item) => item.action_type === "onsite_conversion.messaging_first_reply");
+
+    const spend = number(row.spend);
+    const conversations = number(conversationAction?.value);
 
     return {
       configured: true,
       error: null,
       ads: {
-        spend: number(row.spend),
+        spend,
         impressions: number(row.impressions),
         clicks: number(row.clicks),
         ctr: number(row.ctr),
         cpc: number(row.cpc),
         purchases: number(purchaseAction?.value),
         revenue: number(purchaseValue?.value),
+        conversations,
+        costPerConversation: conversations > 0 ? spend / conversations : 0,
       },
     };
   } catch (error) {
