@@ -1575,82 +1575,124 @@ a { color: inherit; }
   border-color: var(--ink);
 }
 
+.sales-summary {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
 .sales-board {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(214px, 1fr);
-  gap: 12px;
+  grid-auto-columns: minmax(248px, 1fr);
+  align-items: start;
+  gap: 10px;
   overflow-x: auto;
   padding-bottom: 8px;
 }
 
 .board-col {
+  --stage: #9aa0a6;
   display: flex;
   flex-direction: column;
-  min-height: 220px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.6);
+  min-height: 260px;
+  border: 1px solid rgba(22, 22, 24, 0.08);
+  border-top: 3px solid var(--stage);
+  border-radius: 10px;
+  background: #f4f2ec;
 }
 
+.board-col[data-stage="respondido"] { --stage: #4a90e2; }
+.board-col[data-stage="interesado"] { --stage: #f5a623; }
+.board-col[data-stage="apartado"] { --stage: #9b51e0; }
+.board-col[data-stage="cerrado"] { --stage: #27ae60; }
+.board-col[data-stage="perdido"] { --stage: #eb5757; }
+
 .board-col.is-over {
-  border-color: var(--ink);
-  background: rgba(216, 244, 92, 0.2);
+  background: #eef6df;
+  border-color: rgba(22, 22, 24, 0.25);
 }
 
 .board-col__head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--line);
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted);
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid rgba(22, 22, 24, 0.06);
 }
 
-.board-col__head em {
-  font-style: normal;
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: var(--cream);
-  color: var(--ink);
-  font-size: 9.5px;
+.board-col__head strong {
+  display: block;
+  font-size: 12.5px;
+  letter-spacing: -0.01em;
+}
+
+.board-col__head small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
 }
 
 .board-col__body {
   display: grid;
   align-content: start;
   gap: 8px;
-  padding: 10px;
+  padding: 8px;
 }
 
 .board-card {
-  padding: 10px 11px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--paper);
+  position: relative;
+  padding: 10px 12px 10px 13px;
+  border: 1px solid rgba(22, 22, 24, 0.08);
+  border-left: 3px solid var(--stage);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(22, 22, 24, 0.05);
   cursor: grab;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.board-card:hover {
+  box-shadow: 0 5px 14px rgba(22, 22, 24, 0.1);
+  transform: translateY(-1px);
 }
 
 .board-card:active { cursor: grabbing; }
 .board-card.is-dragging { opacity: 0.45; }
+
+.board-card__grip {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: -1px;
+  opacity: 0.35;
+}
 
 .board-card__top {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 6px;
+  padding-right: 16px;
 }
 
-.board-card__top strong { font-size: 12px; }
+.board-card__top strong {
+  overflow: hidden;
+  font-size: 12.5px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .source-pill {
+  flex: none;
   padding: 1px 6px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(22, 22, 24, 0.12);
   border-radius: 999px;
   color: var(--muted);
   font-size: 8.5px;
@@ -1660,7 +1702,7 @@ a { color: inherit; }
 }
 
 .board-card__product {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   overflow: hidden;
   color: var(--muted);
   font-size: 10.5px;
@@ -1668,33 +1710,44 @@ a { color: inherit; }
   white-space: nowrap;
 }
 
-.board-card__amount {
-  margin: 6px 0 0;
-  font-size: 11.5px;
-  font-weight: 700;
-}
-
 .board-card__note {
   display: -webkit-box;
   margin: 6px 0 0;
   overflow: hidden;
-  color: var(--muted);
+  color: var(--ink-soft);
   font-size: 10.5px;
+  line-height: 1.35;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
 
+.board-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(22, 22, 24, 0.06);
+}
+
+.board-card__amount {
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
 .board-card__time {
-  display: block;
-  margin-top: 6px;
   color: var(--muted);
   font-size: 9.5px;
 }
 
 .board-empty {
-  margin: 4px 0;
+  margin: 2px 0;
+  padding: 10px;
+  border: 1px dashed rgba(22, 22, 24, 0.15);
+  border-radius: 8px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10.5px;
   text-align: center;
 }
 

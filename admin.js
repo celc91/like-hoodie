@@ -1073,6 +1073,12 @@
       badge.textContent = String(pending);
     }
 
+    const pipelineTotal = conversations.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
+    setText(
+      "#sales-summary",
+      `${formatInt(total)} conversaciones · ${formatMoney(pipelineTotal)}`
+    );
+
     const boardButton = $("#sales-view-board");
     const listButton = $("#sales-view-list");
     if (boardButton) boardButton.classList.toggle("is-active", salesView === "board");
@@ -1111,25 +1117,36 @@
 
     board.innerHTML = SALES_STAGES.map((stage) => {
       const items = byStage[stage.id] || [];
+      const stageTotal = items.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
       const cards = items.length
         ? items
             .map(
               (c) => `<article class="board-card" draggable="true" data-conv-id="${c.id}" tabindex="0">
+                <span class="board-card__grip" aria-hidden="true">⋮⋮</span>
                 <div class="board-card__top">
                   <strong>${escapeHTML(c.name)}</strong>
                   <span class="source-pill">${escapeHTML(SOURCE_LABEL[c.source] || c.source)}</span>
                 </div>
                 <p class="board-card__product">${escapeHTML(c.product || "—")}</p>
-                ${Number(c.amount) > 0 ? `<p class="board-card__amount">${formatMoney(c.amount)}</p>` : ""}
                 ${c.notes ? `<p class="board-card__note">${escapeHTML(c.notes)}</p>` : ""}
-                <span class="board-card__time">${relativeTime(c.created_at)}</span>
+                <div class="board-card__meta">
+                  <span class="board-card__amount">${
+                    Number(c.amount) > 0 ? formatMoney(c.amount) : "—"
+                  }</span>
+                  <span class="board-card__time">${relativeTime(c.created_at)}</span>
+                </div>
               </article>`
             )
             .join("")
-        : '<p class="board-empty">—</p>';
+        : '<p class="board-empty">Sin conversaciones</p>';
 
       return `<section class="board-col" data-stage="${stage.id}">
-        <header class="board-col__head"><span>${stage.label}</span><em>${items.length}</em></header>
+        <header class="board-col__head">
+          <div>
+            <strong>${stage.label}</strong>
+            <small>${items.length} · ${formatMoney(stageTotal)}</small>
+          </div>
+        </header>
         <div class="board-col__body">${cards}</div>
       </section>`;
     }).join("");
