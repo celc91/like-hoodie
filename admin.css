@@ -1848,14 +1848,8 @@ a { color: inherit; }
 }
 
 @media (min-width: 900px) {
-  [data-panel="ventas"] {
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100vh - 190px);
-  }
   .sales-board {
-    flex: 1 1 0;
-    min-height: 0;
+    height: clamp(400px, 64vh, 820px);
   }
   .board-col {
     height: 100%;
@@ -1870,6 +1864,8 @@ a { color: inherit; }
 }
 
 /* Cabecera mas compacta en Ventas para dejar sitio al tablero. */
+[data-panel="ventas"] .section-head { margin-bottom: 12px; }
+[data-panel="ventas"] .section-head h1 { font-size: clamp(30px, 3.2vw, 40px); }
 [data-panel="ventas"] .kpi { padding: 14px 16px; border-radius: 14px; }
 [data-panel="ventas"] .kpi strong { font-size: clamp(22px, 2.4vw, 30px); }
 [data-panel="ventas"] .kpi > span { margin-bottom: 6px; }
