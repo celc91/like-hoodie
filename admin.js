@@ -1097,8 +1097,6 @@
       renderSalesList(rows);
     }
 
-    window.requestAnimationFrame(fitSalesBoard);
-
     const updated = $("#sales-updated");
     if (updated) {
       updated.textContent = `Actualizado ${new Date().toLocaleTimeString("es-MX", {
@@ -1154,20 +1152,7 @@
     }).join("");
   }
 
-  function fitSalesBoard() {
-    const board = $("#sales-board");
-    if (!board) return;
-    const panel = document.querySelector('[data-panel="ventas"]');
-    if (window.innerWidth < 900 || board.hidden || (panel && panel.hidden)) {
-      board.style.height = "";
-      return;
-    }
-    const top = board.getBoundingClientRect().top + window.scrollY;
-    const available = window.innerHeight - top - 84;
-    board.style.height = `${Math.max(170, Math.round(available))}px`;
-  }
 
-  window.addEventListener("resize", fitSalesBoard);
 
   function renderSalesList(rows) {
     const body = $("#conv-body");
