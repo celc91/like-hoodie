@@ -373,6 +373,17 @@ Instagram bio/historia, Facebook) con botón de copiar.
 La guía completa, con el detalle de permisos, comprobaciones y limitaciones, está
 en [`docs/estadisticas.md`](docs/estadisticas.md).
 
+### Ventas (embudo de conversaciones)
+
+La pestaña **Ventas** registra las conversaciones de Marketplace, anuncios y
+WhatsApp y su etapa: *nuevo → respondido → interesado → apartado → cerrado* (o
+*perdido*). Muestra el embudo, la tasa de cierre, los ingresos y el ticket medio.
+
+Meta no expone los chats de Marketplace por API, así que el registro es manual:
+se añaden desde la propia pestaña y se cambian de etapa con un selector. Los
+datos viven en la tabla `conversations` con RLS de administrador
+(`supabase/conversaciones.sql`).
+
 ## Pagos con Clip
 
 La integración con **Clip Checkout redireccionado** está creada en `supabase/functions/`:

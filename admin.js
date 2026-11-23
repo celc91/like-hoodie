@@ -553,6 +553,7 @@
       });
       if (section === "resumen") loadStats();
       if (section === "estadisticas") loadAnalytics();
+      if (section === "ventas") loadConversations();
       if (section === "pedidos") loadOrders();
       if (section === "facturacion") {
         loadBilling();
@@ -601,6 +602,7 @@
   function loadAll() {
     loadStats();
     loadAnalytics();
+    loadConversations();
     loadOrders();
     loadBilling();
     loadGlobalHistory();
@@ -975,6 +977,215 @@
   }
 
   updateUtmLink();
+
+  /* --------------------------- Ventas / embudo --------------------------- */
+
+  const SALES_STAGES = [
+    { id: "nuevo", label: "Nuevo" },
+    { id: "respondido", label: "Respondido" },
+    { id: "interesado", label: "Interesado" },
+    { id: "apartado", label: "Apartado" },
+    { id: "cerrado", label: "Cerrado" },
+    { id: "perdido", label: "Perdido" },
+  ];
+
+  const SOURCE_LABEL = {
+    marketplace: "Marketplace",
+    meta_ads: "Anuncio Meta",
+    whatsapp: "WhatsApp",
+    instagram: "Instagram",
+    web: "Web",
+    otro: "Otro",
+  };
+
+  let conversations = [];
+
+  async function loadConversations() {
+    if (!client) return;
+    const { data, error } = await client
+      .from("conversations")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(500);
+
+    if (error) {
+      toast("No se pudieron cargar las conversaciones.");
+      return;
+    }
+
+    conversations = Array.isArray(data) ? data : [];
+    renderConversations();
+  }
+
+  function renderConversations() {
+    const total = conversations.length;
+    const won = conversations.filter((c) => c.stage === "cerrado");
+    const pending = conversations.filter((c) => c.stage === "nuevo").length;
+    const lost = conversations.filter((c) => c.stage === "perdido").length;
+    const open = Math.max(0, total - won.length - lost);
+    const revenue = won.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
+    const rate = total ? Math.round((won.length / total) * 100) : 0;
+    const aov = won.length ? revenue / won.length : 0;
+
+    setText("#sales-total", formatInt(total));
+    setText("#sales-open", `${formatInt(open)} abiertas`);
+    setText("#sales-pending", formatInt(pending));
+    setText("#sales-won", formatInt(won.length));
+    setText("#sales-rate", `${rate} % de cierre`);
+    setText("#sales-revenue", formatMoney(revenue));
+    setText("#sales-aov", `Ticket medio ${formatMoney(aov)}`);
+
+    const funnel = $("#sales-funnel");
+    if (funnel) {
+      const counts = {};
+      conversations.forEach((c) => {
+        counts[c.stage] = (counts[c.stage] || 0) + 1;
+      });
+      const max = Math.max(1, ...Object.values(counts));
+
+      funnel.innerHTML = SALES_STAGES.map((stage) => {
+        const count = counts[stage.id] || 0;
+        const width = Math.round((count / max) * 100);
+        const pct = total ? Math.round((count / total) * 100) : 0;
+        return `<div class="funnel-row" data-stage="${stage.id}">
+          <span class="funnel-label">${stage.label}</span>
+          <div class="funnel-track"><div class="funnel-fill" style="width:${width}%"></div></div>
+          <span class="funnel-value">${count}<small>${pct} %</small></span>
+        </div>`;
+      }).join("");
+    }
+
+    const body = $("#conv-body");
+    const empty = $("#conv-empty");
+    if (body) {
+      if (!conversations.length) {
+        body.innerHTML = "";
+        if (empty) empty.hidden = false;
+      } else {
+        if (empty) empty.hidden = true;
+        body.innerHTML = conversations
+          .map((c) => {
+            const options = SALES_STAGES.map(
+              (stage) =>
+                `<option value="${stage.id}"${stage.id === c.stage ? " selected" : ""}>${stage.label}</option>`
+            ).join("");
+            return `<tr>
+              <td>${escapeHTML(c.name)}</td>
+              <td>${escapeHTML(SOURCE_LABEL[c.source] || c.source)}</td>
+              <td>${escapeHTML(c.product || "—")}</td>
+              <td>
+                <select class="conv-stage" data-conv-stage="${c.id}" aria-label="Etapa de ${escapeHTML(
+                  c.name
+                )}">${options}</select>
+              </td>
+              <td>
+                <input class="conv-amount" type="number" min="0" max="100000" step="1"
+                  value="${Number(c.amount) || 0}" data-conv-amount="${c.id}"
+                  aria-label="Monto de ${escapeHTML(c.name)}">
+              </td>
+              <td class="conv-note" title="${escapeHTML(c.notes || "")}">${escapeHTML(
+                c.notes || "—"
+              )}</td>
+              <td><button class="conv-delete" type="button" data-conv-delete="${c.id}">Quitar</button></td>
+            </tr>`;
+          })
+          .join("");
+      }
+    }
+
+    const updated = $("#sales-updated");
+    if (updated) {
+      updated.textContent = `Actualizado ${new Date().toLocaleTimeString("es-MX", {
+        hour: "2-digit",
+        minute: "2-digit",
+      })}`;
+    }
+  }
+
+  async function updateConversation(id, patch) {
+    if (!client || !id) return;
+    const { error } = await client.from("conversations").update(patch).eq("id", id);
+    if (error) {
+      toast("No se pudo actualizar la conversación.");
+      return;
+    }
+    const index = conversations.findIndex((c) => c.id === id);
+    if (index >= 0) conversations[index] = { ...conversations[index], ...patch };
+    renderConversations();
+    toast("Conversación actualizada.");
+  }
+
+  async function deleteConversation(id) {
+    if (!client || !id) return;
+    const { error } = await client.from("conversations").delete().eq("id", id);
+    if (error) {
+      toast("No se pudo quitar la conversación.");
+      return;
+    }
+    conversations = conversations.filter((c) => c.id !== id);
+    renderConversations();
+    toast("Conversación quitada.");
+  }
+
+  const convBody = $("#conv-body");
+  if (convBody) {
+    convBody.addEventListener("change", (event) => {
+      const stage = event.target.closest("[data-conv-stage]");
+      if (stage) {
+        updateConversation(stage.dataset.convStage, { stage: stage.value });
+        return;
+      }
+      const amount = event.target.closest("[data-conv-amount]");
+      if (amount) {
+        updateConversation(amount.dataset.convAmount, {
+          amount: Math.max(0, Math.min(100000, Number(amount.value) || 0)),
+        });
+      }
+    });
+
+    convBody.addEventListener("click", (event) => {
+      const remove = event.target.closest("[data-conv-delete]");
+      if (!remove) return;
+      if (!window.confirm("¿Quitar esta conversación del embudo?")) return;
+      deleteConversation(remove.dataset.convDelete);
+    });
+  }
+
+  const convForm = $("#conv-form");
+  if (convForm) {
+    convForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const name = ($("#conv-name")?.value || "").trim();
+      if (!name || !client) return;
+
+      const payload = {
+        name: name.slice(0, 80),
+        source: $("#conv-source")?.value || "marketplace",
+        product: ($("#conv-product")?.value || "").trim().slice(0, 120),
+        stage: "nuevo",
+        amount: Math.max(0, Math.min(100000, Number($("#conv-amount")?.value) || 0)),
+        notes: ($("#conv-notes")?.value || "").trim().slice(0, 1000),
+      };
+
+      const { data, error } = await client
+        .from("conversations")
+        .insert(payload)
+        .select()
+        .single();
+
+      if (error) {
+        toast("No se pudo añadir la conversación.");
+        return;
+      }
+
+      conversations.unshift(data);
+      renderConversations();
+      convForm.reset();
+      const product = $("#conv-product");
+      if (product) product.value = "Sudadera Cocodrilo GTA 6";
+      toast("Conversación añadida.");
+    });
+  }
 
   /* ------------------------------- Stats -------------------------------- */
 

@@ -16,6 +16,10 @@ semántico.
 - **Reseñas:** sección `#resenas` alimentada por `resenas.json`; permanece oculta
   mientras no haya reseñas reales con consentimiento. Ver `docs/resenas.md`.
 - **CI RLS:** workflow `RLS` con bootstrap local, runner de concurrencia y pgTAP.
+- **Embudo de ventas en el panel:** pestaña **Ventas** con las conversaciones
+  de Marketplace, anuncios y WhatsApp, su etapa (*nuevo*, *respondido*,
+  *interesado*, *apartado*, *cerrado*, *perdido*), tasa de cierre, ingresos y
+  ticket medio. Tabla `conversations` con RLS de administrador.
 - **Países en el panel:** la pestaña Estadísticas muestra los países de las
   visitas (usuarios por país, con los nombres en español) y permite filtrar por
   país el gráfico diario y todos los indicadores.

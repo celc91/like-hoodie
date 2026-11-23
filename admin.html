@@ -67,6 +67,7 @@
         <nav class="tabs" aria-label="Secciones del panel">
           <button class="tab is-active" data-section="resumen" type="button">Resumen</button>
           <button class="tab" data-section="estadisticas" type="button">Estadísticas</button>
+          <button class="tab" data-section="ventas" type="button">Ventas</button>
           <button class="tab" data-section="pedidos" type="button">Pedidos</button>
           <button class="tab" data-section="facturacion" type="button">Facturación</button>
           <button class="tab" data-section="carritos" type="button">Carritos</button>
@@ -312,6 +313,90 @@
 
           <p class="utm-note">Usa siempre el mismo enlace por canal. Si cambias de campaña, cambia también el enlace que publicas.</p>
         </article>
+      </section>
+
+      <section class="section" data-panel="ventas" hidden>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Ventas</p>
+            <h1>Del mensaje a la venta.</h1>
+          </div>
+          <span class="updated" id="sales-updated"></span>
+        </div>
+
+        <div class="kpis">
+          <article class="kpi">
+            <span>Conversaciones</span>
+            <strong id="sales-total">—</strong>
+            <small id="sales-open">—</small>
+          </article>
+          <article class="kpi">
+            <span>Sin responder</span>
+            <strong id="sales-pending">—</strong>
+            <small>Etapa “nuevo”</small>
+          </article>
+          <article class="kpi">
+            <span>Cerradas</span>
+            <strong id="sales-won">—</strong>
+            <small id="sales-rate">—</small>
+          </article>
+          <article class="kpi">
+            <span>Ingresos</span>
+            <strong id="sales-revenue">—</strong>
+            <small id="sales-aov">—</small>
+          </article>
+        </div>
+
+        <div class="grid-2">
+          <article class="card">
+            <div class="card-head">
+              <h2>Embudo</h2>
+              <span class="muted">Conversaciones por etapa</span>
+            </div>
+            <div class="funnel" id="sales-funnel"></div>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <h2>Nueva conversación</h2>
+              <span class="muted">Registro manual</span>
+            </div>
+            <form class="conv-form" id="conv-form">
+              <input id="conv-name" type="text" placeholder="Nombre" maxlength="80" required>
+              <select id="conv-source" aria-label="Origen">
+                <option value="marketplace">Marketplace</option>
+                <option value="meta_ads">Anuncio Meta</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="instagram">Instagram</option>
+                <option value="web">Web</option>
+                <option value="otro">Otro</option>
+              </select>
+              <input id="conv-product" type="text" value="Sudadera Cocodrilo GTA 6" maxlength="120" placeholder="Producto">
+              <input id="conv-amount" type="number" min="0" max="100000" step="1" placeholder="Monto MXN">
+              <input id="conv-notes" type="text" maxlength="1000" placeholder="Nota (opcional)">
+              <button class="btn btn-dark" type="submit">Añadir</button>
+            </form>
+            <p class="muted conv-hint">Se guarda en Supabase y solo lo ve el administrador.</p>
+          </article>
+        </div>
+
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Origen</th>
+                <th scope="col">Producto</th>
+                <th scope="col">Etapa</th>
+                <th scope="col">Monto</th>
+                <th scope="col">Nota</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody id="conv-body"></tbody>
+          </table>
+          <p class="empty" id="conv-empty" hidden>Sin conversaciones registradas.</p>
+        </div>
       </section>
 
       <section class="section" data-panel="pedidos" hidden>
@@ -604,6 +689,6 @@
 
   <script src="vendor/supabase-js.min.js?v=20261110-sec1"></script>
   <script src="supabase-config.js?v=20261110-pub1"></script>
-  <script src="admin.js?v=20261121-paisfiltro1"></script>
+  <script src="admin.js?v=20261123-ventas1"></script>
 </body>
 </html>

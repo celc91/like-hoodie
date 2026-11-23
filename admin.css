@@ -1445,3 +1445,122 @@ a { color: inherit; }
   .utm-grid { grid-template-columns: 1fr; }
   .utm-output { flex-direction: column; align-items: stretch; }
 }
+
+/* ------------------------------ Ventas / embudo ------------------------------ */
+
+.funnel {
+  display: grid;
+  gap: 10px;
+}
+
+.funnel-row {
+  display: grid;
+  grid-template-columns: 96px 1fr 78px;
+  align-items: center;
+  gap: 10px;
+}
+
+.funnel-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.funnel-track {
+  height: 22px;
+  border-radius: 8px;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+.funnel-fill {
+  height: 100%;
+  border-radius: 8px;
+  background: var(--ink);
+  min-width: 2px;
+}
+
+.funnel-row[data-stage="cerrado"] .funnel-fill { background: var(--orange); }
+.funnel-row[data-stage="perdido"] .funnel-fill { background: var(--line); }
+
+.funnel-value {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+  color: var(--ink);
+}
+
+.funnel-value small {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.conv-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.conv-form input,
+.conv-form select {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+}
+
+.conv-form button { grid-column: 1 / -1; }
+
+.conv-hint {
+  margin: 10px 0 0;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+.conv-note {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.conv-stage,
+.conv-amount {
+  min-height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+}
+
+.conv-amount { width: 92px; }
+
+.conv-delete {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.conv-delete:hover { color: var(--orange); }
+
+@media (max-width: 640px) {
+  .conv-form { grid-template-columns: 1fr; }
+  .funnel-row { grid-template-columns: 78px 1fr 64px; }
+}

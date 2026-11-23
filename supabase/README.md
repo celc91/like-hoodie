@@ -342,6 +342,17 @@ La función exige una sesión de administrador con MFA. Sin secretos responde co
 `configured: false` y el panel muestra qué falta. La guía completa está en
 [`docs/estadisticas.md`](../docs/estadisticas.md).
 
+## 12. Ventas y conversaciones
+
+La pestaña **Ventas** del panel usa la tabla `conversations`, creada por
+`supabase/conversaciones.sql`. Guarda nombre, origen, producto, etapa (`nuevo`,
+`respondido`, `interesado`, `apartado`, `cerrado`, `perdido`), monto y nota.
+
+- RLS: solo `is_admin()` (administrador con MFA) puede leer o modificar.
+- El registro es manual porque Meta no expone los chats de Marketplace por API.
+
+Ejecuta el SQL una vez y listo; el panel se encarga del resto.
+
 ## Privacidad
 
 Antes de operar, actualiza `privacidad.html` y `cookies.html` para mencionar:
