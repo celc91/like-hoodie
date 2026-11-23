@@ -348,7 +348,7 @@ Secretos de la función (Supabase → Edge Functions → Secrets):
 | `GA_SERVICE_ACCOUNT` | JSON de la cuenta de servicio con acceso de lectura a la propiedad |
 | `GA_PROPERTY_ID` | Opcional; por defecto `344891849` |
 | `META_ACCESS_TOKEN` | Token con `ads_read` para Ads Insights |
-| `META_AD_ACCOUNT_ID` | Opcional; por defecto `act_2254330422156099` |
+| `META_AD_ACCOUNT_ID` | Opcional; por defecto `act_2254330422156099`. Hoy apunta a `act_2084208475729036`, donde corre el boost de Marketplace |
 
 Para GA4: crea una cuenta de servicio en Google Cloud, habilita la Analytics Data
 API, descarga su clave JSON y añádela en GA4 → *Administrar* → *Acceso a la
@@ -357,6 +357,13 @@ propiedad* como **Lectora**.
 Para Meta: asigna la cuenta publicitaria al system user con *View performance* y
 genera un token con `ads_read`. Si no defines `META_ACCESS_TOKEN`, la función
 reutiliza el token de Conversions API de Vault.
+
+El token actual es un token de usuario de larga duración (60 días), generado en
+Graph API Explorer con el permiso `ads_read` y extendido en *Access Token
+Debugger*. Caduca el **22 de enero de 2027**; para renovarlo, repite el proceso y
+actualiza el secreto. El gasto que muestra Estadísticas es el del periodo
+elegido (7, 28 o 90 días); el boost de Marketplace se factura en la cuenta
+`act_2084208475729036`.
 
 Ejecuta una vez `supabase/estadisticas.sql`: da permiso a `service_role` para leer
 `meta_last_response()` y crea `stats_meta_token()`.

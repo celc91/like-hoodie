@@ -46,6 +46,10 @@ semántico.
 
 ### Corregido
 
+- **Gasto de Meta en Estadísticas:** el secreto `META_ACCESS_TOKEN` no tenía
+  `ads_read`. Ahora usa un token de larga duración (60 días) con acceso a la
+  cuenta del boost de Marketplace (`act_2084208475729036`), así que la tarjeta
+  GASTO muestra el gasto real del periodo elegido.
 - **Compras demo en GA4 y Meta:** `Purchase` solo se envía cuando
   `payment_status = 'paid'`. El trigger `orders_meta_purchase` escucha ahora
   `INSERT` y `UPDATE` y descarta pedidos demo o pendientes. Ver

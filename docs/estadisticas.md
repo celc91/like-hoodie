@@ -66,6 +66,13 @@ tokens por propiedad al día; el panel consume muy pocos.
 4. En Supabase → **Edge Functions → Secrets**:
    - `META_ACCESS_TOKEN`: el token.
    - `META_AD_ACCOUNT_ID` (opcional): por defecto `act_2254330422156099`.
+     Hoy apunta a `act_2084208475729036`, la cuenta del boost de Marketplace.
+
+Si la cuenta publicitaria no se puede asignar al system user (por ejemplo, porque
+es una cuenta personal fuera del portfolio), se puede usar un token de usuario:
+Graph API Explorer → permisos `ads_read` → *Generate Access Token* → *Access
+Token Debugger* → *Extend Access Token* (60 días). Hay que renovarlo antes de que
+caduque; el actual vence el **22 de enero de 2027**.
 
 Si no existe `META_ACCESS_TOKEN`, la función reutiliza el token de Conversions
 API guardado en Vault (`meta_capi_token`) a través de `stats_meta_token()`. Ese
