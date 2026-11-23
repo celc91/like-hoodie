@@ -1586,11 +1586,12 @@ a { color: inherit; }
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(190px, 1fr);
-  align-items: start;
+  align-items: stretch;
   gap: 10px;
   overflow-x: auto;
   padding-bottom: 8px;
   scrollbar-width: thin;
+  overscroll-behavior: contain;
 }
 
 .board-col {
@@ -1835,3 +1836,17 @@ a { color: inherit; }
   .tabs::-webkit-scrollbar { display: none; }
   .tab { padding: 8px 12px; font-size: 10px; }
 }
+
+/* El tablero se queda dentro de la ventana: las columnas scrollean, no la pagina. */
+@media (min-width: 900px) {
+  .sales-board {
+    max-height: calc(100vh - 320px);
+    min-height: 320px;
+  }
+  .board-col { min-height: 0; }
+  .board-col__body { min-height: 0; overflow-y: auto; }
+}
+
+.modal { overscroll-behavior: contain; }
+
+body.is-locked { overflow: hidden; }

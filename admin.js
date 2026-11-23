@@ -1237,6 +1237,7 @@
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
     modal.removeAttribute("inert");
+    document.body.classList.add("is-locked");
     window.setTimeout(() => $("#conv-d-name")?.focus(), 60);
   }
 
@@ -1246,6 +1247,7 @@
     modal.classList.remove("is-open");
     modal.setAttribute("aria-hidden", "true");
     modal.setAttribute("inert", "");
+    document.body.classList.remove("is-locked");
     editingConversation = null;
   }
 
