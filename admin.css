@@ -1838,16 +1838,6 @@ a { color: inherit; }
 }
 
 /* El tablero se queda dentro de la ventana: las columnas scrollean, no la pagina. */
-[data-panel="ventas"] {
-  display: flex;
-  flex-direction: column;
-}
-
-.sales-board {
-  flex: 1 1 0;
-  min-height: 0;
-}
-
 .board-card {
   min-width: 0;
   max-width: 100%;
@@ -1858,7 +1848,15 @@ a { color: inherit; }
 }
 
 @media (min-width: 900px) {
-  [data-panel="ventas"] { min-height: calc(100vh - 190px); }
+  [data-panel="ventas"] {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 190px);
+  }
+  .sales-board {
+    flex: 1 1 0;
+    min-height: 0;
+  }
   .board-col {
     height: 100%;
     min-height: 0;
