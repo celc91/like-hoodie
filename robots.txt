@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /admin.html
+Disallow: /clave.html
 
 Sitemap: https://likehoodie.com/sitemap.xml
