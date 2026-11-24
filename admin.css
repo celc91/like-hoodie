@@ -1877,3 +1877,46 @@ a { color: inherit; }
 .modal { overscroll-behavior: contain; }
 
 body.is-locked { overflow: hidden; }
+
+/* ------------------------- Selector de idioma ES/EN ------------------------- */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid rgba(23, 19, 15, 0.16);
+  border-radius: 999px;
+  background: rgba(23, 19, 15, 0.04);
+  vertical-align: middle;
+  flex: 0 0 auto;
+}
+.lang-switch button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: 600 10px/1 "Inter", "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: 0.09em;
+  padding: 5px 7px;
+  border-radius: 999px;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: background 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+}
+.lang-switch button:hover { opacity: 0.9; }
+.lang-switch button[aria-pressed="true"] {
+  background: var(--ink, #17130f);
+  color: var(--paper, #fffdf9);
+  opacity: 1;
+}
+.lang-switch--floating {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 9999;
+  background: var(--paper, #fff);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+.login-card { position: relative; }
+.login-card > .lang-switch { position: absolute; top: 14px; right: 14px; z-index: 2; }
+@media (max-width: 640px) { .lang-switch button { padding: 5px 6px; } }

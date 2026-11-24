@@ -1,0 +1,240 @@
+# like hoodie ♡ — traducciones del panel
+# Formato: español ||| english
+
+Administración — like hoodie ♡ ||| Admin — like hoodie ♡
+Panel de administración ||| Admin panel
+Entra a tu negocio. ||| Sign in to your business.
+Pedidos, carritos abandonados y métricas en un solo lugar. ||| Orders, abandoned carts and metrics in one place.
+Correo ||| Email
+Contraseña ||| Password
+Entrar ||| Sign in
+Seguridad ||| Security
+Verificación en dos pasos ||| Two-step verification
+Escribe el código de tu app autenticadora. ||| Enter the code from your authenticator app.
+Clave manual: ||| Manual key:
+Código de 6 dígitos ||| 6-digit code
+Verificar ||| Verify
+Cancelar y volver ||| Cancel and go back
+La sesión se cierra al cerrar la pestaña y tras 30 minutos de inactividad. ||| The session ends when you close the tab and after 30 minutes of inactivity.
+Falta configurar Supabase. Edita ||| Supabase isn't configured yet. Edit
+y sigue los pasos de ||| and follow the steps in
+← Volver a la tienda ||| ← Back to the shop
+Resumen ||| Overview
+Estadísticas ||| Analytics
+Ventas ||| Sales
+Pedidos ||| Orders
+Facturación ||| Invoicing
+Carritos ||| Carts
+Salud ||| Health
+Actualizar ||| Refresh
+Salir ||| Sign out
+Tu negocio, en claro. ||| Your business, clearly.
+Pedidos hoy ||| Orders today
+Ingresos 30 días ||| Revenue, 30 days
+Carritos abandonados ||| Abandoned carts
+Conversión 30 días ||| Conversion, 30 days
+Pedidos últimos 14 días ||| Orders, last 14 days
+Cantidad ||| Quantity
+Lo que más piden ||| Most ordered
+Últimos 30 días ||| Last 30 days
+Técnica ||| Technique
+Material ||| Material
+Color ||| Color
+Talla ||| Size
+Cómo te encuentran. ||| How they find you.
+Últimos 7 días ||| Last 7 days
+Últimos 28 días ||| Last 28 days
+Últimos 90 días ||| Last 90 days
+Todos los países ||| All countries
+Abrir GA4 ||| Open GA4
+Abrir Meta ||| Open Meta
+Usuarios ||| Users
+Sesiones ||| Sessions
+Vistas ||| Views
+Conversiones ||| Conversions
+Usuarios por día ||| Users per day
+Canales ||| Channels
+Países ||| Countries
+Páginas ||| Pages
+Eventos ||| Events
+Conteo ||| Count
+Publicidad y píxel ||| Ads and pixel
+Gasto ||| Spend
+Impresiones ||| Impressions
+Clics ||| Clicks
+Conversaciones ||| Conversations
+Compras ||| Purchases
+Enlaces con UTM ||| UTM links
+Para saber de dónde llega cada visita ||| To know where each visit comes from
+Página ||| Page
+Inicio ||| Home
+Cocodrilo de Miami ||| Miami Crocodile
+Insignia atardecer ||| Sunset Badge
+Panorama Vice ||| Panorama Vice
+Corazón neón ||| Neon Heart
+Diseñar la mía ||| Design mine
+Fuente ||| Source
+Medio ||| Medium
+Campaña ||| Campaign
+Copiar ||| Copy
+Instagram historia ||| Instagram story
+Usa siempre el mismo enlace por canal. Si cambias de campaña, cambia también el enlace que publicas. ||| Always use the same link per channel. If you change campaigns, change the published link too.
+Del mensaje a la venta. ||| From message to sale.
+Sin responder ||| Unanswered
+Etapa “nuevo” ||| Stage “new”
+Cerradas ||| Closed
+Ingresos ||| Revenue
+Todos los orígenes ||| All sources
+Anuncio Meta ||| Meta ad
+Otro ||| Other
+Tablero ||| Board
+Lista ||| List
++ Nueva conversación ||| + New conversation
+Nombre ||| Name
+Origen ||| Source
+Producto ||| Product
+Etapa ||| Stage
+Monto ||| Amount
+Nota ||| Note
+Sin conversaciones registradas. ||| No conversations yet.
+Conversación ||| Conversation
+Nueva conversación ||| New conversation
+Nuevo ||| New
+Respondido ||| Replied
+Interesado ||| Interested
+Apartado ||| Reserved
+Cerrado ||| Closed
+Perdido ||| Lost
+Monto (MXN) ||| Amount (MXN)
+Eliminar ||| Delete
+Guardar ||| Save
+Órdenes y estados. ||| Orders and statuses.
+Exportar CSV ||| Export CSV
+Todos los estados ||| All statuses
+Pendiente ||| Pending
+Confirmado ||| Confirmed
+En producción ||| In production
+Enviado ||| Shipped
+Entregado ||| Delivered
+Cancelado ||| Cancelled
+Pedido ||| Order
+Fecha ||| Date
+Cliente ||| Customer
+Artículos ||| Items
+Diseño ||| Design
+Total ||| Total
+Estado ||| Status
+No hay pedidos con estos filtros. ||| No orders match these filters.
+Anterior ||| Previous
+Siguiente ||| Next
+Global semanal. ||| Weekly global invoice.
+Cierre los domingos. Emite la global dentro de las 24 horas siguientes. Si un cliente necesita factura individual, debe solicitarla y confirmar su correo antes del cierre: la global es de público en general y no es deducible. El desglose de IVA/base se confirma con tu contador antes de emitir. ||| Closes on Sundays. Issue the global invoice within the next 24 hours. If a customer needs an individual invoice, they must request it and confirm their email before the cutoff: the global invoice is issued to the general public and is not deductible. Confirm the VAT/base breakdown with your accountant before issuing.
+Desde ||| From
+Hasta ||| To
+Forma SAT ||| SAT payment method
+No hay pedidos pagados en este periodo. ||| No paid orders in this period.
+Registrar global emitida ||| Register issued global invoice
+Después de emitir el CFDI global en el SAT, captura el UUID y la forma de pago. Se marcarán los pedidos pendientes con esa forma. ||| After issuing the global CFDI with the SAT, enter the UUID and payment method. Pending orders will be marked with that method.
+04 · Tarjeta de crédito ||| 04 · Credit card
+28 · Tarjeta de débito ||| 28 · Debit card
+Notas ||| Notes
+Marcar global emitida ||| Mark global invoice as issued
+Globales emitidas ||| Issued global invoices
+Historial de facturas globales registradas, con periodo, forma de pago, total y UUID. ||| History of registered global invoices, with period, payment method, total and UUID.
+Periodo ||| Period
+Emitida ||| Issued
+No hay facturas globales registradas. ||| No global invoices registered.
+Solicitudes individuales ||| Individual requests
+Solicitudes enviadas desde el formulario público. El cliente debe confirmar el correo de compra. Revisa los datos fiscales, emite el CFDI individual en el SAT y captura el UUID. Si la solicitud no procede, cancélala para liberar el pedido. ||| Requests sent from the public form. The customer must confirm the purchase email. Review the tax details, issue the individual CFDI with the SAT and enter the UUID. If the request isn't valid, cancel it to release the order.
+Todas ||| All
+Sin confirmar ||| Unconfirmed
+Por revisar ||| To review
+Emitidas ||| Issued
+Canceladas ||| Cancelled
+Solicitud ||| Request
+Datos fiscales ||| Tax details
+No hay solicitudes individuales. ||| No individual requests.
+Oportunidades pendientes. ||| Pending opportunities.
+Abandonados ||| Abandoned
+Activos ||| Active
+Convertidos ||| Converted
+Todos ||| All
+Última actividad ||| Last activity
+Valor ||| Value
+Paso ||| Step
+No hay carritos con estos filtros. ||| No carts match these filters.
+Monitorización. ||| Monitoring.
+Errores JS · 24 h ||| JS errors · 24 h
+Máx. 30/hora por sesión ||| Max. 30/hour per session
+Checkout fallido · 24 h ||| Failed checkout · 24 h
+Errores al guardar pedido ||| Order save errors
+Print fallido · 24 h ||| Failed print · 24 h
+Modelo fallido · 24 h ||| Failed model · 24 h
+Compra de la colección ||| Collection purchase
+Errores de JavaScript ||| JavaScript errors
+Ruta ||| Path
+Mensaje ||| Message
+Sin errores registrados en 24 h. ||| No errors in the last 24 h.
+Fallos de compra y print ||| Purchase and print failures
+Evento ||| Event
+Detalle ||| Detail
+Sin fallos registrados en 24 h. ||| No failures in the last 24 h.
+Pendiente de vista previa ||| Pending preview
+Aprobado por el cliente ||| Approved by customer
+Rechazado por el cliente ||| Rejected by customer
+Demostración ||| Demo
+Pago pendiente ||| Payment pending
+Pago fallido ||| Payment failed
+Pago cancelado ||| Payment cancelled
+No se pudo cerrar la sesión inactiva. ||| Couldn't close the inactive session.
+Sesión cerrada por inactividad. Vuelve a entrar. ||| Session closed due to inactivity. Sign in again.
+Vacío ||| Empty
+Esta cuenta no tiene permisos de administrador. ||| This account doesn't have admin permissions.
+No se pudo verificar MFA. ||| Couldn't verify MFA.
+No se pudo verificar la seguridad de la cuenta. Vuelve a entrar. ||| Couldn't verify account security. Sign in again.
+No se pudo cargar Supabase. Revisa tu conexión e inténtalo de nuevo. ||| Couldn't load Supabase. Check your connection and try again.
+No se pudo iniciar la verificación. Inténtalo de nuevo. ||| Couldn't start verification. Try again.
+Código incorrecto o expirado. Inténtalo de nuevo. ||| Incorrect or expired code. Try again.
+Sin datos en este periodo. ||| No data in this period.
+Sin datos ||| No data
+Sin datos todavía ||| No data yet
+GA4 no respondió ||| GA4 didn't respond
+Meta no respondió ||| Meta didn't respond
+por sesión ||| per session
+sin fecha ||| no date
+Todavía no hay envíos de la Conversions API registrados. ||| No Conversions API events have been sent yet.
+Sin token configurado ||| No token configured
+Tu sesión no tiene permisos de administrador con MFA. ||| Your session doesn't have admin permissions with MFA.
+Selecciona y copia el enlace. ||| Select and copy the link.
+Sin conversaciones ||| No conversations
+Conversación actualizada. ||| Conversation updated.
+No se pudo quitar la conversación. ||| Couldn't remove the conversation.
+Conversación quitada. ||| Conversation removed.
+Editar conversación ||| Edit conversation
+¿Quitar esta conversación del embudo? ||| Remove this conversation from the pipeline?
+04 · Crédito ||| 04 · Credit
+28 · Débito ||| 28 · Debit
+Sin forma SAT ||| No SAT method
+El periodo de facturación no es válido. ||| The billing period isn't valid.
+No se pudo cargar la facturación. ||| Couldn't load billing.
+No se pudo actualizar la facturación del pedido. ||| Couldn't update the order billing.
+Facturación del pedido actualizada. ||| Order billing updated.
+Crédito ||| Credit
+Débito ||| Debit
+UUID del CFDI ||| CFDI UUID
+Escribe un UUID válido de 36 caracteres. ||| Enter a valid 36-character UUID.
+Carrito ||| Cart
+Ciudad / Estado / CP ||| City / State / ZIP
+Referencia de pago ||| Payment reference
+Estado del pedido ||| Order status
+Aprobación del diseño ||| Design approval
+Paquetería ||| Carrier
+La URL de seguimiento debe empezar por https:// ||| The tracking URL must start with https://
+No se pudieron guardar los cambios. ||| Couldn't save changes.
+Pedido actualizado. ||| Order updated.
+No se pudo cargar el pedido. ||| Couldn't load the order.
+No se pudieron cargar los pedidos. ||| Couldn't load orders.
+No se pudieron cargar los carritos. ||| Couldn't load carts.
+No se pudo cargar la salud del sitio. ||| Couldn't load site health.
+No se pudieron cargar las estadísticas ||| Couldn't load analytics
+La sesión no es válida. Vuelve a entrar. ||| Your session isn't valid. Sign in again.

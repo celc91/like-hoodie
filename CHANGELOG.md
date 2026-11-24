@@ -23,6 +23,11 @@ semántico.
 - **Ventas como CRM:** tablero por etapas con arrastrar y soltar, ficha
   editable, vista lista, búsqueda y filtro por origen, auto-refresco cada 60 s
   y aviso de conversaciones sin responder en la pestaña.
+- **Selector de idioma ES/EN:** la tienda y el panel cambian de idioma al
+  instante y recuerdan la elección en `localStorage` (`lh-lang`). Incluye
+  navegación, fichas, configurador, carrito, checkout, pedido y todo el panel.
+  Las traducciones se editan en `i18n/store.txt` e `i18n/admin.txt` y se
+  compilan con `node scripts/build-i18n.mjs`.
 - **Países en el panel:** la pestaña Estadísticas muestra los países de las
   visitas (usuarios por país, con los nombres en español) y permite filtrar por
   país el gráfico diario y todos los indicadores.

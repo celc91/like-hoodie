@@ -330,6 +330,30 @@ npx supabase secrets set LOOKUP_IP_SALT=<cadena-aleatoria-larga>
 Sin esta variable, los endpoints que la usan responden `503`: fallan cerrados en
 vez de hashear con una sal pública.
 
+### Idioma (ES/EN)
+
+La tienda y el panel tienen un selector **ES/EN** en la cabecera. La elección se
+guarda en `localStorage` (`lh-lang`) y se aplica al instante, sin recargar ni
+cambiar de URL. El selector también aparece en la tarjeta de acceso del panel y
+en las páginas sin cabecera.
+
+Las traducciones viven en dos archivos de texto:
+
+- `i18n/store.txt` — tienda, fichas, carrito, checkout y páginas de pedido.
+- `i18n/admin.txt` — panel de administración.
+
+Cada línea tiene el formato `texto en español ||| english text`. Para añadir o
+corregir una traducción, edita el `.txt` y ejecuta:
+
+```bash
+node scripts/build-i18n.mjs
+```
+
+Eso regenera `i18n-store.js` e `i18n-admin.js`. Si cambias el motor
+(`i18n.js`) o los diccionarios, sube el `?v=` de los tres scripts en el HTML
+para evitar caché. Las páginas legales (privacidad, términos y cookies) siguen
+en español; el aviso legal vinculante es la versión en español.
+
 ### Estadísticas (GA4 y Meta)
 
 La pestaña **Estadísticas** del panel lee datos reales de Google Analytics 4 y de
