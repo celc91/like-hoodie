@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
   const config = window.LIKEHOODIE_SUPABASE || {};
   const configured =
     typeof config.url === "string" &&
@@ -58,7 +58,7 @@
   const STATUS_LABELS = {
     pending: "Pendiente",
     confirmed: "Confirmado",
-    production: "En producción",
+    production: "En producciÃ³n",
     shipped: "Enviado",
     delivered: "Entregado",
     cancelled: "Cancelado",
@@ -72,7 +72,7 @@
   };
 
   const PAYMENT_LABELS = {
-    demo: "Demostración",
+    demo: "DemostraciÃ³n",
     pending: "Pago pendiente",
     paid: "Pagado",
     failed: "Pago fallido",
@@ -108,11 +108,13 @@
     return money.format(Number(value) || 0);
   }
 
+  const uiLocale = () => (document.documentElement.lang === "en" ? "en-US" : "es-MX");
+
   function formatDate(value, withTime = true) {
-    if (!value) return "—";
+    if (!value) return "â€”";
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "—";
-    return date.toLocaleString("es-MX", {
+    if (Number.isNaN(date.getTime())) return "â€”";
+    return date.toLocaleString(uiLocale(), {
       day: "2-digit",
       month: "short",
       year: "numeric",
@@ -177,11 +179,11 @@
       try {
         await client.auth.signOut();
       } catch (error) {
-        console.warn("No se pudo cerrar la sesión inactiva.", error);
+        console.warn("No se pudo cerrar la sesiÃ³n inactiva.", error);
       }
       currentUser = null;
       showLogin();
-      setLoginError("Sesión cerrada por inactividad. Vuelve a entrar.");
+      setLoginError("SesiÃ³n cerrada por inactividad. Vuelve a entrar.");
     }, IDLE_TIMEOUT_MS);
   }
 
@@ -230,7 +232,7 @@
       open: "Activo",
       abandoned: "Abandonado",
       converted: "Convertido",
-      empty: "Vacío",
+      empty: "VacÃ­o",
     };
     return `<span class="badge status-${escapeHTML(status)}">${escapeHTML(
       labels[status] || status
@@ -245,7 +247,7 @@
   }
 
   function itemsSummary(items) {
-    if (!Array.isArray(items) || !items.length) return "—";
+    if (!Array.isArray(items) || !items.length) return "â€”";
     const first = items[0];
     const rest = items.length - 1;
     return `${escapeHTML(first.name || "Sudadera")}${
@@ -326,7 +328,7 @@
     });
 
     if (error) {
-      setLoginError("No se pudo activar la verificación en dos pasos.");
+      setLoginError("No se pudo activar la verificaciÃ³n en dos pasos.");
       await client.auth.signOut();
       currentUser = null;
       showLogin();
@@ -334,7 +336,7 @@
     }
 
     mfaFactorId = data.id;
-    mfaTitle.textContent = "Activa la verificación en dos pasos";
+    mfaTitle.textContent = "Activa la verificaciÃ³n en dos pasos";
     mfaDesc.textContent =
       "Es obligatoria para el panel. Escanea el QR con Google Authenticator, 1Password o Authy.";
     const qr = mfaQrSource(data.totp?.qr_code);
@@ -349,9 +351,9 @@
 
   function startMfaChallenge(factor) {
     mfaFactorId = factor.id;
-    mfaTitle.textContent = "Verificación en dos pasos";
+    mfaTitle.textContent = "VerificaciÃ³n en dos pasos";
     mfaDesc.textContent =
-      "Escribe el código de 6 dígitos de tu app autenticadora.";
+      "Escribe el cÃ³digo de 6 dÃ­gitos de tu app autenticadora.";
     mfaQrWrap.hidden = true;
     mfaSecretWrap.hidden = true;
     mfaCode.value = "";
@@ -405,7 +407,7 @@
     if (!window.supabase || typeof window.supabase.createClient !== "function") {
       setupNote.hidden = false;
       setupNote.textContent =
-        "No se pudo cargar Supabase. Revisa tu conexión e inténtalo de nuevo.";
+        "No se pudo cargar Supabase. Revisa tu conexiÃ³n e intÃ©ntalo de nuevo.";
       loginButton.disabled = true;
       return;
     }
@@ -454,7 +456,7 @@
       const email = String(data.get("email") || "").trim();
       const password = String(data.get("password") || "");
       loginButton.disabled = true;
-      loginButton.textContent = "Entrando…";
+      loginButton.textContent = "Entrandoâ€¦";
 
       const { data: authData, error } = await client.auth.signInWithPassword({
         email,
@@ -465,7 +467,7 @@
       loginButton.textContent = "Entrar";
 
       if (error) {
-        setLoginError("No se pudo iniciar sesión. Revisa tus datos e inténtalo de nuevo.");
+        setLoginError("No se pudo iniciar sesiÃ³n. Revisa tus datos e intÃ©ntalo de nuevo.");
         return;
       }
 
@@ -479,12 +481,12 @@
       setMfaError("");
       const code = String(mfaCode.value || "").replace(/\D/g, "");
       if (!/^[0-9]{6}$/.test(code) || !mfaFactorId) {
-        setMfaError("Escribe un código de 6 dígitos.");
+        setMfaError("Escribe un cÃ³digo de 6 dÃ­gitos.");
         return;
       }
 
       mfaButton.disabled = true;
-      mfaButton.textContent = "Verificando…";
+      mfaButton.textContent = "Verificandoâ€¦";
 
       const { data: challenge, error: challengeError } =
         await client.auth.mfa.challenge({ factorId: mfaFactorId });
@@ -492,7 +494,7 @@
       if (challengeError) {
         mfaButton.disabled = false;
         mfaButton.textContent = "Verificar";
-        setMfaError("No se pudo iniciar la verificación. Inténtalo de nuevo.");
+        setMfaError("No se pudo iniciar la verificaciÃ³n. IntÃ©ntalo de nuevo.");
         return;
       }
 
@@ -506,7 +508,7 @@
       mfaButton.textContent = "Verificar";
 
       if (verifyError) {
-        setMfaError("Código incorrecto o expirado. Inténtalo de nuevo.");
+        setMfaError("CÃ³digo incorrecto o expirado. IntÃ©ntalo de nuevo.");
         mfaCode.value = "";
         mfaCode.focus();
         return;
@@ -523,11 +525,11 @@
       try {
         await client.auth.signOut();
       } catch (error) {
-        console.warn("No se pudo cerrar la sesión MFA.", error);
+        console.warn("No se pudo cerrar la sesiÃ³n MFA.", error);
       }
       currentUser = null;
       showLogin();
-      setLoginError("Inicio de sesión cancelado.");
+      setLoginError("Inicio de sesiÃ³n cancelado.");
     });
   }
 
@@ -578,7 +580,7 @@
   if (healthRefresh) {
     healthRefresh.addEventListener("click", () => {
       loadHealth();
-      toast("Monitorización actualizada.");
+      toast("MonitorizaciÃ³n actualizada.");
     });
   }
 
@@ -586,7 +588,7 @@
   if (analyticsRefresh) {
     analyticsRefresh.addEventListener("click", () => {
       loadAnalytics();
-      toast("Estadísticas actualizadas.");
+      toast("EstadÃ­sticas actualizadas.");
     });
   }
 
@@ -618,11 +620,11 @@
     ga: `
       <strong>Conecta Google Analytics 4</strong>
       <p>1. En Google Cloud crea una cuenta de servicio y descarga su clave JSON.</p>
-      <p>2. En GA4 → Administrar → Acceso a la propiedad, añádela como <em>Lectora</em>.</p>
-      <p>3. En Supabase → Edge Functions → Secrets, crea <code>GA_SERVICE_ACCOUNT</code> con ese JSON (y, si hace falta, <code>GA_PROPERTY_ID</code>).</p>`,
+      <p>2. En GA4 â†’ Administrar â†’ Acceso a la propiedad, aÃ±Ã¡dela como <em>Lectora</em>.</p>
+      <p>3. En Supabase â†’ Edge Functions â†’ Secrets, crea <code>GA_SERVICE_ACCOUNT</code> con ese JSON (y, si hace falta, <code>GA_PROPERTY_ID</code>).</p>`,
     meta: `
       <strong>Conecta Meta</strong>
-      <p>En Business Settings genera un token con <code>ads_read</code> y guárdalo como <code>META_ACCESS_TOKEN</code>. La cuenta publicitaria se toma de <code>META_AD_ACCOUNT_ID</code> o de la predeterminada.</p>`,
+      <p>En Business Settings genera un token con <code>ads_read</code> y guÃ¡rdalo como <code>META_ACCESS_TOKEN</code>. La cuenta publicitaria se toma de <code>META_AD_ACCOUNT_ID</code> o de la predeterminada.</p>`,
   };
 
   function formatInt(value) {
@@ -665,8 +667,8 @@
         const date = new Date(`${row.date}T12:00:00`);
         const label = Number.isNaN(date.getTime())
           ? row.date
-          : date.toLocaleDateString("es-MX", { day: "2-digit", month: "short" });
-        return `<div class="bar" title="${escapeHTML(label)}: ${count} usuarios · ${
+          : date.toLocaleDateString(uiLocale(), { day: "2-digit", month: "short" });
+        return `<div class="bar" title="${escapeHTML(label)}: ${count} usuarios Â· ${
           Number(row.sessions) || 0
         } sesiones">
           <span class="bar-value">${count || ""}</span>
@@ -678,14 +680,14 @@
   }
 
   const COUNTRY_NAMES = {
-    Mexico: "México",
+    Mexico: "MÃ©xico",
     "United States": "Estados Unidos",
-    Spain: "España",
+    Spain: "EspaÃ±a",
     Colombia: "Colombia",
     Argentina: "Argentina",
     Chile: "Chile",
-    Peru: "Perú",
-    Canada: "Canadá",
+    Peru: "PerÃº",
+    Canada: "CanadÃ¡",
     France: "Francia",
     Germany: "Alemania",
     "United Kingdom": "Reino Unido",
@@ -693,8 +695,8 @@
     Ecuador: "Ecuador",
     Guatemala: "Guatemala",
     "Costa Rica": "Costa Rica",
-    Panama: "Panamá",
-    "Dominican Republic": "República Dominicana",
+    Panama: "PanamÃ¡",
+    "Dominican Republic": "RepÃºblica Dominicana",
     Bolivia: "Bolivia",
     Uruguay: "Uruguay",
     Venezuela: "Venezuela",
@@ -710,7 +712,7 @@
 
   function countryLabel(value) {
     const name = String(value || "").trim();
-    if (!name || /^\(not set\)$/i.test(name)) return "Sin país";
+    if (!name || /^\(not set\)$/i.test(name)) return "Sin paÃ­s";
     return COUNTRY_NAMES[name] || name;
   }
 
@@ -726,7 +728,7 @@
     element.innerHTML = rows
       .map(
         (row) =>
-          `<li><span>${escapeHTML(String(row.label || "—"))}</span><strong>${formatInt(
+          `<li><span>${escapeHTML(String(row.label || "â€”"))}</span><strong>${formatInt(
             row.count
           )}</strong></li>`
       )
@@ -737,17 +739,17 @@
     const ga = data.ga || {};
     const meta = data.meta || {};
     const days = Number(data.days) || 28;
-    const rangeLabel = `Últimos ${days} días`;
+    const rangeLabel = `Ãšltimos ${days} dÃ­as`;
 
     const countrySelect = $("#analytics-country");
     let activeCountry = "";
     if (countrySelect) {
       const selected = countrySelect.value;
       const list = Array.isArray(ga.countries) ? ga.countries : [];
-      const options = ['<option value="">Todos los países</option>'];
+      const options = ['<option value="">Todos los paÃ­ses</option>'];
       list.forEach((row) => {
         const raw = String(row.label || "");
-        if (!raw || raw === "Sin país") return;
+        if (!raw || raw === "Sin paÃ­s") return;
         options.push(
           `<option value="${escapeHTML(raw)}">${escapeHTML(countryLabel(raw))}</option>`
         );
@@ -769,24 +771,24 @@
       const blocks = [];
       if (ga.configured === false) blocks.push(ANALYTICS_SETUP.ga);
       if (meta.configured === false) blocks.push(ANALYTICS_SETUP.meta);
-      if (ga.error) blocks.push(`<strong>GA4 no respondió</strong><p>${escapeHTML(ga.error)}</p>`);
-      if (meta.error) blocks.push(`<strong>Meta no respondió</strong><p>${escapeHTML(meta.error)}</p>`);
+      if (ga.error) blocks.push(`<strong>GA4 no respondiÃ³</strong><p>${escapeHTML(ga.error)}</p>`);
+      if (meta.error) blocks.push(`<strong>Meta no respondiÃ³</strong><p>${escapeHTML(meta.error)}</p>`);
       setup.innerHTML = blocks.join("");
       setup.hidden = blocks.length === 0;
     }
 
     const totals = ga.totals || {};
-    setText("#ga-users", ga.configured && ga.totals ? formatInt(totals.users) : "—");
-    setText("#ga-sessions", ga.configured && ga.totals ? formatInt(totals.sessions) : "—");
-    setText("#ga-views", ga.configured && ga.totals ? formatInt(totals.views) : "—");
-    setText("#ga-key", ga.configured && ga.totals ? formatInt(totals.keyEvents) : "—");
+    setText("#ga-users", ga.configured && ga.totals ? formatInt(totals.users) : "â€”");
+    setText("#ga-sessions", ga.configured && ga.totals ? formatInt(totals.sessions) : "â€”");
+    setText("#ga-views", ga.configured && ga.totals ? formatInt(totals.views) : "â€”");
+    setText("#ga-key", ga.configured && ga.totals ? formatInt(totals.keyEvents) : "â€”");
 
     setText("#ga-users-note", rangeLabel);
     setText("#ga-sessions-note", ga.totals ? `${formatInt(totals.users)} usuarios` : "");
     setText(
       "#ga-views-note",
       ga.totals && totals.sessions
-        ? `${(Number(totals.views) / Number(totals.sessions)).toFixed(1)} por sesión`
+        ? `${(Number(totals.views) / Number(totals.sessions)).toFixed(1)} por sesiÃ³n`
         : ""
     );
     setText(
@@ -799,7 +801,7 @@
     const rangeParts = [rangeLabel];
     if (ga.totals) rangeParts.push(formatMoney(totals.revenue));
     if (activeCountry) rangeParts.push(countryLabel(activeCountry));
-    setText("#ga-range", rangeParts.join(" · "));
+    setText("#ga-range", rangeParts.join(" Â· "));
     renderAnalyticsChart(ga.daily);
     renderAnalyticsList("#ga-channels", ga.channels, "Sin sesiones");
     renderAnalyticsList(
@@ -814,9 +816,9 @@
     renderAnalyticsList("#ga-events", ga.events, "Sin eventos");
 
     const ads = meta.ads || {};
-    setText("#meta-spend", meta.configured ? formatMoney(ads.spend) : "—");
-    setText("#meta-impressions", meta.configured ? formatInt(ads.impressions) : "—");
-    setText("#meta-clicks", meta.configured ? formatInt(ads.clicks) : "—");
+    setText("#meta-spend", meta.configured ? formatMoney(ads.spend) : "â€”");
+    setText("#meta-impressions", meta.configured ? formatInt(ads.impressions) : "â€”");
+    setText("#meta-clicks", meta.configured ? formatInt(ads.clicks) : "â€”");
 
     setText("#meta-spend-note", rangeLabel);
     setText(
@@ -831,14 +833,14 @@
         ? `Costo por clic ${formatMoney(ads.cpc)}`
         : ""
     );
-    setText("#meta-conversations", meta.configured ? formatInt(ads.conversations) : "—");
+    setText("#meta-conversations", meta.configured ? formatInt(ads.conversations) : "â€”");
     setText(
       "#meta-conversation-note",
       meta.configured && ads.conversations
-        ? `${formatMoney(ads.costPerConversation)} por conversación`
+        ? `${formatMoney(ads.costPerConversation)} por conversaciÃ³n`
         : ""
     );
-    setText("#meta-purchases", meta.configured ? formatInt(ads.purchases) : "—");
+    setText("#meta-purchases", meta.configured ? formatInt(ads.purchases) : "â€”");
     setText(
       "#meta-revenue-note",
       meta.configured
@@ -853,14 +855,14 @@
         const when = capi.cuando ? new Date(capi.cuando) : null;
         const label =
           when && !Number.isNaN(when.getTime())
-            ? when.toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" })
+            ? when.toLocaleString(uiLocale(), { dateStyle: "short", timeStyle: "short" })
             : "sin fecha";
-        health.innerHTML = `Conversions API · último envío <strong>${escapeHTML(
+        health.innerHTML = `Conversions API Â· Ãºltimo envÃ­o <strong>${escapeHTML(
           String(capi.status)
         )}</strong> (${escapeHTML(label)}).`;
       } else {
         health.textContent =
-          "Todavía no hay envíos de la Conversions API registrados.";
+          "TodavÃ­a no hay envÃ­os de la Conversions API registrados.";
       }
     }
     setText("#meta-note", meta.configured ? rangeLabel : "Sin token configurado");
@@ -881,7 +883,7 @@
         ? sessionData.session.access_token
         : "";
 
-      if (!accessToken) throw new Error("La sesión no es válida. Vuelve a entrar.");
+      if (!accessToken) throw new Error("La sesiÃ³n no es vÃ¡lida. Vuelve a entrar.");
 
       const response = await fetch(`${config.url}/functions/v1/stats`, {
         method: "POST",
@@ -894,10 +896,10 @@
       });
 
       if (response.status === 403) {
-        throw new Error("Tu sesión no tiene permisos de administrador con MFA.");
+        throw new Error("Tu sesiÃ³n no tiene permisos de administrador con MFA.");
       }
       if (!response.ok) {
-        throw new Error(`No se pudieron cargar las estadísticas (${response.status}).`);
+        throw new Error(`No se pudieron cargar las estadÃ­sticas (${response.status}).`);
       }
 
       const data = await response.json();
@@ -915,7 +917,7 @@
       const setup = $("#analytics-setup");
       if (setup) {
         setup.hidden = false;
-        setup.innerHTML = `<strong>No se pudieron cargar las estadísticas</strong><p>${escapeHTML(
+        setup.innerHTML = `<strong>No se pudieron cargar las estadÃ­sticas</strong><p>${escapeHTML(
           error.message || "Error desconocido."
         )}</p>`;
       }
@@ -1089,7 +1091,7 @@
     const pipelineTotal = conversations.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
     setText(
       "#sales-summary",
-      `${formatInt(total)} conversaciones · ${formatMoney(pipelineTotal)}`
+      `${formatInt(total)} conversaciones Â· ${formatMoney(pipelineTotal)}`
     );
 
     const boardButton = $("#sales-view-board");
@@ -1135,16 +1137,16 @@
         ? items
             .map(
               (c) => `<article class="board-card" draggable="true" data-conv-id="${c.id}" tabindex="0">
-                <span class="board-card__grip" aria-hidden="true">⋮⋮</span>
+                <span class="board-card__grip" aria-hidden="true">â‹®â‹®</span>
                 <div class="board-card__top">
                   <strong>${escapeHTML(c.name)}</strong>
                   <span class="source-pill">${escapeHTML(SOURCE_LABEL[c.source] || c.source)}</span>
                 </div>
-                <p class="board-card__product">${escapeHTML(c.product || "—")}</p>
+                <p class="board-card__product">${escapeHTML(c.product || "â€”")}</p>
                 ${c.notes ? `<p class="board-card__note">${escapeHTML(c.notes)}</p>` : ""}
                 <div class="board-card__meta">
                   <span class="board-card__amount">${
-                    Number(c.amount) > 0 ? formatMoney(c.amount) : "—"
+                    Number(c.amount) > 0 ? formatMoney(c.amount) : "â€”"
                   }</span>
                   <span class="board-card__time">${relativeTime(c.created_at)}</span>
                 </div>
@@ -1157,7 +1159,7 @@
         <header class="board-col__head">
           <div>
             <strong>${stage.label}</strong>
-            <small>${items.length} · ${formatMoney(stageTotal)}</small>
+            <small>${items.length} Â· ${formatMoney(stageTotal)}</small>
           </div>
         </header>
         <div class="board-col__body">${cards}</div>
@@ -1188,14 +1190,14 @@
         return `<tr>
           <td>${escapeHTML(c.name)}</td>
           <td>${escapeHTML(SOURCE_LABEL[c.source] || c.source)}</td>
-          <td>${escapeHTML(c.product || "—")}</td>
+          <td>${escapeHTML(c.product || "â€”")}</td>
           <td><select class="conv-stage" data-conv-stage="${c.id}" aria-label="Etapa de ${escapeHTML(
             c.name
           )}">${options}</select></td>
           <td><input class="conv-amount" type="number" min="0" max="100000" step="1" value="${
             Number(c.amount) || 0
           }" data-conv-amount="${c.id}" aria-label="Monto de ${escapeHTML(c.name)}"></td>
-          <td class="conv-note" title="${escapeHTML(c.notes || "")}">${escapeHTML(c.notes || "—")}</td>
+          <td class="conv-note" title="${escapeHTML(c.notes || "")}">${escapeHTML(c.notes || "â€”")}</td>
           <td><button class="conv-delete" type="button" data-conv-delete="${c.id}">Quitar</button></td>
         </tr>`;
       })
@@ -1206,13 +1208,13 @@
     if (!client || !id) return false;
     const { error } = await client.from("conversations").update(patch).eq("id", id);
     if (error) {
-      toast("No se pudo actualizar la conversación.");
+      toast("No se pudo actualizar la conversaciÃ³n.");
       return false;
     }
     const index = conversations.findIndex((c) => c.id === id);
     if (index >= 0) conversations[index] = { ...conversations[index], ...patch };
     renderConversations();
-    if (!options.silent) toast("Conversación actualizada.");
+    if (!options.silent) toast("ConversaciÃ³n actualizada.");
     return true;
   }
 
@@ -1220,12 +1222,12 @@
     if (!client || !id) return;
     const { error } = await client.from("conversations").delete().eq("id", id);
     if (error) {
-      toast("No se pudo quitar la conversación.");
+      toast("No se pudo quitar la conversaciÃ³n.");
       return;
     }
     conversations = conversations.filter((c) => c.id !== id);
     renderConversations();
-    toast("Conversación quitada.");
+    toast("ConversaciÃ³n quitada.");
   }
 
   /* ---------------------------- Ficha (modal) ---------------------------- */
@@ -1235,7 +1237,7 @@
     if (!modal) return;
 
     editingConversation = conversation || null;
-    setText("#conv-modal-title", conversation ? "Editar conversación" : "Nueva conversación");
+    setText("#conv-modal-title", conversation ? "Editar conversaciÃ³n" : "Nueva conversaciÃ³n");
 
     if ($("#conv-d-name")) $("#conv-d-name").value = conversation ? conversation.name : "";
     if ($("#conv-d-source")) $("#conv-d-source").value = conversation ? conversation.source : "marketplace";
@@ -1286,16 +1288,16 @@
     if (editingConversation) {
       const saved = await updateConversation(editingConversation.id, payload, { silent: true });
       if (!saved) return;
-      toast("Conversación actualizada.");
+      toast("ConversaciÃ³n actualizada.");
     } else {
       const { data, error } = await client.from("conversations").insert(payload).select().single();
       if (error) {
-        toast("No se pudo añadir la conversación.");
+        toast("No se pudo aÃ±adir la conversaciÃ³n.");
         return;
       }
       conversations.unshift(data);
       renderConversations();
-      toast("Conversación añadida.");
+      toast("ConversaciÃ³n aÃ±adida.");
     }
 
     closeConversationModal();
@@ -1308,7 +1310,7 @@
   if (convDelete) {
     convDelete.addEventListener("click", () => {
       if (!editingConversation) return;
-      if (!window.confirm("¿Quitar esta conversación del embudo?")) return;
+      if (!window.confirm("Â¿Quitar esta conversaciÃ³n del embudo?")) return;
       deleteConversation(editingConversation.id);
       closeConversationModal();
     });
@@ -1396,7 +1398,7 @@
     convBody.addEventListener("click", (event) => {
       const remove = event.target.closest("[data-conv-delete]");
       if (!remove) return;
-      if (!window.confirm("¿Quitar esta conversación del embudo?")) return;
+      if (!window.confirm("Â¿Quitar esta conversaciÃ³n del embudo?")) return;
       deleteConversation(remove.dataset.convDelete);
     });
   }
@@ -1446,7 +1448,7 @@
   const salesNew = $("#sales-new");
   if (salesNew) salesNew.addEventListener("click", () => openConversationModal(null));
 
-  // Auto-refresco: cada 60 s y al volver a la pestaña.
+  // Auto-refresco: cada 60 s y al volver a la pestaÃ±a.
   window.setInterval(() => {
     if (document.visibilityState !== "visible") return;
     const app = $("#app-view");
@@ -1465,13 +1467,13 @@
     const element = $(target);
     if (!element) return;
     if (!Array.isArray(rows) || !rows.length) {
-      element.innerHTML = '<li><span>Sin datos todavía</span><strong>0</strong></li>';
+      element.innerHTML = '<li><span>Sin datos todavÃ­a</span><strong>0</strong></li>';
       return;
     }
     element.innerHTML = rows
       .map(
         (row) =>
-          `<li><span>${escapeHTML(row.label || "—")}</span><strong>${escapeHTML(
+          `<li><span>${escapeHTML(row.label || "â€”")}</span><strong>${escapeHTML(
             row.count
           )}</strong></li>`
       )
@@ -1482,7 +1484,7 @@
     const chart = $("#orders-chart");
     if (!chart) return;
     if (!Array.isArray(series) || !series.length) {
-      chart.innerHTML = '<p class="empty">Sin pedidos todavía.</p>';
+      chart.innerHTML = '<p class="empty">Sin pedidos todavÃ­a.</p>';
       return;
     }
     const max = Math.max(1, ...series.map((row) => Number(row.orders) || 0));
@@ -1491,11 +1493,11 @@
         const count = Number(row.orders) || 0;
         const height = Math.max(3, Math.round((count / max) * 100));
         const date = new Date(`${row.day}T12:00:00`);
-        const label = date.toLocaleDateString("es-MX", {
+        const label = date.toLocaleDateString(uiLocale(), {
           day: "2-digit",
           month: "short",
         });
-        return `<div class="bar" title="${escapeHTML(label)}: ${count} pedidos · ${formatMoney(
+        return `<div class="bar" title="${escapeHTML(label)}: ${count} pedidos Â· ${formatMoney(
           row.revenue
         )}">
           <span class="bar-value">${count || ""}</span>
@@ -1511,7 +1513,7 @@
     const { data, error } = await client.rpc("admin_stats", { p_days: 30 });
     if (error) {
       console.warn(error);
-      toast("No se pudieron cargar las métricas.");
+      toast("No se pudieron cargar las mÃ©tricas.");
       return;
     }
 
@@ -1527,7 +1529,7 @@
     set("#kpi-orders-today", data.orders_today ?? 0);
     set(
       "#kpi-orders-30",
-      `${orders30} pedido${orders30 === 1 ? "" : "s"} en 30 días`
+      `${orders30} pedido${orders30 === 1 ? "" : "s"} en 30 dÃ­as`
     );
     set("#kpi-revenue-30", formatMoney(data.revenue_30));
     set("#kpi-aov", `Ticket promedio ${formatMoney(data.aov_30)}`);
@@ -1614,7 +1616,7 @@
               <span class="customer-name">${escapeHTML(order.customer_name)}</span>
               <span class="customer-email">${escapeHTML(order.email)}</span>
             </td>
-            <td><span class="items-summary">${itemsSummary(order.items)} · ${itemsCount(
+            <td><span class="items-summary">${itemsSummary(order.items)} Â· ${itemsCount(
             order.items
           )} u.</span></td>
             <td class="design-cell">${designShot(
@@ -1653,7 +1655,7 @@
 
     const pageLabel = $("#orders-page");    if (pageLabel) {
       const pages = Math.max(1, Math.ceil(ordersTotal / ordersPageSize));
-      pageLabel.textContent = `Página ${ordersPage + 1} de ${pages}`;
+      pageLabel.textContent = `PÃ¡gina ${ordersPage + 1} de ${pages}`;
     }
     const prev = $("#orders-prev");
     const next = $("#orders-next");
@@ -1748,8 +1750,8 @@
 
     if (billingSummary) {
       billingSummary.innerHTML = [
-        billingCard("04 · Crédito", summary.pending_04, summary.total_04),
-        billingCard("28 · Débito", summary.pending_28, summary.total_28),
+        billingCard("04 Â· CrÃ©dito", summary.pending_04, summary.total_04),
+        billingCard("28 Â· DÃ©bito", summary.pending_28, summary.total_28),
         billingCard("Sin forma SAT", summary.pending_none, null),
         billingCard("Facturas individuales", summary.individual, null),
         billingCard("Ya en global", summary.global, null),
@@ -1766,8 +1768,8 @@
         const isGlobal = status === "global";
         const options = [
           ["", "Sin forma"],
-          ["04", "04 · Crédito"],
-          ["28", "28 · Débito"],
+          ["04", "04 Â· CrÃ©dito"],
+          ["28", "28 Â· DÃ©bito"],
         ]
           .map(
             ([value, label]) =>
@@ -1814,7 +1816,7 @@
     const start = billingStart.value;
     const end = billingEnd.value;
     if (!start || !end || start > end) {
-      toast("El periodo de facturación no es válido.");
+      toast("El periodo de facturaciÃ³n no es vÃ¡lido.");
       return;
     }
 
@@ -1825,7 +1827,7 @@
 
     if (error) {
       console.warn(error);
-      toast("No se pudo cargar la facturación.");
+      toast("No se pudo cargar la facturaciÃ³n.");
       return;
     }
 
@@ -1841,10 +1843,10 @@
     });
     if (error) {
       console.warn(error);
-      toast("No se pudo actualizar la facturación del pedido.");
+      toast("No se pudo actualizar la facturaciÃ³n del pedido.");
       return;
     }
-    toast("Facturación del pedido actualizada.");
+    toast("FacturaciÃ³n del pedido actualizada.");
     loadBilling();
   }
 
@@ -1856,7 +1858,7 @@
     const notes = String(billingNotes.value || "").trim();
 
     if (!start || !end || start > end) {
-      setBillingError("El periodo no es válido.");
+      setBillingError("El periodo no es vÃ¡lido.");
       return;
     }
     if (
@@ -1864,7 +1866,7 @@
         uuid
       )
     ) {
-      setBillingError("Escribe un UUID válido de 36 caracteres.");
+      setBillingError("Escribe un UUID vÃ¡lido de 36 caracteres.");
       return;
     }
 
@@ -1888,7 +1890,7 @@
     billingUuid.value = "";
     billingNotes.value = "";
     toast(
-      `Global registrada: ${data.orders} pedidos · ${formatMoney(data.total)}.`
+      `Global registrada: ${data.orders} pedidos Â· ${formatMoney(data.total)}.`
     );
     loadBilling();
     loadGlobalHistory();
@@ -1907,14 +1909,14 @@
     historyBody.innerHTML = invoices
       .map(
         (invoice) => `<tr>
-          <td>${escapeHTML(invoice.period_start)} → ${escapeHTML(invoice.period_end)}</td>
-          <td>${escapeHTML(invoice.payment_form)} · ${
-            invoice.payment_form === "04" ? "Crédito" : "Débito"
+          <td>${escapeHTML(invoice.period_start)} â†’ ${escapeHTML(invoice.period_end)}</td>
+          <td>${escapeHTML(invoice.payment_form)} Â· ${
+            invoice.payment_form === "04" ? "CrÃ©dito" : "DÃ©bito"
           }</td>
           <td><strong>${formatMoney(invoice.total)}</strong></td>
           <td><span class="order-payment">${escapeHTML(invoice.uuid)}</span></td>
           <td>${escapeHTML(formatDate(invoice.issued_at))}</td>
-          <td>${invoice.notes ? escapeHTML(invoice.notes) : "—"}</td>
+          <td>${invoice.notes ? escapeHTML(invoice.notes) : "â€”"}</td>
         </tr>`
       )
       .join("");
@@ -1933,7 +1935,7 @@
     if (error) {
       console.warn(error);
       setHistoryError(
-        "No se pudo cargar el historial de globales. Revisa que la migración fase9 esté aplicada."
+        "No se pudo cargar el historial de globales. Revisa que la migraciÃ³n fase9 estÃ© aplicada."
       );
       return;
     }
@@ -1979,7 +1981,7 @@
         const fiscal = [
           `<strong class="request-rfc">${escapeHTML(request.rfc)}</strong>`,
           escapeHTML(request.legal_name),
-          `Régimen ${escapeHTML(request.tax_regime)} · CP ${escapeHTML(request.zip)}`,
+          `RÃ©gimen ${escapeHTML(request.tax_regime)} Â· CP ${escapeHTML(request.zip)}`,
           `Uso ${escapeHTML(request.cfdi_use)}`,
           escapeHTML(request.invoice_email),
           request.notes ? `Nota: ${escapeHTML(request.notes)}` : "",
@@ -2026,14 +2028,14 @@
           </td>
           <td>${escapeHTML(formatDate(request.created_at))}</td>
           <td><div class="request-fiscal">${fiscal}</div></td>
-          <td>${form ? `${escapeHTML(form)} · ${form === "04" ? "Crédito" : "Débito"}` : "—"}</td>
+          <td>${form ? `${escapeHTML(form)} Â· ${form === "04" ? "CrÃ©dito" : "DÃ©bito"}` : "â€”"}</td>
           <td>${requestBadge(status)}${statusDetail}</td>
           <td>${
             request.uuid
               ? `<span class="order-payment">${escapeHTML(request.uuid)}</span><span class="customer-email">${escapeHTML(
                   formatDate(request.issued_at)
                 )}</span>`
-              : "—"
+              : "â€”"
           }</td>
           <td>${actions}</td>
         </tr>`;
@@ -2062,7 +2064,7 @@
     if (error) {
       console.warn(error);
       setRequestsError(
-        "No se pudieron cargar las solicitudes individuales. Revisa que la migración de facturación esté aplicada."
+        "No se pudieron cargar las solicitudes individuales. Revisa que la migraciÃ³n de facturaciÃ³n estÃ© aplicada."
       );
       return;
     }
@@ -2076,7 +2078,7 @@
         uuid
       )
     ) {
-      setRequestsError("Escribe un UUID válido de 36 caracteres.");
+      setRequestsError("Escribe un UUID vÃ¡lido de 36 caracteres.");
       return;
     }
     setRequestsError("");
@@ -2088,7 +2090,7 @@
     if (error) {
       console.warn(error);
       setRequestsError(
-        "No se pudo marcar como emitida. Confirma que el cliente validó el correo y que el pedido no está en una global."
+        "No se pudo marcar como emitida. Confirma que el cliente validÃ³ el correo y que el pedido no estÃ¡ en una global."
       );
       return;
     }
@@ -2120,13 +2122,13 @@
     });
     if (error) {
       console.warn(error);
-      setRequestsError("No se pudo reenviar el correo de confirmación.");
+      setRequestsError("No se pudo reenviar el correo de confirmaciÃ³n.");
       return;
     }
     toast(
       data && data.email_sent
-        ? "Correo de confirmación reenviado."
-        : "No se pudo enviar el correo. Revisa la configuración de Resend."
+        ? "Correo de confirmaciÃ³n reenviado."
+        : "No se pudo enviar el correo. Revisa la configuraciÃ³n de Resend."
     );
     loadInvoiceRequests();
   }
@@ -2199,7 +2201,7 @@
         return;
       }
       const rows = [
-        ["Pedido", "Fecha", "Total", "Forma SAT", "Facturación"],
+        ["Pedido", "Fecha", "Total", "Forma SAT", "FacturaciÃ³n"],
         ...orders.map((order) => [
           `LH-${order.number}`,
           formatDate(order.created_at, false),
@@ -2253,7 +2255,7 @@
       if (cancel) {
         if (
           !window.confirm(
-            "¿Cancelar esta solicitud? El pedido volverá a quedar pendiente para la factura global."
+            "Â¿Cancelar esta solicitud? El pedido volverÃ¡ a quedar pendiente para la factura global."
           )
         ) {
           return;
@@ -2384,7 +2386,7 @@
 
     if (errorsResult.error || eventsResult.error) {
       console.warn(errorsResult.error || eventsResult.error);
-      toast("No se pudo cargar la monitorización.");
+      toast("No se pudo cargar la monitorizaciÃ³n.");
       return;
     }
 
@@ -2405,9 +2407,9 @@
         .map(
           (row) => `<tr>
             <td>${escapeHTML(formatDate(row.created_at))}</td>
-            <td>${escapeHTML(row.path || "—")}</td>
+            <td>${escapeHTML(row.path || "â€”")}</td>
             <td class="health-message" title="${escapeHTML(row.message || "")}">${escapeHTML(
-              row.message || "—"
+              row.message || "â€”"
             )}</td>
           </tr>`
         )
@@ -2429,10 +2431,10 @@
           }
           return `<tr>
             <td>${escapeHTML(formatDate(row.created_at))}</td>
-            <td>${escapeHTML(row.name || "—")}</td>
-            <td>${escapeHTML(row.path || "—")}</td>
+            <td>${escapeHTML(row.name || "â€”")}</td>
+            <td>${escapeHTML(row.path || "â€”")}</td>
             <td class="health-message" title="${escapeHTML(detail)}">${escapeHTML(
-              detail.slice(0, 160) || "—"
+              detail.slice(0, 160) || "â€”"
             )}</td>
           </tr>`;
         })
@@ -2457,7 +2459,7 @@
       .map(
         (cart) => `<tr>
           <td>${escapeHTML(formatDate(cart.updated_at))}</td>
-          <td><span class="items-summary">${itemsSummary(cart.items)} · ${itemsCount(
+          <td><span class="items-summary">${itemsSummary(cart.items)} Â· ${itemsCount(
           cart.items
         )} u.</span></td>
           <td><strong>${formatMoney(cart.subtotal)}</strong></td>
@@ -2508,7 +2510,7 @@
     resizing: "Preparando print",
     ready: "Print listo",
     review: "Print a revisar",
-    failed: "Print falló",
+    failed: "Print fallÃ³",
   };
 
   async function printAssetFor(design) {
@@ -2551,7 +2553,7 @@
         asset.status
       )}">${escapeHTML(label)}</span>${retry}`;
     }
-    const dpi = asset.dpi ? ` · ${asset.dpi} DPI` : "";
+    const dpi = asset.dpi ? ` Â· ${asset.dpi} DPI` : "";
     return `<a class="logo-link logo-link--print" href="${escapeHTML(
       url
     )}" target="_blank" rel="noopener" download="print-${side.toLowerCase()}.png">Descargar print ${side}${escapeHTML(
@@ -2568,7 +2570,7 @@
     const fx = Number.isFinite(Number(x)) ? Number(x) : 50;
     const fy = Number.isFinite(Number(y)) ? Number(y) : 50;
     const fmt = (value) => String(Math.round(value * 10) / 10).replace(".", ",");
-    return `X ${fmt(fx)} % · Y ${fmt(fy)} %`;
+    return `X ${fmt(fx)} % Â· Y ${fmt(fy)} %`;
   }
 
   function placementStatus(x, y, product) {
@@ -2583,7 +2585,7 @@
     const fmt = (value) => String(Math.round(value * 10) / 10).replace(".", ",");
 
     if (!inside) {
-      return { text: "Fuera del área de impresión", outside: true };
+      return { text: "Fuera del Ã¡rea de impresiÃ³n", outside: true };
     }
 
     const dx = px - (area.x + area.w / 2);
@@ -2596,7 +2598,7 @@
       Math.abs(dy) < 0.6
         ? "centrado"
         : `${fmt(Math.abs(dy))} % ${dy > 0 ? "abajo" : "arriba"}`;
-    return { text: `Dentro del área · ${horizontal} · ${vertical}`, outside: false };
+    return { text: `Dentro del Ã¡rea Â· ${horizontal} Â· ${vertical}`, outside: false };
   }
 
   function designMeta(item, side) {
@@ -2614,9 +2616,9 @@
         `<span class="design-meta__row"><b>Logo</b> ${coordText(
           design.logoX,
           design.logoY
-        )} · ${Math.round((Number(design.logoScale) || 1) * 100)} %${
+        )} Â· ${Math.round((Number(design.logoScale) || 1) * 100)} %${
           Number(design.logoRotate)
-            ? ` · ${Math.round(Number(design.logoRotate))}°`
+            ? ` Â· ${Math.round(Number(design.logoRotate))}Â°`
             : ""
         }</span>`,
         `<span class="design-meta__status ${
@@ -2629,9 +2631,9 @@
         `<span class="design-meta__row"><b>Texto</b> ${coordText(
           design.textX,
           design.textY
-        )} · ${Math.round((Number(design.textScale) || 1) * 100)} %${
+        )} Â· ${Math.round((Number(design.textScale) || 1) * 100)} %${
           Number(design.textRotate)
-            ? ` · ${Math.round(Number(design.textRotate))}°`
+            ? ` Â· ${Math.round(Number(design.textRotate))}Â°`
             : ""
         }</span>`
       );
@@ -2668,7 +2670,7 @@
     return luminance > 0.58 ? "#1c1c1f" : "#fffdf8";
   }
 
-  /* Prenda con el diseño guardado en el pedido (frente o espalda). */
+  /* Prenda con el diseÃ±o guardado en el pedido (frente o espalda). */
   function designShot(item, side, logoUrl, extraClass = "") {
     const design = (item && item[side]) || {};
     const isTote = item && item.product === "tote";
@@ -2825,7 +2827,7 @@
                   : ""
               }<span class="detail-logo-name">Logo frente${
                 item.front?.logoName
-                  ? ` · ${escapeHTML(item.front.logoName)}`
+                  ? ` Â· ${escapeHTML(item.front.logoName)}`
                   : ""
               }</span>${frontLink}${frontPrint}</span>`
             );
@@ -2840,7 +2842,7 @@
                   : ""
               }<span class="detail-logo-name">Logo espalda${
                 item.back?.logoName
-                  ? ` · ${escapeHTML(item.back.logoName)}`
+                  ? ` Â· ${escapeHTML(item.back.logoName)}`
                   : ""
               }</span>${backLink}${backPrint}</span>`
             );
@@ -2848,17 +2850,17 @@
           const logos = logoItems.join("");
 
           const roster = item.rosterName || item.rosterNumber
-            ? ` · Equipo: ${escapeHTML(item.rosterName || "Sin nombre")}${
+            ? ` Â· Equipo: ${escapeHTML(item.rosterName || "Sin nombre")}${
                 item.rosterNumber ? ` #${escapeHTML(item.rosterNumber)}` : ""
               }`
             : "";
           return `<li>
             <div class="detail-item-main">
-              <span>${escapeHTML(item.name || "Sudadera")} · ${escapeHTML(
+              <span>${escapeHTML(item.name || "Sudadera")} Â· ${escapeHTML(
             item.colorName || ""
-          )} · Talla ${escapeHTML(item.size || "—")} · ${escapeHTML(
+          )} Â· Talla ${escapeHTML(item.size || "â€”")} Â· ${escapeHTML(
             item.materialName || ""
-          )} · ${escapeHTML(item.techniqueName || "")} · x${escapeHTML(item.qty)}${roster}</span>
+          )} Â· ${escapeHTML(item.techniqueName || "")} Â· x${escapeHTML(item.qty)}${roster}</span>
               <strong>${formatMoney((Number(item.unitPrice) || 0) * (Number(item.qty) || 0))}</strong>
             </div>
             <div class="design-previews">
@@ -2895,7 +2897,7 @@
     const items = Array.isArray(order.items) ? order.items : [];
     detail.innerHTML = `
       <h2 id="order-modal-title">Pedido LH-${escapeHTML(order.number)}</h2>
-      <p class="modal-sub">${escapeHTML(formatDate(order.created_at))} · ${statusBadge(
+      <p class="modal-sub">${escapeHTML(formatDate(order.created_at))} Â· ${statusBadge(
       order.status
     )}</p>
       <div class="detail-grid">
@@ -2903,11 +2905,11 @@
           order.customer_name
         )}</strong></div>
         <div><span>Email</span><strong>${escapeHTML(order.email)}</strong></div>
-        <div><span>Teléfono</span><strong>${escapeHTML(order.phone || "—")}</strong></div>
+        <div><span>TelÃ©fono</span><strong>${escapeHTML(order.phone || "â€”")}</strong></div>
         <div><span>Ciudad / Estado / CP</span><strong>${escapeHTML(
-          [order.city, order.state, order.zip].filter(Boolean).join(" · ") || "-"
+          [order.city, order.state, order.zip].filter(Boolean).join(" Â· ") || "-"
         )}</strong></div>
-        <div><span>Dirección</span><strong>${escapeHTML(order.address || "-")}</strong></div>
+        <div><span>DirecciÃ³n</span><strong>${escapeHTML(order.address || "-")}</strong></div>
         ${
           order.address_ref
             ? `<div><span>Referencias</span><strong>${escapeHTML(
@@ -2916,9 +2918,9 @@
             : ""
         }
         <div><span>Pago</span><strong>${escapeHTML(
-          order.payment_method === "clip" ? "Clip" : "Demostración"
-        )} · ${escapeHTML(
-          PAYMENT_LABELS[order.payment_status] || order.payment_status || "—"
+          order.payment_method === "clip" ? "Clip" : "DemostraciÃ³n"
+        )} Â· ${escapeHTML(
+          PAYMENT_LABELS[order.payment_status] || order.payment_status || "â€”"
         )}</strong></div>
         ${
           order.payment_reference
@@ -2953,7 +2955,7 @@
             )
             .join("")}
         </select>
-        <label for="detail-approval">Aprobación del diseño</label>
+        <label for="detail-approval">AprobaciÃ³n del diseÃ±o</label>
         <select id="detail-approval">
           ${Object.entries(APPROVAL_LABELS)
             .map(
@@ -2967,19 +2969,19 @@
             .join("")}
         </select>
         <label for="detail-notes">Notas internas</label>
-        <textarea id="detail-notes" placeholder="Producción, entrega o incidencias…">${escapeHTML(
+        <textarea id="detail-notes" placeholder="ProducciÃ³n, entrega o incidenciasâ€¦">${escapeHTML(
           order.admin_notes || ""
         )}</textarea>
-        <label for="detail-carrier">Paquetería</label>
-        <input id="detail-carrier" type="text" maxlength="60" placeholder="Estafeta, DHL, FedEx…" value="${escapeHTML(
+        <label for="detail-carrier">PaqueterÃ­a</label>
+        <input id="detail-carrier" type="text" maxlength="60" placeholder="Estafeta, DHL, FedExâ€¦" value="${escapeHTML(
           order.carrier || ""
         )}">
-        <label for="detail-tracking">Número de guía</label>
+        <label for="detail-tracking">NÃºmero de guÃ­a</label>
         <input id="detail-tracking" type="text" maxlength="80" placeholder="1234567890" value="${escapeHTML(
           order.tracking_number || ""
         )}">
         <label for="detail-tracking-url">URL de seguimiento</label>
-        <input id="detail-tracking-url" type="url" maxlength="300" placeholder="https://…" value="${escapeHTML(
+        <input id="detail-tracking-url" type="url" maxlength="300" placeholder="https://â€¦" value="${escapeHTML(
           order.tracking_url || ""
         )}">
         <button class="btn btn-dark" type="button" id="detail-save">Guardar cambios</button>
@@ -3082,7 +3084,7 @@
       return;
     }
     const rows = [
-      ["Pedido", "Fecha", "Estado del pedido", "Pago", "Cliente", "Email", "Teléfono", "Dirección", "Referencias", "Ciudad", "Estado (envío)", "CP", "Artículos", "Subtotal", "Envío", "Total", "Paquetería", "Guía", "Seguimiento", "Notas"],
+      ["Pedido", "Fecha", "Estado del pedido", "Pago", "Cliente", "Email", "TelÃ©fono", "DirecciÃ³n", "Referencias", "Ciudad", "Estado (envÃ­o)", "CP", "ArtÃ­culos", "Subtotal", "EnvÃ­o", "Total", "PaqueterÃ­a", "GuÃ­a", "Seguimiento", "Notas"],
       ...(data || []).map((order) => [
         `LH-${order.number}`,
         order.created_at,
@@ -3115,7 +3117,7 @@
       ? cartsCache.filter((cart) => cart.display_status === filter)
       : cartsCache;
     const rows = [
-      ["Última actividad", "Estado", "Paso", "Artículos", "Unidades", "Valor", "Detalle"],
+      ["Ãšltima actividad", "Estado", "Paso", "ArtÃ­culos", "Unidades", "Valor", "Detalle"],
       ...filtered.map((cart) => [
         cart.updated_at,
         cart.display_status,

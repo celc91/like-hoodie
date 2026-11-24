@@ -256,6 +256,23 @@
     });
   }
 
+  function syncLegalNote() {
+    const hero = document.querySelector(".legal-hero .container");
+    if (!hero) return;
+    const existing = hero.querySelector(".legal-lang-note");
+    if (lang !== "en") {
+      if (existing) existing.remove();
+      return;
+    }
+    if (existing) return;
+    const note = document.createElement("p");
+    note.className = "legal-lang-note";
+    note.innerHTML =
+      'This legal document is currently available in Spanish. The Spanish version is the legally binding one. ' +
+      'For an English summary or any questions, write to <a href="mailto:hola@likehoodie.com">hola@likehoodie.com</a>.';
+    hero.appendChild(note);
+  }
+
   function setLang(next, options = {}) {
     const normalized = SUPPORTED.includes(next) ? next : "es";
     if (normalized === lang && !options.force) {
@@ -271,6 +288,7 @@
     document.documentElement.lang = lang === "en" ? "en" : "es";
     applyTree(document.body);
     applyTitle();
+    syncLegalNote();
     refreshSwitcher();
     document.dispatchEvent(new CustomEvent("lh:langchange", { detail: { lang } }));
   }
@@ -373,6 +391,7 @@
       applyTree(document.body);
       applyTitle();
     }
+    syncLegalNote();
     observe();
     refreshSwitcher();
   }

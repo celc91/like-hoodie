@@ -8766,3 +8766,16 @@ body.is-locked .wa-float {
 .login-card { position: relative; }
 .login-card > .lang-switch { position: absolute; top: 14px; right: 14px; z-index: 2; }
 @media (max-width: 640px) { .lang-switch button { padding: 5px 6px; } }
+
+.legal-lang-note {
+  margin: 0 0 18px;
+  padding: 11px 14px;
+  border: 1px solid var(--line, rgba(23, 19, 15, 0.14));
+  border-left: 3px solid var(--accent, #ff4d1f);
+  border-radius: 10px;
+  background: var(--paper, #fffdf9);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink, #17130f);
+}
+.legal-lang-note a { color: inherit; }
